@@ -12,7 +12,7 @@ pub use crate::{
     },
     system_data::{
         AssetLoadingResources, DefinitionLoadingResources, IdMappingResources,
-        SequenceComponentResources, SpriteLoadingResources, TextureLoadingResources,
+        SequenceComponentResources, SpritesDefinitionLoadingResources, TextureLoadingResources,
     },
 };
 

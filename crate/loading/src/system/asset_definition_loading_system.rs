@@ -79,7 +79,7 @@ impl<'s> System<'s> for AssetDefinitionLoadingSystem {
                     asset_id,
                 );
 
-                *load_stage = LoadStage::DefinitionLoading;
+                *load_stage = LoadStage::AssetDefinitionLoading;
             });
     }
 }
@@ -111,7 +111,7 @@ impl AssetDefinitionLoadingSystem {
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_stage_progress_counters
-            .entry(LoadStage::DefinitionLoading)
+            .entry(LoadStage::AssetDefinitionLoading)
             .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings

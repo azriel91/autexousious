@@ -72,7 +72,7 @@ impl<'s> System<'s> for AssetIdMappingSystem {
 
         asset_load_stage
             .iter_mut()
-            .filter(|(_, load_stage)| **load_stage == LoadStage::DefinitionLoading)
+            .filter(|(_, load_stage)| **load_stage == LoadStage::AssetDefinitionLoading)
             .for_each(|(asset_id, load_stage)| {
                 if Self::definition_loaded(
                     &mut asset_loading_resources,

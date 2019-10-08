@@ -36,13 +36,13 @@ pub struct AssetSpritesLoadingSystemData<'s> {
     pub definition_loading_resources: DefinitionLoadingResources<'s>,
     /// `IdMappingResources`.
     pub id_mapping_resources: IdMappingResources<'s>,
-    /// `SpriteLoadingResources`.
-    pub sprite_loading_resources: SpriteLoadingResources<'s>,
+    /// `SpritesDefinitionLoadingResources`.
+    pub sprites_definition_loading_resources: SpritesDefinitionLoadingResources<'s>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SpriteLoadingResources<'s> {
+pub struct SpritesDefinitionLoadingResources<'s> {
     /// `SpritesDefinition` assets.
     #[derivative(Debug = "ignore")]
     pub sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
@@ -62,7 +62,7 @@ impl<'s> System<'s> for AssetSpritesLoadingSystem {
             mut asset_loading_resources,
             definition_loading_resources,
             id_mapping_resources,
-            mut sprite_loading_resources,
+            mut sprites_definition_loading_resources,
         }: Self::SystemData,
     ) {
         asset_load_stage
@@ -77,11 +77,11 @@ impl<'s> System<'s> for AssetSpritesLoadingSystem {
                 ) {
                     Self::sprites_load(
                         &mut asset_loading_resources,
-                        &mut sprite_loading_resources,
+                        &mut sprites_definition_loading_resources,
                         asset_id,
                     );
 
-                    *load_stage = LoadStage::SpritesLoading
+                    *load_stage = LoadStage::SpritesDefinitionLoading
                 }
             });
     }
@@ -226,10 +226,10 @@ impl AssetSpritesLoadingSystem {
             load_stage_progress_counters,
             loader,
         }: &mut AssetLoadingResources<'_>,
-        SpriteLoadingResources {
+        SpritesDefinitionLoadingResources {
             sprites_definition_assets,
             asset_sprites_definition_handles,
-        }: &mut SpriteLoadingResources<'_>,
+        }: &mut SpritesDefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) {
         let asset_type = asset_type_mappings
@@ -237,7 +237,7 @@ impl AssetSpritesLoadingSystem {
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_stage_progress_counters
-            .entry(LoadStage::SpritesLoading)
+            .entry(LoadStage::SpritesDefinitionLoading)
             .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings

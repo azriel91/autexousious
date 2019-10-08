@@ -1,17 +1,17 @@
 /// Each asset's loading status.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum LoadStage {
-    /// The collective asset hasn't been loaded at all.
+    /// The collective asset hasn't been loaded.
     New,
-    /// Asset definition is loading.
-    DefinitionLoading,
-    /// Asset definition is loading.
+    /// Asset definition loading from disk.
+    AssetDefinitionLoading,
+    /// Sequence Name Strings mapping to Sequence IDs.
     IdMapping,
-    /// Sprite definition is loading.
-    SpritesLoading,
-    /// Textures are loading.
+    /// Sprite definition loading from disk.
+    SpritesDefinitionLoading,
+    /// Texture loading from disk.
     TextureLoading,
-    /// Sequence components are loading.
+    /// Sequence components loading from memory.
     SequenceComponentLoading,
     /// The collective asset is fully loaded.
     Complete,

@@ -8,10 +8,10 @@ use derivative::Derivative;
 use slotmap::SecondaryMap;
 use sprite_model::config::SpritesDefinition;
 
-/// `SpriteLoadingResources`.
+/// `SpritesDefinitionLoadingResources`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SpriteLoadingResources<'s> {
+pub struct SpritesDefinitionLoadingResources<'s> {
     /// `SpritesDefinition` assets.
     #[derivative(Debug = "ignore")]
     pub sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,

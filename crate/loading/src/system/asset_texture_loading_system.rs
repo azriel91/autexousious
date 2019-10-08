@@ -13,7 +13,7 @@ use slotmap::SecondaryMap;
 use sprite_loading::SpriteLoader;
 use typename_derive::TypeName;
 
-use crate::{AssetLoadingResources, SpriteLoadingResources};
+use crate::{AssetLoadingResources, SpritesDefinitionLoadingResources};
 
 /// Loads asset textures.
 #[derive(Default, Derivative, TypeName, new)]
@@ -30,8 +30,8 @@ pub struct AssetTextureLoadingSystemData<'s> {
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
-    /// `SpriteLoadingResources`.
-    pub sprite_loading_resources: SpriteLoadingResources<'s>,
+    /// `SpritesDefinitionLoadingResources`.
+    pub sprites_definition_loading_resources: SpritesDefinitionLoadingResources<'s>,
     /// `TextureLoadingResources`.
     pub texture_loading_resources: TextureLoadingResources<'s>,
 }
@@ -59,18 +59,19 @@ impl<'s> System<'s> for AssetTextureLoadingSystem {
         AssetTextureLoadingSystemData {
             mut asset_load_stage,
             mut asset_loading_resources,
-            sprite_loading_resources,
+            sprites_definition_loading_resources,
             mut texture_loading_resources,
         }: Self::SystemData,
     ) {
         asset_load_stage
             .iter_mut()
-            .filter(|(_, load_stage)| **load_stage == LoadStage::SpritesLoading)
+            .filter(|(_, load_stage)| **load_stage == LoadStage::SpritesDefinitionLoading)
             .for_each(|(asset_id, load_stage)| {
-                if Self::sprites_definition_loaded(&sprite_loading_resources, asset_id) {
+                if Self::sprites_definition_loaded(&sprites_definition_loading_resources, asset_id)
+                {
                     Self::texture_load(
                         &mut asset_loading_resources,
-                        &sprite_loading_resources,
+                        &sprites_definition_loading_resources,
                         &mut texture_loading_resources,
                         asset_id,
                     );
@@ -86,10 +87,10 @@ impl AssetTextureLoadingSystem {
     ///
     /// Returns `true` if there was no sprite definition for the asset.
     fn sprites_definition_loaded(
-        SpriteLoadingResources {
+        SpritesDefinitionLoadingResources {
             sprites_definition_assets,
             asset_sprites_definition_handles,
-        }: &SpriteLoadingResources<'_>,
+        }: &SpritesDefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) -> bool {
         asset_sprites_definition_handles
@@ -111,10 +112,10 @@ impl AssetTextureLoadingSystem {
             loader,
             ..
         }: &mut AssetLoadingResources<'_>,
-        SpriteLoadingResources {
+        SpritesDefinitionLoadingResources {
             sprites_definition_assets,
             asset_sprites_definition_handles,
-        }: &SpriteLoadingResources<'_>,
+        }: &SpritesDefinitionLoadingResources<'_>,
         TextureLoadingResources {
             texture_assets,
             sprite_sheet_assets,
