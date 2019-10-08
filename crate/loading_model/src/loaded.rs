@@ -1,6 +1,6 @@
 //! Types that represent processed configuration.
 
-pub use self::{asset_load_status::AssetLoadStatus, load_status::LoadStatus};
+pub use self::{asset_load_stage::AssetLoadStage, load_stage::LoadStage};
 
-mod asset_load_status;
-mod load_status;
+mod asset_load_stage;
+mod load_stage;

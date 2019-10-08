@@ -10,7 +10,7 @@ use character_model::config::CharacterSequenceName;
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::config::EnergySequenceName;
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use object_type::ObjectType;
 use sequence_model::loaded::{AssetSequenceIdMappings, SequenceIdMappings};
@@ -28,7 +28,7 @@ pub struct AssetIdMappingSystem;
 pub struct AssetIdMappingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -56,7 +56,7 @@ impl<'s> System<'s> for AssetIdMappingSystem {
     fn run(
         &mut self,
         AssetIdMappingSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             mut asset_loading_resources,
             definition_loading_resources,
             mut id_mapping_resources,
@@ -70,10 +70,10 @@ impl<'s> System<'s> for AssetIdMappingSystem {
         asset_sequence_id_mappings_character.set_capacity(capacity);
         asset_sequence_id_mappings_energy.set_capacity(capacity);
 
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::DefinitionLoading)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::DefinitionLoading)
+            .for_each(|(asset_id, load_stage)| {
                 if Self::definition_loaded(
                     &mut asset_loading_resources,
                     &definition_loading_resources,
@@ -86,7 +86,7 @@ impl<'s> System<'s> for AssetIdMappingSystem {
                         asset_id,
                     );
 
-                    *load_status = LoadStatus::IdMapping
+                    *load_stage = LoadStage::IdMapping
                 }
             });
     }
@@ -147,7 +147,7 @@ impl AssetIdMappingSystem {
         AssetLoadingResources {
             asset_id_mappings,
             asset_type_mappings,
-            load_status_progress_counters,
+            load_stage_progress_counters,
             ..
         }: &mut AssetLoadingResources,
         DefinitionLoadingResources {
@@ -173,8 +173,8 @@ impl AssetIdMappingSystem {
             .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
-        let _progress_counter = load_status_progress_counters
-            .entry(LoadStatus::IdMapping)
+        let _progress_counter = load_stage_progress_counters
+            .entry(LoadStage::IdMapping)
             .or_insert_with(ProgressCounter::new);
 
         match asset_type {

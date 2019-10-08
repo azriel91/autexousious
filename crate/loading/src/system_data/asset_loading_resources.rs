@@ -7,7 +7,7 @@ use amethyst::{
 };
 use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
 use derivative::Derivative;
-use loading_model::loaded::LoadStatus;
+use loading_model::loaded::LoadStage;
 use slotmap::SecondaryMap;
 
 /// `AssetLoadingResources`.
@@ -23,9 +23,9 @@ pub struct AssetLoadingResources<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
-    /// `HashMap<LoadStatus, WaitSequenceHandles>` resource.
+    /// `HashMap<LoadStage, WaitSequenceHandles>` resource.
     #[derivative(Debug = "ignore")]
-    pub load_status_progress_counters: Write<'s, HashMap<LoadStatus, ProgressCounter>>,
+    pub load_stage_progress_counters: Write<'s, HashMap<LoadStage, ProgressCounter>>,
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: ReadExpect<'s, Loader>,

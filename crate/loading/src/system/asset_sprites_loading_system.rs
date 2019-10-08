@@ -7,7 +7,7 @@ use asset_loading::YamlFormat;
 use asset_model::{config::AssetType, loaded::AssetId};
 use derivative::Derivative;
 use derive_new::new;
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
 use object_type::ObjectType;
@@ -28,7 +28,7 @@ pub struct AssetSpritesLoadingSystem;
 pub struct AssetSpritesLoadingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -58,17 +58,17 @@ impl<'s> System<'s> for AssetSpritesLoadingSystem {
     fn run(
         &mut self,
         AssetSpritesLoadingSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             mut asset_loading_resources,
             definition_loading_resources,
             id_mapping_resources,
             mut sprite_loading_resources,
         }: Self::SystemData,
     ) {
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::IdMapping)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::IdMapping)
+            .for_each(|(asset_id, load_stage)| {
                 if Self::id_mapped(
                     &asset_loading_resources,
                     &definition_loading_resources,
@@ -81,7 +81,7 @@ impl<'s> System<'s> for AssetSpritesLoadingSystem {
                         asset_id,
                     );
 
-                    *load_status = LoadStatus::SpritesLoading
+                    *load_stage = LoadStage::SpritesLoading
                 }
             });
     }
@@ -223,7 +223,7 @@ impl AssetSpritesLoadingSystem {
             asset_id_to_path,
             asset_id_mappings,
             asset_type_mappings,
-            load_status_progress_counters,
+            load_stage_progress_counters,
             loader,
         }: &mut AssetLoadingResources<'_>,
         SpriteLoadingResources {
@@ -236,8 +236,8 @@ impl AssetSpritesLoadingSystem {
             .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
-        let progress_counter = load_status_progress_counters
-            .entry(LoadStatus::SpritesLoading)
+        let progress_counter = load_stage_progress_counters
+            .entry(LoadStage::SpritesLoading)
             .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings

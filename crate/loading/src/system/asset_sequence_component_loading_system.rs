@@ -26,7 +26,7 @@ use derivative::Derivative;
 use derive_new::new;
 use energy_model::config::EnergySequence;
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use map_model::{
     config::LayerPosition,
@@ -64,7 +64,7 @@ pub struct AssetSequenceComponentLoadingSystem;
 pub struct AssetSequenceComponentLoadingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -171,7 +171,7 @@ impl<'s> System<'s> for AssetSequenceComponentLoadingSystem {
     fn run(
         &mut self,
         AssetSequenceComponentLoadingSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             mut asset_loading_resources,
             definition_loading_resources,
             id_mapping_resources,
@@ -200,10 +200,10 @@ impl<'s> System<'s> for AssetSequenceComponentLoadingSystem {
         asset_interactions_sequence_handles.set_capacity(capacity);
         asset_spawns_sequence_handles.set_capacity(capacity);
 
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::TextureLoading)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::TextureLoading)
+            .for_each(|(asset_id, load_stage)| {
                 if Self::textures_loaded(&texture_loading_resources, asset_id) {
                     Self::sequence_components_load(
                         &mut asset_loading_resources,
@@ -214,7 +214,7 @@ impl<'s> System<'s> for AssetSequenceComponentLoadingSystem {
                         asset_id,
                     );
 
-                    *load_status = LoadStatus::SequenceComponentLoading;
+                    *load_stage = LoadStage::SequenceComponentLoading;
                 }
             });
     }

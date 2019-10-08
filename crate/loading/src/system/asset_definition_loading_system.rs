@@ -9,7 +9,7 @@ use character_model::{config::CharacterDefinition, loaded::AssetCharacterDefinit
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::{config::EnergyDefinition, loaded::AssetEnergyDefinitionHandle};
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use map_model::{config::MapDefinition, loaded::AssetMapDefinitionHandle};
 use object_type::ObjectType;
@@ -28,7 +28,7 @@ pub struct AssetDefinitionLoadingSystem;
 pub struct AssetDefinitionLoadingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     pub asset_loading_resources: AssetLoadingResources<'s>,
     /// `DefinitionLoadingResources`.
@@ -64,22 +64,22 @@ impl<'s> System<'s> for AssetDefinitionLoadingSystem {
     fn run(
         &mut self,
         AssetDefinitionLoadingSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             mut asset_loading_resources,
             mut definition_loading_resources,
         }: Self::SystemData,
     ) {
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::New)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::New)
+            .for_each(|(asset_id, load_stage)| {
                 Self::definition_load(
                     &mut asset_loading_resources,
                     &mut definition_loading_resources,
                     asset_id,
                 );
 
-                *load_status = LoadStatus::DefinitionLoading;
+                *load_stage = LoadStage::DefinitionLoading;
             });
     }
 }
@@ -91,7 +91,7 @@ impl AssetDefinitionLoadingSystem {
             asset_id_to_path,
             asset_id_mappings,
             asset_type_mappings,
-            load_status_progress_counters,
+            load_stage_progress_counters,
             loader,
         }: &mut AssetLoadingResources<'_>,
         DefinitionLoadingResources {
@@ -110,8 +110,8 @@ impl AssetDefinitionLoadingSystem {
             .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
-        let progress_counter = load_status_progress_counters
-            .entry(LoadStatus::DefinitionLoading)
+        let progress_counter = load_stage_progress_counters
+            .entry(LoadStage::DefinitionLoading)
             .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings

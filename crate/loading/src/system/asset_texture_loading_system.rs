@@ -7,7 +7,7 @@ use amethyst::{
 use asset_model::loaded::AssetId;
 use derivative::Derivative;
 use derive_new::new;
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use slotmap::SecondaryMap;
 use sprite_loading::SpriteLoader;
@@ -26,7 +26,7 @@ pub struct AssetTextureLoadingSystem;
 pub struct AssetTextureLoadingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -57,16 +57,16 @@ impl<'s> System<'s> for AssetTextureLoadingSystem {
     fn run(
         &mut self,
         AssetTextureLoadingSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             mut asset_loading_resources,
             sprite_loading_resources,
             mut texture_loading_resources,
         }: Self::SystemData,
     ) {
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::SpritesLoading)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::SpritesLoading)
+            .for_each(|(asset_id, load_stage)| {
                 if Self::sprites_definition_loaded(&sprite_loading_resources, asset_id) {
                     Self::texture_load(
                         &mut asset_loading_resources,
@@ -75,7 +75,7 @@ impl<'s> System<'s> for AssetTextureLoadingSystem {
                         asset_id,
                     );
 
-                    *load_status = LoadStatus::TextureLoading;
+                    *load_stage = LoadStage::TextureLoading;
                 }
             });
     }
@@ -107,7 +107,7 @@ impl AssetTextureLoadingSystem {
         AssetLoadingResources {
             asset_id_to_path,
             asset_id_mappings,
-            load_status_progress_counters,
+            load_stage_progress_counters,
             loader,
             ..
         }: &mut AssetLoadingResources<'_>,
@@ -122,8 +122,8 @@ impl AssetTextureLoadingSystem {
         }: &mut TextureLoadingResources<'_>,
         asset_id: AssetId,
     ) {
-        let mut progress_counter = load_status_progress_counters
-            .entry(LoadStatus::TextureLoading)
+        let mut progress_counter = load_stage_progress_counters
+            .entry(LoadStage::TextureLoading)
             .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings

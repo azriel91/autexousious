@@ -5,7 +5,7 @@ use amethyst::{
 use asset_model::loaded::AssetId;
 use derivative::Derivative;
 use derive_new::new;
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::info;
 use typename_derive::TypeName;
 
@@ -22,7 +22,7 @@ pub struct AssetLoadingCompleteSystem;
 pub struct AssetLoadingCompleteSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_load_status: Write<'s, AssetLoadStatus>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -36,15 +36,15 @@ impl<'s> System<'s> for AssetLoadingCompleteSystem {
     fn run(
         &mut self,
         AssetLoadingCompleteSystemData {
-            mut asset_load_status,
+            mut asset_load_stage,
             asset_loading_resources,
             sequence_component_resources,
         }: Self::SystemData,
     ) {
-        asset_load_status
+        asset_load_stage
             .iter_mut()
-            .filter(|(_, load_status)| **load_status == LoadStatus::SequenceComponentLoading)
-            .for_each(|(asset_id, load_status)| {
+            .filter(|(_, load_stage)| **load_stage == LoadStage::SequenceComponentLoading)
+            .for_each(|(asset_id, load_stage)| {
                 if Self::sequence_components_loaded(&sequence_component_resources, asset_id) {
                     let asset_slug = asset_loading_resources
                         .asset_id_mappings
@@ -53,7 +53,7 @@ impl<'s> System<'s> for AssetLoadingCompleteSystem {
 
                     info!("Loaded `{}`.", asset_slug);
 
-                    *load_status = LoadStatus::Complete;
+                    *load_stage = LoadStage::Complete;
                 }
             });
     }
