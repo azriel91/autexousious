@@ -1,3 +1,5 @@
+cargo-features = ["profile-overrides"]
+
 [workspace]
 members = ["app/*", "crate/*"]
 
@@ -5,6 +7,11 @@ members = ["app/*", "crate/*"]
 # Slower compilation, but better performance of final executable.
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
+
+# All dependencies (but not this crate itself) will be compiled
+# with -Copt-level=3 . This includes build dependencies.
+[profile.dev.overrides."*"]
+opt-level = 3
 
 [patch.crates-io]
 # https://github.com/trimental/andrew/pull/2
