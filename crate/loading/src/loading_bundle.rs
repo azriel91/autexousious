@@ -10,8 +10,8 @@ use typename::TypeName;
 
 use crate::{
     AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem,
-    AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoadingSystem,
-    AssetTextureLoadingSystem,
+    AssetPartLoadingCoordinatorSystem, AssetSequenceComponentLoadingSystem,
+    AssetSpritesDefinitionLoadingSystem, AssetTextureLoadingSystem,
 };
 
 /// Adds asset discovery and loading systems to the `World`.
@@ -33,9 +33,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
             &[],
         ); // kcov-ignore
         builder.add(
+            AssetPartLoadingCoordinatorSystem::new(),
+            &AssetPartLoadingCoordinatorSystem::type_name(),
+            &[&AssetDiscoverySystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             AssetDefinitionLoadingSystem::new(),
             &AssetDefinitionLoadingSystem::type_name(),
-            &[&AssetDiscoverySystem::type_name()],
+            &[&AssetPartLoadingCoordinatorSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             AssetIdMappingSystem::new(),

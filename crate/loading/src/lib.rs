@@ -7,8 +7,9 @@ pub use crate::{
     loading_state::LoadingState,
     system::{
         AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem, AssetPartLoader,
-        AssetPartLoadingSystem, AssetSequenceComponentLoadingSystem,
-        AssetSpritesDefinitionLoadingSystem, AssetTextureLoadingSystem,
+        AssetPartLoadingCoordinatorSystem, AssetPartLoadingSystem,
+        AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoadingSystem,
+        AssetTextureLoadingSystem,
     },
     system_data::{
         AssetLoadingResources, DefinitionLoadingResources, DefinitionLoadingResourcesRead,
