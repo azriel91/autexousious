@@ -10,7 +10,7 @@ use typename::TypeName;
 
 use crate::{
     AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem,
-    AssetLoadingCompleteSystem, AssetSequenceComponentLoadingSystem, AssetSpritesLoadingSystem,
+    AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoadingSystem,
     AssetTextureLoadingSystem,
 };
 
@@ -43,24 +43,19 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
             &[&AssetDefinitionLoadingSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            AssetSpritesLoadingSystem::new(),
-            &AssetSpritesLoadingSystem::type_name(),
+            AssetSpritesDefinitionLoadingSystem::new(),
+            &AssetSpritesDefinitionLoadingSystem::type_name(),
             &[&AssetIdMappingSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             AssetTextureLoadingSystem::new(),
             &AssetTextureLoadingSystem::type_name(),
-            &[&AssetSpritesLoadingSystem::type_name()],
+            &[&AssetSpritesDefinitionLoadingSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             AssetSequenceComponentLoadingSystem::new(),
             &AssetSequenceComponentLoadingSystem::type_name(),
             &[&AssetTextureLoadingSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            AssetLoadingCompleteSystem::new(),
-            &AssetLoadingCompleteSystem::type_name(),
-            &[&AssetSequenceComponentLoadingSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }

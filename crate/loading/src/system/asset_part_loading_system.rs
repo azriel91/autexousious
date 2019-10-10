@@ -1,5 +1,3 @@
-use asset_model::loaded::AssetId;
-use loading_model::loaded::AssetLoadStatus;
 use std::marker::PhantomData;
 
 use amethyst::{
@@ -8,34 +6,30 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use loading_model::loaded::{AssetLoadStage, LoadStage, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStatus};
+use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::AssetLoadingResources;
+use crate::{AssetLoadingResources, AssetPartLoader};
 
 /// Loads part of a collective asset.
 #[derive(Derivative, TypeName, new)]
 #[derivative(Debug)]
-pub struct AssetPartLoadingSystem<'s, R>
+pub struct AssetPartLoadingSystem<R>
 where
-    R: SystemData<'s>,
+    R: for<'s> AssetPartLoader<'s> + TypeNameTrait,
 {
-    /// `LoadStage` that this System is concerned with
-    load_stage: LoadStage,
-    /// Function that loads the asset part.
-    #[derivative(Debug = "ignore")]
-    fn_process: fn(&mut AssetLoadingResources, &mut R, AssetId),
-    /// Function that checks if the asset part is loaded.
-    #[derivative(Debug = "ignore")]
-    fn_complete: fn(&mut AssetLoadingResources, &R, AssetId),
     /// Marker.
-    marker: PhantomData<&'s R>,
+    marker: PhantomData<R>,
 }
 
 /// `AssetPartLoaderSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct AssetPartLoaderSystemData<'s, R> {
+pub struct AssetPartLoaderSystemData<'s, R>
+where
+    R: for<'sd> AssetPartLoader<'sd> + TypeNameTrait,
+{
     /// `AssetLoadStage` resource.
     #[derivative(Debug = "ignore")]
     pub asset_load_stage: Read<'s, AssetLoadStage>,
@@ -45,12 +39,13 @@ pub struct AssetPartLoaderSystemData<'s, R> {
     /// `AssetLoadingResources`.
     pub asset_loading_resources: AssetLoadingResources<'s>,
     /// Resources needed to load the asset part.
-    pub asset_part_resources: R,
+    #[derivative(Debug = "ignore")]
+    pub asset_part_resources: <R as AssetPartLoader<'s>>::SystemData,
 }
 
-impl<'s, R> AssetPartLoadingSystem<'s, R>
+impl<R> AssetPartLoadingSystem<R>
 where
-    R: SystemData<'s>,
+    R: for<'s> AssetPartLoader<'s> + TypeNameTrait,
 {
     fn process_assets_queued(
         &self,
@@ -59,11 +54,11 @@ where
             asset_load_status,
             asset_loading_resources,
             asset_part_resources,
-        }: &mut AssetPartLoaderSystemData<'_, R>,
+        }: &mut AssetPartLoaderSystemData<R>,
     ) {
         asset_load_stage
             .iter()
-            .filter(|(_, load_stage)| **load_stage == self.load_stage)
+            .filter(|(_, load_stage)| **load_stage == R::LOAD_STAGE)
             .for_each(|(asset_id, _)| {
                 let queued = asset_load_status
                     .get(asset_id)
@@ -71,7 +66,7 @@ where
                     .map(|load_status| load_status == LoadStatus::Queued)
                     .unwrap_or(false);
                 if queued {
-                    (self.fn_process)(asset_loading_resources, asset_part_resources, asset_id);
+                    R::process(asset_loading_resources, asset_part_resources, asset_id);
 
                     asset_load_status.insert(asset_id, LoadStatus::InProgress);
                 }
@@ -85,11 +80,11 @@ where
             asset_load_status,
             asset_loading_resources,
             asset_part_resources,
-        }: &mut AssetPartLoaderSystemData<'_, R>,
+        }: &mut AssetPartLoaderSystemData<R>,
     ) {
         asset_load_stage
             .iter()
-            .filter(|(_, load_stage)| **load_stage == self.load_stage)
+            .filter(|(_, load_stage)| **load_stage == R::LOAD_STAGE)
             .for_each(|(asset_id, _)| {
                 let in_progress = asset_load_status
                     .get(asset_id)
@@ -97,18 +92,18 @@ where
                     .map(|load_status| load_status == LoadStatus::InProgress)
                     .unwrap_or(false);
 
-                if in_progress {
-                    (self.fn_complete)(asset_loading_resources, asset_part_resources, asset_id);
-
+                if in_progress
+                    && R::is_complete(asset_loading_resources, asset_part_resources, asset_id)
+                {
                     asset_load_status.insert(asset_id, LoadStatus::Complete);
                 }
             });
     }
 }
 
-impl<'s, R> System<'s> for AssetPartLoadingSystem<'s, R>
+impl<'s, R> System<'s> for AssetPartLoadingSystem<R>
 where
-    R: SystemData<'s>,
+    R: for<'sd> AssetPartLoader<'sd> + TypeNameTrait,
 {
     type SystemData = AssetPartLoaderSystemData<'s, R>;
 

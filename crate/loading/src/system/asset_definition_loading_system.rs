@@ -1,92 +1,27 @@
-use amethyst::{
-    assets::{AssetStorage, ProgressCounter},
-    ecs::{Read, System, World, Write},
-    shred::{ResourceId, SystemData},
-};
+use amethyst::assets::ProgressCounter;
 use asset_loading::YamlFormat;
 use asset_model::{config::AssetType, loaded::AssetId};
-use character_model::{config::CharacterDefinition, loaded::AssetCharacterDefinitionHandle};
-use derivative::Derivative;
-use derive_new::new;
-use energy_model::{config::EnergyDefinition, loaded::AssetEnergyDefinitionHandle};
-use loading_model::loaded::{AssetLoadStage, LoadStage};
+use loading_model::loaded::LoadStage;
 use log::debug;
-use map_model::{config::MapDefinition, loaded::AssetMapDefinitionHandle};
 use object_type::ObjectType;
 use typename_derive::TypeName;
 
-use crate::AssetLoadingResources;
+use crate::{
+    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResources,
+};
 
 /// Loads asset definitions.
-#[derive(Default, Derivative, TypeName, new)]
-#[derivative(Debug)]
-pub struct AssetDefinitionLoadingSystem;
+pub type AssetDefinitionLoadingSystem = AssetPartLoadingSystem<AssetDefinitionLoader>;
 
-/// `AssetDefinitionLoadingSystemData`.
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct AssetDefinitionLoadingSystemData<'s> {
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_load_stage: Write<'s, AssetLoadStage>,
-    /// `AssetLoadingResources`.
-    pub asset_loading_resources: AssetLoadingResources<'s>,
-    /// `DefinitionLoadingResources`.
-    pub definition_loading_resources: DefinitionLoadingResources<'s>,
-}
+/// `AssetDefinitionLoader`.
+#[derive(Debug, TypeName)]
+pub struct AssetDefinitionLoader;
 
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct DefinitionLoadingResources<'s> {
-    /// `CharacterDefinition` assets.
-    #[derivative(Debug = "ignore")]
-    pub character_definition_assets: Read<'s, AssetStorage<CharacterDefinition>>,
-    /// `EnergyDefinition` assets.
-    #[derivative(Debug = "ignore")]
-    pub energy_definition_assets: Read<'s, AssetStorage<EnergyDefinition>>,
-    /// `MapDefinition` assets.
-    #[derivative(Debug = "ignore")]
-    pub map_definition_assets: Read<'s, AssetStorage<MapDefinition>>,
-    /// `AssetCharacterDefinitionHandle` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_character_definition_handle: Write<'s, AssetCharacterDefinitionHandle>,
-    /// `AssetEnergyDefinitionHandle` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_energy_definition_handle: Write<'s, AssetEnergyDefinitionHandle>,
-    /// `AssetMapDefinitionHandle` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_map_definition_handle: Write<'s, AssetMapDefinitionHandle>,
-}
+impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
+    const LOAD_STAGE: LoadStage = LoadStage::AssetDefinitionLoading;
+    type SystemData = DefinitionLoadingResources<'s>;
 
-impl<'s> System<'s> for AssetDefinitionLoadingSystem {
-    type SystemData = AssetDefinitionLoadingSystemData<'s>;
-
-    fn run(
-        &mut self,
-        AssetDefinitionLoadingSystemData {
-            mut asset_load_stage,
-            mut asset_loading_resources,
-            mut definition_loading_resources,
-        }: Self::SystemData,
-    ) {
-        asset_load_stage
-            .iter_mut()
-            .filter(|(_, load_stage)| **load_stage == LoadStage::New)
-            .for_each(|(asset_id, load_stage)| {
-                Self::definition_load(
-                    &mut asset_loading_resources,
-                    &mut definition_loading_resources,
-                    asset_id,
-                );
-
-                *load_stage = LoadStage::AssetDefinitionLoading;
-            });
-    }
-}
-
-impl AssetDefinitionLoadingSystem {
-    /// Loads an asset's `Definition`.
-    fn definition_load(
+    fn process(
         AssetLoadingResources {
             asset_id_to_path,
             asset_id_mappings,
@@ -170,6 +105,54 @@ impl AssetDefinitionLoadingSystem {
                 );
 
                 asset_map_definition_handle.insert(asset_id, map_definition_handle);
+            }
+        }
+    }
+
+    fn is_complete(
+        AssetLoadingResources {
+            asset_type_mappings,
+            ..
+        }: &mut AssetLoadingResources<'_>,
+        DefinitionLoadingResources {
+            character_definition_assets,
+            energy_definition_assets,
+            map_definition_assets,
+            asset_character_definition_handle,
+            asset_energy_definition_handle,
+            asset_map_definition_handle,
+        }: &DefinitionLoadingResources<'_>,
+        asset_id: AssetId,
+    ) -> bool {
+        let asset_type = asset_type_mappings
+            .get(asset_id)
+            .expect("Expected `AssetType` mapping to exist.");
+
+        match asset_type {
+            AssetType::Object(object_type) => match object_type {
+                ObjectType::Character => {
+                    let character_definition_handle = asset_character_definition_handle
+                        .get(asset_id)
+                        .expect("Expected `CharacterDefinitionHandle` to exist.");
+                    character_definition_assets
+                        .get(character_definition_handle)
+                        .is_some()
+                }
+                ObjectType::Energy => {
+                    let energy_definition_handle = asset_energy_definition_handle
+                        .get(asset_id)
+                        .expect("Expected `EnergyDefinitionHandle` to exist.");
+                    energy_definition_assets
+                        .get(energy_definition_handle)
+                        .is_some()
+                }
+                ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
+            },
+            AssetType::Map => {
+                let map_definition_handle = asset_map_definition_handle
+                    .get(asset_id)
+                    .expect("Expected `MapDefinitionHandle` to exist.");
+                map_definition_assets.get(map_definition_handle).is_some()
             }
         }
     }

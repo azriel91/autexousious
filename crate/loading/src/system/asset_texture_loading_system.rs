@@ -1,110 +1,28 @@
-use amethyst::{
-    assets::{AssetStorage, ProgressCounter},
-    ecs::{Read, System, World, Write},
-    renderer::{sprite::SpriteSheetHandle, SpriteSheet, Texture},
-    shred::{ResourceId, SystemData},
-};
+use amethyst::assets::ProgressCounter;
 use asset_model::loaded::AssetId;
-use derivative::Derivative;
-use derive_new::new;
-use loading_model::loaded::{AssetLoadStage, LoadStage};
+use loading_model::loaded::LoadStage;
 use log::debug;
-use slotmap::SecondaryMap;
 use sprite_loading::SpriteLoader;
 use typename_derive::TypeName;
 
-use crate::{AssetLoadingResources, SpritesDefinitionLoadingResources};
+use crate::{
+    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
+    SpritesDefinitionLoadingResourcesRead, TextureLoadingResources,
+};
 
-/// Loads asset textures.
-#[derive(Default, Derivative, TypeName, new)]
-#[derivative(Debug)]
-pub struct AssetTextureLoadingSystem;
+/// Loads asset sprites definitions.
+pub type AssetTextureLoadingSystem = AssetPartLoadingSystem<AssetTextureLoader>;
 
-/// `AssetTextureLoadingSystemData`.
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct AssetTextureLoadingSystemData<'s> {
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_load_stage: Write<'s, AssetLoadStage>,
-    /// `AssetLoadingResources`.
-    #[derivative(Debug = "ignore")]
-    pub asset_loading_resources: AssetLoadingResources<'s>,
-    /// `SpritesDefinitionLoadingResources`.
-    pub sprites_definition_loading_resources: SpritesDefinitionLoadingResources<'s>,
-    /// `TextureLoadingResources`.
-    pub texture_loading_resources: TextureLoadingResources<'s>,
-}
+/// `AssetTextureLoader`.
+#[derive(Debug, TypeName)]
+pub struct AssetTextureLoader;
 
-/// `TextureLoadingResources`.
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct TextureLoadingResources<'s> {
-    /// `Texture` assets.
-    #[derivative(Debug = "ignore")]
-    pub texture_assets: Read<'s, AssetStorage<Texture>>,
-    /// `SpriteSheet` assets.
-    #[derivative(Debug = "ignore")]
-    pub sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
-    /// `SecondaryMap<AssetId, Vec<SpriteSheetHandle>>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_sheet_handles: Write<'s, SecondaryMap<AssetId, Vec<SpriteSheetHandle>>>,
-}
-
-impl<'s> System<'s> for AssetTextureLoadingSystem {
-    type SystemData = AssetTextureLoadingSystemData<'s>;
-
-    fn run(
-        &mut self,
-        AssetTextureLoadingSystemData {
-            mut asset_load_stage,
-            mut asset_loading_resources,
-            sprites_definition_loading_resources,
-            mut texture_loading_resources,
-        }: Self::SystemData,
-    ) {
-        asset_load_stage
-            .iter_mut()
-            .filter(|(_, load_stage)| **load_stage == LoadStage::SpritesDefinitionLoading)
-            .for_each(|(asset_id, load_stage)| {
-                if Self::sprites_definition_loaded(&sprites_definition_loading_resources, asset_id)
-                {
-                    Self::texture_load(
-                        &mut asset_loading_resources,
-                        &sprites_definition_loading_resources,
-                        &mut texture_loading_resources,
-                        asset_id,
-                    );
-
-                    *load_stage = LoadStage::TextureLoading;
-                }
-            });
-    }
-}
-
-impl AssetTextureLoadingSystem {
-    /// Returns whether the `SpritesDefinition` asset has been loaded.
-    ///
-    /// Returns `true` if there was no sprite definition for the asset.
-    fn sprites_definition_loaded(
-        SpritesDefinitionLoadingResources {
-            sprites_definition_assets,
-            asset_sprites_definition_handles,
-        }: &SpritesDefinitionLoadingResources<'_>,
-        asset_id: AssetId,
-    ) -> bool {
-        asset_sprites_definition_handles
-            .get(asset_id)
-            .map(|sprites_definition_handle| {
-                sprites_definition_assets
-                    .get(sprites_definition_handle)
-                    .is_some()
-            })
-            .unwrap_or(true)
-    }
+impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
+    const LOAD_STAGE: LoadStage = LoadStage::TextureLoading;
+    type SystemData = TextureLoadingResources<'s>;
 
     /// Loads an asset's `Texture`s and `SpriteSheet`s.
-    fn texture_load(
+    fn process(
         AssetLoadingResources {
             asset_id_to_path,
             asset_id_mappings,
@@ -112,11 +30,12 @@ impl AssetTextureLoadingSystem {
             loader,
             ..
         }: &mut AssetLoadingResources<'_>,
-        SpritesDefinitionLoadingResources {
-            sprites_definition_assets,
-            asset_sprites_definition_handles,
-        }: &SpritesDefinitionLoadingResources<'_>,
         TextureLoadingResources {
+            sprites_definition_loading_resources_read:
+                SpritesDefinitionLoadingResourcesRead {
+                    sprites_definition_assets,
+                    asset_sprites_definition_handles,
+                },
             texture_assets,
             sprite_sheet_assets,
             asset_sprite_sheet_handles,
@@ -160,5 +79,31 @@ impl AssetTextureLoadingSystem {
 
             asset_sprite_sheet_handles.insert(asset_id, sprite_sheet_handles);
         }
+    }
+
+    /// Returns whether the `Texture`s and `SpriteSheet` assets have been loaded.
+    ///
+    /// Returns `true` if there are no textures to load.
+    fn is_complete(
+        _: &mut AssetLoadingResources<'_>,
+        TextureLoadingResources {
+            texture_assets,
+            sprite_sheet_assets,
+            asset_sprite_sheet_handles,
+            ..
+        }: &TextureLoadingResources<'_>,
+        asset_id: AssetId,
+    ) -> bool {
+        asset_sprite_sheet_handles
+            .get(asset_id)
+            .map(|sprite_sheet_handles| {
+                sprite_sheet_handles.iter().all(|sprite_sheet_handle| {
+                    sprite_sheet_assets
+                        .get(sprite_sheet_handle)
+                        .and_then(|sprite_sheet| texture_assets.get(&sprite_sheet.texture))
+                        .is_some()
+                })
+            })
+            .unwrap_or(true)
     }
 }

@@ -1,163 +1,63 @@
 use std::iter::FromIterator;
 
-use amethyst::{
-    assets::ProgressCounter,
-    ecs::{System, World, Write},
-    shred::{ResourceId, SystemData},
-};
+use amethyst::assets::ProgressCounter;
 use asset_model::{config::AssetType, loaded::AssetId};
-use character_model::config::CharacterSequenceName;
-use derivative::Derivative;
-use derive_new::new;
-use energy_model::config::EnergySequenceName;
-use loading_model::loaded::{AssetLoadStage, LoadStage};
+use loading_model::loaded::LoadStage;
 use log::debug;
+use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
 use object_type::ObjectType;
-use sequence_model::loaded::{AssetSequenceIdMappings, SequenceIdMappings};
+use sequence_model::loaded::SequenceIdMappings;
+use serde::{Deserialize, Serialize};
 use typename_derive::TypeName;
 
-use crate::{AssetLoadingResources, DefinitionLoadingResources};
+use crate::{
+    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
+    IdMappingResources,
+};
 
 /// Maps asset sequence name strings to IDs.
-#[derive(Default, Derivative, TypeName, new)]
-#[derivative(Debug)]
-pub struct AssetIdMappingSystem;
+pub type AssetIdMappingSystem = AssetPartLoadingSystem<AssetIdMapper>;
 
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct AssetIdMappingSystemData<'s> {
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_load_stage: Write<'s, AssetLoadStage>,
-    /// `AssetLoadingResources`.
-    #[derivative(Debug = "ignore")]
-    pub asset_loading_resources: AssetLoadingResources<'s>,
-    /// `DefinitionLoadingResources`.
-    pub definition_loading_resources: DefinitionLoadingResources<'s>,
-    /// `IdMappingResources`.
-    pub id_mapping_resources: IdMappingResources<'s>,
-}
+/// `AssetIdMapper`.
+#[derive(Debug, TypeName)]
+pub struct AssetIdMapper;
 
-#[derive(Derivative, SystemData)]
-#[derivative(Debug)]
-pub struct IdMappingResources<'s> {
-    /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_id_mappings_character:
-        Write<'s, AssetSequenceIdMappings<CharacterSequenceName>>,
-    /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_id_mappings_energy: Write<'s, AssetSequenceIdMappings<EnergySequenceName>>,
-}
+impl<'s> AssetPartLoader<'s> for AssetIdMapper {
+    const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
+    type SystemData = IdMappingResources<'s>;
 
-impl<'s> System<'s> for AssetIdMappingSystem {
-    type SystemData = AssetIdMappingSystemData<'s>;
-
-    fn run(
-        &mut self,
-        AssetIdMappingSystemData {
-            mut asset_load_stage,
-            mut asset_loading_resources,
-            definition_loading_resources,
-            mut id_mapping_resources,
-        }: Self::SystemData,
-    ) {
-        let capacity = asset_loading_resources.asset_id_mappings.capacity();
-        let IdMappingResources {
+    fn preprocess(
+        AssetLoadingResources {
+            asset_id_mappings, ..
+        }: &mut AssetLoadingResources,
+        IdMappingResources {
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
-        } = &mut id_mapping_resources;
+            ..
+        }: &mut IdMappingResources<'_>,
+    ) {
+        let capacity = asset_id_mappings.capacity();
         asset_sequence_id_mappings_character.set_capacity(capacity);
         asset_sequence_id_mappings_energy.set_capacity(capacity);
-
-        asset_load_stage
-            .iter_mut()
-            .filter(|(_, load_stage)| **load_stage == LoadStage::AssetDefinitionLoading)
-            .for_each(|(asset_id, load_stage)| {
-                if Self::definition_loaded(
-                    &mut asset_loading_resources,
-                    &definition_loading_resources,
-                    asset_id,
-                ) {
-                    Self::id_map(
-                        &mut asset_loading_resources,
-                        &definition_loading_resources,
-                        &mut id_mapping_resources,
-                        asset_id,
-                    );
-
-                    *load_stage = LoadStage::IdMapping
-                }
-            });
-    }
-}
-
-impl AssetIdMappingSystem {
-    /// Returns whether the definition asset has been loaded.
-    fn definition_loaded(
-        AssetLoadingResources {
-            asset_type_mappings,
-            ..
-        }: &mut AssetLoadingResources<'_>,
-        DefinitionLoadingResources {
-            character_definition_assets,
-            energy_definition_assets,
-            map_definition_assets,
-            asset_character_definition_handle,
-            asset_energy_definition_handle,
-            asset_map_definition_handle,
-        }: &DefinitionLoadingResources<'_>,
-        asset_id: AssetId,
-    ) -> bool {
-        let asset_type = asset_type_mappings
-            .get(asset_id)
-            .expect("Expected `AssetType` mapping to exist.");
-
-        match asset_type {
-            AssetType::Object(object_type) => match object_type {
-                ObjectType::Character => {
-                    let character_definition_handle = asset_character_definition_handle
-                        .get(asset_id)
-                        .expect("Expected `CharacterDefinitionHandle` to exist.");
-                    character_definition_assets
-                        .get(character_definition_handle)
-                        .is_some()
-                }
-                ObjectType::Energy => {
-                    let energy_definition_handle = asset_energy_definition_handle
-                        .get(asset_id)
-                        .expect("Expected `EnergyDefinitionHandle` to exist.");
-                    energy_definition_assets
-                        .get(energy_definition_handle)
-                        .is_some()
-                }
-                ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
-            },
-            AssetType::Map => {
-                let map_definition_handle = asset_map_definition_handle
-                    .get(asset_id)
-                    .expect("Expected `MapDefinitionHandle` to exist.");
-                map_definition_assets.get(map_definition_handle).is_some()
-            }
-        }
     }
 
     /// Map's an asset's sequence IDs.
-    fn id_map(
+    fn process(
         AssetLoadingResources {
             asset_id_mappings,
             asset_type_mappings,
             load_stage_progress_counters,
             ..
         }: &mut AssetLoadingResources,
-        DefinitionLoadingResources {
-            character_definition_assets,
-            energy_definition_assets,
-            asset_character_definition_handle,
-            asset_energy_definition_handle,
-            ..
-        }: &DefinitionLoadingResources<'_>,
         IdMappingResources {
+            definition_loading_resources_read:
+                DefinitionLoadingResourcesRead {
+                    character_definition_assets,
+                    energy_definition_assets,
+                    asset_character_definition_handle,
+                    asset_energy_definition_handle,
+                    ..
+                },
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
         }: &mut IdMappingResources<'_>,
@@ -209,5 +109,138 @@ impl AssetIdMappingSystem {
             },
             AssetType::Map => {}
         }
+    }
+
+    /// Returns whether ID mappings has been completed.
+    fn is_complete(
+        asset_loading_resources: &mut AssetLoadingResources,
+        id_mapping_resources: &IdMappingResources<'_>,
+        asset_id: AssetId,
+    ) -> bool {
+        let AssetLoadingResources {
+            asset_type_mappings,
+            ..
+        } = asset_loading_resources;
+        let IdMappingResources {
+            definition_loading_resources_read:
+                DefinitionLoadingResourcesRead {
+                    character_definition_assets,
+                    energy_definition_assets,
+                    asset_character_definition_handle,
+                    asset_energy_definition_handle,
+                    ..
+                },
+            asset_sequence_id_mappings_character,
+            asset_sequence_id_mappings_energy,
+        } = id_mapping_resources;
+
+        let asset_type = asset_type_mappings
+            .get(asset_id)
+            .expect("Expected `AssetType` mapping to exist.");
+
+        match asset_type {
+            AssetType::Object(object_type) => match object_type {
+                ObjectType::Character => {
+                    let id_mappings_self =
+                        asset_sequence_id_mappings_character.get(asset_id).is_some();
+                    let spawn_id_mappings_exist = {
+                        let character_definition = asset_character_definition_handle
+                            .get(asset_id)
+                            .and_then(|character_definition_handle| {
+                                character_definition_assets.get(character_definition_handle)
+                            })
+                            .expect("Expected `CharacterDefinition` to be loaded.");
+
+                        Self::spawn_object_sequence_id_mappings_loaded(
+                            asset_loading_resources,
+                            id_mapping_resources,
+                            &character_definition.object_definition,
+                        )
+                    };
+
+                    id_mappings_self && spawn_id_mappings_exist
+                }
+                ObjectType::Energy => {
+                    let id_mappings_self =
+                        asset_sequence_id_mappings_energy.get(asset_id).is_some();
+                    let spawn_id_mappings_exist = {
+                        let energy_definition = asset_energy_definition_handle
+                            .get(asset_id)
+                            .and_then(|energy_definition_handle| {
+                                energy_definition_assets.get(energy_definition_handle)
+                            })
+                            .expect("Expected `EnergyDefinition` to be loaded.");
+
+                        Self::spawn_object_sequence_id_mappings_loaded(
+                            asset_loading_resources,
+                            id_mapping_resources,
+                            &energy_definition.object_definition,
+                        )
+                    };
+
+                    id_mappings_self && spawn_id_mappings_exist
+                }
+                ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
+            },
+            AssetType::Map => true,
+        }
+    }
+}
+
+impl AssetIdMapper {
+    fn spawn_object_sequence_id_mappings_loaded<ObjSeq>(
+        AssetLoadingResources {
+            asset_id_mappings,
+            asset_type_mappings,
+            ..
+        }: &AssetLoadingResources<'_>,
+        IdMappingResources {
+            asset_sequence_id_mappings_character,
+            asset_sequence_id_mappings_energy,
+            ..
+        }: &IdMappingResources<'_>,
+        object_definition: &ObjectDefinition<ObjSeq>,
+    ) -> bool
+    where
+        ObjSeq: GameObjectSequence,
+        ObjSeq::SequenceName: for<'des> Deserialize<'des> + Serialize,
+    {
+        object_definition
+            .sequences
+            .values()
+            .flat_map(|game_obj_seq| game_obj_seq.object_sequence().frames.iter())
+            .flat_map(|frame| frame.object_frame().spawns.iter())
+            .try_fold((), |_, spawn| {
+                // Check if sequence ID mappings exist for `spawn.object`.
+                let spawn_asset_slug = &spawn.object;
+                let spawn_asset_id = asset_id_mappings
+                    .id(spawn_asset_slug)
+                    .copied()
+                    .unwrap_or_else(|| panic!("Asset ID not found for `{}`.", spawn_asset_slug));
+                let spawn_asset_type = asset_type_mappings
+                    .get(spawn_asset_id)
+                    .expect("Expected `AssetType` mapping to exist.");
+
+                let spawn_id_mappings_exist = match spawn_asset_type {
+                    AssetType::Object(spawn_object_type) => match spawn_object_type {
+                        ObjectType::Character => asset_sequence_id_mappings_character
+                            .get(spawn_asset_id)
+                            .is_some(),
+                        ObjectType::Energy => asset_sequence_id_mappings_energy
+                            .get(spawn_asset_id)
+                            .is_some(),
+                        ObjectType::TestObject => {
+                            panic!("Spawning `TestObject`s is not supported.")
+                        }
+                    },
+                    AssetType::Map => panic!("Spawning `Map`s is not supported."),
+                };
+                if spawn_id_mappings_exist {
+                    Ok(())
+                } else {
+                    Err(())
+                }
+            })
+            .is_ok()
     }
 }
