@@ -4,6 +4,9 @@ version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
+[lib]
+test = false
+
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
