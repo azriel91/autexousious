@@ -39,15 +39,32 @@ for test_bin_by_crate in $test_bins_by_crate; do
   crate_coverage_dir="${coverage_dir}/${test_bin_name}"
   crate_coverage_dirs+=("${crate_coverage_dir}")
 
-  (
-    echo "Running '${test_bin_path}'"
+  if [[ "${crate_name}" == "workspace_tests" ]]
+  then
+    # Collective workspace tests
+    (
+      echo "Running '${test_bin_path}'"
 
-    export CARGO_MANIFEST_DIR="$crate_dir"
-    kcov --include-pattern="${crate_dir}/src/,${crate_dir}/tests/" \
-      "--exclude-line=${kcov_exclude_line}" \
-      "--exclude-region=${kcov_exclude_region}" \
-      "${crate_coverage_dir}" "${test_bin_path}"
-  )
+      export CARGO_MANIFEST_DIR="$crate_dir"
+      kcov \
+        --include-pattern="${repository_dir}/crate/" \
+        --exclude-line="${kcov_exclude_line}" \
+        --exclude-region="${kcov_exclude_region}" \
+        "${crate_coverage_dir}" "${test_bin_path}"
+    )
+  else
+    # Integration tests also include coverage.
+    (
+      echo "Running '${test_bin_path}'"
+
+      export CARGO_MANIFEST_DIR="$crate_dir"
+      kcov --include-pattern="${crate_dir}/src/,${crate_dir}/tests/" \
+        "--exclude-line=${kcov_exclude_line}" \
+        "--exclude-region=${kcov_exclude_region}" \
+        "${crate_coverage_dir}" "${test_bin_path}"
+    )
+  fi
+
 done
 
 rm -rf "${coverage_dir}/merged"
