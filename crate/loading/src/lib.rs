@@ -6,9 +6,10 @@ pub use crate::{
     loading_bundle::LoadingBundle,
     loading_state::LoadingState,
     system::{
-        AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem, AssetPartLoader,
-        AssetPartLoadingCoordinatorSystem, AssetPartLoadingSystem,
-        AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoadingSystem,
+        AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMapper,
+        AssetIdMappingSystem, AssetPartLoader, AssetPartLoadingCoordinatorSystem,
+        AssetPartLoadingSystem, AssetSequenceComponentLoader, AssetSequenceComponentLoadingSystem,
+        AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem, AssetTextureLoader,
         AssetTextureLoadingSystem,
     },
     system_data::{

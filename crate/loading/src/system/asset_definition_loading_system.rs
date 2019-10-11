@@ -130,30 +130,24 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
 
         match asset_type {
             AssetType::Object(object_type) => match object_type {
-                ObjectType::Character => {
-                    let character_definition_handle = asset_character_definition_handle
-                        .get(asset_id)
-                        .expect("Expected `CharacterDefinitionHandle` to exist.");
-                    character_definition_assets
-                        .get(character_definition_handle)
-                        .is_some()
-                }
-                ObjectType::Energy => {
-                    let energy_definition_handle = asset_energy_definition_handle
-                        .get(asset_id)
-                        .expect("Expected `EnergyDefinitionHandle` to exist.");
-                    energy_definition_assets
-                        .get(energy_definition_handle)
-                        .is_some()
-                }
+                ObjectType::Character => asset_character_definition_handle
+                    .get(asset_id)
+                    .and_then(|character_definition_handle| {
+                        character_definition_assets.get(character_definition_handle)
+                    })
+                    .is_some(),
+                ObjectType::Energy => asset_energy_definition_handle
+                    .get(asset_id)
+                    .and_then(|character_definition_handle| {
+                        energy_definition_assets.get(character_definition_handle)
+                    })
+                    .is_some(),
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map => {
-                let map_definition_handle = asset_map_definition_handle
-                    .get(asset_id)
-                    .expect("Expected `MapDefinitionHandle` to exist.");
-                map_definition_assets.get(map_definition_handle).is_some()
-            }
+            AssetType::Map => asset_map_definition_handle
+                .get(asset_id)
+                .and_then(|map_definition_handle| map_definition_assets.get(map_definition_handle))
+                .is_some(),
         }
     }
 }

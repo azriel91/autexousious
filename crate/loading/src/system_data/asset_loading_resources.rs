@@ -23,7 +23,7 @@ pub struct AssetLoadingResources<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
-    /// `HashMap<LoadStage, WaitSequenceHandles>` resource.
+    /// `HashMap<LoadStage, ProgressCounter>` resource.
     #[derivative(Debug = "ignore")]
     pub load_stage_progress_counters: Write<'s, HashMap<LoadStage, ProgressCounter>>,
     /// `Loader` to load assets.
