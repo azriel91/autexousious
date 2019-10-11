@@ -23,24 +23,25 @@ pub struct AssetDiscoverySystem {
     assets_dir: PathBuf,
 }
 
+/// `AssetDiscoverySystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct AssetDiscoverySystemData<'s> {
     /// `Option<AssetIndex>` resource.
     #[derivative(Debug = "ignore")]
-    asset_index: Write<'s, Option<AssetIndex>>,
+    pub asset_index: Write<'s, Option<AssetIndex>>,
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
-    asset_id_mappings: Write<'s, AssetIdMappings>,
+    pub asset_id_mappings: Write<'s, AssetIdMappings>,
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    asset_type_mappings: Write<'s, AssetTypeMappings>,
+    pub asset_type_mappings: Write<'s, AssetTypeMappings>,
     /// `AssetLoadStage` resource.
     #[derivative(Debug = "ignore")]
-    asset_load_stage: Write<'s, AssetLoadStage>,
+    pub asset_load_stage: Write<'s, AssetLoadStage>,
     /// `SecondaryMap<AssetId, PathBuf>` resource.
     #[derivative(Debug = "ignore")]
-    asset_id_to_path: Write<'s, SecondaryMap<AssetId, PathBuf>>,
+    pub asset_id_to_path: Write<'s, SecondaryMap<AssetId, PathBuf>>,
 }
 
 impl<'s> System<'s> for AssetDiscoverySystem {

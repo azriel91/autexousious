@@ -1,6 +1,6 @@
 pub use self::{
     asset_definition_loading_system::{AssetDefinitionLoader, AssetDefinitionLoadingSystem},
-    asset_discovery_system::AssetDiscoverySystem,
+    asset_discovery_system::{AssetDiscoverySystem, AssetDiscoverySystemData},
     asset_id_mapping_system::{AssetIdMapper, AssetIdMappingSystem},
     asset_part_loader::AssetPartLoader,
     asset_part_loading_coordinator_system::AssetPartLoadingCoordinatorSystem,
