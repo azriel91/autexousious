@@ -1,0 +1,7 @@
+sequences:
+  stand: {}            # 0
+  stand_attack_0: {}   # 1
+  stand_attack_1: {}   # 2
+  custom_string_a: {}  # 3
+  custom_string_b: {}  # 4
+  walk: {}             # 5

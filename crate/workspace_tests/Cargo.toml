@@ -117,6 +117,7 @@ strum_macros = "0.16.0"
 team_model = { path = "../team_model" }
 tempfile = "3.1.0"
 test_object_model = { path = "../test_object_model" }
+test_support = { path = "../test_support" }
 tracker = { path = "../tracker" }
 typename = "0.1.1"
 typename_derive = "0.1.3"
