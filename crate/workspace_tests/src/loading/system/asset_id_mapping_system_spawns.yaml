@@ -1,0 +1,6 @@
+sequences:
+  stand:
+    frames:
+      - spawns:
+          - object: "test/square"
+          - object: "test/bat"
