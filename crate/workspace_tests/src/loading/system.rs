@@ -1,3 +1,4 @@
 mod asset_definition_loading_system;
 mod asset_discovery_system;
 mod asset_id_mapping_system;
+mod asset_part_loading_coordinator_system;

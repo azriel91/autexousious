@@ -8,9 +8,10 @@ pub use crate::{
     system::{
         AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetDiscoverySystem,
         AssetDiscoverySystemData, AssetIdMapper, AssetIdMappingSystem, AssetPartLoader,
-        AssetPartLoadingCoordinatorSystem, AssetPartLoadingSystem, AssetSequenceComponentLoader,
-        AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoader,
-        AssetSpritesDefinitionLoadingSystem, AssetTextureLoader, AssetTextureLoadingSystem,
+        AssetPartLoadingCoordinatorSystem, AssetPartLoadingCoordinatorSystemData,
+        AssetPartLoadingSystem, AssetSequenceComponentLoader, AssetSequenceComponentLoadingSystem,
+        AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem, AssetTextureLoader,
+        AssetTextureLoadingSystem,
     },
     system_data::{
         AssetLoadingResources, DefinitionLoadingResources, DefinitionLoadingResourcesRead,

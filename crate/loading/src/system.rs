@@ -3,7 +3,9 @@ pub use self::{
     asset_discovery_system::{AssetDiscoverySystem, AssetDiscoverySystemData},
     asset_id_mapping_system::{AssetIdMapper, AssetIdMappingSystem},
     asset_part_loader::AssetPartLoader,
-    asset_part_loading_coordinator_system::AssetPartLoadingCoordinatorSystem,
+    asset_part_loading_coordinator_system::{
+        AssetPartLoadingCoordinatorSystem, AssetPartLoadingCoordinatorSystemData,
+    },
     asset_part_loading_system::AssetPartLoadingSystem,
     asset_sequence_component_loading_system::{
         AssetSequenceComponentLoader, AssetSequenceComponentLoadingSystem,
