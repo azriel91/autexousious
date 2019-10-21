@@ -9,9 +9,11 @@
 ### Changed
 
 * Moved all module tests into `workspace_tests` crate. ([#171])
+* Don't build unnecessary doctest binaries. ([#174])
 
 [#171]: https://gitlab.com/azriel91/autexousious/issues/171
 [#172]: https://gitlab.com/azriel91/autexousious/issues/172
+[#174]: https://gitlab.com/azriel91/autexousious/issues/174
 
 ## 0.14.0 (2019-09-27)
 
