@@ -93,7 +93,7 @@ mod tests {
                 // See bat/object.yaml for values.
                 expect_component_values(world, wait_expected)
             })
-            .run()
+            .run_isolated()
     }
 
     fn initial_values(

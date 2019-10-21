@@ -22,7 +22,7 @@ mod tests {
             .with_assertion(|_world| {
                 // TODO: assert sound was played.
             })
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: GameModeSelectionEvent) {

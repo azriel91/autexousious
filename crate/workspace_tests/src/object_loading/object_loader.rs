@@ -97,7 +97,7 @@ mod test {
                 assert_frame_component_data_count!(body_sequence_handles);
                 assert_frame_component_data_count!(interactions_sequence_handles);
             })
-            .run()
+            .run_isolated()
     }
 
     type TestSystemData<'s> = (

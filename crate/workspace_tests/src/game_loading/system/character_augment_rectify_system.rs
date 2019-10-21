@@ -189,7 +189,7 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_assertion(fn_assert)
-            .run()
+            .run_isolated()
     }
 
     fn setup_map_selection(world: &mut World, slug: &AssetSlug) {

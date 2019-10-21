@@ -156,7 +156,7 @@ mod tests {
                     asset_id,
                 ))
             })
-            .run()
+            .run_isolated()
     }
 
     struct SetupParams {

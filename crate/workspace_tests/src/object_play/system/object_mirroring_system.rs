@@ -51,6 +51,6 @@ mod tests {
                     world.system_data::<(ReadStorage<'_, Mirrored>, ReadStorage<'_, Transform>)>();
                 (&mirroreds, &transforms).join().for_each(assertion_fn)
             })
-            .run()
+            .run_isolated()
     }
 }

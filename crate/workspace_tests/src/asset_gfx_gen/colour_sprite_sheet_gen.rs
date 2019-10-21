@@ -42,7 +42,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -82,7 +82,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]

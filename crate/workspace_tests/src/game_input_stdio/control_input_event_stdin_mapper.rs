@@ -49,7 +49,7 @@ mod tests {
                     result.unwrap()
                 )
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -84,7 +84,7 @@ mod tests {
                     result.unwrap()
                 )
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -119,7 +119,7 @@ mod tests {
                     result.unwrap()
                 )
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -161,6 +161,6 @@ mod tests {
                     // kcov-ignore-end
                 }
             })
-            .run()
+            .run_isolated()
     }
 }

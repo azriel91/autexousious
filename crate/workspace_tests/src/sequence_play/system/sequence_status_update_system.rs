@@ -49,7 +49,7 @@ mod tests {
                 let events_expected = sequence_update_events_expected_fn(world);
                 expect_events(world, events_expected);
             })
-            .run()
+            .run_isolated()
     }
 
     fn register_reader(world: &mut World) {

@@ -31,7 +31,7 @@ mod test {
                 )
                 .with_assertion(|world| assert_widget_count(world, 2))
                 .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -70,7 +70,7 @@ mod test {
                     &[]
                 )
                 .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -109,7 +109,7 @@ mod test {
                     &[]
                 )
                 .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
-                .run() // kcov-ignore
+                .run_isolated() // kcov-ignore
                 .is_ok()
         );
     }

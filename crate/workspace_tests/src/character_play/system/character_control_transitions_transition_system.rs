@@ -476,7 +476,7 @@ mod tests {
                     expect_events(world, charge_use_events);
                 }
             })
-            .run()
+            .run_isolated()
     }
 
     fn test_character_sequence() -> CharacterSequence {

@@ -65,7 +65,7 @@ mod tests {
                 send_event(world, event);
             })
             .with_assertion(|_world| {})
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: MapSelectionEvent) {

@@ -34,6 +34,6 @@ mod tests {
                 <EnergyComponentStorages as SystemData>::setup(world);
             })
             .with_assertion(assertion)
-            .run()
+            .run_isolated()
     }
 }
