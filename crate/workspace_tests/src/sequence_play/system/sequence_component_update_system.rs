@@ -57,7 +57,7 @@ mod tests {
                 );
                 expect_component_values(world, wait_sequence_handle_expected)
             })
-            .run_isolated()
+            .run()
     }
 
     fn initial_values(world: &mut World, with_asset_id: bool) {

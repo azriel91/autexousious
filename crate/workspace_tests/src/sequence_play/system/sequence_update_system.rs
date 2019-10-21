@@ -49,7 +49,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -84,7 +84,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     /// Asserts the following when a frame is still in progress but entity is frozen:
@@ -120,7 +120,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     /// Asserts the following when a frame is still in progress but entity is frozen:
@@ -156,7 +156,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -194,7 +194,7 @@ mod tests {
                 let events = frame_begin_events(world, 1);
                 expect_events(world, events);
             })
-            .run_isolated()
+            .run()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -232,7 +232,7 @@ mod tests {
                 let events = sequence_end_events(world, 4);
                 expect_events(world, events);
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -259,7 +259,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -286,7 +286,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run_isolated()
+            .run()
     }
 
     fn setup_system_data(world: &mut World) {

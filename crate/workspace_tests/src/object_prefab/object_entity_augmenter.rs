@@ -120,6 +120,6 @@ mod tests {
                 world.insert(asset_id);
             })
             .with_assertion(assertion_fn)
-            .run_isolated()
+            .run()
     }
 }

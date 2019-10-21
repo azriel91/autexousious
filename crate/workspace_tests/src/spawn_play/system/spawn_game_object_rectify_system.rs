@@ -103,7 +103,7 @@ mod tests {
             )
             .with_effect(setup_fn)
             .with_assertion(assertion_fn)
-            .run_isolated()
+            .run()
     }
 
     fn spawn_entity(

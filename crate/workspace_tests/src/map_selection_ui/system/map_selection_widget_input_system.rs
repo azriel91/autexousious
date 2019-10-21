@@ -229,7 +229,7 @@ mod test {
                 let map_selection_events = map_selection_events_fn(world);
                 assert_events(world, map_selection_events);
             })
-            .run_isolated()
+            .run()
     }
 
     fn map_selection_fade(world: &mut World) -> MapSelection {

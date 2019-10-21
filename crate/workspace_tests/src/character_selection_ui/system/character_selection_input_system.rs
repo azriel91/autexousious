@@ -131,7 +131,7 @@ mod test {
                 let character_selection_events = character_selection_events_fn(world);
                 assert_events(world, character_selection_events);
             })
-            .run_isolated()
+            .run()
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {

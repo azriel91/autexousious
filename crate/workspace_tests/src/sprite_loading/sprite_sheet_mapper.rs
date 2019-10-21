@@ -87,7 +87,7 @@ mod test {
                     SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
                 );
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -161,7 +161,7 @@ mod test {
                     SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
                 );
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -190,7 +190,7 @@ mod test {
                     SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
                 );
             })
-            .run_isolated()
+            .run()
     }
 
     fn simple_definition() -> SpriteSheetDefinition {

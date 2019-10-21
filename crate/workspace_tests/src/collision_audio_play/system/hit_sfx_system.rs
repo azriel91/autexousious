@@ -26,7 +26,7 @@ mod tests {
                 send_event(world, event);
             })
             .with_assertion(|_world| {})
-            .run_isolated()
+            .run()
     }
 
     fn send_event(world: &mut World, event: HitEvent) {

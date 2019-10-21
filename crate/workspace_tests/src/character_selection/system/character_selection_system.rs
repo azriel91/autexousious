@@ -117,7 +117,7 @@ mod tests {
                     character_selections.selections.get(&123).cloned()
                 );
             })
-            .run_isolated()
+            .run()
     }
 
     fn send_event(world: &mut World, event: CharacterSelectionEvent) {

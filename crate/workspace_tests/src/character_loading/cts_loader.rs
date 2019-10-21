@@ -116,7 +116,7 @@ mod tests {
 
                 assertion_fn(character_cts, &character_control_transitions_assets);
             })
-            .run_isolated()
+            .run()
     }
 
     fn test_character_sequence() -> CharacterSequence {

@@ -16,7 +16,9 @@ mod test {
     use strum::IntoEnumIterator;
     use typename::TypeName;
 
-    use game_mode_selection_ui::{GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE};
+    use game_mode_selection_ui::{
+        GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE,
+    };
 
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
@@ -29,7 +31,7 @@ mod test {
             )
             .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
             .with_assertion(|world| assert_siblings_correct(world))
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -60,7 +62,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_IDLE))
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -91,7 +93,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_ACTIVE))
-            .run_isolated()
+            .run()
     }
 
     fn input_config() -> InputConfig {

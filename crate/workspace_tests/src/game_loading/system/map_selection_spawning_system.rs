@@ -109,7 +109,7 @@ mod tests {
                     assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
                 }
             })
-            .run_isolated()
+            .run()
     }
 
     fn setup_system_data(world: &mut World) {

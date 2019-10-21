@@ -85,7 +85,7 @@ mod tests {
                             result.unwrap()
                         )
                     })
-                    .run_isolated()
+                    .run()
             }
         };
     }

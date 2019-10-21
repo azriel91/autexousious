@@ -73,7 +73,7 @@ mod tests {
                 send_event(world, character_selection_event);
             })
             .with_assertion(|_world| {})
-            .run_isolated()
+            .run()
     }
 
     fn send_event(world: &mut World, event: CharacterSelectionEvent) {
