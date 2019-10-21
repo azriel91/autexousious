@@ -330,7 +330,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
     /// Returns whether sequence components assets have been loaded.
     fn is_complete(
-        _: &mut AssetLoadingResources<'_>,
+        _: &AssetLoadingResources<'_>,
         SequenceComponentLoadingResources {
             wait_sequence_assets,
             source_sequence_assets,

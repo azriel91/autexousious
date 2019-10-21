@@ -113,7 +113,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
 
     /// Returns whether ID mappings has been completed.
     fn is_complete(
-        asset_loading_resources: &mut AssetLoadingResources,
+        asset_loading_resources: &AssetLoadingResources,
         id_mapping_resources: &IdMappingResources<'_>,
         asset_id: AssetId,
     ) -> bool {

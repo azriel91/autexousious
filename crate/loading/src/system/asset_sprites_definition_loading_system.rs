@@ -85,7 +85,11 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
     ///
     /// Returns `true` if there was no sprite definition for the asset.
     fn is_complete(
-        _: &mut AssetLoadingResources<'_>,
+        AssetLoadingResources {
+            asset_id_to_path,
+            asset_type_mappings,
+            ..
+        }: &AssetLoadingResources<'_>,
         SpritesDefinitionLoadingResources {
             sprites_definition_assets,
             asset_sprites_definition_handles,
@@ -99,6 +103,23 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
                     .get(sprites_definition_handle)
                     .is_some()
             })
-            .unwrap_or(true)
+            .unwrap_or_else(|| {
+                let asset_type = asset_type_mappings
+                    .get(asset_id)
+                    .expect("Expected `AssetType` mapping to exist.");
+
+                let asset_path = asset_id_to_path
+                    .get(asset_id)
+                    .expect("Expected `PathBuf` mapping to exist for `AssetId`.");
+
+                let sprites_definition_path = asset_path.join("sprites.yaml");
+
+                if let AssetType::Map = asset_type {
+                    // If there is no sprites definition, return `true`. Otherwise return `false`.
+                    !sprites_definition_path.exists()
+                } else {
+                    false
+                }
+            })
     }
 }

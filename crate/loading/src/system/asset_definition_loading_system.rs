@@ -113,7 +113,7 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
         AssetLoadingResources {
             asset_type_mappings,
             ..
-        }: &mut AssetLoadingResources<'_>,
+        }: &AssetLoadingResources,
         DefinitionLoadingResources {
             character_definition_assets,
             energy_definition_assets,

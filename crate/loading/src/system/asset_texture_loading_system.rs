@@ -85,7 +85,7 @@ impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
     ///
     /// Returns `true` if there are no textures to load.
     fn is_complete(
-        _: &mut AssetLoadingResources<'_>,
+        _: &AssetLoadingResources<'_>,
         TextureLoadingResources {
             texture_assets,
             sprite_sheet_assets,

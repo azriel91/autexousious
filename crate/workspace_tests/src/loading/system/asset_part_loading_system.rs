@@ -185,7 +185,7 @@ mod tests {
         }
 
         fn is_complete(
-            _asset_loading_resources: &mut AssetLoadingResources,
+            _: &AssetLoadingResources,
             asset_mock_load_data: &Self::SystemData,
             asset_id: AssetId,
         ) -> bool {

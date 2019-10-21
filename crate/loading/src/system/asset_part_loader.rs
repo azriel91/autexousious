@@ -38,7 +38,7 @@ pub trait AssetPartLoader<'s> {
 
     /// Returns if the asset part is loaded.
     fn is_complete(
-        asset_loading_resources: &mut AssetLoadingResources,
+        asset_loading_resources: &AssetLoadingResources,
         system_data: &Self::SystemData,
         asset_id: AssetId,
     ) -> bool;
