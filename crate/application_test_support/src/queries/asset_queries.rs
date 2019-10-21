@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use amethyst::ecs::{World, WorldExt};
 use asset_model::{
     config::{AssetSlug, AssetType},
@@ -51,5 +53,32 @@ impl AssetQueries {
             .id(asset_slug)
             .copied()
             .unwrap_or_else(|| panic!("Asset ID for `{}` not found.", asset_slug))
+    }
+
+    /// Generates an `AssetId` for the given slug.
+    ///
+    /// This will insert `AssetIdMappings` into the `World` if it is not already present.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: `AssetSlug` to generate an `AssetId` for.
+    pub fn id_generate(world: &mut World, asset_slug: AssetSlug) -> AssetId {
+        let mut asset_id_mappings = world.entry().or_insert(AssetIdMappings::new());
+        asset_id_mappings.insert(asset_slug)
+    }
+
+    /// Returns an `AssetId` where the asset slug is not important.
+    ///
+    /// This will insert `AssetIdMappings` into the `World` if it is not already present.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    pub fn id_generate_any(world: &mut World) -> AssetId {
+        Self::id_generate(
+            world,
+            AssetSlug::from_str("test/item").expect("Expected `AssetSlug` to be valid."),
+        )
     }
 }

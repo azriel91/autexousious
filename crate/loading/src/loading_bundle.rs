@@ -8,7 +8,11 @@ use amethyst::{
 use derive_new::new;
 use typename::TypeName;
 
-use crate::{AssetDiscoverySystem, AssetLoadingSystem};
+use crate::{
+    AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem,
+    AssetPartLoadingCoordinatorSystem, AssetSequenceComponentLoadingSystem,
+    AssetSpritesDefinitionLoadingSystem, AssetTextureLoadingSystem,
+};
 
 /// Adds asset discovery and loading systems to the `World`.
 #[derive(Debug, new)]
@@ -29,9 +33,34 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
             &[],
         ); // kcov-ignore
         builder.add(
-            AssetLoadingSystem::new(),
-            &AssetLoadingSystem::type_name(),
+            AssetPartLoadingCoordinatorSystem::new(),
+            &AssetPartLoadingCoordinatorSystem::type_name(),
             &[&AssetDiscoverySystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            AssetDefinitionLoadingSystem::new(),
+            &AssetDefinitionLoadingSystem::type_name(),
+            &[&AssetPartLoadingCoordinatorSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            AssetIdMappingSystem::new(),
+            &AssetIdMappingSystem::type_name(),
+            &[&AssetDefinitionLoadingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            AssetSpritesDefinitionLoadingSystem::new(),
+            &AssetSpritesDefinitionLoadingSystem::type_name(),
+            &[&AssetIdMappingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            AssetTextureLoadingSystem::new(),
+            &AssetTextureLoadingSystem::type_name(),
+            &[&AssetSpritesDefinitionLoadingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            AssetSequenceComponentLoadingSystem::new(),
+            &AssetSequenceComponentLoadingSystem::type_name(),
+            &[&AssetTextureLoadingSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }

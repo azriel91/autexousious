@@ -1,0 +1,14 @@
+[package]
+name = "test_support"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+application = { path = "../application" }
+serde = { version = "1.0.101", features = ["derive"] }
+serde_yaml = "0.8.9"

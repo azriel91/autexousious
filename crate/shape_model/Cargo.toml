@@ -4,6 +4,9 @@ version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
+[lib]
+test = false
+
 [dependencies]
 serde = { version = "1.0.101", features = ["derive"] }
 strum_macros = "0.16.0"

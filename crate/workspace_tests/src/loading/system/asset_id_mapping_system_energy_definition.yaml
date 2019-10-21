@@ -1,0 +1,6 @@
+sequences:
+  hover: {}    # 0
+  fly: {}      # 1
+  hit: {}      # 2
+  hitting: {}  # 3
+  pow: {}      # 4

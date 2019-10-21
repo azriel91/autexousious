@@ -5,6 +5,9 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 publish = false
 
+[lib]
+test = false
+
 [dependencies]
 asset_model = { path = "../asset_model" }
 lazy_static = "1.4.0"

@@ -11,7 +11,7 @@ mod tests {
     use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
     use game_model::play::GameEntities;
     use loading::LoadingBundle;
-    use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+    use loading_model::loaded::{AssetLoadStage, LoadStage};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
@@ -153,12 +153,12 @@ mod tests {
         fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
             data.data.update(&data.world);
 
-            let (asset_id_mappings, asset_load_status) = data
+            let (asset_id_mappings, asset_load_stage) = data
                 .world
-                .system_data::<(Read<'_, AssetIdMappings>, Read<'_, AssetLoadStatus>)>();
-            if let Some(LoadStatus::Complete) = asset_id_mappings
+                .system_data::<(Read<'_, AssetIdMappings>, Read<'_, AssetLoadStage>)>();
+            if let Some(LoadStage::Complete) = asset_id_mappings
                 .id(&self.slug)
-                .and_then(|asset_id| asset_load_status.get(*asset_id))
+                .and_then(|asset_id| asset_load_stage.get(*asset_id))
             {
                 Trans::Pop
             } else {

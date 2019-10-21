@@ -4,6 +4,9 @@ version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
+[lib]
+test = false
+
 [dependencies]
 asset_model = { path = "../asset_model" }
 lazy_static = "1.4.0"
