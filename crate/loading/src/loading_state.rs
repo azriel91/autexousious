@@ -12,7 +12,7 @@ use asset_model::loaded::AssetTypeMappings;
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use humantime;
-use loading_model::loaded::{AssetLoadStatus, LoadStatus};
+use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::{error, warn};
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
@@ -91,10 +91,10 @@ where
             && *data.world.read_resource::<UiAudioLoadingStatus>()
                 == UiAudioLoadingStatus::Complete;
 
-        let asset_load_statuses_complete = {
-            let (asset_type_mappings, asset_load_status) = data
+        let asset_load_stagees_complete = {
+            let (asset_type_mappings, asset_load_stage) = data
                 .world
-                .system_data::<(Read<'_, AssetTypeMappings>, Read<'_, AssetLoadStatus>)>();
+                .system_data::<(Read<'_, AssetTypeMappings>, Read<'_, AssetLoadStage>)>();
 
             // https://github.com/rust-lang/rust-clippy/issues/1524
             #[allow(clippy::let_and_return)]
@@ -102,21 +102,18 @@ where
                 .iter_ids_all()
                 .flat_map(|(_asset_type, asset_ids)| asset_ids.iter())
                 .try_fold((), |_, asset_id| {
-                    let load_status =
-                        asset_load_status
-                            .get(*asset_id)
-                            .copied()
-                            .unwrap_or_else(|| {
-                                panic!("Expected asset `{:?}` to have `LoadStatus`.", asset_id)
-                            });
+                    let load_stage =
+                        asset_load_stage.get(*asset_id).copied().unwrap_or_else(|| {
+                            panic!("Expected asset `{:?}` to have `LoadStage`.", asset_id)
+                        });
 
-                    if load_status == LoadStatus::Complete {
+                    if load_stage == LoadStage::Complete {
                         Ok(())
                     } else {
                         if let Stopwatch::Ended(..) = &self.stopwatch {
                             warn!(
                                 "Asset ID `{:?}` has not completed loading. {:?}",
-                                asset_id, load_status
+                                asset_id, load_stage
                             );
                         }
                         Err(())
@@ -127,7 +124,7 @@ where
             asset_loading_complete
         };
 
-        if loading_statuses_complete && asset_load_statuses_complete {
+        if loading_statuses_complete && asset_load_stagees_complete {
             Trans::Switch(Box::new(
                 self.next_state
                     .take()

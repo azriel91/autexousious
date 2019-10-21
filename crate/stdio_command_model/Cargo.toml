@@ -4,6 +4,9 @@ version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
+[lib]
+test = false
+
 [dependencies]
 derivative = "1.0.3"
 derive-new = "0.5.8"

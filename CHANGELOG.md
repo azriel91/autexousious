@@ -2,11 +2,16 @@
 
 ## 0.15.0 (unreleased)
 
+### Added
+
+* Tests for asset part loading systems. ([#172])
+
 ### Changed
 
 * Moved all module tests into `workspace_tests` crate. ([#171])
 
 [#171]: https://gitlab.com/azriel91/autexousious/issues/171
+[#172]: https://gitlab.com/azriel91/autexousious/issues/172
 
 ## 0.14.0 (2019-09-27)
 
