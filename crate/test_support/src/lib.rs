@@ -1,6 +1,29 @@
 #![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
-//!
+//! Macros to resolve source paths and load files during testing.
+
+/// Returns a `PathBuf` to the directory of the current source file.
+#[macro_export]
+macro_rules! source_dir {
+    () => {{
+        use std::path::{Path, PathBuf};
+
+        // Need to do this, as `file!()` returns a path relative to the repository root.
+        let mut source_dir = {
+            let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+            let mut repo_dir = crate_dir.to_path_buf();
+            repo_dir.pop();
+            repo_dir.pop();
+            repo_dir
+        };
+
+        let rs_file = Path::new(file!());
+        source_dir.push(rs_file);
+
+        source_dir.pop();
+        source_dir
+    }};
+}
 
 /// Deserializes the yaml file adjacent to the current file.
 ///
