@@ -5,4 +5,5 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [lib]
+doctest = false
 test = false
