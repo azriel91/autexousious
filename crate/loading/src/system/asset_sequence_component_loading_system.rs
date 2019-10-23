@@ -1,5 +1,6 @@
 use amethyst::renderer::SpriteRender;
 use asset_model::{config::AssetType, loaded::AssetId};
+use background_model::{config::LayerPosition, loaded::LayerPositions};
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::CharacterSequence,
@@ -8,10 +9,7 @@ use character_model::{
 use energy_model::config::EnergySequence;
 use loading_model::loaded::LoadStage;
 use log::debug;
-use map_model::{
-    config::LayerPosition,
-    loaded::{LayerPositions, Margins},
-};
+use map_model::loaded::Margins;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
@@ -252,14 +250,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .expect("Expected `MapDefinition` to be loaded.");
 
                 if let Some(sprite_sheet_handles) = asset_sprite_sheet_handles.get(asset_id) {
-                    let capacity = map_definition.layers.len();
+                    let capacity = map_definition.background.layers.len();
                     let sequence_handles = (
                         Vec::<WaitSequenceHandle>::with_capacity(capacity),
                         Vec::<SpriteRenderSequenceHandle>::with_capacity(capacity),
                         Vec::<LayerPosition>::with_capacity(capacity),
                     );
                     let (wait_sequence_handles, sprite_render_sequence_handles, layer_positions) =
-                        map_definition.layers.iter().fold(
+                        map_definition.background.layers.iter().fold(
                             sequence_handles,
                             |(
                                 mut wait_sequence_handles,

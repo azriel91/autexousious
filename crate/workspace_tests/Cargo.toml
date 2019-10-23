@@ -25,6 +25,7 @@ assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
+background_model = { path = "../background_model" }
 camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }

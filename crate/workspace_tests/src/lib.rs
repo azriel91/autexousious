@@ -32,6 +32,8 @@ mod audio_loading;
 #[cfg(test)]
 mod audio_play;
 #[cfg(test)]
+mod background_model;
+#[cfg(test)]
 mod camera_play;
 #[cfg(test)]
 mod character_loading;

@@ -5,6 +5,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
+use background_model::loaded::AssetLayerPositions;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -17,7 +18,7 @@ use collision_model::{
 };
 use derivative::Derivative;
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
-use map_model::loaded::{AssetLayerPositions, AssetMapBounds, AssetMargins};
+use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
 use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};

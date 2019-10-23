@@ -3,8 +3,8 @@ use amethyst::{
     ecs::{Entities, Read, World},
     shred::{ResourceId, SystemData},
 };
+use background_model::loaded::AssetLayerPositions;
 use derivative::Derivative;
-use map_model::loaded::AssetLayerPositions;
 use sequence_model::loaded::{AssetWaitSequenceHandles, WaitSequence};
 use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
 

@@ -1,12 +1,11 @@
 #[cfg(test)]
 mod test {
+    use background_model::config::{BackgroundDefinition, Layer, LayerFrame, LayerPosition};
     use sequence_model::config::Wait;
     use serde_yaml;
     use sprite_model::config::SpriteRef;
 
-    use map_model::config::{
-        Layer, LayerFrame, LayerPosition, MapBounds, MapDefinition, MapHeader,
-    };
+    use map_model::config::{MapBounds, MapDefinition, MapHeader};
 
     const MAP_NO_LAYERS: &str = r#"---
 header:
@@ -37,7 +36,8 @@ layers:
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
         let header = MapHeader::new("Blank Map".to_string(), bounds);
-        let expected = MapDefinition::new(header, Vec::new());
+        let expected = MapDefinition::new(header, BackgroundDefinition::default());
+
         assert_eq!(expected, map_definition);
     }
 
@@ -60,7 +60,8 @@ layers:
             vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
         );
         let layers = vec![layer_0, layer_1];
-        let expected = MapDefinition::new(header, layers);
+        let expected = MapDefinition::new(header, BackgroundDefinition::new(layers));
+
         assert_eq!(expected, map_definition);
     }
 }
