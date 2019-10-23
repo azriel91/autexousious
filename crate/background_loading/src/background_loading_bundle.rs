@@ -4,24 +4,24 @@ use amethyst::{
     ecs::{DispatcherBuilder, World},
     Error,
 };
+use background_model::config::BackgroundDefinition;
 use derive_new::new;
-use map_model::config::MapDefinition;
 
 /// Adds the following `System`s to the `World`:
 ///
-/// * `Processor<MapDefinition>`
+/// * `Processor<BackgroundDefinition>`
 #[derive(Debug, new)]
-pub struct MapLoadingBundle;
+pub struct BackgroundLoadingBundle;
 
-impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
+impl<'a, 'b> SystemBundle<'a, 'b> for BackgroundLoadingBundle {
     fn build(
         self,
         _world: &mut World,
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         builder.add(
-            Processor::<MapDefinition>::new(),
-            "map_definition_processor",
+            Processor::<BackgroundDefinition>::new(),
+            "background_definition_processor",
             &[],
         );
         Ok(())

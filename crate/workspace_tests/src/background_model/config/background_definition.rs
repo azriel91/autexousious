@@ -6,7 +6,10 @@ mod test {
 
     use background_model::config::{BackgroundDefinition, Layer, LayerFrame, LayerPosition};
 
-    const BACKGROUND_EMPTY: &str = "---\n";
+    const BACKGROUND_EMPTY: &str = "\
+    ---\n\
+    layers: []\n
+    ";
     const BACKGROUND_WITH_LAYERS: &str = r#"---
 layers:
   - position: { x: 1, y: 4 } # missing z

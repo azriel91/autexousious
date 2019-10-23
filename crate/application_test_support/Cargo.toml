@@ -16,6 +16,7 @@ asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
+background_loading = { path = "../background_loading" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }

@@ -6,7 +6,7 @@
 
 pub use crate::{
     common::NAMESPACE_BUILT_IN,
-    map::{MAP_BLANK, MAP_BLANK_NAME, MAP_BLANK_SLUG},
+    map::{MAP_BLANK_NAME, MAP_BLANK_SLUG, MAP_DEFINITION_BLANK},
 };
 
 mod common;

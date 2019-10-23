@@ -20,6 +20,7 @@ use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use audio_loading::AudioLoadingBundle;
+use background_loading::BackgroundLoadingBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
@@ -123,6 +124,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
+            .with_bundle(BackgroundLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(EnergyLoadingBundle::new())?

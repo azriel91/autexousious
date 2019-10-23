@@ -145,6 +145,7 @@ where
                          * `SpriteLoadingBundle`\n\
                          * `CharacterLoadingBundle`\n\
                          * `EnergyLoadingBundle`\n\
+                         * `BackgroundLoadingBundle`\n\
                          * `MapLoadingBundle`\n\
                          * `amethyst::audio::AudioBundle`\n\
                          * `KinematicLoadingBundle`\n\
