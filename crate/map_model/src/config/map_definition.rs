@@ -10,6 +10,6 @@ pub struct MapDefinition {
     /// Base information of the map.
     pub header: MapHeader,
     /// Image layers to draw.
-    #[serde(default, rename = "layer")]
+    #[serde(default)]
     pub layers: Vec<Layer>,
 }

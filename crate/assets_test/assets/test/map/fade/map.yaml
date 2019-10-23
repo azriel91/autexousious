@@ -2,7 +2,7 @@ header:
   name: "Fade"
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 400, depth: 200 }
 
-layer:
+layers:
   - # Sky
     position: { x: 0, y: 200, z: 0 }
     frames: [{ wait: 10, sprite: { sheet: 0, index: 0 } }]

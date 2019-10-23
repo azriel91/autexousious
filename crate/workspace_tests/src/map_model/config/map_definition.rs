@@ -19,7 +19,7 @@ header:
   name: "Layered Map"
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
 
-layer:
+layers:
   - position: { x: 1, y: 4 } # missing z
     frames: [
       { wait: 7, sprite: { sheet: 0, index: 0 } },
