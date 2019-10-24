@@ -1,8 +1,8 @@
-use asset_model::config::{AssetIndex, AssetTypeVariants};
+use asset_model::config::{AssetIndex, AssetType, AssetTypeVariants};
 use heck::SnakeCase;
 use strum::IntoEnumIterator;
 
-use crate::{MapIndexer, NamespaceDirectory, ObjectIndexer};
+use crate::{FlatIndexer, NamespaceDirectory, ObjectIndexer};
 
 /// Indexes assets within a single namespace directory.
 #[derive(Debug)]
@@ -22,13 +22,18 @@ impl AssetIndexer {
 
             match asset_type {
                 AssetTypeVariants::Object => {
-                    asset_index.objects =
-                        ObjectIndexer::index(&namespace_dir.namespace, &asset_type_dir)
+                    asset_index.extend(ObjectIndexer::index(
+                        &namespace_dir.namespace,
+                        &asset_type_dir,
+                    ));
                 }
                 AssetTypeVariants::Map => {
-                    asset_index.maps = MapIndexer::index(&namespace_dir.namespace, &asset_type_dir)
+                    asset_index.insert(
+                        AssetType::Map,
+                        FlatIndexer::index(&namespace_dir.namespace, &asset_type_dir),
+                    );
                 }
-            };
+            }
 
             asset_index
         })

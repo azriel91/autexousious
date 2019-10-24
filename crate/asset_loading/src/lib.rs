@@ -12,7 +12,7 @@ pub use crate::{
     asset_indexer::AssetIndexer,
     asset_indexing_utils::AssetIndexingUtils,
     dir_traverse::DirTraverse,
-    map_indexer::MapIndexer,
+    flat_indexer::FlatIndexer,
     namespace_directory::NamespaceDirectory,
     namespace_discoverer::{
         NamespaceDiscoverer, ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR,
@@ -25,7 +25,7 @@ mod asset_discovery;
 mod asset_indexer;
 mod asset_indexing_utils;
 mod dir_traverse;
-mod map_indexer;
+mod flat_indexer;
 mod namespace_directory;
 mod namespace_discoverer;
 mod object_indexer;

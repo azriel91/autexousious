@@ -1,14 +1,10 @@
 use std::collections::HashMap;
 
-use object_type::ObjectType;
+use derive_deref::{Deref, DerefMut};
+use derive_new::new;
 
-use crate::config::index::AssetRecord;
+use crate::config::{index::AssetRecord, AssetType};
 
 /// Index of all assets.
-#[derive(Debug, Default, PartialEq)]
-pub struct AssetIndex {
-    /// List of objects in the assets directories.
-    pub objects: HashMap<ObjectType, Vec<AssetRecord>>,
-    /// List of maps in the assets directories
-    pub maps: Vec<AssetRecord>,
-}
+#[derive(Debug, Default, Deref, DerefMut, PartialEq, new)]
+pub struct AssetIndex(pub HashMap<AssetType, Vec<AssetRecord>>);

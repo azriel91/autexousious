@@ -2,7 +2,7 @@
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use asset_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder, AssetType};
     use hamcrest::prelude::*;
     use object_type::ObjectType;
     use tempfile::tempdir;
@@ -44,7 +44,10 @@ mod tests {
         let asset_index = AssetDiscovery::asset_index(&assets_dir);
 
         assert_that!(
-            &asset_index.maps,
+            &asset_index.get(&AssetType::Map).expect(
+                "Expected `Vec<AssetRecord>` to exist for \
+                 `AssetType::Map`."
+            ),
             contains(vec![
                 asset_record(ASSETS_DEFAULT_DIR, "map_0", map_0_dir),
                 asset_record(ASSETS_TEST_DIR, "map_1", map_1_dir),
@@ -54,7 +57,12 @@ mod tests {
         // kcov-ignore-start
         assert_that!(
             // kcov-ignore-end
-            asset_index.objects.get(&ObjectType::Character).unwrap(),
+            asset_index
+                .get(&AssetType::Object(ObjectType::Character))
+                .expect(
+                    "Expected `Vec<AssetRecord>` to exist for \
+                     `AssetType::Object(ObjectType::Character)`."
+                ),
             contains(vec![asset_record("user1", "char_0", char_0_dir),]).exactly()
         );
 
