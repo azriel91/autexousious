@@ -14,8 +14,9 @@ mod tests {
     };
     use assets_test::{
         CHAR_BAT_PATH, CHAR_BAT_SLUG, ENERGY_SQUARE_PATH, ENERGY_SQUARE_SLUG, MAP_FADE_PATH,
-        MAP_FADE_SLUG,
+        MAP_FADE_SLUG, UI_PLAIN_BACKGROUND_PATH, UI_PLAIN_BACKGROUND_SLUG,
     };
+    use background_model::config::BackgroundDefinition;
     use character_model::config::CharacterDefinition;
     use energy_model::config::EnergyDefinition;
     use loading_model::loaded::LoadStage;
@@ -120,6 +121,38 @@ mod tests {
         )
     }
 
+    #[test]
+    fn loads_ui_definition() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                asset_slug: UI_PLAIN_BACKGROUND_SLUG.clone(),
+                asset_path: UI_PLAIN_BACKGROUND_PATH.clone(),
+                asset_type: AssetType::Ui,
+            },
+            ExpectedParams {
+                fn_assertion: |definition_loading_resources, asset_id| {
+                    let DefinitionLoadingResources {
+                        background_definition_assets,
+                        asset_background_definition_handle,
+                        ..
+                    } = definition_loading_resources;
+
+                    let background_definition_handle =
+                        asset_background_definition_handle.get(asset_id);
+
+                    assert!(background_definition_handle.is_some());
+
+                    let background_definition_handle = background_definition_handle
+                        .expect("Expected `BackgroundDefinitionHandle` to exist.");
+                    let background_definition =
+                        background_definition_assets.get(background_definition_handle);
+
+                    assert!(background_definition.is_some());
+                },
+            },
+        )
+    }
+
     fn run_test(
         SetupParams {
             asset_slug,
@@ -133,6 +166,7 @@ mod tests {
             .with_system(Processor::<CharacterDefinition>::new(), "", &[])
             .with_system(Processor::<EnergyDefinition>::new(), "", &[])
             .with_system(Processor::<MapDefinition>::new(), "", &[])
+            .with_system(Processor::<BackgroundDefinition>::new(), "", &[])
             .with_effect(move |world| {
                 let asset_id = {
                     let (mut asset_id_to_path, mut asset_id_mappings, mut asset_type_mappings) =

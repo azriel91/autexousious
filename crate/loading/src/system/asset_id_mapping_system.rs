@@ -107,7 +107,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map => {}
+            AssetType::Map | AssetType::Ui => {}
         }
     }
 
@@ -182,7 +182,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map => true,
+            AssetType::Map | AssetType::Ui => true,
         }
     }
 }
@@ -234,6 +234,7 @@ impl AssetIdMapper {
                         }
                     },
                     AssetType::Map => panic!("Spawning `Map`s is not supported."),
+                    AssetType::Ui => panic!("Spawning `Ui`s is not supported."),
                 };
                 if spawn_id_mappings_exist {
                     Ok(())

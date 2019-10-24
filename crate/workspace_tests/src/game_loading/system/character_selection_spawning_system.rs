@@ -18,6 +18,7 @@ mod tests {
     };
     use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
+    use background_loading::BackgroundLoadingBundle;
     use character_loading::CharacterLoadingBundle;
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
@@ -163,6 +164,7 @@ mod tests {
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
+            .with_bundle(BackgroundLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())

@@ -33,9 +33,11 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             character_definition_assets,
             energy_definition_assets,
             map_definition_assets,
+            background_definition_assets,
             asset_character_definition_handle,
             asset_energy_definition_handle,
             asset_map_definition_handle,
+            asset_background_definition_handle,
         }: &mut DefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -106,6 +108,19 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
 
                 asset_map_definition_handle.insert(asset_id, map_definition_handle);
             }
+            AssetType::Ui => {
+                let background_definition_handle = loader.load(
+                    asset_path
+                        .join("background.yaml")
+                        .to_str()
+                        .expect("Expected path to be valid unicode."),
+                    YamlFormat,
+                    &mut *progress_counter,
+                    background_definition_assets,
+                );
+
+                asset_background_definition_handle.insert(asset_id, background_definition_handle);
+            }
         }
     }
 
@@ -118,9 +133,11 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             character_definition_assets,
             energy_definition_assets,
             map_definition_assets,
+            background_definition_assets,
             asset_character_definition_handle,
             asset_energy_definition_handle,
             asset_map_definition_handle,
+            asset_background_definition_handle,
         }: &DefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) -> bool {
@@ -147,6 +164,12 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             AssetType::Map => asset_map_definition_handle
                 .get(asset_id)
                 .and_then(|map_definition_handle| map_definition_assets.get(map_definition_handle))
+                .is_some(),
+            AssetType::Ui => asset_background_definition_handle
+                .get(asset_id)
+                .and_then(|background_definition_handle| {
+                    background_definition_assets.get(background_definition_handle)
+                })
                 .is_some(),
         }
     }

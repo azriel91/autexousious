@@ -1,0 +1,5 @@
+layers:
+  - # 1x1 pixel
+    position: { x: 0, y: 0, z: 0 }
+    frames:
+      - { wait: 1, sprite: { sheet: 0, index: 0 } }

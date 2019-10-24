@@ -1,4 +1,4 @@
-use std::{mem, path::Path};
+use std::{convert::TryFrom, mem, path::Path};
 
 use asset_model::config::{AssetIndex, AssetType, AssetTypeVariant};
 use object_type::ObjectType;
@@ -21,8 +21,8 @@ impl AssetDiscovery {
         namespace_directories.iter().map(AssetIndexer::index).fold(
             AssetIndex::default(),
             |mut asset_index_combined, mut asset_index| {
-                AssetTypeVariant::iter().for_each(|asset_type_variant| match asset_type_variant {
-                    AssetTypeVariant::Object => {
+                AssetTypeVariant::iter().for_each(|asset_type_variant| {
+                    if let AssetTypeVariant::Object = asset_type_variant {
                         ObjectType::iter().for_each(|object_type| {
                             Self::asset_index_merge(
                                 &mut asset_index_combined,
@@ -30,13 +30,14 @@ impl AssetDiscovery {
                                 AssetType::Object(object_type),
                             );
                         });
-                    }
-                    AssetTypeVariant::Map => {
+                    } else {
                         Self::asset_index_merge(
                             &mut asset_index_combined,
                             &mut asset_index,
-                            AssetType::Map,
-                        );
+                            AssetType::try_from(asset_type_variant).unwrap_or_else(|e| {
+                                panic!("Expected `AssetType::try_from({:?})` to succeed.", e)
+                            }),
+                        )
                     }
                 });
 

@@ -33,6 +33,8 @@ map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
+sequence_loading = { path = "../sequence_loading" }
+sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.101", features = ["derive"] }
 serde_yaml = "0.8.9"
