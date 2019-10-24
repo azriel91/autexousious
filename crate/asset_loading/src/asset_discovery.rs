@@ -1,6 +1,6 @@
 use std::{mem, path::Path};
 
-use asset_model::config::{AssetIndex, AssetType, AssetTypeVariants};
+use asset_model::config::{AssetIndex, AssetType, AssetTypeVariant};
 use object_type::ObjectType;
 use strum::IntoEnumIterator;
 
@@ -21,26 +21,24 @@ impl AssetDiscovery {
         namespace_directories.iter().map(AssetIndexer::index).fold(
             AssetIndex::default(),
             |mut asset_index_combined, mut asset_index| {
-                AssetTypeVariants::iter().for_each(
-                    |asset_type_variants| match asset_type_variants {
-                        AssetTypeVariants::Object => {
-                            ObjectType::iter().for_each(|object_type| {
-                                Self::asset_index_merge(
-                                    &mut asset_index_combined,
-                                    &mut asset_index,
-                                    AssetType::Object(object_type),
-                                );
-                            });
-                        }
-                        AssetTypeVariants::Map => {
+                AssetTypeVariant::iter().for_each(|asset_type_variant| match asset_type_variant {
+                    AssetTypeVariant::Object => {
+                        ObjectType::iter().for_each(|object_type| {
                             Self::asset_index_merge(
                                 &mut asset_index_combined,
                                 &mut asset_index,
-                                AssetType::Map,
+                                AssetType::Object(object_type),
                             );
-                        }
-                    },
-                );
+                        });
+                    }
+                    AssetTypeVariant::Map => {
+                        Self::asset_index_merge(
+                            &mut asset_index_combined,
+                            &mut asset_index,
+                            AssetType::Map,
+                        );
+                    }
+                });
 
                 asset_index_combined
             },

@@ -1,4 +1,4 @@
-use asset_model::config::{AssetIndex, AssetType, AssetTypeVariants};
+use asset_model::config::{AssetIndex, AssetType, AssetTypeVariant};
 use heck::SnakeCase;
 use strum::IntoEnumIterator;
 
@@ -15,19 +15,19 @@ impl AssetIndexer {
     ///
     /// * `namespace_dir`: Namespace directory to index.
     pub fn index(namespace_dir: &NamespaceDirectory) -> AssetIndex {
-        AssetTypeVariants::iter().fold(AssetIndex::default(), |mut asset_index, asset_type| {
+        AssetTypeVariant::iter().fold(AssetIndex::default(), |mut asset_index, asset_type| {
             let asset_type_dir = namespace_dir
                 .path
                 .join(&asset_type.to_string().to_snake_case());
 
             match asset_type {
-                AssetTypeVariants::Object => {
+                AssetTypeVariant::Object => {
                     asset_index.extend(ObjectIndexer::index(
                         &namespace_dir.namespace,
                         &asset_type_dir,
                     ));
                 }
-                AssetTypeVariants::Map => {
+                AssetTypeVariant::Map => {
                     asset_index.insert(
                         AssetType::Map,
                         FlatIndexer::index(&namespace_dir.namespace, &asset_type_dir),

@@ -9,7 +9,7 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter};
 #[derive(Clone, Copy, Debug, EnumDiscriminants, Hash, PartialEq, Eq)]
 #[strum_discriminants(
     derive(Display, EnumIter, Hash),
-    name(AssetTypeVariants),
+    name(AssetTypeVariant),
     strum(serialize_all = "snake_case")
 )]
 pub enum AssetType {
