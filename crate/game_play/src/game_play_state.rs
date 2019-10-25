@@ -7,7 +7,6 @@ use amethyst::{
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
-use camera_play::CameraCreator;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
@@ -25,9 +24,6 @@ pub struct GamePlayState {
     #[derivative(Debug = "ignore")]
     #[new(default)]
     dispatcher: Option<Dispatcher<'static, 'static>>,
-    /// Camera entity
-    #[new(default)]
-    camera: Option<Entity>,
 }
 
 impl GamePlayState {
@@ -80,23 +76,6 @@ impl GamePlayState {
             GamePlayEntityId::default(),
         );
     }
-
-    /// Initializes a camera to view the game.
-    fn initialize_camera(&mut self, world: &mut World) {
-        let camera = CameraCreator::create_in_world(world);
-        self.camera = Some(camera);
-    }
-
-    /// Terminates the camera.
-    fn terminate_camera(&mut self, world: &mut World) {
-        world
-            .delete_entity(
-                self.camera
-                    .take()
-                    .expect("Expected camera entity to be set."),
-            )
-            .expect("Failed to delete camera entity.");
-    }
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
@@ -104,14 +83,12 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         data.world.insert(StateId::GamePlay);
 
         self.initialize_dispatcher(&mut data.world);
-        self.initialize_camera(&mut data.world);
 
         data.world.insert(GamePlayStatus::Playing);
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_entities(&mut data.world);
-        self.terminate_camera(&mut data.world);
         self.terminate_dispatcher();
     }
 

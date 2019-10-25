@@ -21,6 +21,7 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
+use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
@@ -137,7 +138,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     )
                     .with_plugin(RenderFlat2D::default())
                     .with_plugin(RenderUi::default()),
-            )?;
+            )?
+            .with_bundle(CameraPlayBundle::new())?;
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
