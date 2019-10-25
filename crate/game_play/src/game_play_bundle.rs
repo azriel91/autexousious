@@ -1,7 +1,6 @@
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
-    utils::ortho_camera::CameraOrthoSystem,
     Error,
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence, SourceSequenceHandles};
@@ -443,11 +442,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CameraVelocitySystem::default(),
             &CameraVelocitySystem::type_name(),
-            &[&CameraTrackingSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            CameraOrthoSystem::default(),
-            "camera_ortho",
             &[&CameraTrackingSystem::type_name()],
         ); // kcov-ignore
 

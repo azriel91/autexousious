@@ -13,6 +13,7 @@ use amethyst::{
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
+    utils::ortho_camera::CameraOrthoSystem,
     window::DisplayConfig,
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
@@ -131,6 +132,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(EnergyLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
