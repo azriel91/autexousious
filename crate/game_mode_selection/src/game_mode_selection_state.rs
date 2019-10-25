@@ -1,7 +1,11 @@
-use amethyst::{GameData, State, StateData, Trans};
+use std::str::FromStr;
+
+use amethyst::{ecs::WorldExt, utils::removal::Removal, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
+use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
+use background_play::LayerEntitySpawner;
 use derivative::Derivative;
 use derive_new::new;
 use game_mode_selection_model::GameModeSelectionEntityId;
@@ -34,13 +38,46 @@ pub type GameModeSelectionStateBuilder =
 #[derivative(Debug)]
 pub struct GameModeSelectionStateDelegate;
 
+impl GameModeSelectionStateDelegate {
+    fn initialize_state(mut data: StateData<'_, GameData<'static, 'static>>) {
+        data.world.insert(StateId::GameModeSelection);
+        let asset_id = {
+            let asset_slug = AssetSlug::from_str("default/game_mode_selection")
+                .expect("Expected `default/game_mode_selection` to be a valid asset slug.");
+            let asset_slug = &asset_slug;
+            let asset_id_mappings = data.world.read_resource::<AssetIdMappings>();
+            asset_id_mappings
+                .id(asset_slug)
+                .copied()
+                .unwrap_or_else(|| {
+                    let message = format!(
+                        "`AssetId` not found for asset slug: `{}`. \
+                         Make sure `assets/default/ui/game_mode_selection/background.yaml` exists.",
+                        asset_slug
+                    );
+                    panic!("{}", message);
+                })
+        };
+
+        let layer_entities = LayerEntitySpawner::spawn_world(&mut data.world, asset_id);
+        let mut removals = data
+            .world
+            .write_storage::<Removal<GameModeSelectionEntityId>>();
+        layer_entities.iter().for_each(|entity| {
+            removals
+                .insert(*entity, Removal::new(GameModeSelectionEntityId::default()))
+                .expect("Failed to insert `Removal::<GameModeSelectionEntityId>` component.");
+        })
+    }
+}
+
 impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDelegate {
     fn on_start(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.insert(StateId::GameModeSelection);
+        Self::initialize_state(data);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.insert(StateId::GameModeSelection);
+        Self::initialize_state(data);
     }
 
     fn handle_event(

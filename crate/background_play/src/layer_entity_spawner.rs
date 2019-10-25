@@ -1,10 +1,11 @@
 use amethyst::{
     core::{math::Vector3, transform::Transform},
-    ecs::{Entity, World},
+    ecs::{Entity, World, WorldExt},
     renderer::transparent::Transparent,
     shred::SystemData,
 };
-use asset_model::loaded::AssetId;
+use asset_model::loaded::{AssetId, AssetIdMappings};
+use log::debug;
 use num_traits::FromPrimitive;
 use sequence_model::{
     loaded::{SequenceEndTransition, SequenceId, WaitSequence},
@@ -27,12 +28,27 @@ impl LayerEntitySpawner {
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the map into.
-    /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
-    pub fn spawn_world(world: &mut World, map_asset_id: AssetId) -> Vec<Entity> {
+    /// * `asset_id`: Asset ID of the map whose layers to spawn.
+    pub fn spawn_world(world: &mut World, asset_id: AssetId) -> Vec<Entity> {
+        // Hack: Need to move all systems into main dispatcher in order to not do this.
+        LayerSpawningResources::setup(world);
+        LayerComponentStorages::setup(world);
+
+        {
+            let asset_id_mappings = world.read_resource::<AssetIdMappings>();
+            let asset_slug = asset_id_mappings.slug(asset_id).unwrap_or_else(|| {
+                panic!(
+                    "Expected asset slug to exist for asset ID: `{:?}`",
+                    asset_id,
+                )
+            });
+            debug!("Spawning layers for asset: `{}`.", asset_slug);
+        }
+
         Self::spawn_system(
             &LayerSpawningResources::fetch(&world),
             &mut LayerComponentStorages::fetch(&world),
-            map_asset_id,
+            asset_id,
         )
     }
 
@@ -42,7 +58,7 @@ impl LayerEntitySpawner {
     ///
     /// * `map_spawning_resources`: Resources to construct the map with.
     /// * `map_layer_component_storages`: Component storages for the spawned entities.
-    /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
+    /// * `asset_id`: Asset ID of the map whose layers to spawn.
     pub fn spawn_system<'res, 's>(
         LayerSpawningResources {
             entities,
@@ -65,12 +81,12 @@ impl LayerEntitySpawner {
             wait_sequence_handles,
             sprite_render_sequence_handles,
         }: &mut LayerComponentStorages<'s>,
-        map_asset_id: AssetId,
+        asset_id: AssetId,
     ) -> Vec<Entity> {
-        let asset_wait_sequence_handles = asset_wait_sequence_handles.get(map_asset_id);
+        let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
-            asset_sprite_render_sequence_handles.get(map_asset_id);
-        let layer_positions = asset_layer_positions.get(map_asset_id);
+            asset_sprite_render_sequence_handles.get(asset_id);
+        let layer_positions = asset_layer_positions.get(asset_id);
 
         // Spawn map layer entities
         if let (
