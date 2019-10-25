@@ -11,7 +11,7 @@ use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequenc
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct MapSpawningResources<'s> {
+pub struct LayerSpawningResources<'s> {
     /// `EntitiesRes` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,

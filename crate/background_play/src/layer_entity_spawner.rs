@@ -13,13 +13,13 @@ use sequence_model::{
 use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
-use crate::{MapLayerComponentStorages, MapSpawningResources};
+use crate::{LayerComponentStorages, LayerSpawningResources};
 
 /// Spawns map layer entities into the world.
 #[derive(Debug)]
-pub struct MapLayerEntitySpawner;
+pub struct LayerEntitySpawner;
 
-impl MapLayerEntitySpawner {
+impl LayerEntitySpawner {
     /// Spawns entities for each of the layers in a map.
     ///
     /// Idea: What if we could spawn two maps at the same time?
@@ -30,8 +30,8 @@ impl MapLayerEntitySpawner {
     /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
     pub fn spawn_world(world: &mut World, map_asset_id: AssetId) -> Vec<Entity> {
         Self::spawn_system(
-            &MapSpawningResources::fetch(&world),
-            &mut MapLayerComponentStorages::fetch(&world),
+            &LayerSpawningResources::fetch(&world),
+            &mut LayerComponentStorages::fetch(&world),
             map_asset_id,
         )
     }
@@ -44,27 +44,27 @@ impl MapLayerEntitySpawner {
     /// * `map_layer_component_storages`: Component storages for the spawned entities.
     /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
     pub fn spawn_system<'res, 's>(
-        MapSpawningResources {
+        LayerSpawningResources {
             entities,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
             asset_layer_positions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
-        }: &MapSpawningResources<'res>,
-        MapLayerComponentStorages {
-            ref mut transparents,
-            ref mut transforms,
-            ref mut waits,
-            ref mut sequence_ids,
-            ref mut sequence_end_transitions,
-            ref mut sequence_statuses,
-            ref mut frame_index_clocks,
-            ref mut frame_wait_clocks,
-            ref mut sprite_renders,
-            ref mut wait_sequence_handles,
-            ref mut sprite_render_sequence_handles,
-        }: &mut MapLayerComponentStorages<'s>,
+        }: &LayerSpawningResources<'res>,
+        LayerComponentStorages {
+            transparents,
+            transforms,
+            waits,
+            sequence_ids,
+            sequence_end_transitions,
+            sequence_statuses,
+            frame_index_clocks,
+            frame_wait_clocks,
+            sprite_renders,
+            wait_sequence_handles,
+            sprite_render_sequence_handles,
+        }: &mut LayerComponentStorages<'s>,
         map_asset_id: AssetId,
     ) -> Vec<Entity> {
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(map_asset_id);

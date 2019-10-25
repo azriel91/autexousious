@@ -2,15 +2,14 @@ use amethyst::{
     ecs::{ReadExpect, System, World, Write},
     shred::{ResourceId, SystemData},
 };
+use background_play::{LayerComponentStorages, LayerEntitySpawner, LayerSpawningResources};
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
 
-use crate::{
-    GameLoadingStatus, MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
-};
+use crate::GameLoadingStatus;
 
 /// Spawns map entities based on the map selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -26,12 +25,12 @@ pub struct MapSelectionSpawningSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: ReadExpect<'s, MapSelection>,
-    /// `MapSpawningResources`.
+    /// `LayerSpawningResources`.
     #[derivative(Debug = "ignore")]
-    pub map_spawning_resources: MapSpawningResources<'s>,
-    /// `MapLayerComponentStorages`.
+    pub layer_spawning_resources: LayerSpawningResources<'s>,
+    /// `LayerComponentStorages`.
     #[derivative(Debug = "ignore")]
-    pub map_layer_component_storages: MapLayerComponentStorages<'s>,
+    pub layer_component_storages: LayerComponentStorages<'s>,
     /// `GameEntities` resource.
     #[derivative(Debug = "ignore")]
     pub game_entities: Write<'s, GameEntities>,
@@ -45,8 +44,8 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         MapSelectionSpawningSystemData {
             mut game_loading_status,
             map_selection,
-            map_spawning_resources,
-            mut map_layer_component_storages,
+            layer_spawning_resources,
+            mut layer_component_storages,
             mut game_entities,
         }: Self::SystemData,
     ) {
@@ -55,9 +54,9 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         }
 
         // TODO: implement Random
-        let map_layer_entities = MapLayerEntitySpawner::spawn_system(
-            &map_spawning_resources,
-            &mut map_layer_component_storages,
+        let map_layer_entities = LayerEntitySpawner::spawn_system(
+            &layer_spawning_resources,
+            &mut layer_component_storages,
             map_selection
                 .asset_id()
                 .expect("Expected `MapSelection` to contain ID."),

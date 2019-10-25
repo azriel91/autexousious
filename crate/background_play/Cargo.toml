@@ -1,0 +1,19 @@
+[package]
+name = "background_play"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_model = { path = "../asset_model" }
+background_model = { path = "../background_model" }
+derivative = "1.0.3"
+num-traits = "0.2.8"
+sequence_model = { path = "../sequence_model" }
+sequence_model_spi = { path = "../sequence_model_spi" }
+sprite_model = { path = "../sprite_model" }

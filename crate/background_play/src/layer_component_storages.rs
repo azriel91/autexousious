@@ -12,10 +12,10 @@ use sequence_model::{
 };
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-/// Map layer `Component` storages.
+/// `Layer` component storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct MapLayerComponentStorages<'s> {
+pub struct LayerComponentStorages<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
