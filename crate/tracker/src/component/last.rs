@@ -6,7 +6,9 @@ use named_type_derive::NamedType;
 
 /// Stores the last value of the component.
 #[derive(Debug, Deref, DerefMut, NamedType, new)] // kcov-ignore
-pub struct Last<T: Component + Clone + Send + Sync>(pub T);
+pub struct Last<T>(pub T)
+where
+    T: Component + Clone + Send + Sync;
 
 impl<T> Component for Last<T>
 where
