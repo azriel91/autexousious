@@ -140,6 +140,8 @@ mod sprite_loading;
 #[cfg(test)]
 mod sprite_model;
 #[cfg(test)]
+mod state_play;
+#[cfg(test)]
 mod stdio_command_stdio;
 #[cfg(test)]
 mod stdio_input;

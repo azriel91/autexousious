@@ -108,6 +108,7 @@ spawn_play = { path = "../spawn_play" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
+state_play = { path = "../state_play" }
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }

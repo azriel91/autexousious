@@ -14,7 +14,7 @@ mod tests {
     };
     use assets_test::{
         CHAR_BAT_PATH, CHAR_BAT_SLUG, ENERGY_SQUARE_PATH, ENERGY_SQUARE_SLUG, MAP_FADE_PATH,
-        MAP_FADE_SLUG, UI_PLAIN_BACKGROUND_PATH, UI_PLAIN_BACKGROUND_SLUG,
+        MAP_FADE_SLUG, UI_CHARACTER_SELECTION_PATH, UI_CHARACTER_SELECTION_SLUG,
     };
     use background_model::config::BackgroundDefinition;
     use character_model::config::CharacterDefinition;
@@ -125,8 +125,8 @@ mod tests {
     fn loads_ui_definition() -> Result<(), Error> {
         run_test(
             SetupParams {
-                asset_slug: UI_PLAIN_BACKGROUND_SLUG.clone(),
-                asset_path: UI_PLAIN_BACKGROUND_PATH.clone(),
+                asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
+                asset_path: UI_CHARACTER_SELECTION_PATH.clone(),
                 asset_type: AssetType::Ui,
             },
             ExpectedParams {
