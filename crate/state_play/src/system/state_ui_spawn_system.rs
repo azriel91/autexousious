@@ -104,30 +104,35 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             let state_id = ev.state_id;
 
             // Don't panic if there are no assets for the current `StateId`.
-            if let Some(asset_id) = Self::asset_id(&asset_id_mappings, state_id) {
-                let layer_entities = LayerEntitySpawner::spawn_system(
+            let layer_entities = Self::asset_id(&asset_id_mappings, state_id).map(|asset_id| {
+                LayerEntitySpawner::spawn_system(
                     &layer_spawning_resources,
                     &mut layer_component_storages,
                     asset_id,
-                );
+                )
+            });
 
-                if let Some(state_ui_data) = state_ui_data.as_mut() {
-                    (*state_ui_data).entities.drain(..).for_each(|entity| {
-                        entities.delete(entity).unwrap_or_else(|e| {
-                            let message =
-                                format!("Failed to delete state UI entity: {:?}. {}", entity, e);
-                            error!("{}", &message);
-                            panic!("{}", &message);
-                        });
+            if let Some(state_ui_data) = state_ui_data.as_mut() {
+                (*state_ui_data).entities.drain(..).for_each(|entity| {
+                    entities.delete(entity).unwrap_or_else(|e| {
+                        let message =
+                            format!("Failed to delete state UI entity: {:?}. {}", entity, e);
+                        error!("{}", &message);
+                        panic!("{}", &message);
                     });
+                });
 
-                    state_ui_data.state_id = state_id;
+                state_ui_data.state_id = state_id;
+                if let Some(layer_entities) = layer_entities {
                     state_ui_data.entities = layer_entities;
-                } else {
-                    lazy_update.exec_mut(move |world| {
-                        world.insert(StateUiData::new(state_id, layer_entities));
-                    });
                 }
+            } else {
+                lazy_update.exec_mut(move |world| {
+                    world.insert(StateUiData::new(
+                        state_id,
+                        layer_entities.unwrap_or_else(Vec::new),
+                    ));
+                });
             }
         }
     }

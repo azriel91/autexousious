@@ -60,6 +60,24 @@ mod tests {
     }
 
     #[test]
+    fn deletes_previous_layer_entities_when_next_state_id_has_no_assets() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                events: vec![StateIdUpdateEvent::new(StateId::CharacterSelection, None)],
+                events_next: vec![StateIdUpdateEvent::new(
+                    StateId::GamePlay,
+                    Some(StateId::CharacterSelection),
+                )],
+            },
+            ExpectedParams {
+                // See `assets_test/assets/test/character_selection/background.yaml`.
+                entity_count: 1,
+                entity_count_next: 0,
+            },
+        )
+    }
+
+    #[test]
     fn only_processes_last_event() -> Result<(), Error> {
         run_test(
             SetupParams {
