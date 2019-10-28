@@ -4781,6 +4781,7 @@ dependencies = [
  "background_play 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kinematic_model 0.14.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "state_registry 0.14.0",
  "tracker 0.14.0",

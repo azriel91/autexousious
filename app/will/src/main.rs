@@ -44,7 +44,7 @@ use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
-use state_play::{StateIdEventSystem, StateUiSpawnSystem};
+use state_play::{StateCameraResetSystem, StateIdEventSystem, StateUiSpawnSystem};
 use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -144,6 +144,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(
                 StateUiSpawnSystem::new(),
                 &StateUiSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                StateCameraResetSystem::new(),
+                &StateCameraResetSystem::type_name(),
                 &[&StateIdEventSystem::type_name()],
             )
             .with(
