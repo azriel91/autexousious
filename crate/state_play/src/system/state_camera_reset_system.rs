@@ -1,16 +1,15 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, System, World, WriteStorage},
-    renderer::camera::Camera,
+    ecs::{Entities, Entity, Join, Read, System, World},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
+use camera_play::{CameraCreator, CameraCreatorResources};
 use derivative::Derivative;
 use derive_new::new;
-use kinematic_model::config::Position;
 use state_registry::StateIdUpdateEvent;
 use typename_derive::TypeName;
 
-/// Resets `Camera` positions when `StateId` changes.
+/// Resets `Camera` transforms when `StateId` changes.
 #[derive(Debug, Default, TypeName, new)]
 pub struct StateCameraResetSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
@@ -25,12 +24,11 @@ pub struct StateCameraResetSystemData<'s> {
     /// `StateIdUpdateEvent` channel.
     #[derivative(Debug = "ignore")]
     pub state_id_update_ec: Read<'s, EventChannel<StateIdUpdateEvent>>,
-    /// `Camera` components.
+    /// `Entities`.
     #[derivative(Debug = "ignore")]
-    pub cameras: ReadStorage<'s, Camera>,
-    /// `Position<f32>` components.
-    #[derivative(Debug = "ignore")]
-    pub positions: WriteStorage<'s, Position<f32>>,
+    pub entities: Entities<'s>,
+    /// `CameraCreatorResources`.
+    pub camera_creator_resources: CameraCreatorResources<'s>,
 }
 
 impl<'s> System<'s> for StateCameraResetSystem {
@@ -40,8 +38,8 @@ impl<'s> System<'s> for StateCameraResetSystem {
         &mut self,
         StateCameraResetSystemData {
             state_id_update_ec,
-            cameras,
-            mut positions,
+            entities,
+            mut camera_creator_resources,
         }: Self::SystemData,
     ) {
         let state_id_update_event_rid = self
@@ -51,11 +49,18 @@ impl<'s> System<'s> for StateCameraResetSystem {
 
         // Make sure events are read.
         let mut events_iterator = state_id_update_ec.read(state_id_update_event_rid);
+
         if events_iterator.next().is_some() {
-            (&cameras, &mut positions).join().for_each(|(_, position)| {
-                position.x = 0.;
-                position.y = 0.;
-                position.z = 0.;
+            let camera_entities = {
+                let cameras = &camera_creator_resources.camera_component_storages.cameras;
+                (&entities, cameras)
+                    .join()
+                    .map(|(entity, _)| entity)
+                    .collect::<Vec<Entity>>()
+            };
+
+            camera_entities.into_iter().for_each(|entity| {
+                CameraCreator::camera_reset(&mut camera_creator_resources, entity);
             });
         }
     }

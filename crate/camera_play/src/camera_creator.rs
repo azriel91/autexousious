@@ -1,6 +1,6 @@
 use amethyst::{
     core::{math::Vector3, Transform},
-    ecs::{Entity, SystemData, World},
+    ecs::{Entities, Entity, SystemData, World},
     renderer::camera::{Camera, Projection},
     utils::ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
 };
@@ -23,7 +23,10 @@ impl CameraCreator {
         world.setup::<CameraCreatorResources<'_>>();
 
         CameraCreatorResources::setup(world);
-        Self::create(&mut world.system_data::<CameraCreatorResources<'_>>())
+
+        let (entities, mut camera_creator_resources) =
+            world.system_data::<(Entities<'_>, CameraCreatorResources<'_>)>();
+        Self::create(entities, &mut camera_creator_resources)
     }
 
     /// Creates a camera entity.
@@ -32,8 +35,21 @@ impl CameraCreator {
     ///
     /// * `camera_creator_resources`: Resources used to create the camera.
     pub fn create(
+        entities: Entities<'_>,
+        camera_creator_resources: &mut CameraCreatorResources<'_>,
+    ) -> Entity {
+        let entity = entities.create();
+
+        Self::camera_reset(camera_creator_resources, entity);
+
+        entity
+    }
+
+    /// Resets a camera entity's components to default values.
+    ///
+    /// This is used when returning from game play.
+    pub fn camera_reset(
         CameraCreatorResources {
-            entities,
             screen_dimensions,
             camera_zoom_dimensions,
             camera_component_storages:
@@ -46,7 +62,8 @@ impl CameraCreator {
                     transforms,
                 },
         }: &mut CameraCreatorResources<'_>,
-    ) -> Entity {
+        entity: Entity,
+    ) {
         let (window_width, window_height) = (screen_dimensions.width(), screen_dimensions.height());
         let (zoom_width, zoom_height) =
             (camera_zoom_dimensions.width, camera_zoom_dimensions.height);
@@ -75,8 +92,6 @@ impl CameraCreator {
             camera_ortho
         };
 
-        let camera_target_coordinates = CameraTargetCoordinates::default();
-
         // Camera translation from origin.
         //
         // The Z coordinate of the camera is how far along it should be before it faces the
@@ -91,10 +106,10 @@ impl CameraCreator {
             zoom_height / 2.,
             CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
         );
+
+        let camera_target_coordinates = CameraTargetCoordinates(translation);
         let position = Position::from(translation);
         let transform = Transform::from(translation);
-
-        let entity = entities.create();
 
         cameras
             .insert(entity, camera)
@@ -114,7 +129,5 @@ impl CameraCreator {
         transforms
             .insert(entity, transform)
             .expect("Failed to insert `Transform` component.");
-
-        entity
     }
 }
