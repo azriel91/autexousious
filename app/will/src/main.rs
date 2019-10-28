@@ -44,10 +44,13 @@ use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use state_play::{StateIdEventSystem, StateUiSpawnSystem};
+use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
+use tracker::PrevTrackerSystem;
 use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
 
@@ -133,6 +136,21 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
+            .with(
+                StateIdEventSystem::new(),
+                &StateIdEventSystem::type_name(),
+                &[],
+            )
+            .with(
+                StateUiSpawnSystem::new(),
+                &StateUiSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
+                "state_id_prev_tracker_system",
+                &[&StateUiSpawnSystem::type_name()],
+            )
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
