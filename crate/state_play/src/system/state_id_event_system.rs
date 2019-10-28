@@ -5,6 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use log::debug;
 use state_registry::{StateId, StateIdUpdateEvent};
 use tracker::Prev;
 use typename_derive::TypeName;
@@ -49,6 +50,7 @@ impl<'s> System<'s> for StateIdEventSystem {
                 .unwrap_or(true)
             {
                 let state_id_update_event = StateIdUpdateEvent::new(state_id, state_id_prev);
+                debug!("Sending event: {:?}", state_id_update_event);
                 state_id_update_ec.single_write(state_id_update_event);
             }
         }
