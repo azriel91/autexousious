@@ -1,0 +1,17 @@
+[package]
+name = "ui_model"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+serde = { version = "1.0.101", features = ["derive"] }
+ui_menu_item_model = { path = "../ui_menu_item_model" }
+
+[features]
+nightly = ["amethyst/nightly"]

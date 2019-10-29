@@ -153,3 +153,5 @@ mod test_object_model;
 mod tracker;
 #[cfg(test)]
 mod ui_audio_loading;
+#[cfg(test)]
+mod ui_model;
