@@ -7,7 +7,7 @@ mod test {
     use serde_yaml;
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItemSequenceName, UiMenuItems};
 
-    use ui_model::config::UiType;
+    use ui_model::config::UiDefinition;
 
     const UI_MENU_YAML: &str = r#"
 menu:
@@ -22,12 +22,12 @@ menu:
 "#;
 
     #[test]
-    fn deserialize_ui_type() {
-        let ui_type =
-            serde_yaml::from_str::<UiType>(UI_MENU_YAML).expect("Failed to deserialize `UiType`.");
+    fn deserialize_ui_definition() {
+        let ui_type = serde_yaml::from_str::<UiDefinition>(UI_MENU_YAML)
+            .expect("Failed to deserialize `UiDefinition`.");
 
         assert_eq!(
-            UiType::Menu(UiMenuItems::new(vec![
+            UiDefinition::Menu(UiMenuItems::new(vec![
                 UiMenuItem::new(
                     GameModeIndex::StartGame,
                     String::from("Start Game"),
