@@ -9,7 +9,7 @@ use crate::config::GameObjectSequence;
 /// Contains all of the sequences for an `Object`.
 ///
 /// This type is not intended to be instantiated by consumers directly. Instead, consumers should
-/// instante the various definition types for each object type, such as [`CharacterDefinition`]
+/// instantiate the various definition types for each object type, such as [`CharacterDefinition`]
 /// [char_definition] for characters.
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
