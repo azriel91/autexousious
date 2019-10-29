@@ -7,8 +7,11 @@ pub use self::{
     control_transition_multiple::ControlTransitionMultiple,
     control_transition_single::ControlTransitionSingle,
     control_transitions::ControlTransitions,
+    frame::Frame,
+    sequence::Sequence,
     sequence_end_transition::SequenceEndTransition,
     sequence_name_string::SequenceNameString,
+    sequences::Sequences,
     wait::{Wait, WAIT_DEFAULT},
 };
 
@@ -16,6 +19,9 @@ mod control_transition;
 mod control_transition_multiple;
 mod control_transition_single;
 mod control_transitions;
+mod frame;
+mod sequence;
 mod sequence_end_transition;
 mod sequence_name_string;
+mod sequences;
 mod wait;
