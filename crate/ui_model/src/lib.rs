@@ -3,3 +3,4 @@
 //! Types used to represent UI configuration.
 
 pub mod config;
+pub mod loaded;
