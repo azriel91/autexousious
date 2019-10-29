@@ -3,10 +3,13 @@
 pub use sequence_model_core::config::SequenceName;
 
 pub use self::{
-    control_transition::ControlTransition, control_transition_multiple::ControlTransitionMultiple,
-    control_transition_single::ControlTransitionSingle, control_transitions::ControlTransitions,
-    sequence_end_transition::SequenceEndTransition, sequence_name_string::SequenceNameString,
-    wait::Wait,
+    control_transition::ControlTransition,
+    control_transition_multiple::ControlTransitionMultiple,
+    control_transition_single::ControlTransitionSingle,
+    control_transitions::ControlTransitions,
+    sequence_end_transition::SequenceEndTransition,
+    sequence_name_string::SequenceNameString,
+    wait::{Wait, WAIT_DEFAULT},
 };
 
 mod control_transition;

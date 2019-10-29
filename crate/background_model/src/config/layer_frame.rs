@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteRef;
 
 /// Components to use on this frame.
-#[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default)]
 pub struct LayerFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.

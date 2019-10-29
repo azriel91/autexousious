@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::{LayerFrame, LayerPosition};
 
 /// An image layer on a background.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct Layer {
     /// Position of the image on the background.
     #[serde(default)]
