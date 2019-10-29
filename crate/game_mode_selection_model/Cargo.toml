@@ -11,6 +11,7 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_menu = { path = "../application_menu" }
+serde = { version = "1.0.101", features = ["derive"] }
 strum = "0.16.0"
 strum_macros = "0.16.0"
 typename = "0.1.1"
