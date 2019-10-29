@@ -5216,6 +5216,8 @@ name = "ui_model"
 version = "0.15.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_derive 0.14.0",
+ "game_mode_selection_model 0.14.0",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_menu_item_model 0.15.0",
 ]

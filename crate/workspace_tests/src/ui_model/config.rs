@@ -23,8 +23,8 @@ menu:
 
     #[test]
     fn deserialize_ui_type() {
-        let ui_type = serde_yaml::from_str::<UiType<_>>(UI_MENU_YAML)
-            .expect("Failed to deserialize `UiType`.");
+        let ui_type =
+            serde_yaml::from_str::<UiType>(UI_MENU_YAML).expect("Failed to deserialize `UiType`.");
 
         assert_eq!(
             UiType::Menu(UiMenuItems::new(vec![
