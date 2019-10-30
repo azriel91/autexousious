@@ -3,11 +3,14 @@ mod test {
     use std::str::FromStr;
 
     use game_mode_selection_model::GameModeIndex;
-    use sequence_model::config::SequenceNameString;
+    use indexmap::IndexMap;
+    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
-    use ui_menu_item_model::config::{UiMenuItem, UiMenuItemSequenceName, UiMenuItems};
+    use sprite_model::config::{SpriteFrame, SpriteRef};
+    use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
+    use ui_model_spi::config::UiSequenceName;
 
-    use ui_model::config::UiDefinition;
+    use ui_model::config::{UiDefinition, UiSequence, UiSequences, UiType};
 
     const UI_MENU_YAML: &str = r#"
 menu:
@@ -19,29 +22,65 @@ menu:
   - index: "exit"
     text: "Exit"
     sequence: "exit_inactive"
+
+sequences:
+  start_game_inactive:
+    next: "none"
+    frames:
+      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+
+  active:
+    next: "repeat"
+    frames:
+      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+
+  exit_inactive:
+    next: "none"
+    frames:
+      - { wait: 2, sprite: { sheet: 0, index: 0 } }
 "#;
 
     #[test]
     fn deserialize_ui_definition() {
-        let ui_type = serde_yaml::from_str::<UiDefinition>(UI_MENU_YAML)
+        let ui_definition = serde_yaml::from_str::<UiDefinition>(UI_MENU_YAML)
             .expect("Failed to deserialize `UiDefinition`.");
 
-        assert_eq!(
-            UiDefinition::Menu(UiMenuItems::new(vec![
-                UiMenuItem::new(
-                    GameModeIndex::StartGame,
-                    String::from("Start Game"),
-                    SequenceNameString::from(UiMenuItemSequenceName::Active),
+        let ui_type = UiType::Menu(UiMenuItems::new(vec![
+            UiMenuItem::new(
+                GameModeIndex::StartGame,
+                String::from("Start Game"),
+                SequenceNameString::from(UiSequenceName::Active),
+            ),
+            UiMenuItem::new(
+                GameModeIndex::Exit,
+                String::from("Exit"),
+                SequenceNameString::from_str("exit_inactive").expect(
+                    "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
                 ),
-                UiMenuItem::new(
-                    GameModeIndex::Exit,
-                    String::from("Exit"),
-                    SequenceNameString::from_str("exit_inactive").expect(
-                        "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed."
-                    ),
-                )
-            ])),
-            ui_type
-        );
+            ),
+        ]));
+        let sequences = {
+            let mut sequences = IndexMap::new();
+            sequences.insert(
+                SequenceNameString::String(String::from("start_game_inactive")),
+                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+            );
+            sequences.insert(
+                SequenceNameString::Name(UiSequenceName::Active),
+                UiSequence::new(SequenceEndTransition::Repeat, sprite_frames()),
+            );
+            sequences.insert(
+                SequenceNameString::String(String::from("exit_inactive")),
+                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+            );
+            UiSequences::new(sequences)
+        };
+        let ui_definition_expected = UiDefinition { ui_type, sequences };
+
+        assert_eq!(ui_definition_expected, ui_definition);
+    }
+
+    fn sprite_frames() -> Vec<SpriteFrame> {
+        vec![SpriteFrame::new(Wait::new(2), SpriteRef::new(0, 0))]
     }
 }

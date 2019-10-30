@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-/// `UiMenuItem` sequence names.
+/// Sequence names common to UI widgets.
 #[derive(
     Clone,
     Copy,
@@ -23,7 +23,7 @@ use typename_derive::TypeName;
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum UiMenuItemSequenceName {
+pub enum UiSequenceName {
     /// Item is not focused.
     #[derivative(Default)]
     Inactive,
@@ -33,4 +33,4 @@ pub enum UiMenuItemSequenceName {
     Selected,
 }
 
-impl SequenceName for UiMenuItemSequenceName {}
+impl SequenceName for UiSequenceName {}

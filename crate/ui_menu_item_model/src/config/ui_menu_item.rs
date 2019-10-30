@@ -1,8 +1,7 @@
 use derive_new::new;
 use sequence_model::config::SequenceNameString;
 use serde::{Deserialize, Serialize};
-
-use crate::config::UiMenuItemSequenceName;
+use ui_model_spi::config::UiSequenceName;
 
 /// Specifies an object to ui_menu_item.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -14,5 +13,5 @@ pub struct UiMenuItem<I> {
     #[serde(default)]
     pub text: String,
     /// `SequenceNameString` that the ui_menu_item should begin with.
-    pub sequence: SequenceNameString<UiMenuItemSequenceName>,
+    pub sequence: SequenceNameString<UiSequenceName>,
 }
