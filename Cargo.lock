@@ -4761,6 +4761,7 @@ dependencies = [
  "asset_model 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "sequence_model 0.14.0",
  "sequence_model_derive 0.14.0",
  "sequence_model_spi 0.14.0",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
