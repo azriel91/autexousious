@@ -108,6 +108,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 IdMappingResourcesRead {
                     asset_sequence_id_mappings_character,
                     asset_sequence_id_mappings_energy,
+                    ..
                 },
             texture_loading_resources_read:
                 TextureLoadingResourcesRead {

@@ -1,4 +1,4 @@
-use std::iter::FromIterator;
+use std::{iter::FromIterator, str::FromStr};
 
 use amethyst::assets::ProgressCounter;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -6,7 +6,10 @@ use loading_model::loaded::LoadStage;
 use log::debug;
 use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
 use object_type::ObjectType;
-use sequence_model::loaded::SequenceIdMappings;
+use sequence_model::{
+    config::{SequenceName, SequenceNameString},
+    loaded::SequenceIdMappings,
+};
 use serde::{Deserialize, Serialize};
 use typename_derive::TypeName;
 
@@ -21,6 +24,20 @@ pub type AssetIdMappingSystem = AssetPartLoadingSystem<AssetIdMapper>;
 /// `AssetIdMapper`.
 #[derive(Debug, TypeName)]
 pub struct AssetIdMapper;
+
+impl AssetIdMapper {
+    fn layer_to_sequence_name_string<'layers, SeqName>(
+        layers: &'layers [background_model::config::Layer],
+    ) -> impl Iterator<Item = SequenceNameString<SeqName>> + 'layers
+    where
+        SeqName: SequenceName,
+    {
+        layers.iter().enumerate().map(|(layer_index, _)| {
+            SequenceNameString::<SeqName>::from_str(&format!("background_layer_{}", layer_index))
+                .expect("Expected sequence name string to be valid.")
+        })
+    }
+}
 
 impl<'s> AssetPartLoader<'s> for AssetIdMapper {
     const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
@@ -54,12 +71,17 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 DefinitionLoadingResourcesRead {
                     character_definition_assets,
                     energy_definition_assets,
+                    background_definition_assets,
+                    ui_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
+                    asset_background_definition_handle,
+                    asset_ui_definition_handle,
                     ..
                 },
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
+            asset_sequence_id_mappings_ui,
         }: &mut IdMappingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -107,7 +129,39 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map | AssetType::Ui => {}
+            AssetType::Map => {}
+            AssetType::Ui => {
+                let background_definition = asset_background_definition_handle
+                    .get(asset_id)
+                    .and_then(|background_definition_handle| {
+                        background_definition_assets.get(background_definition_handle)
+                    });
+
+                let ui_definition =
+                    asset_ui_definition_handle
+                        .get(asset_id)
+                        .and_then(|ui_definition_handle| {
+                            ui_definition_assets.get(ui_definition_handle)
+                        });
+
+                let sequence_id_mappings = match (background_definition, ui_definition) {
+                    (None, None) => SequenceIdMappings::new(),
+                    (None, Some(ui_definition)) => {
+                        SequenceIdMappings::from_iter(ui_definition.sequences.keys())
+                    }
+                    (Some(background_definition), None) => SequenceIdMappings::from_iter(
+                        Self::layer_to_sequence_name_string(&background_definition.layers),
+                    ),
+                    (Some(background_definition), Some(ui_definition)) => {
+                        SequenceIdMappings::from_iter(
+                            Self::layer_to_sequence_name_string(&background_definition.layers)
+                                .chain(ui_definition.sequences.keys().cloned()),
+                        )
+                    }
+                };
+
+                asset_sequence_id_mappings_ui.insert(asset_id, sequence_id_mappings);
+            }
         }
     }
 
@@ -132,6 +186,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 },
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
+            asset_sequence_id_mappings_ui,
         } = id_mapping_resources;
 
         let asset_type = asset_type_mappings
@@ -182,7 +237,8 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map | AssetType::Ui => true,
+            AssetType::Map => true,
+            AssetType::Ui => asset_sequence_id_mappings_ui.get(asset_id).is_some(),
         }
     }
 }
