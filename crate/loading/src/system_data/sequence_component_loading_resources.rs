@@ -17,11 +17,13 @@ use collision_model::{
     },
 };
 use derivative::Derivative;
+use game_mode_selection_model::GameModeIndex;
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
 use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
+use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
 
@@ -117,6 +119,10 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `AssetLayerPositions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_layer_positions: Write<'s, AssetLayerPositions>,
+
+    /// `AssetUiMenuItems<GameModeIndex>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_menu_items: Write<'s, AssetUiMenuItems<GameModeIndex>>,
 }
 
 /// `SequenceComponentLoadingResourcesRead`.
@@ -204,4 +210,8 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     /// `AssetLayerPositions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_layer_positions: Read<'s, AssetLayerPositions>,
+
+    /// `AssetUiMenuItems<GameModeIndex>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
 }

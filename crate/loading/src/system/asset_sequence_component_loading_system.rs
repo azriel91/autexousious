@@ -10,6 +10,7 @@ use character_model::{
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
 use energy_model::config::EnergySequence;
+use game_mode_selection_model::GameModeIndex;
 use loading_model::loaded::LoadStage;
 use log::debug;
 use map_model::loaded::Margins;
@@ -21,6 +22,8 @@ use sequence_model::loaded::WaitSequenceHandles;
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
 use sprite_model::{config::SpriteFrame, loaded::SpriteRenderSequenceHandles};
 use typename_derive::TypeName;
+use ui_menu_item_model::loaded::{UiMenuItem, UiMenuItems};
+use ui_model::config::UiType;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
@@ -108,6 +111,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 IdMappingResourcesRead {
                     asset_sequence_id_mappings_character,
                     asset_sequence_id_mappings_energy,
+                    asset_sequence_id_mappings_ui,
                     ..
                 },
             texture_loading_resources_read:
@@ -140,6 +144,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_map_bounds,
             asset_margins,
             asset_layer_positions,
+            asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -342,6 +347,47 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         .and_then(|ui_definition_handle| {
                             ui_definition_assets.get(ui_definition_handle)
                         });
+
+                if let Some(ui_definition) = ui_definition {
+                    match &ui_definition.ui_type {
+                        UiType::Menu(ui_menu_items) => {
+                            let ui_menu_items = ui_menu_items
+                                .iter()
+                                .map(|ui_menu_item| {
+                                    let sequence_id_mappings = asset_sequence_id_mappings_ui
+                                        .get(asset_id)
+                                        .unwrap_or_else(|| {
+                                            panic!(
+                                                "Expected `SequenceIdMappings<UiSequenceName>` \
+                                                 to exist for `{}`.",
+                                                asset_slug
+                                            )
+                                        });
+                                    let sequence = &ui_menu_item.sequence;
+                                    let sequence_id = sequence_id_mappings
+                                        .id(sequence)
+                                        .copied()
+                                        .unwrap_or_else(|| {
+                                            panic!(
+                                                "Expected `SequenceIdMapping` to exist for \
+                                                 sequence `{}` for asset `{}`.",
+                                                sequence, asset_slug
+                                            )
+                                        });
+
+                                    UiMenuItem::new(
+                                        ui_menu_item.index,
+                                        ui_menu_item.text.clone(),
+                                        sequence_id,
+                                    )
+                                })
+                                .collect::<Vec<UiMenuItem<GameModeIndex>>>();
+                            let ui_menu_items = UiMenuItems::new(ui_menu_items);
+
+                            asset_ui_menu_items.insert(asset_id, ui_menu_items);
+                        }
+                    }
+                }
 
                 // Load sequence components from `UiDefinition`.
                 let wait_sequence_handles = {
