@@ -17,12 +17,9 @@ use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
 use sequence_loading::{WaitSequenceHandlesLoader, WaitSequenceLoader};
-use sequence_model::loaded::{WaitSequenceHandle, WaitSequenceHandles};
+use sequence_model::loaded::WaitSequenceHandles;
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
-use sprite_model::{
-    config::SpriteFrame,
-    loaded::{SpriteRenderSequenceHandle, SpriteRenderSequenceHandles},
-};
+use sprite_model::{config::SpriteFrame, loaded::SpriteRenderSequenceHandles};
 use typename_derive::TypeName;
 
 use crate::{
@@ -327,10 +324,15 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .get(asset_id)
                     .and_then(|background_definition_handle| {
                         background_definition_assets.get(background_definition_handle)
-                    })
-                    .expect("Expected `BackgroundDefinition` to be loaded.");
+                    });
 
-                Self::load_layer_positions(asset_layer_positions, background_definition, asset_id);
+                if let Some(background_definition) = background_definition {
+                    Self::load_layer_positions(
+                        asset_layer_positions,
+                        background_definition,
+                        asset_id,
+                    );
+                }
 
                 // Load menu items.
                 let ui_definition =
@@ -343,22 +345,24 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 // Load sequence components from `UiDefinition`.
                 let wait_sequence_handles = {
                     let wait_sequence_loader = &wait_sequence_handles_loader.wait_sequence_loader;
-                    let wait_sequence_handle_iter_background =
-                        background_definition.layers.iter().map(|layer| {
-                            wait_sequence_loader.load(|frame| frame.wait, layer.frames.iter())
-                        });
 
-                    let wait_sequence_handles = if let Some(ui_definition) = ui_definition {
-                        let wait_sequence_handle_iter_ui =
-                            ui_definition.sequences.values().map(|sequence| {
+                    let mut wait_sequence_handles = Vec::new();
+
+                    if let Some(background_definition) = background_definition {
+                        wait_sequence_handles.extend(background_definition.layers.iter().map(
+                            |layer| {
+                                wait_sequence_loader.load(|frame| frame.wait, layer.frames.iter())
+                            },
+                        ));
+                    }
+
+                    if let Some(ui_definition) = ui_definition {
+                        wait_sequence_handles.extend(ui_definition.sequences.values().map(
+                            |sequence| {
                                 wait_sequence_loader
                                     .load(|frame| frame.wait, sequence.frames.iter())
-                            });
-                        wait_sequence_handle_iter_background
-                            .chain(wait_sequence_handle_iter_ui)
-                            .collect::<Vec<WaitSequenceHandle>>()
-                    } else {
-                        wait_sequence_handle_iter_background.collect::<Vec<WaitSequenceHandle>>()
+                            },
+                        ));
                     };
 
                     WaitSequenceHandles::new(wait_sequence_handles)
@@ -379,27 +383,27 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         let sprite_render_sequence_loader =
                             &sprite_render_sequence_handles_loader.sprite_render_sequence_loader;
-                        let sprite_render_sequence_handle_iter_background =
-                            background_definition.layers.iter().map(|layer| {
-                                sprite_render_sequence_loader
-                                    .load(sprite_frame_to_sprite_render, layer.frames.iter())
-                            });
 
-                        let sprite_render_sequence_handles = if let Some(ui_definition) =
-                            ui_definition
-                        {
-                            let sprite_render_sequence_handle_iter_ui =
+                        let mut sprite_render_sequence_handles = Vec::new();
+
+                        if let Some(background_definition) = background_definition {
+                            sprite_render_sequence_handles.extend(
+                                background_definition.layers.iter().map(|layer| {
+                                    sprite_render_sequence_loader
+                                        .load(sprite_frame_to_sprite_render, layer.frames.iter())
+                                }),
+                            );
+                        }
+
+                        if let Some(ui_definition) = ui_definition {
+                            sprite_render_sequence_handles.extend(
                                 ui_definition.sequences.values().map(|sequence| {
                                     sprite_render_sequence_loader
                                         .load(sprite_frame_to_sprite_render, sequence.frames.iter())
-                                });
-                            sprite_render_sequence_handle_iter_background
-                                .chain(sprite_render_sequence_handle_iter_ui)
-                                .collect::<Vec<SpriteRenderSequenceHandle>>()
-                        } else {
-                            sprite_render_sequence_handle_iter_background
-                                .collect::<Vec<SpriteRenderSequenceHandle>>()
-                        };
+                                }),
+                            );
+                        }
+
                         SpriteRenderSequenceHandles::new(sprite_render_sequence_handles)
                     };
 
