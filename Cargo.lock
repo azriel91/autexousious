@@ -536,6 +536,7 @@ dependencies = [
  "sprite_loading 0.14.0",
  "sprite_model 0.14.0",
  "ui_audio_loading 0.14.0",
+ "ui_loading 0.15.0",
 ]
 
 [[package]]
@@ -2719,6 +2720,7 @@ dependencies = [
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_model 0.14.0",
+ "ui_model 0.15.0",
 ]
 
 [[package]]
@@ -4368,6 +4370,8 @@ name = "sequence_loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.14.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_loading_spi 0.15.0",
  "sequence_model 0.14.0",
@@ -4743,6 +4747,8 @@ version = "0.14.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "asset_gfx_gen 0.14.0",
+ "asset_model 0.14.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_loading_spi 0.15.0",
@@ -5193,6 +5199,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ui_loading"
+version = "0.15.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_model 0.15.0",
+]
+
+[[package]]
 name = "ui_menu_item_model"
 version = "0.15.0"
 dependencies = [
@@ -5494,6 +5509,7 @@ dependencies = [
  "tracker 0.14.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_loading 0.14.0",
+ "ui_loading 0.15.0",
 ]
 
 [[package]]
@@ -5685,6 +5701,7 @@ dependencies = [
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_loading 0.14.0",
  "ui_audio_model 0.14.0",
+ "ui_loading 0.15.0",
  "ui_menu_item_model 0.15.0",
  "ui_model 0.15.0",
  "ui_model_spi 0.15.0",

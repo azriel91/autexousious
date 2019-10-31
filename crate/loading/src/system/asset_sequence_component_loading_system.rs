@@ -1,7 +1,4 @@
-use amethyst::{
-    assets::{AssetStorage, Handle, Loader},
-    renderer::{SpriteRender, SpriteSheet},
-};
+use amethyst::renderer::SpriteRender;
 use asset_model::{config::AssetType, loaded::AssetId};
 use background_model::{
     config::{BackgroundDefinition, LayerPosition},
@@ -20,10 +17,12 @@ use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
 use sequence_loading::{WaitSequenceHandlesLoader, WaitSequenceLoader};
-use sequence_loading_spi::{FrameComponentDataLoader, SequenceComponentDataLoader};
-use sequence_model::loaded::{AssetWaitSequenceHandles, WaitSequence};
+use sequence_model::loaded::{WaitSequenceHandle, WaitSequenceHandles};
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
-use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
+use sprite_model::{
+    config::SpriteFrame,
+    loaded::{SpriteRenderSequenceHandle, SpriteRenderSequenceHandles},
+};
 use typename_derive::TypeName;
 
 use crate::{
@@ -39,55 +38,11 @@ pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSeque
 pub struct AssetSequenceComponentLoader;
 
 impl AssetSequenceComponentLoader {
-    fn load_background_definition(
-        loader: &Loader,
-        (
-            wait_sequence_assets,
-            sprite_render_sequence_assets,
-            asset_wait_sequence_handles,
-            asset_sprite_render_sequence_handles,
-            asset_layer_positions,
-        ): (
-            &AssetStorage<WaitSequence>,
-            &AssetStorage<SpriteRenderSequence>,
-            &mut AssetWaitSequenceHandles,
-            &mut AssetSpriteRenderSequenceHandles,
-            &mut AssetLayerPositions,
-        ),
-        sprite_sheet_handles: &[Handle<SpriteSheet>],
+    fn load_layer_positions(
+        asset_layer_positions: &mut AssetLayerPositions,
         background_definition: &BackgroundDefinition,
         asset_id: AssetId,
     ) {
-        let wait_sequence_handles = WaitSequenceHandlesLoader::load(
-            |layer| {
-                WaitSequenceLoader::load(
-                    loader,
-                    wait_sequence_assets,
-                    |frame| frame.wait,
-                    layer.frames.iter(),
-                )
-            },
-            background_definition.layers.iter(),
-        );
-        let sprite_render_sequence_handles = SpriteRenderSequenceHandlesLoader::load(
-            |layer| {
-                SpriteRenderSequenceLoader::load(
-                    loader,
-                    sprite_render_sequence_assets,
-                    |frame| {
-                        let sprite_ref = &frame.sprite;
-                        let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
-                        let sprite_number = sprite_ref.index;
-                        SpriteRender {
-                            sprite_sheet,
-                            sprite_number,
-                        }
-                    },
-                    layer.frames.iter(),
-                )
-            },
-            background_definition.layers.iter(),
-        );
         let layer_positions = {
             let capacity = background_definition.layers.len();
             let sequence_handles = Vec::<LayerPosition>::with_capacity(capacity);
@@ -101,8 +56,6 @@ impl AssetSequenceComponentLoader {
             LayerPositions::new(layer_positions)
         };
 
-        asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
-        asset_sprite_render_sequence_handles.insert(asset_id, sprite_render_sequence_handles);
         asset_layer_positions.insert(asset_id, layer_positions);
     }
 }
@@ -147,10 +100,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     energy_definition_assets,
                     map_definition_assets,
                     background_definition_assets,
+                    ui_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
                     asset_map_definition_handle,
                     asset_background_definition_handle,
+                    asset_ui_definition_handle,
                 },
             id_mapping_resources_read:
                 IdMappingResourcesRead {
@@ -207,29 +162,46 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         debug!("Loading `{}` sequence components.", asset_slug,);
 
+        let wait_sequence_loader = WaitSequenceLoader {
+            loader,
+            wait_sequence_assets,
+        };
+        let mut wait_sequence_handles_loader = WaitSequenceHandlesLoader {
+            wait_sequence_loader,
+            asset_wait_sequence_handles,
+        };
+        let sprite_render_sequence_loader = SpriteRenderSequenceLoader {
+            loader,
+            sprite_render_sequence_assets,
+        };
+        let mut sprite_render_sequence_handles_loader = SpriteRenderSequenceHandlesLoader {
+            sprite_render_sequence_loader,
+            asset_sprite_render_sequence_handles,
+        };
+
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
         match asset_type {
             AssetType::Object(object_type) => {
                 let sprite_sheet_handles = sprite_sheet_handles
                     .expect("Expected `SpriteSheetHandles` to exist for object.");
                 let object_loader_params = ObjectLoaderParams {
-                    loader: &*loader,
-                    asset_id_mappings: &*asset_id_mappings,
-                    asset_type_mappings: &*asset_type_mappings,
-                    asset_sequence_id_mappings_character: &*asset_sequence_id_mappings_character,
-                    asset_sequence_id_mappings_energy: &*asset_sequence_id_mappings_energy,
-                    wait_sequence_assets: &*wait_sequence_assets,
-                    source_assets: &*source_assets,
-                    source_sequence_assets: &*source_sequence_assets,
-                    object_acceleration_sequence_assets: &*object_acceleration_sequence_assets,
-                    sprite_render_sequence_assets: &*sprite_render_sequence_assets,
-                    body_sequence_assets: &*body_sequence_assets,
-                    interactions_sequence_assets: &*interactions_sequence_assets,
-                    spawns_sequence_assets: &*spawns_sequence_assets,
-                    body_assets: &*body_assets,
-                    interactions_assets: &*interactions_assets,
-                    spawns_assets: &*spawns_assets,
-                    sprite_sheet_handles: &sprite_sheet_handles,
+                    loader,
+                    asset_id_mappings,
+                    asset_type_mappings,
+                    asset_sequence_id_mappings_character,
+                    asset_sequence_id_mappings_energy,
+                    wait_sequence_assets,
+                    source_assets,
+                    source_sequence_assets,
+                    object_acceleration_sequence_assets,
+                    sprite_render_sequence_assets,
+                    body_sequence_assets,
+                    interactions_sequence_assets,
+                    spawns_sequence_assets,
+                    body_assets,
+                    interactions_assets,
+                    spawns_assets,
+                    sprite_sheet_handles,
                 };
 
                 let object = match object_type {
@@ -327,16 +299,20 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 let background_definition = &map_definition.background;
                 if let Some(sprite_sheet_handles) = sprite_sheet_handles {
-                    Self::load_background_definition(
-                        loader,
-                        (
-                            wait_sequence_assets,
-                            sprite_render_sequence_assets,
-                            asset_wait_sequence_handles,
-                            asset_sprite_render_sequence_handles,
-                            asset_layer_positions,
-                        ),
+                    wait_sequence_handles_loader.load(
+                        background_definition.layers.iter(),
+                        |layer| layer.frames.iter(),
+                        asset_id,
+                    );
+                    sprite_render_sequence_handles_loader.load(
+                        background_definition.layers.iter(),
+                        |layer| layer.frames.iter(),
+                        asset_id,
                         sprite_sheet_handles,
+                    );
+
+                    Self::load_layer_positions(
+                        asset_layer_positions,
                         background_definition,
                         asset_id,
                     );
@@ -354,20 +330,81 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     })
                     .expect("Expected `BackgroundDefinition` to be loaded.");
 
+                Self::load_layer_positions(asset_layer_positions, background_definition, asset_id);
+
+                // Load menu items.
+                let ui_definition =
+                    asset_ui_definition_handle
+                        .get(asset_id)
+                        .and_then(|ui_definition_handle| {
+                            ui_definition_assets.get(ui_definition_handle)
+                        });
+
+                // Load sequence components from `UiDefinition`.
+                let wait_sequence_handles = {
+                    let wait_sequence_loader = &wait_sequence_handles_loader.wait_sequence_loader;
+                    let wait_sequence_handle_iter_background =
+                        background_definition.layers.iter().map(|layer| {
+                            wait_sequence_loader.load(|frame| frame.wait, layer.frames.iter())
+                        });
+
+                    let wait_sequence_handles = if let Some(ui_definition) = ui_definition {
+                        let wait_sequence_handle_iter_ui =
+                            ui_definition.sequences.values().map(|sequence| {
+                                wait_sequence_loader
+                                    .load(|frame| frame.wait, sequence.frames.iter())
+                            });
+                        wait_sequence_handle_iter_background
+                            .chain(wait_sequence_handle_iter_ui)
+                            .collect::<Vec<WaitSequenceHandle>>()
+                    } else {
+                        wait_sequence_handle_iter_background.collect::<Vec<WaitSequenceHandle>>()
+                    };
+
+                    WaitSequenceHandles::new(wait_sequence_handles)
+                };
+                asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
+
                 if let Some(sprite_sheet_handles) = sprite_sheet_handles {
-                    Self::load_background_definition(
-                        loader,
-                        (
-                            wait_sequence_assets,
-                            sprite_render_sequence_assets,
-                            asset_wait_sequence_handles,
-                            asset_sprite_render_sequence_handles,
-                            asset_layer_positions,
-                        ),
-                        sprite_sheet_handles,
-                        background_definition,
-                        asset_id,
-                    );
+                    let sprite_render_sequence_handles = {
+                        let sprite_frame_to_sprite_render = |frame: &SpriteFrame| {
+                            let sprite_ref = &frame.sprite;
+                            let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
+                            let sprite_number = sprite_ref.index;
+                            SpriteRender {
+                                sprite_sheet,
+                                sprite_number,
+                            }
+                        };
+
+                        let sprite_render_sequence_loader =
+                            &sprite_render_sequence_handles_loader.sprite_render_sequence_loader;
+                        let sprite_render_sequence_handle_iter_background =
+                            background_definition.layers.iter().map(|layer| {
+                                sprite_render_sequence_loader
+                                    .load(sprite_frame_to_sprite_render, layer.frames.iter())
+                            });
+
+                        let sprite_render_sequence_handles = if let Some(ui_definition) =
+                            ui_definition
+                        {
+                            let sprite_render_sequence_handle_iter_ui =
+                                ui_definition.sequences.values().map(|sequence| {
+                                    sprite_render_sequence_loader
+                                        .load(sprite_frame_to_sprite_render, sequence.frames.iter())
+                                });
+                            sprite_render_sequence_handle_iter_background
+                                .chain(sprite_render_sequence_handle_iter_ui)
+                                .collect::<Vec<SpriteRenderSequenceHandle>>()
+                        } else {
+                            sprite_render_sequence_handle_iter_background
+                                .collect::<Vec<SpriteRenderSequenceHandle>>()
+                        };
+                        SpriteRenderSequenceHandles::new(sprite_render_sequence_handles)
+                    };
+
+                    asset_sprite_render_sequence_handles
+                        .insert(asset_id, sprite_render_sequence_handles);
                 }
             }
         }

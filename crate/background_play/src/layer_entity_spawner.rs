@@ -98,12 +98,12 @@ impl LayerEntitySpawner {
             asset_sprite_render_sequence_handles,
             layer_positions,
         ) {
-            asset_wait_sequence_handles
+            layer_positions
                 .iter()
+                .zip(asset_wait_sequence_handles.iter())
                 .zip(asset_sprite_render_sequence_handles.iter())
-                .zip(layer_positions.iter())
                 .map(
-                    |((wait_sequence_handle, sprite_render_sequence_handle), layer_position)| {
+                    |((layer_position, wait_sequence_handle), sprite_render_sequence_handle)| {
                         let entity = entities.create();
 
                         let mut transform = Transform::default();

@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod test {
-    use background_model::config::{BackgroundDefinition, Layer, LayerFrame, LayerPosition};
+    use background_model::config::{BackgroundDefinition, Layer, LayerPosition};
     use sequence_model::config::Wait;
     use serde_yaml;
-    use sprite_model::config::SpriteRef;
+    use sprite_model::config::{SpriteFrame, SpriteRef};
 
     use map_model::config::{MapBounds, MapDefinition, MapHeader};
 
@@ -51,13 +51,13 @@ layers:
         let layer_0 = Layer::new(
             LayerPosition::new(1, 4, 0),
             vec![
-                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
-                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
+                SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
+                SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
             ],
         );
         let layer_1 = Layer::new(
             LayerPosition::new(-1, -2, -3),
-            vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+            vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
         );
         let layers = vec![layer_0, layer_1];
         let expected = MapDefinition::new(header, BackgroundDefinition::new(layers));

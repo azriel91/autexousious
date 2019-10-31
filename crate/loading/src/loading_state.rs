@@ -161,6 +161,7 @@ where
                          * `KinematicLoadingBundle`\n\
                          * `CollisionAudioLoadingBundle`\n\
                          * `UiAudioLoadingBundle`\n\
+                         * `UiLoadingBundle`\n\
                          \n\
                          These provide the necessary `System`s to process the loaded assets.\n",
                         duration

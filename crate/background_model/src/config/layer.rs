@@ -1,7 +1,8 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
+use sprite_model::config::SpriteFrame;
 
-use crate::config::{LayerFrame, LayerPosition};
+use crate::config::LayerPosition;
 
 /// An image layer on a background.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -10,5 +11,5 @@ pub struct Layer {
     #[serde(default)]
     pub position: LayerPosition,
     /// Frames in the animation sequence.
-    pub frames: Vec<LayerFrame>,
+    pub frames: Vec<SpriteFrame>,
 }

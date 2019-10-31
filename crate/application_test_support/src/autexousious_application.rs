@@ -28,6 +28,7 @@ use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use ui_audio_loading::UiAudioLoadingBundle;
+use ui_loading::UiLoadingBundle;
 
 use crate::{AssetQueries, SetupFunction};
 
@@ -94,6 +95,7 @@ impl AutexousiousApplication {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(BackgroundLoadingBundle::new())
+            .with_bundle(UiLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())

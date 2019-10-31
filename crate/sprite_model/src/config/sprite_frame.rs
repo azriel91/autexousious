@@ -23,3 +23,9 @@ impl AsRef<Wait> for SpriteFrame {
         &self.wait
     }
 }
+
+impl AsRef<SpriteRef> for SpriteFrame {
+    fn as_ref(&self) -> &SpriteRef {
+        &self.sprite
+    }
+}

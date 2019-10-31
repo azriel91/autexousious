@@ -44,7 +44,8 @@ spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
-ui_audio_loading = { path = "../../crate/ui_audio_loading" }
+ui_audio_loading = { path = "../ui_audio_loading" }
+ui_loading = { path = "../ui_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

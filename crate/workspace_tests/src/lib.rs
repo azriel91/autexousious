@@ -154,4 +154,6 @@ mod tracker;
 #[cfg(test)]
 mod ui_audio_loading;
 #[cfg(test)]
+mod ui_loading;
+#[cfg(test)]
 mod ui_model;

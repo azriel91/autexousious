@@ -1,6 +1,6 @@
 [package]
-name = "sequence_loading"
-version = "0.14.0"
+name = "ui_loading"
+version = "0.15.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -10,12 +10,8 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-asset_model = { path = "../asset_model" }
-derivative = "1.0.3"
 derive-new = "0.5.8"
-sequence_loading_spi = { path = "../sequence_loading_spi" }
-sequence_model = { path = "../sequence_model" }
-sequence_model_spi = { path = "../sequence_model_spi" }
+ui_model = { path = "../ui_model" }
 
 [features]
 nightly = ["amethyst/nightly"]

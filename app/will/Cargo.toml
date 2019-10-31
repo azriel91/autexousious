@@ -52,6 +52,7 @@ structopt-derive = "0.3.2"
 tracker = { path = "../../crate/tracker" }
 typename = "0.1.1"
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
+ui_loading = { path = "../../crate/ui_loading" }
 
 [dev-dependencies]
 assert_cmd = "0.11.1"
