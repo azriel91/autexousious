@@ -19,6 +19,7 @@ game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 log = "0.4.8"
+sequence_model = { path = "../sequence_model" }
 shrev_support = { path = "../shrev_support" }
 state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }

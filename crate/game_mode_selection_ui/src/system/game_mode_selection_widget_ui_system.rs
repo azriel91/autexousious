@@ -16,6 +16,7 @@ use game_mode_selection_model::{
     GameModeIndex, GameModeSelectionEntity, GameModeSelectionEntityId,
 };
 use log::debug;
+use sequence_model::loaded::SequenceId;
 use shrev_support::EventChannelExt;
 use state_registry::StateIdUpdateEvent;
 use state_support::StateAssetUtils;
@@ -53,9 +54,15 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
-    /// `AssetUiMenuItems<GameModeIndex>` components.
+    /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
+    /// `AssetId` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_ids: WriteStorage<'s, AssetId>,
+    /// `SequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
     /// `Theme` resource.
     #[derivative(Debug = "ignore")]
     pub theme: ReadExpect<'s, Theme>,
@@ -97,6 +104,8 @@ impl GameModeSelectionWidgetUiSystem {
         GameModeSelectionWidgetUiSystemData {
             entities,
             asset_ui_menu_items,
+            asset_ids,
+            sequence_ids,
             theme,
             input_config,
             menu_items,
@@ -165,6 +174,8 @@ impl GameModeSelectionWidgetUiSystem {
                             .with(menu_item_widget_state, menu_item_widget_states)
                             .with(ui_transform, ui_transforms)
                             .with(ui_text, ui_texts)
+                            .with(ui_menu_item.sequence_id, sequence_ids)
+                            .with(asset_id, asset_ids)
                             .build()
                     })
                     .collect::<Vec<Entity>>();
