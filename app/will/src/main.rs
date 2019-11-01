@@ -130,8 +130,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
-            .with_bundle(UiLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?
+            .with_bundle(UiLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(EnergyLoadingBundle::new())?

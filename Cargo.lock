@@ -2163,18 +2163,22 @@ dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "application_menu 0.14.0",
  "application_ui 0.14.0",
+ "asset_model 0.14.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.14.0",
  "game_input_model 0.14.0",
  "game_mode_selection_model 0.14.0",
- "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shrev_support 0.15.0",
+ "state_registry 0.14.0",
+ "state_support 0.15.0",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_model 0.14.0",
+ "ui_menu_item_model 0.15.0",
 ]
 
 [[package]]
@@ -4600,6 +4604,14 @@ version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "shrev_support"
+version = "0.15.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "siphasher"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4792,7 +4804,9 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shrev_support 0.15.0",
  "state_registry 0.14.0",
+ "state_support 0.15.0",
  "tracker 0.14.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4806,6 +4820,14 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "state_support"
+version = "0.15.0"
+dependencies = [
+ "asset_model 0.14.0",
+ "state_registry 0.14.0",
 ]
 
 [[package]]

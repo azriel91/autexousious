@@ -3,12 +3,14 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::loaded::{AssetId, AssetIdMappings};
+use asset_model::loaded::AssetIdMappings;
 use background_play::{LayerComponentStorages, LayerEntitySpawner, LayerSpawningResources};
 use derivative::Derivative;
 use derive_new::new;
-use log::{error, warn};
-use state_registry::{StateId, StateIdUpdateEvent, StateUiData};
+use log::error;
+use shrev_support::EventChannelExt;
+use state_registry::{StateIdUpdateEvent, StateUiData};
+use state_support::StateAssetUtils;
 use typename_derive::TypeName;
 
 /// Spawns state UI backgrounds when the `StateId` changes.
@@ -44,47 +46,6 @@ pub struct StateUiSpawnSystemData<'s> {
     pub lazy_update: Read<'s, LazyUpdate>,
 }
 
-impl StateUiSpawnSystem {
-    /// Returns the last event from the event channel.
-    fn last_event(
-        &mut self,
-        state_id_update_ec: &EventChannel<StateIdUpdateEvent>,
-    ) -> Option<StateIdUpdateEvent> {
-        let state_id_update_event_rid = self
-            .state_id_update_event_rid
-            .as_mut()
-            .expect("Expected `state_id_update_event_rid` field to be set.");
-
-        let events_iterator = state_id_update_ec.read(state_id_update_event_rid);
-        let event_count = events_iterator.len();
-
-        if event_count > 1 {
-            warn!(
-                "{} state ID update events received, only processing the last event.",
-                event_count
-            );
-        }
-
-        // Only process the last event.
-        events_iterator
-            .skip(event_count.saturating_sub(1))
-            .next()
-            .copied()
-    }
-
-    /// Returns the State's UI collective asset ID.
-    fn asset_id(asset_id_mappings: &AssetIdMappings, state_id: StateId) -> Option<AssetId> {
-        let state_id_name = state_id.to_string();
-        asset_id_mappings.iter().find_map(|(id, slug)| {
-            if &slug.name == &state_id_name {
-                Some(id)
-            } else {
-                None
-            }
-        })
-    }
-}
-
 impl<'s> System<'s> for StateUiSpawnSystem {
     type SystemData = StateUiSpawnSystemData<'s>;
 
@@ -100,17 +61,23 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             lazy_update,
         }: Self::SystemData,
     ) {
-        if let Some(ev) = self.last_event(&state_id_update_ec) {
+        let state_id_update_event_rid = self
+            .state_id_update_event_rid
+            .as_mut()
+            .expect("Expected `state_id_update_event_rid` field to be set.");
+
+        if let Some(ev) = state_id_update_ec.last_event(state_id_update_event_rid) {
             let state_id = ev.state_id;
 
             // Don't panic if there are no assets for the current `StateId`.
-            let layer_entities = Self::asset_id(&asset_id_mappings, state_id).map(|asset_id| {
-                LayerEntitySpawner::spawn_system(
-                    &layer_spawning_resources,
-                    &mut layer_component_storages,
-                    asset_id,
-                )
-            });
+            let layer_entities =
+                StateAssetUtils::asset_id(&asset_id_mappings, state_id).map(|asset_id| {
+                    LayerEntitySpawner::spawn_system(
+                        &layer_spawning_resources,
+                        &mut layer_component_storages,
+                        asset_id,
+                    )
+                });
 
             if let Some(state_ui_data) = state_ui_data.as_mut() {
                 (*state_ui_data).entities.drain(..).for_each(|entity| {

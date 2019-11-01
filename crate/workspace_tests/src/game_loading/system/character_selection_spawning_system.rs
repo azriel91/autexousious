@@ -37,6 +37,7 @@ mod tests {
     use team_model::play::{IndependentCounter, Team};
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
+    use ui_loading::UiLoadingBundle;
 
     use game_loading::{
         CharacterAugmentStatus, CharacterSelectionSpawningSystem, GameLoadingStatus,
@@ -165,6 +166,7 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(BackgroundLoadingBundle::new())
+            .with_bundle(UiLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())
