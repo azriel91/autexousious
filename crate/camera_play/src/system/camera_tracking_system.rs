@@ -1,6 +1,6 @@
 use amethyst::{
     core::math::Vector3,
-    ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, World, WriteStorage},
     renderer::camera::Camera,
     shred::{ResourceId, SystemData},
 };
@@ -28,7 +28,7 @@ pub struct CameraTrackingSystemData<'s> {
     pub camera_zoom_dimensions: Read<'s, CameraZoomDimensions>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,

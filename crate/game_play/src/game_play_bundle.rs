@@ -1,5 +1,5 @@
 use amethyst::{
-    core::bundle::SystemBundle,
+    core::{bundle::SystemBundle, SystemExt},
     ecs::{DispatcherBuilder, World},
     Error,
 };
@@ -56,6 +56,7 @@ use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::{
     AssetSpriteRenderSequenceHandles, SpriteRenderSequence, SpriteRenderSequenceHandles,
 };
+use state_registry::StateId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -236,17 +237,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            MapEnterExitDetectionSystem::new(),
+            MapEnterExitDetectionSystem::new().pausable(StateId::GamePlay),
             &MapEnterExitDetectionSystem::type_name(),
             &[&ObjectGravitySystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            KeepWithinMapBoundsSystem::new(),
+            KeepWithinMapBoundsSystem::new().pausable(StateId::GamePlay),
             &KeepWithinMapBoundsSystem::type_name(),
             &[&MapEnterExitDetectionSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            ObjectGroundingSystem::new(),
+            ObjectGroundingSystem::new().pausable(StateId::GamePlay),
             &ObjectGroundingSystem::type_name(),
             &[&MapEnterExitDetectionSystem::type_name()],
         ); // kcov-ignore
@@ -349,7 +350,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
         // update.
         builder.add(
-            CharacterSequenceUpdateSystem::new(),
+            CharacterSequenceUpdateSystem::new().pausable(StateId::GamePlay),
             &CharacterSequenceUpdateSystem::type_name(),
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
@@ -435,7 +436,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(
-            CameraTrackingSystem::default(),
+            CameraTrackingSystem::default().pausable(StateId::GamePlay),
             &CameraTrackingSystem::type_name(),
             &[],
         ); // kcov-ignore

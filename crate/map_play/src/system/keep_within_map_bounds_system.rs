@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, ReadExpect, ReadStorage, System, World, WriteStorage},
+    ecs::{Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -29,7 +29,7 @@ pub struct KeepWithinMapBoundsSystemData<'s> {
     pub map_boundary_ec: Read<'s, EventChannel<MapBoundaryEvent>>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,

@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{ReadExpect, System, World, Write},
+    ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
 };
 use background_play::{LayerComponentStorages, LayerEntitySpawner, LayerSpawningResources};
@@ -24,7 +24,7 @@ pub struct MapSelectionSpawningSystemData<'s> {
     pub game_loading_status: Write<'s, GameLoadingStatus>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `LayerSpawningResources`.
     #[derivative(Debug = "ignore")]
     pub layer_spawning_resources: LayerSpawningResources<'s>,

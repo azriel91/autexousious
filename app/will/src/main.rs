@@ -36,6 +36,7 @@ use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
+use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
@@ -158,6 +159,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 "state_id_prev_tracker_system",
                 &[&StateUiSpawnSystem::type_name()],
             )
+            .with_bundle(GamePlayBundle::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
