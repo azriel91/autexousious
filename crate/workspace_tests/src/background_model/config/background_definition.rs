@@ -1,16 +1,16 @@
 #[cfg(test)]
 mod test {
-    use sequence_model::config::Wait;
+    use sequence_model::config::{Sequence, SequenceEndTransition, Wait};
     use serde_yaml;
-    use sprite_model::config::{SpriteFrame, SpriteRef};
+    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef, SpriteSequence};
 
-    use background_model::config::{BackgroundDefinition, Layer, LayerPosition};
+    use background_model::config::BackgroundDefinition;
 
     const BACKGROUND_EMPTY: &str = "\
     ---\n\
     layers: []\n
     ";
-    const BACKGROUND_WITH_LAYERS: &str = r#"---
+    const BACKGROUND_WITH_SPRITE_SEQUENCES: &str = r#"---
 layers:
   - position: { x: 1, y: 4 } # missing z
     frames: [
@@ -35,19 +35,25 @@ layers:
     #[test]
     fn deserialize_with_layers() {
         let background_definition =
-            serde_yaml::from_str::<BackgroundDefinition>(BACKGROUND_WITH_LAYERS)
+            serde_yaml::from_str::<BackgroundDefinition>(BACKGROUND_WITH_SPRITE_SEQUENCES)
                 .expect("Failed to deserialize `BackgroundDefinition`.");
 
-        let layer_0 = Layer::new(
-            LayerPosition::new(1, 4, 0),
-            vec![
-                SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
-                SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
-            ],
+        let layer_0 = SpriteSequence::new(
+            SpritePosition::new(1, 4, 0),
+            Sequence::new(
+                SequenceEndTransition::None,
+                vec![
+                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
+                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
+                ],
+            ),
         );
-        let layer_1 = Layer::new(
-            LayerPosition::new(-1, -2, -3),
-            vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+        let layer_1 = SpriteSequence::new(
+            SpritePosition::new(-1, -2, -3),
+            Sequence::new(
+                SequenceEndTransition::None,
+                vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+            ),
         );
         let layers = vec![layer_0, layer_1];
         let expected = BackgroundDefinition::new(layers);

@@ -1,9 +1,6 @@
 use amethyst::renderer::SpriteRender;
 use asset_model::{config::AssetType, loaded::AssetId};
-use background_model::{
-    config::{BackgroundDefinition, LayerPosition},
-    loaded::{AssetLayerPositions, LayerPositions},
-};
+use background_model::config::BackgroundDefinition;
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::CharacterSequence,
@@ -22,7 +19,10 @@ use sequence_loading::{
 };
 use sequence_model::loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequenceHandles};
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
-use sprite_model::{config::SpriteFrame, loaded::SpriteRenderSequenceHandles};
+use sprite_model::{
+    config::{SpriteFrame, SpritePosition},
+    loaded::{AssetSpritePositions, SpritePositions, SpriteRenderSequenceHandles},
+};
 use typename_derive::TypeName;
 use ui_menu_item_model::loaded::{UiMenuItem, UiMenuItems};
 use ui_model::config::UiType;
@@ -40,25 +40,25 @@ pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSeque
 pub struct AssetSequenceComponentLoader;
 
 impl AssetSequenceComponentLoader {
-    fn load_layer_positions(
-        asset_layer_positions: &mut AssetLayerPositions,
+    fn load_sprite_positions(
+        asset_sprite_positions: &mut AssetSpritePositions,
         background_definition: &BackgroundDefinition,
         asset_id: AssetId,
     ) {
-        let layer_positions = {
+        let sprite_positions = {
             let capacity = background_definition.layers.len();
-            let sequence_handles = Vec::<LayerPosition>::with_capacity(capacity);
-            let layer_positions = background_definition.layers.iter().fold(
+            let sequence_handles = Vec::<SpritePosition>::with_capacity(capacity);
+            let sprite_positions = background_definition.layers.iter().fold(
                 sequence_handles,
-                |mut layer_positions, layer| {
-                    layer_positions.push(layer.position);
-                    layer_positions
+                |mut sprite_positions, layer| {
+                    sprite_positions.push(layer.position);
+                    sprite_positions
                 },
             );
-            LayerPositions::new(layer_positions)
+            SpritePositions::new(sprite_positions)
         };
 
-        asset_layer_positions.insert(asset_id, layer_positions);
+        asset_sprite_positions.insert(asset_id, sprite_positions);
     }
 }
 
@@ -145,7 +145,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_character_cts_handles,
             asset_map_bounds,
             asset_margins,
-            asset_layer_positions,
+            asset_sprite_positions,
             asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
@@ -310,18 +310,18 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 if let Some(sprite_sheet_handles) = sprite_sheet_handles {
                     wait_sequence_handles_loader.load(
                         background_definition.layers.iter(),
-                        |layer| layer.frames.iter(),
+                        |layer| layer.sequence.frames.iter(),
                         asset_id,
                     );
                     sprite_render_sequence_handles_loader.load(
                         background_definition.layers.iter(),
-                        |layer| layer.frames.iter(),
+                        |layer| layer.sequence.frames.iter(),
                         asset_id,
                         sprite_sheet_handles,
                     );
 
-                    Self::load_layer_positions(
-                        asset_layer_positions,
+                    Self::load_sprite_positions(
+                        asset_sprite_positions,
                         background_definition,
                         asset_id,
                     );
@@ -339,8 +339,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     });
 
                 if let Some(background_definition) = background_definition {
-                    Self::load_layer_positions(
-                        asset_layer_positions,
+                    Self::load_sprite_positions(
+                        asset_sprite_positions,
                         background_definition,
                         asset_id,
                     );
@@ -404,7 +404,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     if let Some(background_definition) = background_definition {
                         wait_sequence_handles.extend(background_definition.layers.iter().map(
                             |layer| {
-                                wait_sequence_loader.load(|frame| frame.wait, layer.frames.iter())
+                                wait_sequence_loader
+                                    .load(|frame| frame.wait, layer.sequence.frames.iter())
                             },
                         ));
                     }
@@ -442,8 +443,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         if let Some(background_definition) = background_definition {
                             sprite_render_sequence_handles.extend(
                                 background_definition.layers.iter().map(|layer| {
-                                    sprite_render_sequence_loader
-                                        .load(sprite_frame_to_sprite_render, layer.frames.iter())
+                                    sprite_render_sequence_loader.load(
+                                        sprite_frame_to_sprite_render,
+                                        layer.sequence.frames.iter(),
+                                    )
                                 }),
                             );
                         }

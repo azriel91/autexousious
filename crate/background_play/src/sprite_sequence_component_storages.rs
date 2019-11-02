@@ -12,10 +12,10 @@ use sequence_model::{
 };
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-/// `Layer` component storages.
+/// `SpriteSequence` component storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct LayerComponentStorages<'s> {
+pub struct SpriteSequenceComponentStorages<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,

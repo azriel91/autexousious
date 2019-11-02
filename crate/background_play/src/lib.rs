@@ -3,10 +3,11 @@
 //! Provides background behaviour logic.
 
 pub use self::{
-    layer_component_storages::LayerComponentStorages, layer_entity_spawner::LayerEntitySpawner,
-    layer_spawning_resources::LayerSpawningResources,
+    sprite_sequence_component_storages::SpriteSequenceComponentStorages,
+    sprite_sequence_entity_spawner::SpriteSequenceEntitySpawner,
+    sprite_sequence_spawning_resources::SpriteSequenceSpawningResources,
 };
 
-mod layer_component_storages;
-mod layer_entity_spawner;
-mod layer_spawning_resources;
+mod sprite_sequence_component_storages;
+mod sprite_sequence_entity_spawner;
+mod sprite_sequence_spawning_resources;

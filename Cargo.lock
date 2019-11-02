@@ -4790,6 +4790,7 @@ dependencies = [
  "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=bugfix/initialize-pausable-system-data)",
  "asset_derive 0.14.0",
  "asset_model 0.14.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "sequence_model 0.14.0",
@@ -4797,6 +4798,8 @@ dependencies = [
  "sequence_model_spi 0.14.0",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

@@ -2,7 +2,9 @@ use amethyst::{
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
 };
-use background_play::{LayerComponentStorages, LayerEntitySpawner, LayerSpawningResources};
+use background_play::{
+    SpriteSequenceComponentStorages, SpriteSequenceEntitySpawner, SpriteSequenceSpawningResources,
+};
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
@@ -25,12 +27,12 @@ pub struct MapSelectionSpawningSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: Read<'s, MapSelection>,
-    /// `LayerSpawningResources`.
+    /// `SpriteSequenceSpawningResources`.
     #[derivative(Debug = "ignore")]
-    pub layer_spawning_resources: LayerSpawningResources<'s>,
-    /// `LayerComponentStorages`.
+    pub sprite_sequence_spawning_resources: SpriteSequenceSpawningResources<'s>,
+    /// `SpriteSequenceComponentStorages`.
     #[derivative(Debug = "ignore")]
-    pub layer_component_storages: LayerComponentStorages<'s>,
+    pub sprite_sequence_component_storages: SpriteSequenceComponentStorages<'s>,
     /// `GameEntities` resource.
     #[derivative(Debug = "ignore")]
     pub game_entities: Write<'s, GameEntities>,
@@ -44,8 +46,8 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         MapSelectionSpawningSystemData {
             mut game_loading_status,
             map_selection,
-            layer_spawning_resources,
-            mut layer_component_storages,
+            sprite_sequence_spawning_resources,
+            mut sprite_sequence_component_storages,
             mut game_entities,
         }: Self::SystemData,
     ) {
@@ -54,9 +56,9 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         }
 
         // TODO: implement Random
-        let map_layer_entities = LayerEntitySpawner::spawn_system(
-            &layer_spawning_resources,
-            &mut layer_component_storages,
+        let map_layer_entities = SpriteSequenceEntitySpawner::spawn_system(
+            &sprite_sequence_spawning_resources,
+            &mut sprite_sequence_component_storages,
             map_selection
                 .asset_id()
                 .expect("Expected `MapSelection` to contain ID."),

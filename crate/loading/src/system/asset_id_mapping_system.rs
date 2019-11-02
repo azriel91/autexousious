@@ -11,6 +11,7 @@ use sequence_model::{
     loaded::SequenceIdMappings,
 };
 use serde::{Deserialize, Serialize};
+use sprite_model::config::SpriteSequence;
 use typename_derive::TypeName;
 
 use crate::{
@@ -27,7 +28,7 @@ pub struct AssetIdMapper;
 
 impl AssetIdMapper {
     fn layer_to_sequence_name_string<'layers, SeqName>(
-        layers: &'layers [background_model::config::Layer],
+        layers: &'layers [SpriteSequence],
     ) -> impl Iterator<Item = SequenceNameString<SeqName>> + 'layers
     where
         SeqName: SequenceName,

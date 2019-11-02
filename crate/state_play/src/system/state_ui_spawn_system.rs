@@ -4,7 +4,9 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use asset_model::loaded::AssetIdMappings;
-use background_play::{LayerComponentStorages, LayerEntitySpawner, LayerSpawningResources};
+use background_play::{
+    SpriteSequenceComponentStorages, SpriteSequenceEntitySpawner, SpriteSequenceSpawningResources,
+};
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
@@ -37,10 +39,10 @@ pub struct StateUiSpawnSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
-    /// `LayerSpawningResources`.
-    pub layer_spawning_resources: LayerSpawningResources<'s>,
-    /// `LayerComponentStorages`.
-    pub layer_component_storages: LayerComponentStorages<'s>,
+    /// `SpriteSequenceSpawningResources`.
+    pub sprite_sequence_spawning_resources: SpriteSequenceSpawningResources<'s>,
+    /// `SpriteSequenceComponentStorages`.
+    pub sprite_sequence_component_storages: SpriteSequenceComponentStorages<'s>,
     /// `LazyUpdate` resource.
     #[derivative(Debug = "ignore")]
     pub lazy_update: Read<'s, LazyUpdate>,
@@ -56,8 +58,8 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             state_id_update_ec,
             mut state_ui_data,
             asset_id_mappings,
-            layer_spawning_resources,
-            mut layer_component_storages,
+            sprite_sequence_spawning_resources,
+            mut sprite_sequence_component_storages,
             lazy_update,
         }: Self::SystemData,
     ) {
@@ -72,9 +74,9 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             // Don't panic if there are no assets for the current `StateId`.
             let layer_entities =
                 StateAssetUtils::asset_id(&asset_id_mappings, state_id).map(|asset_id| {
-                    LayerEntitySpawner::spawn_system(
-                        &layer_spawning_resources,
-                        &mut layer_component_storages,
+                    SpriteSequenceEntitySpawner::spawn_system(
+                        &sprite_sequence_spawning_resources,
+                        &mut sprite_sequence_component_storages,
                         asset_id,
                     )
                 });

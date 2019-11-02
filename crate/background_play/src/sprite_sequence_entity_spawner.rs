@@ -14,25 +14,25 @@ use sequence_model::{
 use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
-use crate::{LayerComponentStorages, LayerSpawningResources};
+use crate::{SpriteSequenceComponentStorages, SpriteSequenceSpawningResources};
 
-/// Spawns map layer entities into the world.
+/// Spawns sprite sequence entities into the world.
 #[derive(Debug)]
-pub struct LayerEntitySpawner;
+pub struct SpriteSequenceEntitySpawner;
 
-impl LayerEntitySpawner {
-    /// Spawns entities for each of the layers in a map.
+impl SpriteSequenceEntitySpawner {
+    /// Spawns entities for each of the sprite sequences of an asset.
     ///
     /// Idea: What if we could spawn two maps at the same time?
     ///
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the map into.
-    /// * `asset_id`: Asset ID of the map whose layers to spawn.
+    /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_world(world: &mut World, asset_id: AssetId) -> Vec<Entity> {
         // Hack: Need to move all systems into main dispatcher in order to not do this.
-        LayerSpawningResources::setup(world);
-        LayerComponentStorages::setup(world);
+        SpriteSequenceSpawningResources::setup(world);
+        SpriteSequenceComponentStorages::setup(world);
 
         {
             let asset_id_mappings = world.read_resource::<AssetIdMappings>();
@@ -42,33 +42,33 @@ impl LayerEntitySpawner {
                     asset_id,
                 )
             });
-            debug!("Spawning layers for asset: `{}`.", asset_slug);
+            debug!("Spawning sprite sequences for asset: `{}`.", asset_slug);
         }
 
         Self::spawn_system(
-            &LayerSpawningResources::fetch(&world),
-            &mut LayerComponentStorages::fetch(&world),
+            &SpriteSequenceSpawningResources::fetch(&world),
+            &mut SpriteSequenceComponentStorages::fetch(&world),
             asset_id,
         )
     }
 
-    /// Spawns entities for each of the layers in a map.
+    /// Spawns entities for each of the sprite sequences of an asset.
     ///
     /// # Parameters
     ///
     /// * `map_spawning_resources`: Resources to construct the map with.
-    /// * `map_layer_component_storages`: Component storages for the spawned entities.
-    /// * `asset_id`: Asset ID of the map whose layers to spawn.
+    /// * `map_sprite_sequence_component_storages`: Component storages for the spawned entities.
+    /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_system<'res, 's>(
-        LayerSpawningResources {
+        SpriteSequenceSpawningResources {
             entities,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            asset_layer_positions,
+            asset_sprite_positions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
-        }: &LayerSpawningResources<'res>,
-        LayerComponentStorages {
+        }: &SpriteSequenceSpawningResources<'res>,
+        SpriteSequenceComponentStorages {
             transparents,
             transforms,
             waits,
@@ -80,39 +80,39 @@ impl LayerEntitySpawner {
             sprite_renders,
             wait_sequence_handles,
             sprite_render_sequence_handles,
-        }: &mut LayerComponentStorages<'s>,
+        }: &mut SpriteSequenceComponentStorages<'s>,
         asset_id: AssetId,
     ) -> Vec<Entity> {
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
             asset_sprite_render_sequence_handles.get(asset_id);
-        let layer_positions = asset_layer_positions.get(asset_id);
+        let sprite_positions = asset_sprite_positions.get(asset_id);
 
-        // Spawn map layer entities
+        // Spawn sprite sequence entities
         if let (
             Some(asset_wait_sequence_handles),
             Some(asset_sprite_render_sequence_handles),
-            Some(layer_positions),
+            Some(sprite_positions),
         ) = (
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            layer_positions,
+            sprite_positions,
         ) {
-            layer_positions
+            sprite_positions
                 .iter()
                 .zip(asset_wait_sequence_handles.iter())
                 .zip(asset_sprite_render_sequence_handles.iter())
                 .map(
-                    |((layer_position, wait_sequence_handle), sprite_render_sequence_handle)| {
+                    |((sprite_position, wait_sequence_handle), sprite_render_sequence_handle)| {
                         let entity = entities.create();
 
                         let mut transform = Transform::default();
                         transform.set_translation(Vector3::new(
-                            f32::from_i32(layer_position.x)
+                            f32::from_i32(sprite_position.x)
                                 .expect("Failed to convert i32 into `f32`."),
-                            f32::from_i32(layer_position.y - layer_position.z)
+                            f32::from_i32(sprite_position.y - sprite_position.z)
                                 .expect("Failed to convert i32 into `f32`."),
-                            f32::from_i32(layer_position.z)
+                            f32::from_i32(sprite_position.z)
                                 .expect("Failed to convert i32 into `f32`."),
                         ));
 

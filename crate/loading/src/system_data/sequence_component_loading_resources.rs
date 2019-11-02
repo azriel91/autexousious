@@ -5,7 +5,6 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
-use background_model::loaded::AssetLayerPositions;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -22,7 +21,9 @@ use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAcce
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
-use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
+use sprite_model::loaded::{
+    AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpriteRenderSequence,
+};
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
@@ -116,9 +117,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
-    /// `AssetLayerPositions` resource.
+    /// `AssetSpritePositions` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_layer_positions: Write<'s, AssetLayerPositions>,
+    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
 
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
@@ -207,9 +208,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
-    /// `AssetLayerPositions` resource.
+    /// `AssetSpritePositions` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_layer_positions: Read<'s, AssetLayerPositions>,
+    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
 
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
