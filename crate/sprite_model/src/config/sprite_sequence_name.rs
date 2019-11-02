@@ -26,6 +26,7 @@ use typename_derive::TypeName;
 pub enum SpriteSequenceName {
     /// Minimum variant.
     #[derivative(Default)]
+    #[serde(skip)]
     Unused,
 }
 

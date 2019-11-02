@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test {
     use background_model::config::BackgroundDefinition;
+    use indexmap::IndexMap;
     use sequence_model::config::{Sequence, SequenceEndTransition, Wait};
     use serde_yaml;
     use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef, SpriteSequence};
@@ -19,13 +20,15 @@ header:
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
 
 layers:
-  - position: { x: 1, y: 4 } # missing z
+  zero:
+    position: { x: 1, y: 4 } # missing z
     frames: [
       { wait: 7, sprite: { sheet: 0, index: 0 } },
       { wait: 7, sprite: { sheet: 0, index: 1 } },
     ]
 
-  - position: { x: -1, y: -2, z: -3 }
+  one:
+    position: { x: -1, y: -2, z: -3 }
     frames: [{ wait: 1, sprite: { sheet: 0, index: 0 } }]
 "#;
 
@@ -65,7 +68,9 @@ layers:
                 vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
             ),
         );
-        let layers = vec![layer_0, layer_1];
+        let mut layers = IndexMap::new();
+        layers.insert(String::from("zero"), layer_0);
+        layers.insert(String::from("one"), layer_1);
         let expected = MapDefinition::new(header, BackgroundDefinition::new(layers));
 
         assert_eq!(expected, map_definition);

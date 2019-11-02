@@ -1,5 +1,6 @@
 use asset_derive::Asset;
 use derive_new::new;
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteSequence;
 
@@ -8,5 +9,5 @@ use sprite_model::config::SpriteSequence;
 pub struct BackgroundDefinition {
     /// Sprite layers to draw.
     #[serde(default)]
-    pub layers: Vec<SpriteSequence>,
+    pub layers: IndexMap<String, SpriteSequence>,
 }

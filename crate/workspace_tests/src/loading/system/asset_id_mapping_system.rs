@@ -12,13 +12,17 @@ mod tests {
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     };
-    use assets_test::{CHAR_BAT_SLUG, ENERGY_SQUARE_SLUG, UI_CHARACTER_SELECTION_SLUG};
+    use assets_test::{
+        CHAR_BAT_SLUG, ENERGY_SQUARE_SLUG, MAP_EMPTY_SLUG, UI_CHARACTER_SELECTION_SLUG,
+    };
     use background_loading::BackgroundLoadingBundle;
     use background_model::config::BackgroundDefinition;
     use character_loading::CharacterLoadingBundle;
     use character_model::config::{CharacterDefinition, CharacterSequenceName};
     use energy_loading::EnergyLoadingBundle;
     use energy_model::config::{EnergyDefinition, EnergySequenceName};
+    use map_loading::MapLoadingBundle;
+    use map_model::config::MapDefinition;
     use object_type::ObjectType;
     use sequence_model::{
         config::SequenceNameString,
@@ -262,6 +266,37 @@ mod tests {
     }
 
     #[test]
+    fn maps_map_ids() -> Result<(), Error> {
+        let map_definition =
+            load_yaml!("asset_id_mapping_system_map_definition.yaml", MapDefinition);
+
+        run_test(
+            SetupParams {
+                asset_paramses: vec![AssetParams {
+                    asset_slug: MAP_EMPTY_SLUG.clone(),
+                    asset_type: AssetType::Map,
+                    fn_insert_definition: Box::new(
+                        |loader, definition_loading_resources, asset_id| {
+                            let DefinitionLoadingResources {
+                                map_definition_assets,
+                                asset_map_definition_handle,
+                                ..
+                            } = definition_loading_resources;
+
+                            let map_definition_handle =
+                                loader.load_from_data(map_definition, (), map_definition_assets);
+                            asset_map_definition_handle.insert(asset_id, map_definition_handle);
+                        },
+                    ),
+                }],
+            },
+            ExpectedParams {
+                fn_assertions: vec![assert_map_ids_mapped],
+            },
+        )
+    }
+
+    #[test]
     fn inserts_empty_ui_mappings() -> Result<(), Error> {
         run_test(
             SetupParams {
@@ -395,6 +430,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(BackgroundLoadingBundle::new())
             .with_bundle(UiLoadingBundle::new())
             .with_setup(<AssetIdMappingSystem as System<'_>>::SystemData::setup)
@@ -564,6 +600,31 @@ mod tests {
         assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
     }
 
+    fn assert_map_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
+        let IdMappingResources {
+            asset_sequence_id_mappings_sprite,
+            ..
+        } = id_mapping_resources;
+
+        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
+
+        assert!(sequence_id_mappings.is_some());
+
+        let sequence_id_mappings = sequence_id_mappings
+            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
+        let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
+        sequence_id_mappings_expected.insert(
+            SequenceNameString::String(String::from("zero")),
+            SequenceId(0),
+        );
+        sequence_id_mappings_expected.insert(
+            SequenceNameString::String(String::from("one")),
+            SequenceId(1),
+        );
+
+        assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
+    }
+
     fn assert_no_ui_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
         let IdMappingResources {
             asset_sequence_id_mappings_ui,
@@ -598,11 +659,11 @@ mod tests {
             sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
         let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
         sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("background_layer_0")),
+            SequenceNameString::String(String::from("zero")),
             SequenceId(0),
         );
         sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("background_layer_1")),
+            SequenceNameString::String(String::from("one")),
             SequenceId(1),
         );
 
@@ -655,11 +716,11 @@ mod tests {
             sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
         let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
         sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("background_layer_0")),
+            SequenceNameString::String(String::from("zero")),
             SequenceId(0),
         );
         sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("background_layer_1")),
+            SequenceNameString::String(String::from("one")),
             SequenceId(1),
         );
         sequence_id_mappings_expected.insert(

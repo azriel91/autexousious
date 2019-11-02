@@ -28,7 +28,6 @@ lazy_static! {
         let (width, height, depth) = (800, 600, 200);
         let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
         let header = MapHeader::new("Blank Screen".to_string(), bounds);
-        let layers = Vec::new();
-        MapDefinition::new(header, BackgroundDefinition::new(layers))
+        MapDefinition::new(header, BackgroundDefinition::default())
     };
 }

@@ -17,7 +17,7 @@ use object_type::ObjectType;
 use sequence_loading::{
     SequenceEndTransitionMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
-use sequence_model::loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequenceHandles};
+use sequence_model::loaded::{SequenceEndTransitions, WaitSequenceHandles};
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
 use sprite_model::{
     config::{SpriteFrame, SpritePosition},
@@ -48,7 +48,7 @@ impl AssetSequenceComponentLoader {
         let sprite_positions = {
             let capacity = background_definition.layers.len();
             let sequence_handles = Vec::<SpritePosition>::with_capacity(capacity);
-            let sprite_positions = background_definition.layers.iter().fold(
+            let sprite_positions = background_definition.layers.values().fold(
                 sequence_handles,
                 |mut sprite_positions, layer| {
                     sprite_positions.push(layer.position);
@@ -309,12 +309,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 let background_definition = &map_definition.background;
                 if let Some(sprite_sheet_handles) = sprite_sheet_handles {
                     wait_sequence_handles_loader.load(
-                        background_definition.layers.iter(),
+                        background_definition.layers.values(),
                         |layer| layer.sequence.frames.iter(),
                         asset_id,
                     );
                     sprite_render_sequence_handles_loader.load(
-                        background_definition.layers.iter(),
+                        background_definition.layers.values(),
                         |layer| layer.sequence.frames.iter(),
                         asset_id,
                         sprite_sheet_handles,
@@ -402,7 +402,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     let mut wait_sequence_handles = Vec::new();
 
                     if let Some(background_definition) = background_definition {
-                        wait_sequence_handles.extend(background_definition.layers.iter().map(
+                        wait_sequence_handles.extend(background_definition.layers.values().map(
                             |layer| {
                                 wait_sequence_loader
                                     .load(|frame| frame.wait, layer.sequence.frames.iter())
@@ -442,7 +442,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         if let Some(background_definition) = background_definition {
                             sprite_render_sequence_handles.extend(
-                                background_definition.layers.iter().map(|layer| {
+                                background_definition.layers.values().map(|layer| {
                                     sprite_render_sequence_loader.load(
                                         sprite_frame_to_sprite_render,
                                         layer.sequence.frames.iter(),
@@ -471,10 +471,9 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     let mut sequence_end_transitions = Vec::new();
 
                     if let Some(background_definition) = background_definition {
-                        sequence_end_transitions.extend(background_definition.layers.iter().map(
-                            |_layer| {
-                                // TODO: Support `SequenceEndTransitions` in background definition.
-                                SequenceEndTransition::Repeat
+                        sequence_end_transitions.extend(background_definition.layers.values().map(
+                            |layer| {
+                                sequence_end_transition_mapper_ui.map_disparate(asset_id, layer)
                             },
                         ));
                     }
