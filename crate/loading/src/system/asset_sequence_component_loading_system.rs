@@ -17,8 +17,10 @@ use map_model::loaded::Margins;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
-use sequence_loading::{WaitSequenceHandlesLoader, WaitSequenceLoader};
-use sequence_model::loaded::WaitSequenceHandles;
+use sequence_loading::{
+    SequenceEndTransitionMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
+};
+use sequence_model::loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequenceHandles};
 use sprite_loading::{SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader};
 use sprite_model::{config::SpriteFrame, loaded::SpriteRenderSequenceHandles};
 use typename_derive::TypeName;
@@ -180,6 +182,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         let mut sprite_render_sequence_handles_loader = SpriteRenderSequenceHandlesLoader {
             sprite_render_sequence_loader,
             asset_sprite_render_sequence_handles,
+        };
+
+        let sequence_end_transition_mapper_ui = SequenceEndTransitionMapper {
+            asset_sequence_id_mappings: asset_sequence_id_mappings_ui,
         };
 
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
@@ -457,6 +463,28 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     asset_sprite_render_sequence_handles
                         .insert(asset_id, sprite_render_sequence_handles);
                 }
+
+                let sequence_end_transitions = {
+                    let mut sequence_end_transitions = Vec::new();
+
+                    if let Some(background_definition) = background_definition {
+                        sequence_end_transitions.extend(background_definition.layers.iter().map(
+                            |_layer| {
+                                // TODO: Support `SequenceEndTransitions` in background definition.
+                                SequenceEndTransition::Repeat
+                            },
+                        ));
+                    }
+
+                    if let Some(ui_definition) = ui_definition {
+                        sequence_end_transitions.extend(ui_definition.sequences.values().map(
+                            |sequence| sequence_end_transition_mapper_ui.map(asset_id, sequence),
+                        ));
+                    };
+
+                    SequenceEndTransitions::new(sequence_end_transitions)
+                };
+                asset_sequence_end_transitions.insert(asset_id, sequence_end_transitions);
             }
         }
     }
