@@ -2,12 +2,12 @@ use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
     ecs::{Join, Read, ReadStorage, System, World, WriteStorage},
-    renderer::{camera::Camera, SpriteRender, SpriteSheet},
+    renderer::{SpriteRender, SpriteSheet},
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
-use kinematic_model::config::Position;
+use kinematic_model::{config::Position, play::PositionZAsY};
 use object_model::play::Mirrored;
 use typename_derive::TypeName;
 
@@ -30,9 +30,9 @@ pub struct ObjectTransformUpdateSystemData<'s> {
     /// `SpriteRender` components.
     #[derivative(Debug = "ignore")]
     pub sprite_renders: ReadStorage<'s, SpriteRender>,
-    /// `Camera` components.
+    /// `PositionZAsY` components.
     #[derivative(Debug = "ignore")]
-    pub cameras: ReadStorage<'s, Camera>,
+    pub position_z_as_ys: ReadStorage<'s, PositionZAsY>,
     /// `SpriteSheet` assets.
     #[derivative(Debug = "ignore")]
     pub sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
@@ -50,16 +50,16 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
             positions,
             mirroreds,
             sprite_renders,
-            cameras,
+            position_z_as_ys,
             sprite_sheet_assets,
             mut transforms,
         }: Self::SystemData,
     ) {
-        for (position, mirrored, sprite_render, camera, transform) in (
+        for (position, mirrored, sprite_render, position_z_as_y, transform) in (
             &positions,
             mirroreds.maybe(),
             sprite_renders.maybe(),
-            cameras.maybe(),
+            position_z_as_ys.maybe(),
             &mut transforms,
         )
             .join()
@@ -79,12 +79,12 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
                 transform.set_translation_x(position.x);
             }
 
-            if camera.is_some() {
-                transform.set_translation_y(position.y);
-            } else {
+            if position_z_as_y.is_some() {
                 // We subtract z from the y translation as the z axis increases "out of the screen".
                 // Entities that have a larger Z value are transformed downwards.
                 transform.set_translation_y(position.y - position.z);
+            } else {
+                transform.set_translation_y(position.y);
             }
             transform.set_translation_z(position.z);
         }
