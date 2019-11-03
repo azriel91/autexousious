@@ -79,9 +79,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = AppDir::assets()?;
 
     let game_mode_selection_state =
-        GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new())
-            .with_bundle(GameModeSelectionUiBundle::new())
-            .build();
+        GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
@@ -112,6 +110,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
+            .with_bundle(GameModeSelectionUiBundle::new())?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
                 GameInputStdioBundle::new()
