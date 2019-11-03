@@ -1,6 +1,5 @@
-use sequence_model::config::Sequence;
-use sprite_model::config::SpriteFrame;
+use sprite_model::config::SpriteSequence;
 use ui_model_spi::config::UiSequenceName;
 
-/// Plain sequence of `SpriteFrame`s.
-pub type UiSequence = Sequence<UiSequenceName, SpriteFrame>;
+/// Sequence of `SpriteFrame`s.
+pub type UiSequence = SpriteSequence<UiSequenceName>;

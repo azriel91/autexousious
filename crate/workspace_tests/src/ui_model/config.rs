@@ -4,9 +4,9 @@ mod test {
 
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
-    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
-    use sprite_model::config::{SpriteFrame, SpriteRef};
+    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
     use ui_model_spi::config::UiSequenceName;
 
@@ -26,16 +26,19 @@ menu:
 sequences:
   start_game_inactive:
     next: "none"
+    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
   active:
     next: "repeat"
+    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
   exit_inactive:
     next: "none"
+    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 "#;
@@ -59,19 +62,29 @@ sequences:
                 ),
             ),
         ]));
+        let sprite_position = SpritePosition::new(-1, -2, -3);
         let sequences = {
             let mut sequences = IndexMap::new();
             sequences.insert(
                 SequenceNameString::String(String::from("start_game_inactive")),
-                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+                UiSequence::new(
+                    sprite_position,
+                    Sequence::new(SequenceEndTransition::None, sprite_frames()),
+                ),
             );
             sequences.insert(
                 SequenceNameString::Name(UiSequenceName::Active),
-                UiSequence::new(SequenceEndTransition::Repeat, sprite_frames()),
+                UiSequence::new(
+                    sprite_position,
+                    Sequence::new(SequenceEndTransition::Repeat, sprite_frames()),
+                ),
             );
             sequences.insert(
                 SequenceNameString::String(String::from("exit_inactive")),
-                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+                UiSequence::new(
+                    sprite_position,
+                    Sequence::new(SequenceEndTransition::None, sprite_frames()),
+                ),
             );
             UiSequences::new(sequences)
         };

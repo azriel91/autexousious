@@ -414,7 +414,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         wait_sequence_handles.extend(ui_definition.sequences.values().map(
                             |sequence| {
                                 wait_sequence_loader
-                                    .load(|frame| frame.wait, sequence.frames.iter())
+                                    .load(|frame| frame.wait, sequence.sequence.frames.iter())
                             },
                         ));
                     };
@@ -454,8 +454,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         if let Some(ui_definition) = ui_definition {
                             sprite_render_sequence_handles.extend(
                                 ui_definition.sequences.values().map(|sequence| {
-                                    sprite_render_sequence_loader
-                                        .load(sprite_frame_to_sprite_render, sequence.frames.iter())
+                                    sprite_render_sequence_loader.load(
+                                        sprite_frame_to_sprite_render,
+                                        sequence.sequence.frames.iter(),
+                                    )
                                 }),
                             );
                         }
