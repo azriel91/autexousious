@@ -1,8 +1,7 @@
-use derive_deref::{Deref, DerefMut};
-use derive_new::new;
+use sequence_model_derive::sequence_component_data;
 
 use crate::config::SpritePosition;
 
-/// Positions of each sprite sequence in the background.
-#[derive(Clone, Debug, Deref, DerefMut, PartialEq, new)]
-pub struct SpritePositions(pub Vec<SpritePosition>);
+/// Sequence of `SpritePosition`s.
+#[sequence_component_data(SpritePosition)]
+pub struct SpritePositions;

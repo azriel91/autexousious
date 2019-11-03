@@ -1,8 +1,9 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Position of a sprite on a background.
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Component, Copy, Debug, Default, Deserialize, PartialEq, Eq, Serialize, new)]
 #[serde(default)]
 pub struct SpritePosition {
     /// X coordinate of the sprite on the background.
