@@ -28,3 +28,12 @@ where
         &self.sequence
     }
 }
+
+impl<SeqName> AsRef<SpritePosition> for SpriteSequence<SeqName>
+where
+    SeqName: SequenceName,
+{
+    fn as_ref(&self) -> &SpritePosition {
+        &self.position
+    }
+}

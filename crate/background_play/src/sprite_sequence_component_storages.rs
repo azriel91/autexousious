@@ -4,21 +4,32 @@ use amethyst::{
     renderer::{transparent::Transparent, SpriteRender},
     shred::{ResourceId, SystemData},
 };
+use asset_model::loaded::AssetId;
 use derivative::Derivative;
+use kinematic_model::config::Position;
 use sequence_model::{
     config::Wait,
     loaded::{SequenceEndTransition, SequenceId, WaitSequenceHandle},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use sprite_model::loaded::SpriteRenderSequenceHandle;
+use sprite_model::{config::SpritePosition, loaded::SpriteRenderSequenceHandle};
 
 /// `SpriteSequence` component storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct SpriteSequenceComponentStorages<'s> {
+    /// `AssetId` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_ids: WriteStorage<'s, AssetId>,
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
+    /// `SpritePosition` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_positions: WriteStorage<'s, SpritePosition>,
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: WriteStorage<'s, Position<f32>>,
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,

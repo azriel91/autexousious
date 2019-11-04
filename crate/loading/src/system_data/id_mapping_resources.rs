@@ -36,13 +36,13 @@ pub struct IdMappingResources<'s> {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct IdMappingResourcesRead<'s> {
+    /// `AssetSequenceIdMappings<SpriteSequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_sprite: Read<'s, AssetSequenceIdMappings<SpriteSequenceName>>,
     /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_id_mappings_character:
         Read<'s, AssetSequenceIdMappings<CharacterSequenceName>>,
-    /// `AssetSequenceIdMappings<SpriteSequenceName>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_id_mappings_sprite: Read<'s, AssetSequenceIdMappings<SpriteSequenceName>>,
     /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_id_mappings_energy: Read<'s, AssetSequenceIdMappings<EnergySequenceName>>,

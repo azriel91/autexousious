@@ -1,8 +1,5 @@
 use amethyst::{
-    core::{
-        math::Vector3,
-        transform::{Parent, Transform},
-    },
+    core::transform::Parent,
     ecs::{Entities, Entity, Join, Read, ReadExpect, System, World, WriteStorage},
     renderer::Transparent,
     shred::{ResourceId, SystemData},
@@ -12,7 +9,6 @@ use amethyst::{
 use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::{AssetId, AssetIdMappings};
-use camera_model::play::CameraZoomDimensions;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -20,7 +16,6 @@ use game_input_model::{ControllerId, InputConfig};
 use game_mode_selection_model::{
     GameModeIndex, GameModeSelectionEntity, GameModeSelectionEntityId,
 };
-use kinematic_model::config::Position;
 use log::debug;
 use sequence_model::{
     loaded::SequenceId,
@@ -66,9 +61,6 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
-    /// `CameraZoomDimensions` resource.
-    #[derivative(Debug = "ignore")]
-    pub camera_zoom_dimensions: Read<'s, CameraZoomDimensions>,
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,
@@ -78,13 +70,6 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
-    /// `Position<f32>` components.
-    #[derivative(Debug = "ignore")]
-    pub positions: WriteStorage<'s, Position<f32>>,
-    /// `Transform` components.
-    #[derivative(Debug = "ignore")]
-    pub transforms: WriteStorage<'s, Transform>,
-    /// `FrameIndexClock` components.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
     /// `FrameWaitClock` components.
@@ -131,12 +116,9 @@ impl GameModeSelectionWidgetUiSystem {
         GameModeSelectionWidgetUiSystemData {
             entities,
             asset_ui_menu_items,
-            camera_zoom_dimensions,
             asset_ids,
             sequence_ids,
             transparents,
-            positions,
-            transforms,
             frame_index_clocks,
             frame_wait_clocks,
             theme,
@@ -176,13 +158,6 @@ impl GameModeSelectionWidgetUiSystem {
                             - (item_count as f32 * LABEL_HEIGHT / 2.);
                         let z = 1.;
 
-                        let translation = Vector3::new(
-                            x + camera_zoom_dimensions.width / 2.,
-                            y + camera_zoom_dimensions.height / 2.,
-                            z,
-                        );
-                        let position = Position::from(translation);
-                        let transform = Transform::from(translation);
                         let ui_transform = UiTransform::new(
                             index.to_string(),
                             Anchor::Middle,
@@ -222,8 +197,6 @@ impl GameModeSelectionWidgetUiSystem {
                             .with(ui_menu_item.sequence_id, sequence_ids)
                             .with(asset_id, asset_ids)
                             .with(Transparent, transparents)
-                            .with(position, positions)
-                            .with(transform, transforms)
                             .with(FrameIndexClock::new(1), frame_index_clocks)
                             .with(FrameWaitClock::new(1), frame_wait_clocks)
                             .build()

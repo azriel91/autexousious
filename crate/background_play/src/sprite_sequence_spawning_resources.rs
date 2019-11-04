@@ -4,7 +4,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use sequence_model::loaded::{AssetWaitSequenceHandles, WaitSequence};
+use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use sprite_model::loaded::{
     AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpriteRenderSequence,
 };
@@ -25,6 +25,9 @@ pub struct SpriteSequenceSpawningResources<'s> {
     /// `AssetSpritePositions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    /// `AssetSequenceEndTransitions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_end_transitions: Read<'s, AssetSequenceEndTransitions>,
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,

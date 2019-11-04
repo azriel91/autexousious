@@ -4,6 +4,7 @@
 
 pub use crate::{
     sprite_loader::SpriteLoader, sprite_loading_bundle::SpriteLoadingBundle,
+    sprite_positions_loader::SpritePositionsLoader,
     sprite_render_sequence_handles_loader::SpriteRenderSequenceHandlesLoader,
     sprite_render_sequence_loader::SpriteRenderSequenceLoader,
     sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
@@ -12,6 +13,7 @@ pub use crate::{
 
 mod sprite_loader;
 mod sprite_loading_bundle;
+mod sprite_positions_loader;
 mod sprite_render_sequence_handles_loader;
 mod sprite_render_sequence_loader;
 mod sprite_sheet_loader;
