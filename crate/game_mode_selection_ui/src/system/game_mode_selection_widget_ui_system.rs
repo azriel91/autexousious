@@ -276,68 +276,69 @@ impl GameModeSelectionWidgetUiSystem {
                         .with(ControllerInput::default(), controller_inputs)
                         .build();
                 });
+
+                // Instructions label
+                //
+                // Need to create a container to left justify everything.
+                let container_height = LABEL_HEIGHT_HELP * 5.;
+                let container_entity = {
+                    let ui_transform = UiTransform::new(
+                        String::from("game_mode_selection_instructions"),
+                        Anchor::BottomMiddle,
+                        Anchor::BottomMiddle,
+                        0.,
+                        0.,
+                        1.,
+                        LABEL_WIDTH,
+                        container_height,
+                    );
+
+                    entities
+                        .build_entity()
+                        .with(
+                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
+                            game_mode_selection_entities,
+                        )
+                        .with(ui_transform, ui_transforms)
+                        .build()
+                };
+                vec![
+                    String::from("Press `Up` / `Down` to select game mode. -----"),
+                    String::from("Press `Attack` to confirm selection. ---------"),
+                    String::from(""),
+                    String::from("See `resources/input_config.ron` for controls."),
+                ]
+                .into_iter()
+                .enumerate()
+                .for_each(|(index, string)| {
+                    let ui_transform = UiTransform::new(
+                        format!("game_mode_selection_instructions#{}", index),
+                        Anchor::TopLeft,
+                        Anchor::TopLeft,
+                        0.,
+                        -LABEL_HEIGHT_HELP * index as f32,
+                        1.,
+                        LABEL_WIDTH,
+                        LABEL_HEIGHT_HELP,
+                    );
+
+                    let ui_text =
+                        UiText::new(font.clone(), string, FONT_COLOUR_HELP, FONT_SIZE_HELP);
+
+                    let parent = Parent::new(container_entity);
+
+                    entities
+                        .build_entity()
+                        .with(
+                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
+                            game_mode_selection_entities,
+                        )
+                        .with(ui_transform, ui_transforms)
+                        .with(ui_text, ui_texts)
+                        .with(parent, parents)
+                        .build();
+                });
             }
-
-            // Instructions label
-            //
-            // Need to create a container to left justify everything.
-            let container_height = LABEL_HEIGHT_HELP * 5.;
-            let container_entity = {
-                let ui_transform = UiTransform::new(
-                    String::from("game_mode_selection_instructions"),
-                    Anchor::BottomMiddle,
-                    Anchor::BottomMiddle,
-                    0.,
-                    0.,
-                    1.,
-                    LABEL_WIDTH,
-                    container_height,
-                );
-
-                entities
-                    .build_entity()
-                    .with(
-                        GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                        game_mode_selection_entities,
-                    )
-                    .with(ui_transform, ui_transforms)
-                    .build()
-            };
-            vec![
-                String::from("Press `Up` / `Down` to select game mode. -----"),
-                String::from("Press `Attack` to confirm selection. ---------"),
-                String::from(""),
-                String::from("See `resources/input_config.ron` for controls."),
-            ]
-            .into_iter()
-            .enumerate()
-            .for_each(|(index, string)| {
-                let ui_transform = UiTransform::new(
-                    format!("game_mode_selection_instructions#{}", index),
-                    Anchor::TopLeft,
-                    Anchor::TopLeft,
-                    0.,
-                    -LABEL_HEIGHT_HELP * index as f32,
-                    1.,
-                    LABEL_WIDTH,
-                    LABEL_HEIGHT_HELP,
-                );
-
-                let ui_text = UiText::new(font.clone(), string, FONT_COLOUR_HELP, FONT_SIZE_HELP);
-
-                let parent = Parent::new(container_entity);
-
-                entities
-                    .build_entity()
-                    .with(
-                        GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                        game_mode_selection_entities,
-                    )
-                    .with(ui_transform, ui_transforms)
-                    .with(ui_text, ui_texts)
-                    .with(parent, parents)
-                    .build();
-            });
         }
     }
 
