@@ -5,7 +5,8 @@ use amethyst::{
 };
 use asset_model::loaded::AssetIdMappings;
 use background_play::{
-    SpriteSequenceComponentStorages, SpriteSequenceEntitySpawner, SpriteSequenceSpawningResources,
+    BackgroundLayerComponentStorages, BackgroundLayerEntitySpawner,
+    BackgroundLayerSpawningResources,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -39,10 +40,10 @@ pub struct StateUiSpawnSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
-    /// `SpriteSequenceSpawningResources`.
-    pub sprite_sequence_spawning_resources: SpriteSequenceSpawningResources<'s>,
-    /// `SpriteSequenceComponentStorages`.
-    pub sprite_sequence_component_storages: SpriteSequenceComponentStorages<'s>,
+    /// `BackgroundLayerSpawningResources`.
+    pub background_layer_spawning_resources: BackgroundLayerSpawningResources<'s>,
+    /// `BackgroundLayerComponentStorages`.
+    pub background_layer_component_storages: BackgroundLayerComponentStorages<'s>,
     /// `LazyUpdate` resource.
     #[derivative(Debug = "ignore")]
     pub lazy_update: Read<'s, LazyUpdate>,
@@ -58,8 +59,8 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             state_id_update_ec,
             mut state_ui_data,
             asset_id_mappings,
-            sprite_sequence_spawning_resources,
-            mut sprite_sequence_component_storages,
+            background_layer_spawning_resources,
+            mut background_layer_component_storages,
             lazy_update,
         }: Self::SystemData,
     ) {
@@ -74,9 +75,9 @@ impl<'s> System<'s> for StateUiSpawnSystem {
             // Don't panic if there are no assets for the current `StateId`.
             let layer_entities =
                 StateAssetUtils::asset_id(&asset_id_mappings, state_id).map(|asset_id| {
-                    SpriteSequenceEntitySpawner::spawn_system(
-                        &sprite_sequence_spawning_resources,
-                        &mut sprite_sequence_component_storages,
+                    BackgroundLayerEntitySpawner::spawn_system(
+                        &background_layer_spawning_resources,
+                        &mut background_layer_component_storages,
                         asset_id,
                     )
                 });

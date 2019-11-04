@@ -17,7 +17,7 @@ use sprite_model::{config::SpritePosition, loaded::SpriteRenderSequenceHandle};
 /// `SpriteSequence` component storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SpriteSequenceComponentStorages<'s> {
+pub struct BackgroundLayerComponentStorages<'s> {
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,

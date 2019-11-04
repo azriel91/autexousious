@@ -12,7 +12,7 @@ use sprite_model::loaded::{
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SpriteSequenceSpawningResources<'s> {
+pub struct BackgroundLayerSpawningResources<'s> {
     /// `EntitiesRes` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,

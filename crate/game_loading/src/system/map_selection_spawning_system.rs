@@ -3,7 +3,8 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use background_play::{
-    SpriteSequenceComponentStorages, SpriteSequenceEntitySpawner, SpriteSequenceSpawningResources,
+    BackgroundLayerComponentStorages, BackgroundLayerEntitySpawner,
+    BackgroundLayerSpawningResources,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -27,12 +28,12 @@ pub struct MapSelectionSpawningSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: Read<'s, MapSelection>,
-    /// `SpriteSequenceSpawningResources`.
+    /// `BackgroundLayerSpawningResources`.
     #[derivative(Debug = "ignore")]
-    pub sprite_sequence_spawning_resources: SpriteSequenceSpawningResources<'s>,
-    /// `SpriteSequenceComponentStorages`.
+    pub background_layer_spawning_resources: BackgroundLayerSpawningResources<'s>,
+    /// `BackgroundLayerComponentStorages`.
     #[derivative(Debug = "ignore")]
-    pub sprite_sequence_component_storages: SpriteSequenceComponentStorages<'s>,
+    pub background_layer_component_storages: BackgroundLayerComponentStorages<'s>,
     /// `GameEntities` resource.
     #[derivative(Debug = "ignore")]
     pub game_entities: Write<'s, GameEntities>,
@@ -46,8 +47,8 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         MapSelectionSpawningSystemData {
             mut game_loading_status,
             map_selection,
-            sprite_sequence_spawning_resources,
-            mut sprite_sequence_component_storages,
+            background_layer_spawning_resources,
+            mut background_layer_component_storages,
             mut game_entities,
         }: Self::SystemData,
     ) {
@@ -56,9 +57,9 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         }
 
         // TODO: implement Random
-        let map_layer_entities = SpriteSequenceEntitySpawner::spawn_system(
-            &sprite_sequence_spawning_resources,
-            &mut sprite_sequence_component_storages,
+        let map_layer_entities = BackgroundLayerEntitySpawner::spawn_system(
+            &background_layer_spawning_resources,
+            &mut background_layer_component_storages,
             map_selection
                 .asset_id()
                 .expect("Expected `MapSelection` to contain ID."),

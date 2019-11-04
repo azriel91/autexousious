@@ -15,13 +15,13 @@ use sequence_model::{
 use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
-use crate::{SpriteSequenceComponentStorages, SpriteSequenceSpawningResources};
+use crate::{BackgroundLayerComponentStorages, BackgroundLayerSpawningResources};
 
 /// Spawns sprite sequence entities into the world.
 #[derive(Debug)]
-pub struct SpriteSequenceEntitySpawner;
+pub struct BackgroundLayerEntitySpawner;
 
-impl SpriteSequenceEntitySpawner {
+impl BackgroundLayerEntitySpawner {
     /// Spawns entities for each of the sprite sequences of an asset.
     ///
     /// Idea: What if we could spawn two maps at the same time?
@@ -32,8 +32,8 @@ impl SpriteSequenceEntitySpawner {
     /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_world(world: &mut World, asset_id: AssetId) -> Vec<Entity> {
         // Hack: Need to move all systems into main dispatcher in order to not do this.
-        SpriteSequenceSpawningResources::setup(world);
-        SpriteSequenceComponentStorages::setup(world);
+        BackgroundLayerSpawningResources::setup(world);
+        BackgroundLayerComponentStorages::setup(world);
 
         {
             let asset_id_mappings = world.read_resource::<AssetIdMappings>();
@@ -47,8 +47,8 @@ impl SpriteSequenceEntitySpawner {
         }
 
         Self::spawn_system(
-            &SpriteSequenceSpawningResources::fetch(&world),
-            &mut SpriteSequenceComponentStorages::fetch(&world),
+            &BackgroundLayerSpawningResources::fetch(&world),
+            &mut BackgroundLayerComponentStorages::fetch(&world),
             asset_id,
         )
     }
@@ -57,11 +57,11 @@ impl SpriteSequenceEntitySpawner {
     ///
     /// # Parameters
     ///
-    /// * `map_spawning_resources`: Resources to construct the map with.
-    /// * `map_sprite_sequence_component_storages`: Component storages for the spawned entities.
+    /// * `background_layer_spawning_resources`: Resources to construct the map with.
+    /// * `background_layer_component_storages`: Component storages for the spawned entities.
     /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_system<'res, 's>(
-        SpriteSequenceSpawningResources {
+        BackgroundLayerSpawningResources {
             entities,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
@@ -69,8 +69,8 @@ impl SpriteSequenceEntitySpawner {
             asset_sequence_end_transitions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
-        }: &SpriteSequenceSpawningResources<'res>,
-        SpriteSequenceComponentStorages {
+        }: &BackgroundLayerSpawningResources<'res>,
+        BackgroundLayerComponentStorages {
             asset_ids,
             transparents,
             sprite_positions,
@@ -85,7 +85,7 @@ impl SpriteSequenceEntitySpawner {
             sprite_renders,
             wait_sequence_handles,
             sprite_render_sequence_handles,
-        }: &mut SpriteSequenceComponentStorages<'s>,
+        }: &mut BackgroundLayerComponentStorages<'s>,
         asset_id: AssetId,
     ) -> Vec<Entity> {
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
