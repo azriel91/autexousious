@@ -9,7 +9,7 @@ use kinematic_model::config::Position;
 use log::debug;
 use num_traits::FromPrimitive;
 use sequence_model::{
-    loaded::{SequenceId, WaitSequence},
+    loaded::WaitSequence,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sequence_model_spi::loaded::ComponentDataExt;
@@ -63,6 +63,7 @@ impl BackgroundLayerEntitySpawner {
     pub fn spawn_system<'res, 's>(
         BackgroundLayerSpawningResources {
             entities,
+            asset_background_layers,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
             asset_sprite_positions,
@@ -88,6 +89,7 @@ impl BackgroundLayerEntitySpawner {
         }: &mut BackgroundLayerComponentStorages<'s>,
         asset_id: AssetId,
     ) -> Vec<Entity> {
+        let asset_background_layers = asset_background_layers.get(asset_id);
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
             asset_sprite_render_sequence_handles.get(asset_id);
@@ -96,33 +98,31 @@ impl BackgroundLayerEntitySpawner {
 
         // Spawn sprite sequence entities
         if let (
+            Some(asset_background_layers),
             Some(asset_wait_sequence_handles),
             Some(asset_sprite_render_sequence_handles),
             Some(asset_sprite_positions),
             Some(asset_sequence_end_transitions),
         ) = (
+            asset_background_layers,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
             asset_sprite_positions,
             asset_sequence_end_transitions,
         ) {
-            asset_sprite_positions
+            asset_background_layers
                 .iter()
-                .copied()
+                .zip(asset_sprite_positions.iter().copied())
                 .zip(asset_wait_sequence_handles.iter())
                 .zip(asset_sprite_render_sequence_handles.iter())
                 .zip(asset_sequence_end_transitions.iter().copied())
-                .enumerate()
                 .map(
                     |(
-                        index,
                         (
-                            (
-                                (sprite_position, wait_sequence_handle),
-                                sprite_render_sequence_handle,
-                            ),
-                            sequence_end_transition,
+                            ((background_layer, sprite_position), wait_sequence_handle),
+                            sprite_render_sequence_handle,
                         ),
+                        sequence_end_transition,
                     )| {
                         let entity = entities.create();
 
@@ -186,7 +186,7 @@ impl BackgroundLayerEntitySpawner {
                             .insert(entity, transform)
                             .expect("Failed to insert `Transform` component.");
                         sequence_ids
-                            .insert(entity, SequenceId::new(index))
+                            .insert(entity, background_layer.sequence_id)
                             .expect("Failed to insert `SequenceEndTransition` component.");
                         sequence_end_transitions
                             .insert(entity, sequence_end_transition)

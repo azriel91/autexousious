@@ -3,6 +3,7 @@ use amethyst::{
     ecs::{Entities, Read, World},
     shred::{ResourceId, SystemData},
 };
+use background_model::loaded::AssetBackgroundLayers;
 use derivative::Derivative;
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use sprite_model::loaded::{
@@ -16,6 +17,9 @@ pub struct BackgroundLayerSpawningResources<'s> {
     /// `EntitiesRes` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
     /// `AssetWaitSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_wait_sequence_handles: Read<'s, AssetWaitSequenceHandles>,
