@@ -23,6 +23,7 @@ kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 sequence_model = { path = "../sequence_model" }
 shrev_support = { path = "../shrev_support" }
+sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }
 strum = "0.16.0"

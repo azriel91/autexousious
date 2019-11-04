@@ -1,5 +1,8 @@
 use amethyst::{
-    core::transform::Parent,
+    core::{
+        math::Vector3,
+        transform::{Parent, Transform},
+    },
     ecs::{Entities, Entity, Join, Read, ReadExpect, System, World, WriteStorage},
     renderer::Transparent,
     shred::{ResourceId, SystemData},
@@ -22,6 +25,7 @@ use sequence_model::{
     play::{FrameIndexClock, FrameWaitClock},
 };
 use shrev_support::EventChannelExt;
+use sprite_model::{config::SpritePosition, loaded::AssetSpritePositions};
 use state_registry::StateIdUpdateEvent;
 use state_support::StateAssetUtils;
 use typename_derive::TypeName;
@@ -61,6 +65,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
+    /// `AssetSpritePositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,
@@ -70,6 +77,13 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
+    /// `SpritePosition` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_positions: WriteStorage<'s, SpritePosition>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: WriteStorage<'s, Transform>,
+    /// `FrameIndexClock` components.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
     /// `FrameWaitClock` components.
@@ -116,9 +130,12 @@ impl GameModeSelectionWidgetUiSystem {
         GameModeSelectionWidgetUiSystemData {
             entities,
             asset_ui_menu_items,
+            asset_sprite_positions,
             asset_ids,
             sequence_ids,
             transparents,
+            sprite_positions,
+            transforms,
             frame_index_clocks,
             frame_wait_clocks,
             theme,
@@ -145,13 +162,30 @@ impl GameModeSelectionWidgetUiSystem {
                 .expect("Failed to get regular font handle.");
 
             let ui_menu_items = asset_ui_menu_items.get(asset_id);
-            if let Some(ui_menu_items) = ui_menu_items {
+            let asset_sprite_positions = asset_sprite_positions.get(asset_id);
+            if let (Some(ui_menu_items), Some(asset_sprite_positions)) =
+                (ui_menu_items, asset_sprite_positions)
+            {
                 let item_count = ui_menu_items.len();
                 let menu_items = ui_menu_items
                     .iter()
                     .enumerate()
                     .map(|(order, ui_menu_item)| {
                         let index = ui_menu_item.index;
+                        let sequence_id = ui_menu_item.sequence_id;
+                        let sprite_position = asset_sprite_positions
+                            .get(*sequence_id)
+                            .copied()
+                            .unwrap_or_else(|| {
+                                panic!(
+                                    "Expected `SpritePosition` to exist for \
+                                     sequence ID `{:?}` for asset ID `{:?}`",
+                                    sequence_id, asset_id
+                                )
+                            });
+                        let translation = Into::<Vector3<f32>>::into(sprite_position);
+                        let mut transform = Transform::default();
+                        transform.set_translation(translation);
 
                         let x = -LABEL_WIDTH / 2.;
                         let y = ((item_count - order) as f32 * LABEL_HEIGHT)
@@ -194,9 +228,11 @@ impl GameModeSelectionWidgetUiSystem {
                             .with(menu_item_widget_state, menu_item_widget_states)
                             .with(ui_transform, ui_transforms)
                             .with(ui_text, ui_texts)
-                            .with(ui_menu_item.sequence_id, sequence_ids)
+                            .with(sequence_id, sequence_ids)
                             .with(asset_id, asset_ids)
                             .with(Transparent, transparents)
+                            .with(sprite_position, sprite_positions)
+                            .with(transform, transforms)
                             .with(FrameIndexClock::new(1), frame_index_clocks)
                             .with(FrameWaitClock::new(1), frame_wait_clocks)
                             .build()

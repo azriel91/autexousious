@@ -2185,6 +2185,7 @@ dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.14.0",
  "shrev_support 0.15.0",
+ "sprite_model 0.14.0",
  "state_registry 0.14.0",
  "state_support 0.15.0",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",

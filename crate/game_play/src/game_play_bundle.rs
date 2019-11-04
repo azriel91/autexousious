@@ -131,7 +131,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(AssetSpawnsSequenceHandles, SpawnsSequenceHandles);
         sequence_component_update_system!(AssetSequenceEndTransitions, SequenceEndTransitions);
         sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
-        // sequence_component_update_system!(AssetSpritePositions, SpritePositions);
+        sequence_component_update_system!(AssetSpritePositions, SpritePositions);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
