@@ -1,5 +1,14 @@
+use std::{any::type_name, str::FromStr};
+
 use amethyst::renderer::SpriteRender;
-use asset_model::{config::AssetType, loaded::AssetId};
+use asset_model::{
+    config::{AssetSlug, AssetType},
+    loaded::AssetId,
+};
+use background_model::{
+    config::BackgroundDefinition,
+    loaded::{AssetBackgroundLayers, BackgroundLayer, BackgroundLayers},
+};
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::CharacterSequence,
@@ -18,7 +27,10 @@ use sequence_loading::{
     WaitSequenceLoader,
 };
 use sequence_loading_spi::SequenceComponentDataLoader;
-use sequence_model::loaded::{SequenceEndTransitions, WaitSequenceHandles};
+use sequence_model::{
+    config::{SequenceName, SequenceNameString},
+    loaded::{AssetSequenceIdMappings, SequenceEndTransitions, WaitSequenceHandles},
+};
 use sprite_loading::{
     SpritePositionsLoader, SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader,
 };
@@ -41,6 +53,51 @@ pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSeque
 /// `AssetSequenceComponentLoader`.
 #[derive(Debug, TypeName)]
 pub struct AssetSequenceComponentLoader;
+
+impl AssetSequenceComponentLoader {
+    fn load_background_layers<SeqName>(
+        asset_sequence_id_mappings: &AssetSequenceIdMappings<SeqName>,
+        asset_background_layers: &mut AssetBackgroundLayers,
+        asset_slug: &AssetSlug,
+        asset_id: AssetId,
+        background_definition: &BackgroundDefinition,
+    ) where
+        SeqName: SequenceName,
+    {
+        let background_layers = {
+            let sequence_id_mappings =
+                asset_sequence_id_mappings.get(asset_id).unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceIdMappings<{}>` to exist for `{}`.",
+                        type_name::<SeqName>(),
+                        asset_slug
+                    )
+                });
+            let background_layers = background_definition
+                .layers
+                .keys()
+                .map(|sequence_string| {
+                    let sequence = SequenceNameString::from_str(sequence_string)
+                        .expect("Expected `SequenceNameString::from_str` to succeed.");
+                    sequence_id_mappings
+                        .id(&sequence)
+                        .copied()
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Expected `SequenceIdMapping` to exist for \
+                                 sequence `{}` for asset `{}`.",
+                                sequence, asset_slug
+                            )
+                        })
+                })
+                .map(BackgroundLayer::new)
+                .collect::<Vec<BackgroundLayer>>();
+
+            BackgroundLayers::new(background_layers)
+        };
+        asset_background_layers.insert(asset_id, background_layers);
+    }
+}
 
 impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
     const LOAD_STAGE: LoadStage = LoadStage::SequenceComponentLoading;
@@ -124,9 +181,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_interactions_sequence_handles,
             asset_spawns_sequence_handles,
             asset_character_cts_handles,
+            asset_background_layers,
+            asset_sprite_positions,
             asset_map_bounds,
             asset_margins,
-            asset_sprite_positions,
             asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
@@ -312,6 +370,15 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         sprite_sheet_handles,
                     );
                     sprite_positions_loader.load(background_definition.layers.values(), asset_id);
+
+                    // Background layers.
+                    Self::load_background_layers(
+                        asset_sequence_id_mappings_sprite,
+                        asset_background_layers,
+                        asset_slug,
+                        asset_id,
+                        background_definition,
+                    );
                 }
 
                 sequence_end_transitions_loader
@@ -453,6 +520,15 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         layer.sequence.frames.iter(),
                                     )
                                 }),
+                            );
+
+                            // Background layers.
+                            Self::load_background_layers(
+                                asset_sequence_id_mappings_ui,
+                                asset_background_layers,
+                                asset_slug,
+                                asset_id,
+                                background_definition,
                             );
                         }
 

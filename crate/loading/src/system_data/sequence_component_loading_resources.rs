@@ -5,6 +5,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
+use background_model::loaded::AssetBackgroundLayers;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -111,15 +112,19 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
 
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Write<'s, AssetBackgroundLayers>,
+    /// `AssetSpritePositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
+
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Write<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
-    /// `AssetSpritePositions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
 
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
@@ -202,15 +207,19 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
 
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
+    /// `AssetSpritePositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
-    /// `AssetSpritePositions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
 
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]

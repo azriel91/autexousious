@@ -112,10 +112,17 @@ impl BackgroundLayerEntitySpawner {
                 .zip(asset_wait_sequence_handles.iter())
                 .zip(asset_sprite_render_sequence_handles.iter())
                 .zip(asset_sequence_end_transitions.iter().copied())
+                .enumerate()
                 .map(
                     |(
-                        ((sprite_position, wait_sequence_handle), sprite_render_sequence_handle),
-                        sequence_end_transition,
+                        index,
+                        (
+                            (
+                                (sprite_position, wait_sequence_handle),
+                                sprite_render_sequence_handle,
+                            ),
+                            sequence_end_transition,
+                        ),
                     )| {
                         let entity = entities.create();
 
@@ -179,7 +186,7 @@ impl BackgroundLayerEntitySpawner {
                             .insert(entity, transform)
                             .expect("Failed to insert `Transform` component.");
                         sequence_ids
-                            .insert(entity, SequenceId::default())
+                            .insert(entity, SequenceId::new(index))
                             .expect("Failed to insert `SequenceEndTransition` component.");
                         sequence_end_transitions
                             .insert(entity, sequence_end_transition)
