@@ -5,11 +5,10 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use map_model::{config::MapDefinition, loaded::Map};
+use map_model::config::MapDefinition;
 
 /// Adds the following `System`s to the `World`:
 ///
-/// * `Processor<Map>`
 /// * `Processor<MapDefinition>`
 #[derive(Debug, new)]
 pub struct MapLoadingBundle;
@@ -24,11 +23,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
             Processor::<MapDefinition>::new(),
             "map_definition_processor",
             &[],
-        );
-        builder.add(
-            Processor::<Map>::new(),
-            "map_processor",
-            &["map_definition_processor"],
         );
         Ok(())
     }

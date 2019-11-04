@@ -14,14 +14,16 @@ mod tests {
     };
     use assets_test::{
         CHAR_BAT_PATH, CHAR_BAT_SLUG, ENERGY_SQUARE_PATH, ENERGY_SQUARE_SLUG, MAP_FADE_PATH,
-        MAP_FADE_SLUG,
+        MAP_FADE_SLUG, UI_CHARACTER_SELECTION_PATH, UI_CHARACTER_SELECTION_SLUG,
     };
+    use background_model::config::BackgroundDefinition;
     use character_model::config::CharacterDefinition;
     use energy_model::config::EnergyDefinition;
     use loading_model::loaded::LoadStage;
     use map_model::config::MapDefinition;
     use object_type::ObjectType;
     use slotmap::SecondaryMap;
+    use ui_model::config::UiDefinition;
 
     use loading::{
         AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetLoadingResources,
@@ -37,6 +39,7 @@ mod tests {
                 asset_type: AssetType::Object(ObjectType::Character),
             },
             ExpectedParams {
+                is_complete_pre_load: false,
                 fn_assertion: |definition_loading_resources, asset_id| {
                     let DefinitionLoadingResources {
                         character_definition_assets,
@@ -69,6 +72,7 @@ mod tests {
                 asset_type: AssetType::Object(ObjectType::Energy),
             },
             ExpectedParams {
+                is_complete_pre_load: false,
                 fn_assertion: |definition_loading_resources, asset_id| {
                     let DefinitionLoadingResources {
                         energy_definition_assets,
@@ -99,6 +103,7 @@ mod tests {
                 asset_type: AssetType::Map,
             },
             ExpectedParams {
+                is_complete_pre_load: false,
                 fn_assertion: |definition_loading_resources, asset_id| {
                     let DefinitionLoadingResources {
                         map_definition_assets,
@@ -120,19 +125,57 @@ mod tests {
         )
     }
 
+    #[test]
+    fn loads_ui_definition() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
+                asset_path: UI_CHARACTER_SELECTION_PATH.clone(),
+                asset_type: AssetType::Ui,
+            },
+            ExpectedParams {
+                is_complete_pre_load: true,
+                fn_assertion: |definition_loading_resources, asset_id| {
+                    let DefinitionLoadingResources {
+                        background_definition_assets,
+                        asset_background_definition_handle,
+                        ..
+                    } = definition_loading_resources;
+
+                    let background_definition_handle =
+                        asset_background_definition_handle.get(asset_id);
+
+                    assert!(background_definition_handle.is_some());
+
+                    let background_definition_handle = background_definition_handle
+                        .expect("Expected `BackgroundDefinitionHandle` to exist.");
+                    let background_definition =
+                        background_definition_assets.get(background_definition_handle);
+
+                    assert!(background_definition.is_some());
+                },
+            },
+        )
+    }
+
     fn run_test(
         SetupParams {
             asset_slug,
             asset_path,
             asset_type,
         }: SetupParams,
-        ExpectedParams { fn_assertion }: ExpectedParams,
+        ExpectedParams {
+            is_complete_pre_load,
+            fn_assertion,
+        }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_setup(<AssetDefinitionLoadingSystem as System<'_>>::SystemData::setup)
             .with_system(Processor::<CharacterDefinition>::new(), "", &[])
             .with_system(Processor::<EnergyDefinition>::new(), "", &[])
             .with_system(Processor::<MapDefinition>::new(), "", &[])
+            .with_system(Processor::<BackgroundDefinition>::new(), "", &[])
+            .with_system(Processor::<UiDefinition>::new(), "", &[])
             .with_effect(move |world| {
                 let asset_id = {
                     let (mut asset_id_to_path, mut asset_id_mappings, mut asset_type_mappings) =
@@ -147,17 +190,27 @@ mod tests {
 
                 world.insert(asset_id);
             })
-            .with_assertion(|world| {
-                // Assert that `is_complete` returns false before loading.
+            .with_assertion(move |world| {
                 let asset_id = *world.read_resource::<AssetId>();
                 let (mut asset_loading_resources, mut definition_loading_resources) =
                     world.system_data::<AssetPartLoaderSystemData<'_>>();
 
-                assert!(!AssetDefinitionLoader::is_complete(
-                    &mut asset_loading_resources,
-                    &mut definition_loading_resources,
-                    asset_id,
-                ))
+                if is_complete_pre_load {
+                    // Assert that `is_complete` returns true before loading. This may be true for
+                    // UI assets.
+                    assert!(AssetDefinitionLoader::is_complete(
+                        &mut asset_loading_resources,
+                        &mut definition_loading_resources,
+                        asset_id,
+                    ))
+                } else {
+                    // Assert that `is_complete` returns false before loading.
+                    assert!(!AssetDefinitionLoader::is_complete(
+                        &mut asset_loading_resources,
+                        &mut definition_loading_resources,
+                        asset_id,
+                    ))
+                }
             })
             .with_effect(|world| {
                 let asset_id = *world.read_resource::<AssetId>();
@@ -208,6 +261,7 @@ mod tests {
     }
 
     struct ExpectedParams {
+        is_complete_pre_load: bool,
         fn_assertion: fn(&DefinitionLoadingResources<'_>, AssetId),
     }
 

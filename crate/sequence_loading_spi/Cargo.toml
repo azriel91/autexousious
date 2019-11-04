@@ -1,0 +1,16 @@
+[package]
+name = "sequence_loading_spi"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+sequence_model_spi = { path = "../sequence_model_spi" }
+
+[features]
+nightly = ["amethyst/nightly"]

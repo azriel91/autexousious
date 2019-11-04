@@ -11,4 +11,5 @@ test = false
 [dependencies]
 asset_model = { path = "../asset_model" }
 lazy_static = "1.4.0"
+background_model = { path = "../background_model" }
 map_model = { path = "../map_model" }

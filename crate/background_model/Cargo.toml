@@ -1,0 +1,26 @@
+[package]
+name = "background_model"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_derive = { path = "../asset_derive" }
+asset_model = { path = "../asset_model" }
+derivative = "1.0.3"
+derive-new = "0.5.8"
+derive_deref = "1.1.0"
+derive_more = "0.15.1-pre"
+indexmap = { version = "1.2.0", features = ["serde-1"] }
+sequence_model = { path = "../sequence_model" }
+serde = { version = "1.0.101", features = ["derive"] }
+slotmap = "0.4.0"
+sprite_model = { path = "../sprite_model" }
+
+[features]
+nightly = ["amethyst/nightly"]

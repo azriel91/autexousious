@@ -9,5 +9,8 @@ doctest = true
 test = false
 
 [dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+derivative = "1.0.3"
+derive-new = "0.5.8"
 strum = "0.16.0"
 strum_macros = "0.16.0"

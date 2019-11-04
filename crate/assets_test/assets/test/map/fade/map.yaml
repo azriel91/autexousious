@@ -2,13 +2,14 @@ header:
   name: "Fade"
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 400, depth: 200 }
 
-layer:
-  - # Sky
+layers:
+  sky:
     position: { x: 0, y: 200, z: 0 }
     frames: [{ wait: 10, sprite: { sheet: 0, index: 0 } }]
 
-  - # Ground
+  ground:
     position: { x: 0, y: 0, z: 0 }
+    next: "repeat"
     frames:
       - { wait: 7, sprite: { sheet: 1, index: 0 } }
       - { wait: 7, sprite: { sheet: 1, index: 1 } }

@@ -1,0 +1,13 @@
+[package]
+name = "state_support"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+asset_model = { path = "../asset_model" }
+state_registry = { path = "../state_registry" }

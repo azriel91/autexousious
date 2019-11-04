@@ -1,6 +1,9 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use asset_model::loaded::AssetId;
-use kinematic_model::config::{Position, Velocity};
+use kinematic_model::{
+    config::{Position, Velocity},
+    play::PositionZAsY,
+};
 use object_model::play::{Grounding, Mirrored};
 use sequence_model::{
     loaded::SequenceId,
@@ -32,6 +35,7 @@ impl ObjectEntityAugmenter {
         ObjectComponentStorages {
             asset_ids,
             transparents,
+            position_z_as_ys,
             positions,
             velocities,
             transforms,
@@ -65,6 +69,11 @@ impl ObjectEntityAugmenter {
             transparents
                 .insert(entity, Transparent)
                 .expect("Failed to insert `Transparent` component.");
+        }
+        if position_z_as_ys.get(entity).is_none() {
+            position_z_as_ys
+                .insert(entity, PositionZAsY)
+                .expect("Failed to insert `PositionZAsY` component.");
         }
         if positions.get(entity).is_none() {
             positions

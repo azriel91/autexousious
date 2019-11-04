@@ -5,7 +5,7 @@ pub use self::{
     asset_slug_build_error::AssetSlugBuildError,
     asset_slug_segment::AssetSlugSegment,
     asset_slug_visitor::AssetSlugVisitor,
-    asset_type::{AssetType, AssetTypeVariants},
+    asset_type::{AssetType, AssetTypeVariant},
     index::{AssetIndex, AssetRecord},
 };
 

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use asset_model::config::AssetRecord;
+use asset_model::config::{AssetRecord, AssetType};
 use heck::SnakeCase;
 use object_type::ObjectType;
 use strum::IntoEnumIterator;
@@ -18,16 +18,13 @@ impl ObjectIndexer {
     ///
     /// * `namespace`: Namespace that the objects reside in.
     /// * `object_types_dir`: Directory containing all object types' assets.
-    pub fn index(
-        namespace: &str,
-        object_types_dir: &Path,
-    ) -> HashMap<ObjectType, Vec<AssetRecord>> {
+    pub fn index(namespace: &str, object_types_dir: &Path) -> HashMap<AssetType, Vec<AssetRecord>> {
         ObjectType::iter().fold(HashMap::new(), |mut objects_by_type, object_type| {
             let object_type_dir = object_types_dir.join(&object_type.to_string().to_snake_case());
             let object_dirs = DirTraverse::child_directories(&object_type_dir);
 
             objects_by_type.insert(
-                object_type,
+                AssetType::Object(object_type),
                 object_dirs
                     .into_iter()
                     .filter_map(|object_dir| {

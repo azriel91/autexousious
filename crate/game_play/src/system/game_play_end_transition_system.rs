@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, ReadExpect, ReadStorage, System, World, Write},
+    ecs::{Join, Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -22,7 +22,7 @@ pub struct GamePlayEndTransitionSystem;
 pub struct GamePlayEndTransitionSystemData<'s> {
     /// `GamePlayStatus` resource.
     #[derivative(Debug = "ignore")]
-    pub game_play_status: ReadExpect<'s, GamePlayStatus>,
+    pub game_play_status: Read<'s, GamePlayStatus>,
     /// `Last<ControllerInput>` components.
     #[derivative(Debug = "ignore")]
     pub last_controller_inputs: ReadStorage<'s, Last<ControllerInput>>,

@@ -13,6 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_builder = "0.8.0"
+derive_deref = "1.1.0"
 indexmap = { version = "1.2.0", features = ["serde-1"] }
 object_type = { path = "../object_type" }
 serde = { version = "1.0.101", features = ["derive"] }

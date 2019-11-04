@@ -13,6 +13,7 @@ use amethyst::{
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
+    utils::ortho_camera::CameraOrthoSystem,
     window::DisplayConfig,
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
@@ -20,6 +21,8 @@ use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use audio_loading::AudioLoadingBundle;
+use background_loading::BackgroundLoadingBundle;
+use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
@@ -33,6 +36,7 @@ use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
+use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
@@ -41,12 +45,16 @@ use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use state_play::{StateCameraResetSystem, StateIdEventSystem, StateUiSpawnSystem};
+use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
+use tracker::PrevTrackerSystem;
 use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
+use ui_loading::UiLoadingBundle;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -71,9 +79,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = AppDir::assets()?;
 
     let game_mode_selection_state =
-        GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new())
-            .with_bundle(GameModeSelectionUiBundle::new())
-            .build();
+        GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
@@ -104,6 +110,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
+            .with_bundle(GameModeSelectionUiBundle::new())?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
                 GameInputStdioBundle::new()
@@ -123,11 +130,35 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
+            .with_bundle(BackgroundLoadingBundle::new())?
+            .with_bundle(UiLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(EnergyLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with(CameraOrthoSystem::default(), "camera_ortho", &[])
+            .with(
+                StateIdEventSystem::new(),
+                &StateIdEventSystem::type_name(),
+                &[],
+            )
+            .with(
+                StateUiSpawnSystem::new(),
+                &StateUiSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                StateCameraResetSystem::new(),
+                &StateCameraResetSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
+                "state_id_prev_tracker_system",
+                &[&StateUiSpawnSystem::type_name()],
+            )
+            .with_bundle(GamePlayBundle::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
@@ -135,7 +166,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     )
                     .with_plugin(RenderFlat2D::default())
                     .with_plugin(RenderUi::default()),
-            )?;
+            )?
+            .with_bundle(CameraPlayBundle::new())?;
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?

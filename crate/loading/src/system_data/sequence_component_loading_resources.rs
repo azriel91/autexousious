@@ -5,6 +5,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
+use background_model::loaded::AssetBackgroundLayers;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -16,11 +17,15 @@ use collision_model::{
     },
 };
 use derivative::Derivative;
+use game_mode_selection_model::GameModeIndex;
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
-use map_model::loaded::{AssetLayerPositions, AssetMapBounds, AssetMargins};
+use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
-use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
+use sprite_model::loaded::{
+    AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpriteRenderSequence,
+};
+use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
 
@@ -107,15 +112,23 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
 
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Write<'s, AssetBackgroundLayers>,
+    /// `AssetSpritePositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
+
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Write<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
-    /// `AssetLayerPositions` resource.
+
+    /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_layer_positions: Write<'s, AssetLayerPositions>,
+    pub asset_ui_menu_items: Write<'s, AssetUiMenuItems<GameModeIndex>>,
 }
 
 /// `SequenceComponentLoadingResourcesRead`.
@@ -194,13 +207,21 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
 
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
+    /// `AssetSpritePositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
-    /// `AssetLayerPositions` resource.
+
+    /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_layer_positions: Read<'s, AssetLayerPositions>,
+    pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
 }

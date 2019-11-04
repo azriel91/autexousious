@@ -4,21 +4,20 @@ mod test {
         core::{math::Vector3, transform::Transform},
         ecs::{Builder, Entity, WorldExt},
         input::StringBindings,
-        renderer::camera::Camera,
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use kinematic_model::config::Position;
+    use kinematic_model::{config::Position, play::PositionZAsY};
     use typename::TypeName;
 
     use game_play::ObjectTransformUpdateSystem;
 
     #[test]
-    fn updates_transform_with_x_and_yz() -> Result<(), Error> {
+    fn updates_transform_with_x_and_yz_when_position_z_as_y_present() -> Result<(), Error> {
         run_test(
             SetupParams {
                 position: Position::new(100., -10., 1.),
-                camera: None,
+                position_z_as_y: true,
             },
             ExpectedParams {
                 transform: Transform::from(Vector3::new(100., -11., 1.)),
@@ -27,11 +26,11 @@ mod test {
     }
 
     #[test]
-    fn updates_camera_transform_xyz() -> Result<(), Error> {
+    fn updates_transform_xyz() -> Result<(), Error> {
         run_test(
             SetupParams {
                 position: Position::new(100., -10., 1.),
-                camera: Some(Camera::standard_2d(800., 600.)),
+                position_z_as_y: false,
             },
             ExpectedParams {
                 transform: Transform::from(Vector3::new(100., -10., 1.)),
@@ -40,7 +39,10 @@ mod test {
     }
 
     fn run_test(
-        SetupParams { position, camera }: SetupParams,
+        SetupParams {
+            position,
+            position_z_as_y,
+        }: SetupParams,
         ExpectedParams {
             transform: transform_expected,
         }: ExpectedParams,
@@ -58,8 +60,8 @@ mod test {
                         .with(position)
                         .with(Transform::default());
 
-                    if let Some(camera) = camera.clone() {
-                        entity_builder = entity_builder.with(camera);
+                    if position_z_as_y {
+                        entity_builder = entity_builder.with(PositionZAsY);
                     }
 
                     entity_builder.build()
@@ -84,7 +86,7 @@ mod test {
 
     struct SetupParams {
         position: Position<f32>,
-        camera: Option<Camera>,
+        position_z_as_y: bool,
     }
     struct ExpectedParams {
         transform: Transform,

@@ -5,15 +5,21 @@
 ### Added
 
 * Tests for asset part loading systems. ([#172])
+* Each state may specify background images. ([#175])
+* Game mode selection menu item may be rendered with sprites. ([#175])
 
 ### Changed
 
 * Moved all module tests into `workspace_tests` crate. ([#171])
 * Don't build unnecessary doctest binaries. ([#174])
+* Default `Wait` value for all sequences is now `2` ticks (previously `0`). ([#175])
+* Map layers now need to be given names. ([#175])
+* `GamePlayBundle` systems are moved to the main dispatcher. ([#175])
 
 [#171]: https://gitlab.com/azriel91/autexousious/issues/171
 [#172]: https://gitlab.com/azriel91/autexousious/issues/172
 [#174]: https://gitlab.com/azriel91/autexousious/issues/174
+[#175]: https://gitlab.com/azriel91/autexousious/issues/175
 
 ## 0.14.0 (2019-09-27)
 

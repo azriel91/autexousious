@@ -85,7 +85,7 @@ impl MapSelectionWidgetInputSystem {
                     }
                 }
             }
-            MapSelection::Random(..) => MapSelection::Id(last_map_id),
+            MapSelection::None | MapSelection::Random(..) => MapSelection::Id(last_map_id),
         };
         widget.selection
     }
@@ -122,7 +122,7 @@ impl MapSelectionWidgetInputSystem {
                     }
                 }
             }
-            MapSelection::Random(..) => MapSelection::Id(first_map_id),
+            MapSelection::None | MapSelection::Random(..) => MapSelection::Id(first_map_id),
         };
         widget.selection
     }

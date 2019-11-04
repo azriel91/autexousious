@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
@@ -19,7 +19,7 @@ pub struct ObjectGroundingSystem;
 pub struct ObjectGroundingSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,

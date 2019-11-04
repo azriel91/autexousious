@@ -14,7 +14,10 @@ mod tests {
         config::AssetSlug,
         loaded::{AssetId, AssetIdMappings},
     };
-    use kinematic_model::config::{Position, Velocity};
+    use kinematic_model::{
+        config::{Position, Velocity},
+        play::PositionZAsY,
+    };
     use object_model::play::{Grounding, Mirrored};
     use sequence_model::{
         loaded::{AssetSequenceEndTransitions, SequenceEndTransitions, SequenceId},
@@ -40,6 +43,7 @@ mod tests {
             }
 
             assert!(world.read_storage::<Transparent>().contains(entity));
+            assert!(world.read_storage::<PositionZAsY>().contains(entity));
             assert!(world.read_storage::<Position<f32>>().contains(entity));
             assert!(world.read_storage::<Velocity<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));

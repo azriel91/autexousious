@@ -11,7 +11,6 @@ pub use crate::{
     game_loading_bundle::GameLoadingBundle,
     game_loading_state::GameLoadingState,
     game_loading_status::GameLoadingStatus,
-    spawn::{MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources},
     system::{
         CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData,
         CharacterSelectionSpawningSystem, CharacterSelectionSpawningSystemData,
@@ -23,5 +22,4 @@ mod character_augment_status;
 mod game_loading_bundle;
 mod game_loading_state;
 mod game_loading_status;
-mod spawn;
 mod system;

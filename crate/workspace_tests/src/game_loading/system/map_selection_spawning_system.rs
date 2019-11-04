@@ -9,6 +9,7 @@ mod tests {
     use amethyst_test::{AmethystApplication, GameUpdate};
     use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
+    use background_loading::BackgroundLoadingBundle;
     use game_model::play::GameEntities;
     use loading::LoadingBundle;
     use loading_model::loaded::{AssetLoadStage, LoadStage};
@@ -81,6 +82,7 @@ mod tests {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(BackgroundLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| wait_for_load)

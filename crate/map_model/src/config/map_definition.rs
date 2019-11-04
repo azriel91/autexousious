@@ -1,15 +1,16 @@
 use asset_derive::Asset;
+use background_model::config::BackgroundDefinition;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{Layer, MapHeader};
+use crate::config::MapHeader;
 
 /// Defines a playable area that objects can reside in.
 #[derive(Asset, Clone, Debug, Deserialize, Serialize, PartialEq, new)]
 pub struct MapDefinition {
     /// Base information of the map.
     pub header: MapHeader,
-    /// Image layers to draw.
-    #[serde(default, rename = "layer")]
-    pub layers: Vec<Layer>,
+    /// Background to draw.
+    #[serde(flatten)]
+    pub background: BackgroundDefinition,
 }

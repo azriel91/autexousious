@@ -287,7 +287,7 @@ impl ObjectLoader {
                                                 panic!("Spawning `TestObject`s is not supported.")
                                             }
                                         },
-                                        AssetType::Map => panic!("Spawning `Map`s is not supported."),
+                                        AssetType::Map | AssetType::Ui => panic!("Spawning `Map`s is not supported."),
                                     };
 
                                     Spawn {

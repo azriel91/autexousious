@@ -9,7 +9,7 @@ use object_type::ObjectType;
 pub struct GameEntities {
     /// Map of object entities by object type.
     pub objects: HashMap<ObjectType, Vec<Entity>>,
-    /// Map layer entities.
+    /// Map sprite sequence entities.
     pub map_layers: Vec<Entity>,
 }
 

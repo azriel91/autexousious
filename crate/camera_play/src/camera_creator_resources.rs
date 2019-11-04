@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Read, ReadExpect, World},
+    ecs::{Read, ReadExpect, World},
     shred::{ResourceId, SystemData},
     window::ScreenDimensions,
 };
@@ -12,9 +12,6 @@ use crate::CameraComponentStorages;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CameraCreatorResources<'s> {
-    /// `Entities`.
-    #[derivative(Debug = "ignore")]
-    pub entities: Entities<'s>,
     /// `ScreenDimensions` resource.
     #[derivative(Debug = "ignore")]
     pub screen_dimensions: ReadExpect<'s, ScreenDimensions>,

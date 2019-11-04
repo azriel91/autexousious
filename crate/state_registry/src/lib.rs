@@ -1,8 +1,8 @@
 #![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
-//! Provides an enum that represents `State`s.
+//! Provides data types to manage information about the active `State`.
 //!
-//! This crate exists to indicate which `State` is active.
+//! The `StateId` enum indicates which `State` is active.
 //!
 //! ```rust,ignore
 //! use state_registry::StateId;
@@ -14,6 +14,10 @@
 //! }
 //! ```
 
-pub use crate::state_id::StateId;
+pub use crate::{
+    state_id::StateId, state_id_update_event::StateIdUpdateEvent, state_ui_data::StateUiData,
+};
 
 mod state_id;
+mod state_id_update_event;
+mod state_ui_data;
