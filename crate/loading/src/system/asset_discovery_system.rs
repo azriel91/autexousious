@@ -6,7 +6,7 @@ use amethyst::{
 };
 use asset_loading::AssetDiscovery;
 use asset_model::{
-    config::{AssetIndex, AssetType},
+    config::AssetIndex,
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
 };
 use derivative::Derivative;
@@ -64,39 +64,30 @@ impl<'s> System<'s> for AssetDiscoverySystem {
             debug!("Indexed assets: {:?}", &asset_index_discovered);
 
             let capacity = asset_index_discovered
-                .objects
                 .values()
-                .fold(0, |acc, records| acc + records.len())
-                + asset_index_discovered.maps.len();
+                .fold(0, |acc, asset_records| acc + asset_records.len());
             asset_id_mappings.reserve(capacity);
 
-            let asset_records_objects =
-                asset_index_discovered
-                    .objects
-                    .iter()
-                    .flat_map(|(object_type, asset_records)| {
-                        let asset_type = AssetType::Object(*object_type);
-                        asset_records
-                            .iter()
-                            .map(move |asset_record| (asset_type, asset_record))
-                    });
-            let asset_records_maps = asset_index_discovered
-                .maps
+            asset_index_discovered
                 .iter()
-                .map(|asset_record| (AssetType::Map, asset_record));
-            let asset_records = asset_records_objects.chain(asset_records_maps);
-            asset_records.for_each(|(asset_type, asset_record)| {
-                let asset_id = asset_id_mappings.insert(asset_record.asset_slug.clone());
+                .flat_map(|(asset_type, asset_records)| {
+                    let asset_type = *asset_type;
+                    asset_records
+                        .iter()
+                        .map(move |asset_record| (asset_type, asset_record))
+                })
+                .for_each(|(asset_type, asset_record)| {
+                    let asset_id = asset_id_mappings.insert(asset_record.asset_slug.clone());
 
-                debug!(
-                    "Asset ID ({:?}): slug: `{}`, type: `{:?}`",
-                    asset_id, &asset_record.asset_slug, asset_type
-                );
+                    debug!(
+                        "Asset ID ({:?}): slug: `{}`, type: `{:?}`",
+                        asset_id, &asset_record.asset_slug, asset_type
+                    );
 
-                asset_type_mappings.insert(asset_id, asset_type);
-                asset_load_stage.insert(asset_id, LoadStage::New);
-                asset_id_to_path.insert(asset_id, asset_record.path.clone());
-            });
+                    asset_type_mappings.insert(asset_id, asset_type);
+                    asset_load_stage.insert(asset_id, LoadStage::New);
+                    asset_id_to_path.insert(asset_id, asset_record.path.clone());
+                });
 
             *asset_index = Some(asset_index_discovered);
         }

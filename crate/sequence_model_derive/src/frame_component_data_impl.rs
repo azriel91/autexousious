@@ -30,7 +30,7 @@ pub fn frame_component_data_impl(
 
         impl #type_name {
             #[doc = #fn_new_doc]
-            pub fn new(sequence: Vec<#component_path>) -> Self {
+            pub fn new(sequence: std::vec::Vec<#component_path>) -> Self {
                 #type_name(
                     sequence_model_spi::loaded::FrameComponentData::<#component_path>::new(sequence)
                 )
@@ -43,7 +43,7 @@ pub fn frame_component_data_impl(
             fn default() -> Self {
                 #type_name(
                     sequence_model_spi::loaded::FrameComponentData::<#component_path>::new(
-                        Vec::default()
+                        std::vec::Vec::default()
                     )
                 )
             }
@@ -51,6 +51,10 @@ pub fn frame_component_data_impl(
 
         impl sequence_model_spi::loaded::ComponentDataExt for #type_name {
             type Component = #component_path;
+
+            fn new(sequence: std::vec::Vec<#component_path>) -> Self {
+                #type_name::new(sequence)
+            }
 
             #to_owned_fn_impl
         }

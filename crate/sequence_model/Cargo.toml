@@ -19,6 +19,7 @@ derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
 fnv = "1.0.6"
 game_input_model = { path = "../game_input_model" }
+indexmap = { version = "1.2.0", features = ["serde-1"] }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_core = { path = "../sequence_model_core" }

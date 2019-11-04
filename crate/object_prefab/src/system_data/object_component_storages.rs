@@ -6,7 +6,10 @@ use amethyst::{
 };
 use asset_model::loaded::AssetId;
 use derivative::Derivative;
-use kinematic_model::config::{Position, Velocity};
+use kinematic_model::{
+    config::{Position, Velocity},
+    play::PositionZAsY,
+};
 use object_model::play::{Grounding, Mirrored};
 use sequence_model::{
     loaded::{SequenceEndTransitions, SequenceId},
@@ -25,6 +28,9 @@ pub struct ObjectComponentStorages<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
+    /// `PositionZAsY` components.
+    #[derivative(Debug = "ignore")]
+    pub position_z_as_ys: WriteStorage<'s, PositionZAsY>,
     /// `Position` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,

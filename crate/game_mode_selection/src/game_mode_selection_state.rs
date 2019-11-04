@@ -34,13 +34,19 @@ pub type GameModeSelectionStateBuilder =
 #[derivative(Debug)]
 pub struct GameModeSelectionStateDelegate;
 
+impl GameModeSelectionStateDelegate {
+    fn initialize_state(data: StateData<'_, GameData<'static, 'static>>) {
+        data.world.insert(StateId::GameModeSelection);
+    }
+}
+
 impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDelegate {
     fn on_start(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.insert(StateId::GameModeSelection);
+        Self::initialize_state(data);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.insert(StateId::GameModeSelection);
+        Self::initialize_state(data);
     }
 
     fn handle_event(

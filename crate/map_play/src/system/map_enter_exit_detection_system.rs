@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Entity, Join, Read, ReadExpect, ReadStorage, System, World, Write},
+    ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -27,7 +27,7 @@ pub struct MapEnterExitDetectionSystemData<'s> {
     pub entities: Entities<'s>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,

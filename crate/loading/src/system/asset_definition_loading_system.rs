@@ -33,9 +33,13 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             character_definition_assets,
             energy_definition_assets,
             map_definition_assets,
+            background_definition_assets,
+            ui_definition_assets,
             asset_character_definition_handle,
             asset_energy_definition_handle,
             asset_map_definition_handle,
+            asset_background_definition_handle,
+            asset_ui_definition_handle,
         }: &mut DefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -106,6 +110,38 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
 
                 asset_map_definition_handle.insert(asset_id, map_definition_handle);
             }
+            AssetType::Ui => {
+                // Load `background.yaml` if it exists, don't error if not.
+                let background_definition_path = asset_path.join("background.yaml");
+                if background_definition_path.exists() {
+                    let background_definition_handle = loader.load(
+                        background_definition_path
+                            .to_str()
+                            .expect("Expected path to be valid unicode."),
+                        YamlFormat,
+                        &mut *progress_counter,
+                        background_definition_assets,
+                    );
+
+                    asset_background_definition_handle
+                        .insert(asset_id, background_definition_handle);
+                }
+
+                // Load `ui.yaml` if it exists, don't error if not.
+                let ui_definition_path = asset_path.join("ui.yaml");
+                if ui_definition_path.exists() {
+                    let ui_definition_handle = loader.load(
+                        ui_definition_path
+                            .to_str()
+                            .expect("Expected path to be valid unicode."),
+                        YamlFormat,
+                        &mut *progress_counter,
+                        ui_definition_assets,
+                    );
+
+                    asset_ui_definition_handle.insert(asset_id, ui_definition_handle);
+                }
+            }
         }
     }
 
@@ -118,9 +154,13 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             character_definition_assets,
             energy_definition_assets,
             map_definition_assets,
+            background_definition_assets,
+            ui_definition_assets,
             asset_character_definition_handle,
             asset_energy_definition_handle,
             asset_map_definition_handle,
+            asset_background_definition_handle,
+            asset_ui_definition_handle,
         }: &DefinitionLoadingResources<'_>,
         asset_id: AssetId,
     ) -> bool {
@@ -148,6 +188,24 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
                 .get(asset_id)
                 .and_then(|map_definition_handle| map_definition_assets.get(map_definition_handle))
                 .is_some(),
+            AssetType::Ui => {
+                let background_loaded = asset_background_definition_handle
+                    .get(asset_id)
+                    .map(|background_definition_handle| {
+                        background_definition_assets
+                            .get(background_definition_handle)
+                            .is_some()
+                    })
+                    .unwrap_or(true);
+                let ui_loaded = asset_ui_definition_handle
+                    .get(asset_id)
+                    .map(|ui_definition_handle| {
+                        ui_definition_assets.get(ui_definition_handle).is_some()
+                    })
+                    .unwrap_or(true);
+
+                background_loaded && ui_loaded
+            }
         }
     }
 }

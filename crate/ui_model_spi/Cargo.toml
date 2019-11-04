@@ -1,0 +1,19 @@
+[package]
+name = "ui_model_spi"
+version = "0.15.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+derivative = "1.0.3"
+sequence_model = { path = "../sequence_model" }
+serde = { version = "1.0.101", features = ["derive"] }
+sprite_model = { path = "../sprite_model" }
+strum = "0.16.0"
+strum_macros = "0.16.0"
+typename = "0.1.1"
+typename_derive = "0.1.3"

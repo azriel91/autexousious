@@ -16,6 +16,7 @@ asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
+background_loading = { path = "../background_loading" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }
@@ -43,7 +44,8 @@ spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
-ui_audio_loading = { path = "../../crate/ui_audio_loading" }
+ui_audio_loading = { path = "../ui_audio_loading" }
+ui_loading = { path = "../ui_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

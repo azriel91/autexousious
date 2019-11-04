@@ -134,7 +134,6 @@ frames:
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             sound: Some(PathBuf::from("path/to/sound.wav")),
             ..Default::default()
         }];
@@ -168,7 +167,6 @@ frames:
             },
         ];
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             body: Body::new(body_volumes),
             ..Default::default()
         }];
@@ -199,7 +197,6 @@ frames:
             multiple: false,
         }];
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             interactions: Interactions::new(interactions),
             ..Default::default()
         }];
@@ -225,7 +222,6 @@ frames:
             None,
         )];
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             spawns: Spawns::new(spawns),
             ..Default::default()
         }];
@@ -245,7 +241,6 @@ frames:
         .expect("Failed to deserialize sequence.");
 
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             acceleration: Some(ObjectAcceleration {
                 kind: ObjectAccelerationKind::Continuous,
                 ..Default::default()
@@ -267,7 +262,6 @@ frames:
                 .expect("Failed to deserialize sequence.");
 
         let frames = vec![ObjectFrame {
-            wait: Wait::new(0),
             acceleration: Some(ObjectAcceleration {
                 kind: ObjectAccelerationKind::Once,
                 x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {

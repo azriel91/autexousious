@@ -3,7 +3,7 @@
 /// # Type Parameters
 ///
 /// * `I`: Type that represents the index of the selected menu item.
-#[derive(Clone, Debug, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq)]
 pub enum MenuEvent<I> {
     /// Indicates a menu item was pressed.
     Select(I),

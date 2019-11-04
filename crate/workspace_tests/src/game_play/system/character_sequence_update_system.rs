@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Join, Read, ReadExpect, ReadStorage, WriteStorage},
+        ecs::{Join, Read, ReadStorage, WriteStorage},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -135,7 +135,7 @@ mod tests {
     }
 
     type TestSystemData<'s> = (
-        ReadExpect<'s, MapSelection>,
+        Read<'s, MapSelection>,
         Read<'s, AssetMargins>,
         WriteStorage<'s, ControllerInput>,
         WriteStorage<'s, SequenceId>,

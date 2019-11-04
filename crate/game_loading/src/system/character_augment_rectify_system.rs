@@ -1,8 +1,7 @@
 use amethyst::{
     assets::PrefabData,
     ecs::{
-        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, Write,
-        WriteStorage,
+        Entities, Entity, Join, LazyUpdate, Read, ReadStorage, System, World, Write, WriteStorage,
     },
     shred::{ResourceId, SystemData},
     utils::removal::Removal,
@@ -36,7 +35,7 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     pub game_loading_status: Write<'s, GameLoadingStatus>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_selection: ReadExpect<'s, MapSelection>,
+    pub map_selection: Read<'s, MapSelection>,
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,

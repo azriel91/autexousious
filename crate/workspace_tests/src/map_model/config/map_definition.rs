@@ -1,66 +1,78 @@
 #[cfg(test)]
 mod test {
-    use sequence_model::config::Wait;
+    use background_model::config::BackgroundDefinition;
+    use indexmap::IndexMap;
+    use sequence_model::config::{Sequence, SequenceEndTransition, Wait};
     use serde_yaml;
-    use sprite_model::config::SpriteRef;
+    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef, SpriteSequence};
 
-    use map_model::config::{
-        Layer, LayerFrame, LayerPosition, MapBounds, MapDefinition, MapHeader,
-    };
+    use map_model::config::{MapBounds, MapDefinition, MapHeader};
 
-    const MAP_NO_LAYERS: &str = r#"---
+    const MAP_NO_SPRITE_SEQUENCES: &str = r#"---
 header:
   name: "Blank Map"
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
 "#;
 
-    const MAP_WITH_LAYERS: &str = r#"---
+    const MAP_WITH_SPRITE_SEQUENCES: &str = r#"---
 header:
-  name: "Layered Map"
+  name: "Map with sprite sequence"
   bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
 
-layer:
-  - position: { x: 1, y: 4 } # missing z
+layers:
+  zero:
+    position: { x: 1, y: 4 } # missing z
     frames: [
       { wait: 7, sprite: { sheet: 0, index: 0 } },
       { wait: 7, sprite: { sheet: 0, index: 1 } },
     ]
 
-  - position: { x: -1, y: -2, z: -3 }
+  one:
+    position: { x: -1, y: -2, z: -3 }
     frames: [{ wait: 1, sprite: { sheet: 0, index: 0 } }]
 "#;
 
     #[test]
     fn deserialize_minimal_definition() {
-        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_NO_LAYERS)
+        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_NO_SPRITE_SEQUENCES)
             .expect("Failed to deserialize map definition.");
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
         let header = MapHeader::new("Blank Map".to_string(), bounds);
-        let expected = MapDefinition::new(header, Vec::new());
+        let expected = MapDefinition::new(header, BackgroundDefinition::default());
+
         assert_eq!(expected, map_definition);
     }
 
     #[test]
     fn deserialize_with_layers() {
-        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_WITH_LAYERS)
+        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_WITH_SPRITE_SEQUENCES)
             .expect("Failed to deserialize map definition.");
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
-        let header = MapHeader::new("Layered Map".to_string(), bounds);
-        let layer_0 = Layer::new(
-            LayerPosition::new(1, 4, 0),
-            vec![
-                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
-                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
-            ],
+        let header = MapHeader::new("Map with sprite sequence".to_string(), bounds);
+        let layer_0 = SpriteSequence::new(
+            SpritePosition::new(1, 4, 0),
+            Sequence::new(
+                SequenceEndTransition::None,
+                vec![
+                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
+                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
+                ],
+            ),
         );
-        let layer_1 = Layer::new(
-            LayerPosition::new(-1, -2, -3),
-            vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+        let layer_1 = SpriteSequence::new(
+            SpritePosition::new(-1, -2, -3),
+            Sequence::new(
+                SequenceEndTransition::None,
+                vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+            ),
         );
-        let layers = vec![layer_0, layer_1];
-        let expected = MapDefinition::new(header, layers);
+        let mut layers = IndexMap::new();
+        layers.insert(String::from("zero"), layer_0);
+        layers.insert(String::from("one"), layer_1);
+        let expected = MapDefinition::new(header, BackgroundDefinition::new(layers));
+
         assert_eq!(expected, map_definition);
     }
 }

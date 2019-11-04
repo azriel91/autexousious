@@ -1,9 +1,7 @@
 use asset_model::config::{AssetSlug, AssetSlugBuilder};
+use background_model::config::BackgroundDefinition;
 use lazy_static::lazy_static;
-use map_model::{
-    config::{MapBounds, MapDefinition, MapHeader},
-    loaded::{Map, Margins},
-};
+use map_model::config::{MapBounds, MapDefinition, MapHeader};
 
 use crate::NAMESPACE_BUILT_IN;
 
@@ -26,14 +24,10 @@ lazy_static! {
     };
 
     /// Built-in blank map.
-    pub static ref MAP_BLANK: Map = {
+    pub static ref MAP_DEFINITION_BLANK: MapDefinition = {
         let (width, height, depth) = (800, 600, 200);
         let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
         let header = MapHeader::new("Blank Screen".to_string(), bounds);
-        let layers = Vec::new();
-        let definition = MapDefinition::new(header, layers);
-        let margins = Margins::from(definition.header.bounds);
-
-        Map::new(definition, margins, Vec::new(), Vec::new(), Vec::new())
+        MapDefinition::new(header, BackgroundDefinition::default())
     };
 }

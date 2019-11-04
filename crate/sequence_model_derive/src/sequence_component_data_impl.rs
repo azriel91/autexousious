@@ -57,6 +57,10 @@ pub fn sequence_component_data_impl(
         {
             type Component = #component_path;
 
+            fn new(sequence: std::vec::Vec<#component_path>) -> Self {
+                #type_name::new(sequence)
+            }
+
             #to_owned_fn_impl
         }
     };

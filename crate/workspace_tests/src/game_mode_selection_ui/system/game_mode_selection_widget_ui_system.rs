@@ -3,8 +3,9 @@ mod test {
     use std::collections::HashMap;
 
     use amethyst::{
-        ecs::{Join, ReadStorage, World, WriteStorage},
+        ecs::{Join, ReadStorage, World, WorldExt, WriteStorage},
         input::{Axis as InputAxis, Button},
+        shrev::EventChannel,
         ui::UiText,
         winit::VirtualKeyCode,
         Error,
@@ -13,21 +14,28 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
+    use state_registry::{StateId, StateIdUpdateEvent};
     use strum::IntoEnumIterator;
     use typename::TypeName;
 
-    use game_mode_selection_ui::{GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE};
+    use game_mode_selection_ui::{
+        GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE,
+    };
+
+    // See `assets_test/assets/test/ui/game_mode_selection/ui.yaml`.
+    const GAME_MODE_MENU_ITEM_COUNT: usize = 2;
 
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_effect(|world| world.insert(input_config()))
-            .with_system_single(
+            .with_resource(input_config())
+            .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
+            .with_effect(send_state_id_update_event)
+            .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             .with_assertion(|world| assert_siblings_correct(world))
             .run_isolated()
     }
@@ -37,12 +45,13 @@ mod test {
         AutexousiousApplication::config_base()
             .with_resource(input_config())
             // Set up UI
-            .with_system_single(
+            .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
+            .with_effect(send_state_id_update_event)
+            .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to idle.
             .with_effect(|world| {
                 let mut menu_item_widget_states =
@@ -54,11 +63,6 @@ mod test {
 
                 *menu_item_widget_state = MenuItemWidgetState::Idle;
             })
-            .with_system_single(
-                GameModeSelectionWidgetUiSystem::new(),
-                GameModeSelectionWidgetUiSystem::type_name(),
-                &[],
-            )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_IDLE))
             .run_isolated()
     }
@@ -68,12 +72,13 @@ mod test {
         AutexousiousApplication::config_base()
             .with_resource(input_config())
             // Set up UI
-            .with_system_single(
+            .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
+            .with_effect(send_state_id_update_event)
+            .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to active.
             .with_effect(|world| {
                 let mut menu_item_widget_states =
@@ -85,11 +90,6 @@ mod test {
 
                 *menu_item_widget_state = MenuItemWidgetState::Active;
             })
-            .with_system_single(
-                GameModeSelectionWidgetUiSystem::new(),
-                GameModeSelectionWidgetUiSystem::type_name(),
-                &[],
-            )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_ACTIVE))
             .run_isolated()
     }
@@ -119,6 +119,11 @@ mod test {
         let mut actions = HashMap::new();
         actions.insert(ControlAction::Jump, Button::Key(keys[2]));
         ControllerConfig::new(axes, actions)
+    }
+
+    fn send_state_id_update_event(world: &mut World) {
+        let mut state_id_update_ec = world.write_resource::<EventChannel<StateIdUpdateEvent>>();
+        state_id_update_ec.single_write(StateIdUpdateEvent::new(StateId::GameModeSelection, None));
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {

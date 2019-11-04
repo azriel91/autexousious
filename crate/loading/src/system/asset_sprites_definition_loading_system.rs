@@ -52,7 +52,7 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
             .expect("Expected `PathBuf` mapping to exist for `AssetId`.");
 
         let sprites_definition_path = asset_path.join("sprites.yaml");
-        if let AssetType::Map = asset_type {
+        if let AssetType::Map | AssetType::Ui = asset_type {
             // Return early if `sprites.yaml` does not exist.
             // This means `asset_sprites_definition_handles` will not have a key for the current
             // `asset_id`.
@@ -114,7 +114,7 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
 
                 let sprites_definition_path = asset_path.join("sprites.yaml");
 
-                if let AssetType::Map = asset_type {
+                if let AssetType::Map | AssetType::Ui = asset_type {
                     // If there is no sprites definition, return `true`. Otherwise return `false`.
                     !sprites_definition_path.exists()
                 } else {

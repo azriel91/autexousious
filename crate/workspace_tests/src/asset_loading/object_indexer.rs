@@ -2,7 +2,7 @@
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use asset_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder, AssetType};
     use hamcrest::prelude::*;
     use object_type::ObjectType;
     use tempfile::tempdir;
@@ -28,7 +28,12 @@ mod tests {
         // kcov-ignore-start
         assert_that!(
             // kcov-ignore-end
-            object_assets_records.get(&ObjectType::Character).unwrap(),
+            object_assets_records
+                .get(&AssetType::Object(ObjectType::Character))
+                .expect(
+                    "Expected `Vec<AssetRecord>` to exist for \
+                     `AssetType::Object(ObjectType::Character)`."
+                ),
             contains(vec![
                 asset_record("rara", "char_0", char_0_dir),
                 asset_record("rara", "char_1", char_1_dir),

@@ -1,4 +1,5 @@
-use std::iter::FromIterator;
+use sprite_model::config::SpriteSequenceName;
+use std::{iter::FromIterator, str::FromStr};
 
 use amethyst::assets::ProgressCounter;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -6,7 +7,7 @@ use loading_model::loaded::LoadStage;
 use log::debug;
 use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
 use object_type::ObjectType;
-use sequence_model::loaded::SequenceIdMappings;
+use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use serde::{Deserialize, Serialize};
 use typename_derive::TypeName;
 
@@ -54,12 +55,19 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 DefinitionLoadingResourcesRead {
                     character_definition_assets,
                     energy_definition_assets,
+                    map_definition_assets,
+                    background_definition_assets,
+                    ui_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
-                    ..
+                    asset_map_definition_handle,
+                    asset_background_definition_handle,
+                    asset_ui_definition_handle,
                 },
+            asset_sequence_id_mappings_sprite,
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
+            asset_sequence_id_mappings_ui,
         }: &mut IdMappingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -107,7 +115,66 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map => {}
+            AssetType::Map => {
+                let map_definition = asset_map_definition_handle
+                    .get(asset_id)
+                    .and_then(|map_definition_handle| {
+                        map_definition_assets.get(map_definition_handle)
+                    })
+                    .expect("Expected `MapDefinition` to be loaded.");
+
+                let sequence_id_mappings =
+                    SequenceIdMappings::from_iter(map_definition.background.layers.keys().map(
+                        |sequence_string| {
+                            SequenceNameString::<SpriteSequenceName>::from_str(&sequence_string)
+                                .expect("Expected `SequenceNameString::from_str` to succeed.")
+                        },
+                    ));
+
+                asset_sequence_id_mappings_sprite.insert(asset_id, sequence_id_mappings);
+            }
+            AssetType::Ui => {
+                let background_definition = asset_background_definition_handle
+                    .get(asset_id)
+                    .and_then(|background_definition_handle| {
+                        background_definition_assets.get(background_definition_handle)
+                    });
+
+                let ui_definition =
+                    asset_ui_definition_handle
+                        .get(asset_id)
+                        .and_then(|ui_definition_handle| {
+                            ui_definition_assets.get(ui_definition_handle)
+                        });
+
+                let sequence_id_mappings = match (background_definition, ui_definition) {
+                    (None, None) => SequenceIdMappings::new(),
+                    (None, Some(ui_definition)) => {
+                        SequenceIdMappings::from_iter(ui_definition.sequences.keys())
+                    }
+                    (Some(background_definition), None) => SequenceIdMappings::from_iter(
+                        background_definition.layers.keys().map(|sequence_string| {
+                            SequenceNameString::from_str(sequence_string)
+                                .expect("Expected `SequenceNameString::from_str` to succeed.")
+                        }),
+                    ),
+                    (Some(background_definition), Some(ui_definition)) => {
+                        SequenceIdMappings::from_iter(
+                            background_definition
+                                .layers
+                                .keys()
+                                .map(|sequence_string| {
+                                    SequenceNameString::from_str(sequence_string).expect(
+                                        "Expected `SequenceNameString::from_str` to succeed.",
+                                    )
+                                })
+                                .chain(ui_definition.sequences.keys().cloned()),
+                        )
+                    }
+                };
+
+                asset_sequence_id_mappings_ui.insert(asset_id, sequence_id_mappings);
+            }
         }
     }
 
@@ -130,8 +197,10 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                     asset_energy_definition_handle,
                     ..
                 },
+            asset_sequence_id_mappings_sprite,
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
+            asset_sequence_id_mappings_ui,
         } = id_mapping_resources;
 
         let asset_type = asset_type_mappings
@@ -182,7 +251,8 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 }
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
-            AssetType::Map => true,
+            AssetType::Map => asset_sequence_id_mappings_sprite.get(asset_id).is_some(),
+            AssetType::Ui => asset_sequence_id_mappings_ui.get(asset_id).is_some(),
         }
     }
 }
@@ -234,6 +304,7 @@ impl AssetIdMapper {
                         }
                     },
                     AssetType::Map => panic!("Spawning `Map`s is not supported."),
+                    AssetType::Ui => panic!("Spawning `Ui`s is not supported."),
                 };
                 if spawn_id_mappings_exist {
                     Ok(())

@@ -260,7 +260,7 @@ mod tests {
             .with_system(
                 KeepWithinMapBoundsSystem::new(),
                 KeepWithinMapBoundsSystem::type_name(),
-                &[String::from("map_processor")],
+                &[],
             ) // kcov-ignore
             .with_setup(setup_system_data)
             .with_setup(setup_map_selection)

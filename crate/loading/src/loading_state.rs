@@ -8,7 +8,7 @@ use amethyst::{
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
-use asset_model::loaded::AssetTypeMappings;
+use asset_model::loaded::{AssetIdMappings, AssetTypeMappings};
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use humantime;
@@ -92,9 +92,12 @@ where
                 == UiAudioLoadingStatus::Complete;
 
         let asset_load_stagees_complete = {
-            let (asset_type_mappings, asset_load_stage) = data
-                .world
-                .system_data::<(Read<'_, AssetTypeMappings>, Read<'_, AssetLoadStage>)>();
+            let (asset_type_mappings, asset_id_mappings, asset_load_stage) =
+                data.world.system_data::<(
+                    Read<'_, AssetTypeMappings>,
+                    Read<'_, AssetIdMappings>,
+                    Read<'_, AssetLoadStage>,
+                )>();
 
             // https://github.com/rust-lang/rust-clippy/issues/1524
             #[allow(clippy::let_and_return)]
@@ -111,9 +114,16 @@ where
                         Ok(())
                     } else {
                         if let Stopwatch::Ended(..) = &self.stopwatch {
+                            let asset_slug =
+                                asset_id_mappings.slug(*asset_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected asset ID `{:?}` to have an asset ID mapping.",
+                                        asset_id
+                                    )
+                                });
                             warn!(
-                                "Asset ID `{:?}` has not completed loading. {:?}",
-                                asset_id, load_stage
+                                "Asset `{}` has not completed loading. Load stage: `{:?}`",
+                                asset_slug, load_stage
                             );
                         }
                         Err(())
@@ -145,11 +155,13 @@ where
                          * `SpriteLoadingBundle`\n\
                          * `CharacterLoadingBundle`\n\
                          * `EnergyLoadingBundle`\n\
+                         * `BackgroundLoadingBundle`\n\
                          * `MapLoadingBundle`\n\
                          * `amethyst::audio::AudioBundle`\n\
                          * `KinematicLoadingBundle`\n\
                          * `CollisionAudioLoadingBundle`\n\
                          * `UiAudioLoadingBundle`\n\
+                         * `UiLoadingBundle`\n\
                          \n\
                          These provide the necessary `System`s to process the loaded assets.\n",
                         duration

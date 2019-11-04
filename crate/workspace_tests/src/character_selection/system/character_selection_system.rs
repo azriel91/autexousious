@@ -18,6 +18,7 @@ mod tests {
     };
     use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
+    use background_loading::BackgroundLoadingBundle;
     use character_loading::CharacterLoadingBundle;
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections,
@@ -35,6 +36,7 @@ mod tests {
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
+    use ui_loading::UiLoadingBundle;
 
     use character_selection::CharacterSelectionSystem;
 
@@ -89,6 +91,8 @@ mod tests {
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
+            .with_bundle(BackgroundLoadingBundle::new())
+            .with_bundle(UiLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())

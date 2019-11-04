@@ -28,7 +28,10 @@ use crate::Last;
 /// Implementation note: This uses the `named_type` crate instead of `typename` because we cannot
 /// derive `TypeName` unless we add a `T: TypeName` bound.
 #[derive(Clone, Debug, Default, NamedType, new)]
-pub struct LastTrackerSystem<T: Component + Clone + Send + Sync> {
+pub struct LastTrackerSystem<T>
+where
+    T: Component + Clone + Send + Sync,
+{
     /// Stringified name of the `Component` tracked by this system.
     component_name: &'static str,
     /// Component tracked by this system.

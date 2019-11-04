@@ -32,6 +32,10 @@ mod audio_loading;
 #[cfg(test)]
 mod audio_play;
 #[cfg(test)]
+mod background_loading;
+#[cfg(test)]
+mod background_model;
+#[cfg(test)]
 mod camera_play;
 #[cfg(test)]
 mod character_loading;
@@ -136,6 +140,10 @@ mod sprite_loading;
 #[cfg(test)]
 mod sprite_model;
 #[cfg(test)]
+mod sprite_play;
+#[cfg(test)]
+mod state_play;
+#[cfg(test)]
 mod stdio_command_stdio;
 #[cfg(test)]
 mod stdio_input;
@@ -147,3 +155,7 @@ mod test_object_model;
 mod tracker;
 #[cfg(test)]
 mod ui_audio_loading;
+#[cfg(test)]
+mod ui_loading;
+#[cfg(test)]
+mod ui_model;

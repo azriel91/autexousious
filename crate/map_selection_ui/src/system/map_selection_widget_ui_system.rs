@@ -231,6 +231,7 @@ impl MapSelectionWidgetUiSystem {
             .for_each(|(widget, ui_text)| {
                 ui_text.text = {
                     let slug_string = match widget.selection {
+                        MapSelection::None => String::from("None"),
                         MapSelection::Random(..) => String::from("Random"),
                         MapSelection::Id(asset_id) => {
                             let slug = asset_id_mappings
