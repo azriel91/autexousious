@@ -65,7 +65,8 @@ use typename::TypeName;
 use crate::{
     CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
     GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, GamePlayRemovalAugmentSystem,
-    GroundingFrictionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    GamePlayStatusDisplaySystem, GroundingFrictionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -439,7 +440,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &GamePlayEndDetectionSystem::type_name(),
             &[],
         ); // kcov-ignore
-           // Sends a state transition when game play ends, and `Attack` is pressed.
+
+        builder.add(
+            GamePlayStatusDisplaySystem::new(),
+            &GamePlayStatusDisplaySystem::type_name(),
+            &[&GamePlayEndDetectionSystem::type_name()],
+        ); // kcov-ignore
+
+        // Sends a state transition when game play ends, and `Attack` is pressed.
         builder.add(
             GamePlayEndTransitionSystem::new(),
             &GamePlayEndTransitionSystem::type_name(),

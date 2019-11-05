@@ -2231,6 +2231,7 @@ version = "0.14.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.14.0",
+ "application_ui 0.14.0",
  "asset_model 0.14.0",
  "audio_model 0.14.0",
  "audio_play 0.14.0",
