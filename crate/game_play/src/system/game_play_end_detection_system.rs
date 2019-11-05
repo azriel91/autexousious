@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, System, World, Write},
+    ecs::{Join, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -28,7 +28,7 @@ pub struct GamePlayEndDetectionSystem {
 pub struct GamePlayEndDetectionSystemData<'s> {
     /// `GamePlayStatus` resource.
     #[derivative(Debug = "ignore")]
-    pub game_play_status: Read<'s, GamePlayStatus>,
+    pub game_play_status: Write<'s, GamePlayStatus>,
     /// `GamePlayEvent` channel.
     #[derivative(Debug = "ignore")]
     pub game_play_ec: Write<'s, EventChannel<GamePlayEvent>>,
@@ -40,34 +40,55 @@ pub struct GamePlayEndDetectionSystemData<'s> {
     pub health_pointses: ReadStorage<'s, HealthPoints>,
 }
 
+impl GamePlayEndDetectionSystem {
+    fn team_alive_count(
+        &mut self,
+        teams: &ReadStorage<'_, Team>,
+        health_pointses: &ReadStorage<'_, HealthPoints>,
+    ) -> usize {
+        self.team_alive_counter.clear();
+
+        // Game ends when there is one or less teams remaining
+        (teams, health_pointses)
+            .join()
+            .for_each(|(team, health_points)| {
+                if *health_points > 0 {
+                    let alive_count = self.team_alive_counter.entry(*team).or_insert(0);
+                    *alive_count += 1;
+                };
+            });
+
+        self.team_alive_counter.len()
+    }
+}
+
 impl<'s> System<'s> for GamePlayEndDetectionSystem {
     type SystemData = GamePlayEndDetectionSystemData<'s>;
 
     fn run(
         &mut self,
         GamePlayEndDetectionSystemData {
-            game_play_status,
+            mut game_play_status,
             mut game_play_ec,
             teams,
             health_pointses,
         }: Self::SystemData,
     ) {
-        if *game_play_status == GamePlayStatus::Playing {
-            self.team_alive_counter.clear();
-
-            // Game ends when there is one or less teams remaining
-            (&teams, &health_pointses)
-                .join()
-                .for_each(|(team, health_points)| {
-                    if *health_points > 0 {
-                        let alive_count = self.team_alive_counter.entry(*team).or_insert(0);
-                        *alive_count += 1;
-                    };
-                });
-
-            if self.team_alive_counter.len() <= 1 {
-                game_play_ec.single_write(GamePlayEvent::End);
+        match *game_play_status {
+            GamePlayStatus::Playing => {
+                let team_alive_count = self.team_alive_count(&teams, &health_pointses);
+                if team_alive_count <= 1 {
+                    *game_play_status = GamePlayStatus::Ended;
+                    game_play_ec.single_write(GamePlayEvent::End);
+                }
             }
+            GamePlayStatus::Ended => {
+                let team_alive_count = self.team_alive_count(&teams, &health_pointses);
+                if team_alive_count <= 1 {
+                    *game_play_status = GamePlayStatus::Playing;
+                }
+            }
+            GamePlayStatus::None | GamePlayStatus::Paused => {}
         }
     }
 }

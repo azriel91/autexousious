@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, System, World, Write},
+    ecs::{Join, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -22,7 +22,7 @@ pub struct GamePlayEndTransitionSystem;
 pub struct GamePlayEndTransitionSystemData<'s> {
     /// `GamePlayStatus` resource.
     #[derivative(Debug = "ignore")]
-    pub game_play_status: Read<'s, GamePlayStatus>,
+    pub game_play_status: Write<'s, GamePlayStatus>,
     /// `Last<ControllerInput>` components.
     #[derivative(Debug = "ignore")]
     pub last_controller_inputs: ReadStorage<'s, Last<ControllerInput>>,
@@ -40,7 +40,7 @@ impl<'s> System<'s> for GamePlayEndTransitionSystem {
     fn run(
         &mut self,
         GamePlayEndTransitionSystemData {
-            game_play_status,
+            mut game_play_status,
             last_controller_inputs,
             controller_inputs,
             mut game_play_ec,
@@ -56,6 +56,8 @@ impl<'s> System<'s> for GamePlayEndTransitionSystem {
             );
 
             if should_transition {
+                *game_play_status = GamePlayStatus::None;
+
                 game_play_ec.single_write(GamePlayEvent::EndStats);
             }
         }
