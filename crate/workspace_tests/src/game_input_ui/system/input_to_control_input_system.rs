@@ -15,6 +15,7 @@ mod test {
         ControlInputEvent, ControllerConfig, InputConfig,
     };
     use hamcrest::prelude::*;
+    use indexmap::IndexMap;
     use typename::TypeName;
     use winit::{
         DeviceId, ElementState, Event, KeyboardInput, ModifiersState, VirtualKeyCode, WindowEvent,
@@ -154,7 +155,9 @@ mod test {
             VirtualKeyCode::O,
         ]);
 
-        let controller_configs = vec![controller_config_0, controller_config_1];
+        let mut controller_configs = IndexMap::new();
+        controller_configs.insert(String::from("zero1"), controller_config_0);
+        controller_configs.insert(String::from("one"), controller_config_1);
         InputConfig::new(controller_configs)
     }
 

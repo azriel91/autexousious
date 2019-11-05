@@ -6,6 +6,7 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
+use indexmap::IndexMap;
 use log::error;
 use serde::{Deserialize, Serialize};
 
@@ -15,7 +16,7 @@ use crate::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisCo
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
 pub struct InputConfig {
     /// Axis control configuration.
-    pub controller_configs: Vec<ControllerConfig>,
+    pub controller_configs: IndexMap<String, ControllerConfig>,
 }
 
 impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
@@ -27,7 +28,7 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
         // Axis controls
         let axis_result = input_config
             .controller_configs
-            .iter()
+            .values()
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
@@ -61,7 +62,7 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
         // Action controls
         let action_result = input_config
             .controller_configs
-            .iter()
+            .values()
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
