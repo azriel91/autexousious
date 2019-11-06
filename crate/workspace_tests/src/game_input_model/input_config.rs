@@ -4,11 +4,11 @@ mod tests {
 
     use amethyst::input::{Axis as InputAxis, BindingError, Bindings, Button};
     use hamcrest::prelude::*;
+    use indexmap::IndexMap;
     use winit::VirtualKeyCode;
 
-    use game_input_model::InputConfig;
     use game_input_model::{
-        Axis, ControlAction, ControlBindings, ControllerConfig, PlayerActionControl,
+        Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig, PlayerActionControl,
         PlayerAxisControl,
     };
 
@@ -22,7 +22,9 @@ mod tests {
             VirtualKeyCode::O,
         ]);
 
-        let controller_configs = vec![controller_config_0, controller_config_1];
+        let mut controller_configs = IndexMap::new();
+        controller_configs.insert(String::from("zero1"), controller_config_0);
+        controller_configs.insert(String::from("one"), controller_config_1);
         let input_config = InputConfig::new(controller_configs);
 
         let bindings = Bindings::<ControlBindings>::try_from(&input_config)
@@ -54,7 +56,9 @@ mod tests {
         let controller_config_1 =
             controller_config([VirtualKeyCode::A, VirtualKeyCode::Right, VirtualKeyCode::O]);
 
-        let controller_configs = vec![controller_config_0, controller_config_1];
+        let mut controller_configs = IndexMap::new();
+        controller_configs.insert(String::from("zero1"), controller_config_0);
+        controller_configs.insert(String::from("one"), controller_config_1);
         let input_config = InputConfig::new(controller_configs);
 
         if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
@@ -97,7 +101,9 @@ mod tests {
             VirtualKeyCode::Key1,
         ]);
 
-        let controller_configs = vec![controller_config_0, controller_config_1];
+        let mut controller_configs = IndexMap::new();
+        controller_configs.insert(String::from("zero1"), controller_config_0);
+        controller_configs.insert(String::from("one"), controller_config_1);
         let input_config = InputConfig::new(controller_configs);
 
         if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
