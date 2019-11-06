@@ -8,6 +8,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_play_model::{GamePlayEvent, GamePlayStatus};
+    use game_stats_model::play::{WinOutcome, WinStatus};
     use object_model::play::HealthPoints;
     use team_model::play::{IndependentCounter, Team, TeamCounter};
     use typename::TypeName;
@@ -33,18 +34,20 @@ mod test {
             ExpectedParams {
                 game_play_status: GamePlayStatus::Playing,
                 game_play_events: vec![],
+                win_status: WinStatus::default(),
             },
         )
     }
 
     #[test]
     fn sends_game_play_end_event_when_one_alive_team_remaining() -> Result<(), Error> {
+        let winning_team = Team::Number(TeamCounter::new(0));
         run_test(
             SetupParams {
                 game_play_status: GamePlayStatus::Playing,
                 objects: vec![
                     ObjectStatus {
-                        team: Team::Number(TeamCounter::new(0)),
+                        team: winning_team,
                         liveness: Liveness::Alive,
                     },
                     ObjectStatus {
@@ -56,6 +59,7 @@ mod test {
             ExpectedParams {
                 game_play_status: GamePlayStatus::Ended,
                 game_play_events: vec![GamePlayEvent::End],
+                win_status: WinStatus::new(WinOutcome::WinLoss { winning_team }),
             },
         )
     }
@@ -63,16 +67,17 @@ mod test {
     #[test]
     fn sends_game_play_end_event_when_one_alive_team_multiple_entities_remaining(
     ) -> Result<(), Error> {
+        let winning_team = Team::Number(TeamCounter::new(0));
         run_test(
             SetupParams {
                 game_play_status: GamePlayStatus::Playing,
                 objects: vec![
                     ObjectStatus {
-                        team: Team::Number(TeamCounter::new(0)),
+                        team: winning_team,
                         liveness: Liveness::Alive,
                     },
                     ObjectStatus {
-                        team: Team::Number(TeamCounter::new(0)),
+                        team: winning_team,
                         liveness: Liveness::Alive,
                     },
                     ObjectStatus {
@@ -84,6 +89,7 @@ mod test {
             ExpectedParams {
                 game_play_status: GamePlayStatus::Ended,
                 game_play_events: vec![GamePlayEvent::End],
+                win_status: WinStatus::new(WinOutcome::WinLoss { winning_team }),
             },
         )
     }
@@ -107,6 +113,7 @@ mod test {
             ExpectedParams {
                 game_play_status: GamePlayStatus::Ended,
                 game_play_events: vec![GamePlayEvent::End],
+                win_status: WinStatus::new(WinOutcome::Draw),
             },
         )
     }
@@ -131,6 +138,7 @@ mod test {
             ExpectedParams {
                 game_play_status: GamePlayStatus::Playing,
                 game_play_events: vec![],
+                win_status: WinStatus::default(),
             },
         )
     }
@@ -143,6 +151,7 @@ mod test {
         ExpectedParams {
             game_play_status: game_play_status_expected,
             game_play_events,
+            win_status: win_status_expected,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
@@ -168,8 +177,10 @@ mod test {
             ) // kcov-ignore
             .with_assertion(move |world| {
                 let game_play_status = *world.read_resource::<GamePlayStatus>();
+                let win_status = *world.read_resource::<WinStatus>();
 
                 assert_eq!(game_play_status_expected, game_play_status);
+                assert_eq!(win_status_expected, win_status);
                 assert_game_play_events(world, game_play_events);
             })
             .run()
@@ -203,6 +214,7 @@ mod test {
     struct ExpectedParams {
         game_play_status: GamePlayStatus,
         game_play_events: Vec<GamePlayEvent>,
+        win_status: WinStatus,
     }
 
     struct ObjectStatus {

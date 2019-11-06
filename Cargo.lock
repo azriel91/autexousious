@@ -5794,6 +5794,7 @@ dependencies = [
  "game_play_hud 0.14.0",
  "game_play_model 0.14.0",
  "game_play_stdio 0.14.0",
+ "game_stats_model 0.15.0",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_loading 0.14.0",
