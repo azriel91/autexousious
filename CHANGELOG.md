@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.15.0 (unreleased)
+## 0.15.0 (2019-11-08)
 
 ### Added
 
 * Tests for asset part loading systems. ([#172])
 * Each state may specify background images. ([#175])
-* Game mode selection menu item may be rendered with sprites. ([#175])
+* Game mode selection menu items may be rendered with sprites. ([#175])
 * Controller configuration takes in player names. ([#179])
 * Display player name that won when game ends. ([#179])
 
