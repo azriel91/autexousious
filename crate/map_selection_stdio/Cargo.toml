@@ -1,6 +1,6 @@
 [package]
 name = "map_selection_stdio"
-version = "0.14.0"
+version = "0.15.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
