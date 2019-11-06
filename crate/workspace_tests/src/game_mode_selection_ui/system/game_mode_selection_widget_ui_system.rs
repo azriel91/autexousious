@@ -14,6 +14,7 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
+    use indexmap::IndexMap;
     use state_registry::{StateId, StateIdUpdateEvent};
     use strum::IntoEnumIterator;
     use typename::TypeName;
@@ -103,7 +104,9 @@ mod test {
             VirtualKeyCode::O,
         ]);
 
-        let controller_configs = vec![controller_config_0, controller_config_1];
+        let mut controller_configs = IndexMap::new();
+        controller_configs.insert(String::from("zero1"), controller_config_0);
+        controller_configs.insert(String::from("one"), controller_config_1);
         InputConfig::new(controller_configs)
     }
 

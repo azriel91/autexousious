@@ -2,83 +2,144 @@
 mod test {
     use amethyst::{
         ecs::{Builder, SystemData, World, WorldExt},
-        input::StringBindings,
+        input::{InputBundle, StringBindings},
         shrev::{EventChannel, ReaderId},
+        window::ScreenDimensions,
         Error,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::ControllerInput;
-    use game_play_model::{GamePlayEvent, GamePlayStatus};
+    use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
     use tracker::Last;
     use typename::TypeName;
 
     use game_play::{GamePlayEndTransitionSystem, GamePlayEndTransitionSystemData};
 
     #[test]
+    fn does_not_send_game_play_end_stats_event_when_game_play_transition_clock_not_complete(
+    ) -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 0),
+                game_play_status: GamePlayStatus::Ended,
+                attack_pressed_last: false,
+                attack_pressed: true,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::Ended,
+                game_play_events: vec![],
+            },
+        )
+    }
+
+    #[test]
     fn does_not_send_game_play_end_stats_event_when_game_play_is_not_end() -> Result<(), Error> {
-        AmethystApplication::ui_base::<StringBindings>()
-            .with_resource(GamePlayStatus::Playing)
-            .with_effect(register_gpec_reader)
-            .with_effect(|world| setup_controller_input(world, false, false))
-            .with_system_single(
-                GamePlayEndTransitionSystem::new(),
-                GamePlayEndTransitionSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_assertion(|world| verify_game_play_events(world, &[]))
-            .run()
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
+                game_play_status: GamePlayStatus::Playing,
+                attack_pressed_last: false,
+                attack_pressed: true,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::Playing,
+                game_play_events: vec![],
+            },
+        )
     }
 
     #[test]
     fn does_not_send_game_play_end_stats_event_when_attack_is_not_pressed() -> Result<(), Error> {
-        AmethystApplication::ui_base::<StringBindings>()
-            .with_resource(GamePlayStatus::Ended)
-            .with_effect(register_gpec_reader)
-            .with_effect(|world| setup_controller_input(world, true, false))
-            .with_system_single(
-                GamePlayEndTransitionSystem::new(),
-                GamePlayEndTransitionSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_assertion(|world| verify_game_play_events(world, &[]))
-            .run()
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
+                game_play_status: GamePlayStatus::Ended,
+                attack_pressed_last: true,
+                attack_pressed: false,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::Ended,
+                game_play_events: vec![],
+            },
+        )
     }
 
     #[test]
     fn does_not_send_game_play_end_stats_event_when_attack_was_previously_pressed_and_is_held(
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<StringBindings>()
-            .with_resource(GamePlayStatus::Ended)
-            .with_effect(register_gpec_reader)
-            .with_effect(|world| setup_controller_input(world, true, true))
-            .with_system_single(
-                GamePlayEndTransitionSystem::new(),
-                GamePlayEndTransitionSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_assertion(|world| verify_game_play_events(world, &[]))
-            .run()
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
+                game_play_status: GamePlayStatus::Ended,
+                attack_pressed_last: true,
+                attack_pressed: true,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::Ended,
+                game_play_events: vec![],
+            },
+        )
     }
 
     #[test]
     fn sends_game_play_end_stats_event_when_attack_was_not_previously_pressed_and_is_now(
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<StringBindings>()
-            .with_resource(GamePlayStatus::Ended)
-            .with_effect(register_gpec_reader)
-            .with_effect(|world| setup_controller_input(world, false, true))
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
+                game_play_status: GamePlayStatus::Ended,
+                attack_pressed_last: false,
+                attack_pressed: true,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::None,
+                game_play_events: vec![GamePlayEvent::EndStats],
+            },
+        )
+    }
+
+    fn run_test(
+        SetupParams {
+            game_play_end_transition_delay_clock,
+            game_play_status: game_play_status_setup,
+            attack_pressed_last,
+            attack_pressed,
+        }: SetupParams,
+        ExpectedParams {
+            game_play_status: game_play_status_expected,
+            game_play_events,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(InputBundle::<StringBindings>::new())
+            .with_resource(game_play_end_transition_delay_clock)
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_resource(game_play_status_setup)
+            .with_setup(GamePlayEndTransitionSystemData::setup)
+            .with_setup(register_event_reader)
+            .with_effect(move |world| {
+                setup_controller_input(world, attack_pressed_last, attack_pressed)
+            })
             .with_system_single(
                 GamePlayEndTransitionSystem::new(),
                 GamePlayEndTransitionSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::EndStats]))
+            .with_assertion(move |world| {
+                let game_play_status = *world.read_resource::<GamePlayStatus>();
+
+                assert_eq!(game_play_status_expected, game_play_status);
+                assert_game_play_events(world, game_play_events);
+            })
             .run()
     }
 
-    fn register_gpec_reader(world: &mut World) {
-        GamePlayEndTransitionSystemData::setup(world);
-
+    fn register_event_reader(world: &mut World) {
         let reader_id = {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();
             game_play_ec.register_reader()
@@ -101,14 +162,27 @@ mod test {
             .build();
     }
 
-    fn verify_game_play_events(world: &mut World, expected: &[&GamePlayEvent]) {
+    fn assert_game_play_events(world: &mut World, game_play_events_expected: Vec<GamePlayEvent>) {
         let mut reader_id = &mut world.write_resource::<ReaderId<GamePlayEvent>>();
         let game_play_ec = world.read_resource::<EventChannel<GamePlayEvent>>();
 
-        let actual = game_play_ec
+        let game_play_events_actual = game_play_ec
             .read(&mut reader_id)
-            .collect::<Vec<&GamePlayEvent>>();
+            .copied()
+            .collect::<Vec<GamePlayEvent>>();
 
-        assert_eq!(expected, &*actual);
+        assert_eq!(game_play_events_expected, game_play_events_actual);
+    }
+
+    struct SetupParams {
+        game_play_end_transition_delay_clock: GamePlayEndTransitionDelayClock,
+        game_play_status: GamePlayStatus,
+        attack_pressed_last: bool,
+        attack_pressed: bool,
+    }
+
+    struct ExpectedParams {
+        game_play_status: GamePlayStatus,
+        game_play_events: Vec<GamePlayEvent>,
     }
 }

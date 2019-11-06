@@ -9,7 +9,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
 use game_play_model::{GamePlayEntityId, GamePlayEvent, GamePlayStatus};
-use log::{debug, info};
+use log::debug;
 use state_registry::StateId;
 
 /// `State` where game play takes place.
@@ -70,6 +70,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
             AppEvent::Window(window_event) => {
                 if is_key_down(&window_event, VirtualKeyCode::Escape) {
                     debug!("Returning from `GamePlayState`.");
+                    data.world.insert(GamePlayStatus::None);
                     Trans::Pop
                 } else {
                     Trans::None
@@ -79,6 +80,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                 match game_play_event {
                     GamePlayEvent::Return => {
                         debug!("Returning from `GamePlayState`.");
+                        data.world.insert(GamePlayStatus::None);
                         Trans::Pop
                     }
                     GamePlayEvent::Restart => {
@@ -93,11 +95,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                         data.world.insert(GamePlayStatus::Playing);
                         Trans::None
                     }
-                    GamePlayEvent::End => {
-                        info!("Game play ended!");
-                        data.world.insert(GamePlayStatus::Ended);
-                        Trans::None
-                    }
+                    GamePlayEvent::End => Trans::None,
                     GamePlayEvent::EndStats => {
                         // TODO: `GamePlayStats` state.
                         Trans::Pop

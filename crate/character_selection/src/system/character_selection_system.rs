@@ -68,8 +68,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     };
                     character_selections
                         .selections
-                        .entry(*controller_id)
-                        .or_insert(asset_id);
+                        .insert(*controller_id, asset_id);
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
