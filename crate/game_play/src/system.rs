@@ -4,6 +4,10 @@ pub use self::{
         CharacterSequenceUpdateSystem, CharacterSequenceUpdateSystemData,
     },
     game_play_end_detection_system::{GamePlayEndDetectionSystem, GamePlayEndDetectionSystemData},
+    game_play_end_transition_delay_system::{
+        GamePlayEndTransitionDelaySystem, GamePlayEndTransitionDelaySystemData,
+        GAME_PLAY_END_TRANSITION_DELAY_DEFAULT,
+    },
     game_play_end_transition_system::{
         GamePlayEndTransitionSystem, GamePlayEndTransitionSystemData,
     },
@@ -26,6 +30,7 @@ pub use self::{
 mod character_hit_effect_system;
 mod character_sequence_update_system;
 mod game_play_end_detection_system;
+mod game_play_end_transition_delay_system;
 mod game_play_end_transition_system;
 mod game_play_removal_augment_system;
 mod game_play_status_display_system;

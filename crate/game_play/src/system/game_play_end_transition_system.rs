@@ -1,12 +1,12 @@
 use amethyst::{
-    ecs::{Join, ReadStorage, System, World, Write},
+    ecs::{Join, Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_input::ControllerInput;
-use game_play_model::{GamePlayEvent, GamePlayStatus};
+use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
 use tracker::Last;
 use typename_derive::TypeName;
 
@@ -20,6 +20,9 @@ pub struct GamePlayEndTransitionSystem;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct GamePlayEndTransitionSystemData<'s> {
+    /// `GamePlayEndTransitionDelayClock` resource.
+    #[derivative(Debug = "ignore")]
+    pub game_play_end_transition_delay_clock: Read<'s, GamePlayEndTransitionDelayClock>,
     /// `GamePlayStatus` resource.
     #[derivative(Debug = "ignore")]
     pub game_play_status: Write<'s, GamePlayStatus>,
@@ -40,13 +43,16 @@ impl<'s> System<'s> for GamePlayEndTransitionSystem {
     fn run(
         &mut self,
         GamePlayEndTransitionSystemData {
+            game_play_end_transition_delay_clock,
             mut game_play_status,
             last_controller_inputs,
             controller_inputs,
             mut game_play_ec,
         }: Self::SystemData,
     ) {
-        if *game_play_status == GamePlayStatus::Ended {
+        if game_play_end_transition_delay_clock.is_complete()
+            && *game_play_status == GamePlayStatus::Ended
+        {
             // Transition when someone presses attack
             let should_transition = (&last_controller_inputs, &controller_inputs).join().fold(
                 false,

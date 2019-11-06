@@ -9,16 +9,36 @@ mod test {
     };
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::ControllerInput;
-    use game_play_model::{GamePlayEvent, GamePlayStatus};
+    use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
     use tracker::Last;
     use typename::TypeName;
 
     use game_play::{GamePlayEndTransitionSystem, GamePlayEndTransitionSystemData};
 
     #[test]
+    fn does_not_send_game_play_end_stats_event_when_game_play_transition_clock_not_complete(
+    ) -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 0),
+                game_play_status: GamePlayStatus::Ended,
+                attack_pressed_last: false,
+                attack_pressed: true,
+            },
+            ExpectedParams {
+                game_play_status: GamePlayStatus::Ended,
+                game_play_events: vec![],
+            },
+        )
+    }
+
+    #[test]
     fn does_not_send_game_play_end_stats_event_when_game_play_is_not_end() -> Result<(), Error> {
         run_test(
             SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
                 game_play_status: GamePlayStatus::Playing,
                 attack_pressed_last: false,
                 attack_pressed: true,
@@ -34,6 +54,8 @@ mod test {
     fn does_not_send_game_play_end_stats_event_when_attack_is_not_pressed() -> Result<(), Error> {
         run_test(
             SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
                 game_play_status: GamePlayStatus::Ended,
                 attack_pressed_last: true,
                 attack_pressed: false,
@@ -50,6 +72,8 @@ mod test {
     ) -> Result<(), Error> {
         run_test(
             SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
                 game_play_status: GamePlayStatus::Ended,
                 attack_pressed_last: true,
                 attack_pressed: true,
@@ -66,6 +90,8 @@ mod test {
     ) -> Result<(), Error> {
         run_test(
             SetupParams {
+                game_play_end_transition_delay_clock:
+                    GamePlayEndTransitionDelayClock::new_with_value(1, 1),
                 game_play_status: GamePlayStatus::Ended,
                 attack_pressed_last: false,
                 attack_pressed: true,
@@ -79,6 +105,7 @@ mod test {
 
     fn run_test(
         SetupParams {
+            game_play_end_transition_delay_clock,
             game_play_status: game_play_status_setup,
             attack_pressed_last,
             attack_pressed,
@@ -90,6 +117,7 @@ mod test {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(InputBundle::<StringBindings>::new())
+            .with_resource(game_play_end_transition_delay_clock)
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_resource(game_play_status_setup)
             .with_setup(GamePlayEndTransitionSystemData::setup)
@@ -147,6 +175,7 @@ mod test {
     }
 
     struct SetupParams {
+        game_play_end_transition_delay_clock: GamePlayEndTransitionDelayClock,
         game_play_status: GamePlayStatus,
         attack_pressed_last: bool,
         attack_pressed: bool,
