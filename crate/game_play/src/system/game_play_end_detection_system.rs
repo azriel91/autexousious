@@ -8,6 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
+use game_stats_model::play::{WinOutcome, WinStatus};
 use object_model::play::HealthPoints;
 use team_model::play::Team;
 use typename_derive::TypeName;
@@ -38,9 +39,42 @@ pub struct GamePlayEndDetectionSystemData<'s> {
     /// `HealthPoints` components.
     #[derivative(Debug = "ignore")]
     pub health_pointses: ReadStorage<'s, HealthPoints>,
+    /// `WinStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub win_status: Write<'s, WinStatus>,
 }
 
 impl GamePlayEndDetectionSystem {
+    /// Computes and returns the `WinStatus` if the game has ended.
+    fn win_status(
+        &mut self,
+        GamePlayEndDetectionSystemData {
+            teams,
+            health_pointses,
+            ..
+        }: &mut GamePlayEndDetectionSystemData,
+    ) -> Option<WinStatus> {
+        let team_alive_count = self.team_alive_count(&teams, &health_pointses);
+        if team_alive_count == 0 {
+            let win_outcome = WinOutcome::Draw;
+            let win_status = WinStatus::new(win_outcome);
+            Some(win_status)
+        } else if team_alive_count == 1 {
+            let winning_team = self
+                .team_alive_counter
+                .keys()
+                .next()
+                .copied()
+                .expect("Expected `Team` entry to exist.");
+            let win_outcome = WinOutcome::WinLoss { winning_team };
+            let win_status = WinStatus::new(win_outcome);
+            Some(win_status)
+        } else {
+            None
+        }
+    }
+
+    /// Returns the number of teams remaining in play.
     fn team_alive_count(
         &mut self,
         teams: &ReadStorage<'_, Team>,
@@ -65,27 +99,19 @@ impl GamePlayEndDetectionSystem {
 impl<'s> System<'s> for GamePlayEndDetectionSystem {
     type SystemData = GamePlayEndDetectionSystemData<'s>;
 
-    fn run(
-        &mut self,
-        GamePlayEndDetectionSystemData {
-            mut game_play_status,
-            mut game_play_ec,
-            teams,
-            health_pointses,
-        }: Self::SystemData,
-    ) {
-        match *game_play_status {
+    fn run(&mut self, mut system_data: Self::SystemData) {
+        match *system_data.game_play_status {
             GamePlayStatus::Playing => {
-                let team_alive_count = self.team_alive_count(&teams, &health_pointses);
-                if team_alive_count <= 1 {
-                    *game_play_status = GamePlayStatus::Ended;
-                    game_play_ec.single_write(GamePlayEvent::End);
+                if let Some(win_status) = self.win_status(&mut system_data) {
+                    *system_data.win_status = win_status;
+                    *system_data.game_play_status = GamePlayStatus::Ended;
+                    system_data.game_play_ec.single_write(GamePlayEvent::End);
                 }
             }
             GamePlayStatus::Ended => {
-                let team_alive_count = self.team_alive_count(&teams, &health_pointses);
-                if team_alive_count <= 1 {
-                    *game_play_status = GamePlayStatus::Playing;
+                if self.win_status(&mut system_data).is_none() {
+                    *system_data.win_status = WinStatus::default();
+                    *system_data.game_play_status = GamePlayStatus::Playing;
                 }
             }
             GamePlayStatus::None | GamePlayStatus::Paused => {}

@@ -27,9 +27,11 @@ collision_play = { path = "../collision_play" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input = { path = "../game_input" }
+game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
+game_stats_model = { path = "../game_stats_model" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }

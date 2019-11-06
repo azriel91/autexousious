@@ -1,5 +1,7 @@
+use std::convert::TryInto;
+
 use amethyst::{
-    ecs::{Entities, Join, Read, ReadExpect, System, World, WriteStorage},
+    ecs::{Entities, Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
     ui::{Anchor, UiText, UiTransform},
@@ -7,9 +9,13 @@ use amethyst::{
 use application_ui::{FontVariant, Theme};
 use derivative::Derivative;
 use derive_new::new;
+use game_input::InputControlled;
+use game_input_model::InputConfig;
 use game_play_model::{
     play::GamePlayStatusEntity, GamePlayEntity, GamePlayEntityId, GamePlayEvent,
 };
+use game_stats_model::play::{WinOutcome, WinStatus};
+use team_model::play::Team;
 use typename_derive::TypeName;
 
 const FONT_COLOUR_NEUTRAL: [f32; 4] = [0.8, 0.9, 1., 1.];
@@ -43,6 +49,18 @@ pub struct GamePlayStatusDisplaySystemData<'s> {
     /// `GamePlayEntity` components.
     #[derivative(Debug = "ignore")]
     pub game_play_entities: WriteStorage<'s, GamePlayEntity>,
+    /// `WinStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub win_status: Read<'s, WinStatus>,
+    /// `Team` components.
+    #[derivative(Debug = "ignore")]
+    pub teams: ReadStorage<'s, Team>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `InputConfig` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_config: Read<'s, InputConfig>,
 
     // Resources needed to display text.
     /// `Theme` resource.
@@ -70,6 +88,47 @@ impl GamePlayStatusDisplaySystem {
                     .expect("Failed to delete `GamePlayStatus` entity");
             });
     }
+
+    fn win_status_text(
+        win_status: WinStatus,
+        teams: &ReadStorage<'_, Team>,
+        input_controlleds: &ReadStorage<'_, InputControlled>,
+        input_config: &InputConfig,
+    ) -> String {
+        match win_status.outcome {
+            WinOutcome::None => String::from("Ongoing Match"),
+            WinOutcome::WinLoss { winning_team } => {
+                let winner = (teams, input_controlleds)
+                    .join()
+                    .filter(|(team, _)| **team == winning_team)
+                    .next()
+                    .map(|(team, input_controlled)| match team {
+                        Team::Independent(..) => {
+                            let controller_id = input_controlled.controller_id;
+                            input_config
+                                .controller_configs
+                                .get_index(
+                                    controller_id
+                                        .try_into()
+                                        .expect("Failed to convert `u32` into `usize`"),
+                                )
+                                .map(|(name, _)| name.clone())
+                                .unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `InputConfig` to have at least \
+                                         {} controllers.",
+                                        controller_id + 1
+                                    )
+                                })
+                        }
+                        Team::Number(team_counter) => format!("Team {}", team_counter),
+                    })
+                    .expect("Expected entity for winning team to exist.");
+                format!("Winner: {}", winner)
+            }
+            WinOutcome::Draw => String::from("Draw"),
+        }
+    }
 }
 
 impl<'s> System<'s> for GamePlayStatusDisplaySystem {
@@ -80,6 +139,10 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
         GamePlayStatusDisplaySystemData {
             entities,
             game_play_ec,
+            win_status,
+            teams,
+            input_controlleds,
+            input_config,
             mut game_play_status_entities,
             mut game_play_entities,
             theme,
@@ -105,7 +168,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
                         .expect("Failed to get regular font handle.");
 
                     let x = -LABEL_WIDTH / 2.;
-                    let y = -LABEL_HEIGHT / 2.;
+                    let y = 0.;
                     let z = 1.;
 
                     let ui_transform = UiTransform::new(
@@ -119,9 +182,16 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
                         LABEL_HEIGHT,
                     );
 
+                    let win_status_text = Self::win_status_text(
+                        *win_status,
+                        &teams,
+                        &input_controlleds,
+                        &input_config,
+                    );
+
                     let ui_text = UiText::new(
                         font.clone(),
-                        format!("Winner: {}", "Player X"),
+                        win_status_text,
                         FONT_COLOUR_NEUTRAL,
                         FONT_SIZE_WIDGET,
                     );

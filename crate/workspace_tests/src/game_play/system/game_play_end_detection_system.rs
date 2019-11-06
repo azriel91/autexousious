@@ -26,7 +26,7 @@ mod test {
                     },
                     ObjectStatus {
                         team: Team::Independent(IndependentCounter::new(1)),
-                        liveness: Liveness::Dead,
+                        liveness: Liveness::Alive,
                     },
                 ],
             },
