@@ -36,12 +36,10 @@ impl IoUtils {
     ///
     /// use application::IoUtils;
     ///
-    /// # fn main() {
     /// let path = Path::new("directory/child");
     /// let basename = IoUtils::basename(path).unwrap();
     ///
     /// assert_eq!("child", basename);
-    /// # }
     /// ```
     pub fn basename(path: &Path) -> io::Result<String> {
         let mut components = path.components();

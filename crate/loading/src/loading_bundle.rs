@@ -28,7 +28,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         builder.add(
-            AssetDiscoverySystem::new(self.assets_dir.clone()),
+            AssetDiscoverySystem::new(self.assets_dir),
             &AssetDiscoverySystem::type_name(),
             &[],
         ); // kcov-ignore

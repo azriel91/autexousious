@@ -137,7 +137,7 @@ impl SequenceUpdateSystem {
             if frame_index_clock.is_complete() {
                 *sequence_status = SequenceStatus::End;
 
-                let frame_index = (*frame_index_clock).value.checked_sub(1).unwrap_or(0);
+                let frame_index = (*frame_index_clock).value.saturating_sub(1);
                 sequence_update_ec.single_write(SequenceUpdateEvent::SequenceEnd {
                     entity,
                     frame_index,

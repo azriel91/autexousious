@@ -56,7 +56,6 @@ impl AppFile {
     /// ```rust
     /// use application::{AppDir, AppFile};
     ///
-    /// # fn main() {
     /// // Search for '<application_dir>/resources/config.ron'.
     /// let path = match AppFile::find_in(AppDir::RESOURCES, "config.ron") {
     ///     Ok(path) => path,
@@ -64,7 +63,6 @@ impl AppFile {
     /// };
     ///
     /// println!("Path: {}", path.display());
-    /// # }
     /// ```
     pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
         conf_dir: P,
@@ -155,7 +153,6 @@ impl AppFile {
     ///     title: String,
     /// }
     ///
-    /// # fn main() {
     /// // Search for '<application_dir>/resources/config.ron'.
     /// let config: Config = match AppFile::load_in(
     ///     AppDir::RESOURCES,
@@ -167,7 +164,6 @@ impl AppFile {
     /// };
     ///
     /// println!("Config: {:?}", config);
-    /// # }
     pub fn load_in<T, P>(conf_dir: P, file_name: &str, format: Format) -> Result<T, Error>
     where
         for<'de> T: Deserialize<'de>,

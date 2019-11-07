@@ -42,7 +42,7 @@ impl<'s> System<'s> for StateIdEventSystem {
     ) {
         if let Some(state_id) = state_id {
             let state_id = *state_id;
-            let state_id_prev = state_id_prev.map(|state_id_prev| **state_id_prev).clone();
+            let state_id_prev = state_id_prev.map(|state_id_prev| **state_id_prev);
 
             // Send event when `state_id_prev` is `None`, or when it differs from `state_id`.
             if state_id_prev

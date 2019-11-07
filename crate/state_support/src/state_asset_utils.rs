@@ -15,7 +15,7 @@ impl StateAssetUtils {
     pub fn asset_id(asset_id_mappings: &AssetIdMappings, state_id: StateId) -> Option<AssetId> {
         let state_id_name = state_id.to_string();
         asset_id_mappings.iter().find_map(|(id, slug)| {
-            if &slug.name == &state_id_name {
+            if slug.name == state_id_name {
                 Some(id)
             } else {
                 None

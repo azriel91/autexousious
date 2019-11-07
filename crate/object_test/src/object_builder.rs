@@ -144,7 +144,7 @@ impl ObjectBuilder {
                 loader.load_from_data(self.interactions.clone(), (), &interactions_assets);
             let interactions_sequence = InteractionsSequence::new(vec![interactions_handle]);
 
-            let spawns_handle = loader.load_from_data(self.spawns.clone(), (), &spawns_assets);
+            let spawns_handle = loader.load_from_data(self.spawns, (), &spawns_assets);
             let spawns_sequence = SpawnsSequence::new(vec![spawns_handle]);
 
             let wait_sequence_handle =

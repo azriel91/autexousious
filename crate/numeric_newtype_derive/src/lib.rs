@@ -35,20 +35,18 @@
 //!     };
 //! }
 //!
-//! fn main() {
-//!     test!(PointsU8, u8, 10, 9, 0);
-//!     test!(PointsU16, u16, 10, 9, 0);
-//!     test!(PointsU32, u32, 10, 9, 0);
-//!     test!(PointsU64, u64, 10, 9, 0);
-//!     test!(PointsU128, u128, 10, 9, 0);
-//!     test!(PointsI8, i8, 10, 9, 0);
-//!     test!(PointsI16, i16, 10, 9, 0);
-//!     test!(PointsI32, i32, 10, 9, 0);
-//!     test!(PointsI64, i64, 10, 9, 0);
-//!     test!(PointsI128, i128, 10, 9, 0);
-//!     test!(PointsF32, f32, 10., 9., 0.);
-//!     test!(PointsF64, f64, 10., 9., 0.);
-//! }
+//! test!(PointsU8, u8, 10, 9, 0);
+//! test!(PointsU16, u16, 10, 9, 0);
+//! test!(PointsU32, u32, 10, 9, 0);
+//! test!(PointsU64, u64, 10, 9, 0);
+//! test!(PointsU128, u128, 10, 9, 0);
+//! test!(PointsI8, i8, 10, 9, 0);
+//! test!(PointsI16, i16, 10, 9, 0);
+//! test!(PointsI32, i32, 10, 9, 0);
+//! test!(PointsI64, i64, 10, 9, 0);
+//! test!(PointsI128, i128, 10, 9, 0);
+//! test!(PointsF32, f32, 10., 9., 0.);
+//! test!(PointsF64, f64, 10., 9., 0.);
 //! ```
 
 // TODO: Test using `compiletest_rs`.
