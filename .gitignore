@@ -2,3 +2,6 @@
 /target/
 **/*.rs.bk
 *.zip
+
+/assets/default
+/scenes
