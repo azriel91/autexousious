@@ -15,8 +15,8 @@ application_menu = { path = "../application_menu" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 derive-new = "0.5.8"
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.2"
-structopt-derive = "0.3.2"
+structopt = "0.3.3"
+structopt-derive = "0.3.3"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

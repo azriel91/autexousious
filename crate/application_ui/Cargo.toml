@@ -12,7 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 derive-new = "0.5.8"
-serde = { version = "1.0.101", features = ["derive"] }
+serde = { version = "1.0.102", features = ["derive"] }
 strum = "0.16.0"
 strum_macros = "0.16.0"
 
