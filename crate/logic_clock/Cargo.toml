@@ -16,4 +16,4 @@ serde = { version = "1.0.102", features = ["derive"] }
 
 [dev-dependencies]
 derive_deref = "1.1.0"
-derive_more = "0.15.0"
+derive_more = "0.15.1-pre"

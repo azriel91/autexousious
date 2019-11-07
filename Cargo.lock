@@ -646,7 +646,7 @@ dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_builder 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_type 0.15.0",
@@ -1639,11 +1639,11 @@ dependencies = [
 
 [[package]]
 name = "derive_builder"
-version = "0.8.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "darling 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder_core 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_builder_core 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1651,7 +1651,7 @@ dependencies = [
 
 [[package]]
 name = "derive_builder_core"
-version = "0.8.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "darling 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1852,6 +1852,19 @@ dependencies = [
 [[package]]
 name = "err-derive"
 version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro-error 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "synstructure 0.12.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "err-derive"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro-error 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5023,7 +5036,7 @@ dependencies = [
  "application_event 0.15.0",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "err-derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "err-derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -6030,8 +6043,8 @@ dependencies = [
 "checksum deflate 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "707b6a7b384888a70c8d2e8650b3e60170dfc6a67bb4aa67b6dfca57af4bedb4"
 "checksum derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "942ca430eef7a3806595a6737bc388bf51adb888d3fc0dd1b50f1c170167ee3a"
 "checksum derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)" = "71f31892cd5c62e414316f2963c5689242c43d8e7bbcaaeca97e5e28c95d91d9"
-"checksum derive_builder 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9a71d29c78eaaf1534fc79955d500f7f7799ed350c97bceb6cfd908a2241eba7"
-"checksum derive_builder_core 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "69cecb1f2c698fd8faf108b53ad47f1fc4cd0c2a16691fe2db2d371f52f71421"
+"checksum derive_builder 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a2658621297f2cf68762a6f7dc0bb7e1ff2cfd6583daef8ee0fed6f7ec468ec0"
+"checksum derive_builder_core 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2791ea3e372c8495c0bc2033991d76b512cd799d07491fbd6890124db9458bef"
 "checksum derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)" = "<none>"
 "checksum derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)" = "<none>"
 "checksum difference 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
@@ -6050,6 +6063,7 @@ dependencies = [
 "checksum env_logger 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "aafcde04e90a5226a6443b7aabdb016ba2f8307c847d524724bd9b346dd1a2d3"
 "checksum erased-serde 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "3beee4bc16478a1b26f2e80ad819a52d24745e292f521a63c16eea5f74b7eb60"
 "checksum err-derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "b41487fadaa500d02a819eefcde5f713599a01dd51626ef25d2d72d87115667b"
+"checksum err-derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ead97ef6ef5530312e584d24b1ef31e96455bc2135945109fc737fe8b62ff4a5"
 "checksum escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ceb9adbf9874d5d028b5e4c5739d22b71988252b25c9c98fe7cf9738bee84597"
 "checksum escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "74cf96bec282dcdb07099f7e31d9fed323bca9435a09aba7b6d99b7617bca96d"
 "checksum euclid 0.20.3 (registry+https://github.com/rust-lang/crates.io-index)" = "f46a3516f04c5e05870f71ae6242a97e8f72ee12cfc2f7f5deb16111a98b0670"
