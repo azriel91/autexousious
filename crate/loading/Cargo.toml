@@ -37,8 +37,8 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.101", features = ["derive"] }
-serde_yaml = "0.8.9"
+serde = { version = "1.0.102", features = ["derive"] }
+serde_yaml = "0.8.11"
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }

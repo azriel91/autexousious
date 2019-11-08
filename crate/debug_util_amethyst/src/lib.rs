@@ -26,10 +26,8 @@ use amethyst::Trans;
 /// # struct MyState;
 /// # impl State<GameData<'static, 'static>, ()> for MyState {}
 /// #
-/// # fn main() {
 /// let trans = Trans::Push(Box::new(MyState));
 /// assert_eq!("Trans::Push", display_trans(&trans));
-/// # }
 /// ```
 pub fn display_trans<T, E>(trans: &Trans<T, E>) -> &str {
     match *trans {
@@ -61,10 +59,8 @@ pub fn display_trans<T, E>(trans: &Trans<T, E>) -> &str {
 /// # use amethyst::prelude::*;
 /// # use debug_util_amethyst::assert_eq_trans;
 /// #
-/// # fn main() {
 /// // ok
 /// assert_eq_trans::<(), ()>(&Trans::None, &Trans::None);
-/// # }
 /// ```
 ///
 /// Failing assertion:
@@ -76,10 +72,8 @@ pub fn display_trans<T, E>(trans: &Trans<T, E>) -> &str {
 /// # use amethyst::prelude::*;
 /// # use debug_util_amethyst::assert_eq_trans;
 /// #
-/// # fn main() {
 /// // panic: Expected `Trans::None` but got `Trans::Pop`.
 /// assert_eq_trans::<(), ()>(&Trans::None, &Trans::Pop);
-/// # }
 /// ```
 ///
 /// # Panics
@@ -116,10 +110,8 @@ pub fn assert_eq_trans<T, E>(expected: &Trans<T, E>, actual: &Trans<T, E>) {
 /// # use amethyst::prelude::*;
 /// # use debug_util_amethyst::assert_eq_opt_trans;
 /// #
-/// # fn main() {
 /// assert_eq_opt_trans::<(), ()>(None, None);
 /// assert_eq_opt_trans::<(), ()>(Some(Trans::None).as_ref(), Some(Trans::None).as_ref());
-/// # }
 /// ```
 ///
 /// Failing assertion:
@@ -131,10 +123,8 @@ pub fn assert_eq_trans<T, E>(expected: &Trans<T, E>, actual: &Trans<T, E>) {
 /// # use amethyst::prelude::*;
 /// # use debug_util_amethyst::assert_eq_opt_trans;
 /// #
-/// # fn main() {
 /// // panic: Expected `Some(Trans::None)` but got `Some(Trans::Pop)`.
 /// assert_eq_opt_trans::<(), ()>(Some(Trans::None).as_ref(), Some(Trans::Pop).as_ref());
-/// # }
 /// ```
 ///
 /// # Panics

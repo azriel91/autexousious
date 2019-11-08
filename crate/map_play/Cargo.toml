@@ -12,7 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-enumflags2 = "0.6.0"
+enumflags2 = "0.6.1"
 kinematic_model = { path = "../kinematic_model" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }

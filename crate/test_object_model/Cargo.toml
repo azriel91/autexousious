@@ -19,7 +19,7 @@ kinematic_model = { path = "../kinematic_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type", features = ["test-support"] }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.101", features = ["derive"] }
+serde = { version = "1.0.102", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 strum = "0.16.0"

@@ -24,7 +24,7 @@ object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.101", features = ["derive"] }
+serde = { version = "1.0.102", features = ["derive"] }
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 strum = "0.16.0"

@@ -14,7 +14,7 @@ derivative = "1.0.3"
 derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
 logic_clock = { path = "../logic_clock" }
-serde = { version = "1.0.101", features = ["derive"] }
+serde = { version = "1.0.102", features = ["derive"] }
 
 [features]
 nightly = ["amethyst/nightly"]

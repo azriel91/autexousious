@@ -23,7 +23,7 @@ object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.101", features = ["derive"] }
+serde = { version = "1.0.102", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }

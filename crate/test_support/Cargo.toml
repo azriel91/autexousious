@@ -9,6 +9,3 @@ doctest = false
 test = false
 
 [dependencies]
-application = { path = "../application" }
-serde = { version = "1.0.101", features = ["derive"] }
-serde_yaml = "0.8.9"
