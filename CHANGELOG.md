@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.0 (unreleased)
+
+### Fixed
+
+* Delete entities that are spawned out of bounds. ([#184])
+
+[#184]: https://gitlab.com/azriel91/autexousious/issues/184
+
 ## 0.15.0 (2019-11-08)
 
 ### Added

@@ -15,6 +15,8 @@ use map_selection_model::MapSelection;
 use tracker::Last;
 use typename_derive::TypeName;
 
+use crate::{Comparative, MapBoundsChecks};
+
 /// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited map bounds.
 #[derive(Debug, Default, TypeName, new)]
 pub struct MapEnterExitDetectionSystem;
@@ -75,17 +77,6 @@ impl<'s> System<'s> for MapEnterExitDetectionSystem {
     }
 }
 
-/// Where a value lies in comparison to a range.
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum Comparative {
-    /// Below the range.
-    Below,
-    /// Within the range.
-    Within,
-    /// Above the range.
-    Above,
-}
-
 impl MapEnterExitDetectionSystem {
     /// Returns a `MapBoundaryEvent` if the entity has crossed the map boundary.
     fn detect_enter_exit(
@@ -95,12 +86,13 @@ impl MapEnterExitDetectionSystem {
         position: Position<f32>,
     ) -> Option<MapBoundaryEvent> {
         let (within_x_last, within_y_last, within_z_last) =
-            Self::position_comparative(map_margins, position_last);
+            MapBoundsChecks::position_comparative(map_margins, position_last);
         let within_bounds_last =
-            Self::is_within_bounds(within_x_last, within_y_last, within_z_last);
+            MapBoundsChecks::is_within_bounds(within_x_last, within_y_last, within_z_last);
 
-        let (within_x, within_y, within_z) = Self::position_comparative(map_margins, position);
-        let within_bounds = Self::is_within_bounds(within_x, within_y, within_z);
+        let (within_x, within_y, within_z) =
+            MapBoundsChecks::position_comparative(map_margins, position);
+        let within_bounds = MapBoundsChecks::is_within_bounds(within_x, within_y, within_z);
 
         let mut boundary_faces = BitFlags::<BoundaryFace>::default();
 
@@ -147,42 +139,6 @@ impl MapEnterExitDetectionSystem {
             }))
         } else {
             None
-        }
-    }
-
-    /// Returns whether the position is within the map margins.
-    fn is_within_bounds(
-        within_x: Comparative,
-        within_y: Comparative,
-        within_z: Comparative,
-    ) -> bool {
-        within_x == Comparative::Within
-            && within_y == Comparative::Within
-            && within_z == Comparative::Within
-    }
-
-    /// Returns a 3-tuple of `Comparative`s whether the position is within margins on each axis.
-    fn position_comparative(
-        map_margins: &Margins,
-        position: Position<f32>,
-    ) -> (Comparative, Comparative, Comparative) {
-        let within_x = Self::value_comparative(map_margins.left, map_margins.right, position[0]);
-        let within_y = Self::value_comparative(map_margins.bottom, map_margins.top, position[1]);
-        let within_z = Self::value_comparative(map_margins.back, map_margins.front, position[2]);
-
-        (within_x, within_y, within_z)
-    }
-
-    /// Returns whether the value is between the lower and upper limits (inclusive at both ends).
-    fn value_comparative(lower: f32, upper: f32, value: f32) -> Comparative {
-        if value >= lower {
-            if value <= upper {
-                Comparative::Within
-            } else {
-                Comparative::Above
-            }
-        } else {
-            Comparative::Below
         }
     }
 }
