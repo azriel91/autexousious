@@ -16,6 +16,7 @@ enumflags2 = "0.6.1"
 kinematic_model = { path = "../kinematic_model" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
+spawn_model = { path = "../spawn_model" }
 tracker = { path = "../tracker" }
 typename = "0.1.1"
 typename_derive = "0.1.3"

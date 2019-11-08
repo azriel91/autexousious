@@ -36,7 +36,7 @@ use kinematic_model::{
 };
 use map_play::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
-    MapOutOfBoundsDeletionSystem,
+    MapOutOfBoundsDeletionSystem, MapSpawnOutOfBoundsDetectionSystem,
 };
 use named_type::NamedType;
 use object_play::{
@@ -208,6 +208,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&SpawnGameObjectSystem::type_name()],
         ); // kcov-ignore
         builder.add(
+            MapSpawnOutOfBoundsDetectionSystem::new().pausable(StateId::GamePlay),
+            &MapSpawnOutOfBoundsDetectionSystem::type_name(),
+            &[&SpawnGameObjectRectifySystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             GamePlayRemovalAugmentSystem::new(),
             &GamePlayRemovalAugmentSystem::type_name(),
             &[&SpawnGameObjectSystem::type_name()],
@@ -273,7 +278,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             MapOutOfBoundsDeletionSystem::new(),
             &MapOutOfBoundsDeletionSystem::type_name(),
-            &[&MapEnterExitDetectionSystem::type_name()],
+            &[
+                &MapEnterExitDetectionSystem::type_name(),
+                &MapSpawnOutOfBoundsDetectionSystem::type_name(),
+            ],
         ); // kcov-ignore
         builder.add(
             MapOutOfBoundsClockAugmentSystem::new(),
