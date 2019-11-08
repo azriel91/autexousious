@@ -27,7 +27,7 @@ mod tests {
     fn does_not_send_event_when_remaining_in_map() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(0., 200., 0.),
             },
             ExpectedParams {
@@ -40,7 +40,7 @@ mod tests {
     fn does_not_send_event_when_remaining_out_of_map() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(-1., 200., 0.)),
+                position_last: Position::new(-1., 200., 0.),
                 position: Position::new(-1., 200., 0.),
             },
             ExpectedParams {
@@ -50,29 +50,10 @@ mod tests {
     }
 
     #[test]
-    fn sends_event_when_spawned_out_of_map() -> Result<(), Error> {
-        run_test(
-            SetupParams {
-                position_last: None,
-                position: Position::new(-1., 200., 0.),
-            },
-            ExpectedParams {
-                map_boundary_event_fn: Some(|entity| {
-                    let boundary_faces = BitFlags::<BoundaryFace>::default();
-                    MapBoundaryEvent::Exit(MapBoundaryEventData {
-                        entity,
-                        boundary_faces,
-                    })
-                }),
-            },
-        )
-    }
-
-    #[test]
     fn sends_exit_event_when_exiting_map_left() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(-1., 200., 0.),
             },
             ExpectedParams {
@@ -91,7 +72,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_right() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(800., 200., 0.)),
+                position_last: Position::new(800., 200., 0.),
                 position: Position::new(801., 200., 0.),
             },
             ExpectedParams {
@@ -110,7 +91,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_bottom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(0., 199., 0.),
             },
             ExpectedParams {
@@ -129,7 +110,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_top() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 800., 0.)),
+                position_last: Position::new(0., 800., 0.),
                 position: Position::new(0., 801., 0.),
             },
             ExpectedParams {
@@ -148,7 +129,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_back() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(0., 200., -1.),
             },
             ExpectedParams {
@@ -167,7 +148,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_front() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 200.)),
+                position_last: Position::new(0., 200., 200.),
                 position: Position::new(0., 200., 201.),
             },
             ExpectedParams {
@@ -186,7 +167,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_left_bottom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(-1., 199., 0.),
             },
             ExpectedParams {
@@ -205,7 +186,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_right_top() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(800., 800., 0.)),
+                position_last: Position::new(800., 800., 0.),
                 position: Position::new(801., 801., 0.),
             },
             ExpectedParams {
@@ -224,7 +205,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_bottom_back() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(0., 199., -1.),
             },
             ExpectedParams {
@@ -243,7 +224,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_top_front() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 800., 200.)),
+                position_last: Position::new(0., 800., 200.),
                 position: Position::new(0., 801., 201.),
             },
             ExpectedParams {
@@ -262,7 +243,7 @@ mod tests {
     fn sends_exit_event_when_exiting_map_left_bottom_back() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 0.)),
+                position_last: Position::new(0., 200., 0.),
                 position: Position::new(-1., 199., -1.),
             },
             ExpectedParams {
@@ -282,7 +263,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_left() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(-1., 200., 0.)),
+                position_last: Position::new(-1., 200., 0.),
                 position: Position::new(0., 200., 0.),
             },
             ExpectedParams {
@@ -301,7 +282,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_right() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(801., 200., 0.)),
+                position_last: Position::new(801., 200., 0.),
                 position: Position::new(800., 200., 0.),
             },
             ExpectedParams {
@@ -320,7 +301,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_bottom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 199., 0.)),
+                position_last: Position::new(0., 199., 0.),
                 position: Position::new(0., 200., 0.),
             },
             ExpectedParams {
@@ -339,7 +320,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_top() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 801., 0.)),
+                position_last: Position::new(0., 801., 0.),
                 position: Position::new(0., 800., 0.),
             },
             ExpectedParams {
@@ -358,7 +339,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_back() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., -1.)),
+                position_last: Position::new(0., 200., -1.),
                 position: Position::new(0., 200., 0.),
             },
             ExpectedParams {
@@ -377,7 +358,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_front() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 200., 201.)),
+                position_last: Position::new(0., 200., 201.),
                 position: Position::new(0., 200., 200.),
             },
             ExpectedParams {
@@ -396,7 +377,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_left_top() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(-1., 801., 0.)),
+                position_last: Position::new(-1., 801., 0.),
                 position: Position::new(0., 800., 0.),
             },
             ExpectedParams {
@@ -415,7 +396,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_right_bottom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(801., 199., 0.)),
+                position_last: Position::new(801., 199., 0.),
                 position: Position::new(800., 200., 0.),
             },
             ExpectedParams {
@@ -434,7 +415,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_bottom_front() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 199., 201.)),
+                position_last: Position::new(0., 199., 201.),
                 position: Position::new(0., 200., 200.),
             },
             ExpectedParams {
@@ -453,7 +434,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_top_back() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(0., 801., -1.)),
+                position_last: Position::new(0., 801., -1.),
                 position: Position::new(0., 800., 0.),
             },
             ExpectedParams {
@@ -472,7 +453,7 @@ mod tests {
     fn sends_enter_event_when_entering_map_right_top_front() -> Result<(), Error> {
         run_test(
             SetupParams {
-                position_last: Some(Position::new(801., 801., 201.)),
+                position_last: Position::new(801., 801., 201.),
                 position: Position::new(800., 800., 200.),
             },
             ExpectedParams {
@@ -503,13 +484,11 @@ mod tests {
             .with_effect(setup_map_selection)
             .with_effect(setup_event_reader)
             .with_effect(move |world| {
-                let entity = {
-                    let mut entity_builder = world.create_entity().with(position);
-                    if let Some(position_last) = position_last {
-                        entity_builder = entity_builder.with(Last::new(position_last))
-                    }
-                    entity_builder.build()
-                };
+                let entity = world
+                    .create_entity()
+                    .with(Last::new(position_last))
+                    .with(position)
+                    .build();
 
                 world.insert(entity);
             })
@@ -572,7 +551,7 @@ mod tests {
     }
 
     struct SetupParams {
-        position_last: Option<Position<f32>>,
+        position_last: Position<f32>,
         position: Position<f32>,
     }
 
