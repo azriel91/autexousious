@@ -23,7 +23,8 @@ use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
 use sprite_model::loaded::{
-    AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpriteRenderSequence,
+    AssetSpritePositions, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
+    SpriteRenderSequence, TintSequence,
 };
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
@@ -82,6 +83,10 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
 
+    /// `TintSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub tint_sequence_assets: Read<'s, AssetStorage<TintSequence>>,
+
     /// `AssetSequenceEndTransitions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_end_transitions: Write<'s, AssetSequenceEndTransitions>,
@@ -118,6 +123,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `AssetSpritePositions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
+    /// `AssetTintSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_tint_sequence_handles: Write<'s, AssetTintSequenceHandles>,
 
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
@@ -177,6 +185,10 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
 
+    /// `TintSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub tint_sequence_assets: Read<'s, AssetStorage<TintSequence>>,
+
     /// `AssetSequenceEndTransitions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_end_transitions: Read<'s, AssetSequenceEndTransitions>,
@@ -213,6 +225,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     /// `AssetSpritePositions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    /// `AssetTintSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_tint_sequence_handles: Read<'s, AssetTintSequenceHandles>,
 
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
