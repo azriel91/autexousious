@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 /// RGBA multipliers to apply to the sprite.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, new)]
+#[serde(deny_unknown_fields, default)]
 pub struct Tint {
     /// Value between 0.0 and 1.0 (inclusive) to multiply the red channel with.
     pub r: f32,

@@ -17,7 +17,14 @@ tint: { r: 0.1, g: 0.2, b: 0.3, a: 0.4 }
         let sprite_frame = serde_yaml::from_str::<SpriteFrame>(SPRITE_FRAME_DEFAULTS_YAML)
             .expect("Failed to deserialize `SpriteFrame` defaults.");
 
-        assert_eq!(SpriteFrame::default(), sprite_frame);
+        assert_eq!(
+            SpriteFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 0),
+                tint: Tint::new(1., 1., 1., 1.)
+            },
+            sprite_frame
+        );
     }
 
     #[test]
