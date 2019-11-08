@@ -65,10 +65,15 @@ impl<'s> System<'s> for MapEnterExitDetectionSystem {
             .expect("Expected `Margins` to be loaded.");
 
         // Send event when the entity was in bounds previously, but not in bounds now.
-        let map_boundary_events = (&entities, &positions_last, &positions)
+        let map_boundary_events = (&entities, positions_last.maybe(), &positions)
             .join()
             .filter_map(|(entity, position_last, position)| {
-                Self::detect_enter_exit(map_margins, entity, **position_last, *position)
+                Self::detect_enter_exit(
+                    map_margins,
+                    entity,
+                    position_last.map(|position_last| **position_last),
+                    *position,
+                )
             })
             .collect::<Vec<MapBoundaryEvent>>();
         map_boundary_ec.iter_write(map_boundary_events);
@@ -91,57 +96,67 @@ impl MapEnterExitDetectionSystem {
     fn detect_enter_exit(
         map_margins: &Margins,
         entity: Entity,
-        position_last: Position<f32>,
+        position_last: Option<Position<f32>>,
         position: Position<f32>,
     ) -> Option<MapBoundaryEvent> {
-        let (within_x_last, within_y_last, within_z_last) =
-            Self::position_comparative(map_margins, position_last);
-        let within_bounds_last =
-            Self::is_within_bounds(within_x_last, within_y_last, within_z_last);
-
         let (within_x, within_y, within_z) = Self::position_comparative(map_margins, position);
         let within_bounds = Self::is_within_bounds(within_x, within_y, within_z);
 
+        // Map boundary face that the object exited.
         let mut boundary_faces = BitFlags::<BoundaryFace>::default();
 
-        if within_bounds_last && !within_bounds {
-            match within_x {
-                Comparative::Below => boundary_faces |= BoundaryFace::Left,
-                Comparative::Above => boundary_faces |= BoundaryFace::Right,
-                Comparative::Within => {}
-            }
-            match within_y {
-                Comparative::Below => boundary_faces |= BoundaryFace::Bottom,
-                Comparative::Above => boundary_faces |= BoundaryFace::Top,
-                Comparative::Within => {}
-            }
-            match within_z {
-                Comparative::Below => boundary_faces |= BoundaryFace::Back,
-                Comparative::Above => boundary_faces |= BoundaryFace::Front,
-                Comparative::Within => {}
-            }
-            Some(MapBoundaryEvent::Exit(MapBoundaryEventData {
-                entity,
-                boundary_faces,
-            }))
-        } else if !within_bounds_last && within_bounds {
-            match within_x_last {
-                Comparative::Below => boundary_faces |= BoundaryFace::Left,
-                Comparative::Above => boundary_faces |= BoundaryFace::Right,
-                Comparative::Within => {}
-            }
-            match within_y_last {
-                Comparative::Below => boundary_faces |= BoundaryFace::Bottom,
-                Comparative::Above => boundary_faces |= BoundaryFace::Top,
-                Comparative::Within => {}
-            }
-            match within_z_last {
-                Comparative::Below => boundary_faces |= BoundaryFace::Back,
-                Comparative::Above => boundary_faces |= BoundaryFace::Front,
-                Comparative::Within => {}
-            }
+        if let Some(position_last) = position_last {
+            let (within_x_last, within_y_last, within_z_last) =
+                Self::position_comparative(map_margins, position_last);
+            let within_bounds_last =
+                Self::is_within_bounds(within_x_last, within_y_last, within_z_last);
 
-            Some(MapBoundaryEvent::Enter(MapBoundaryEventData {
+            if within_bounds_last && !within_bounds {
+                match within_x {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Left,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Right,
+                    Comparative::Within => {}
+                }
+                match within_y {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Bottom,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Top,
+                    Comparative::Within => {}
+                }
+                match within_z {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Back,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Front,
+                    Comparative::Within => {}
+                }
+                Some(MapBoundaryEvent::Exit(MapBoundaryEventData {
+                    entity,
+                    boundary_faces,
+                }))
+            } else if !within_bounds_last && within_bounds {
+                match within_x_last {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Left,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Right,
+                    Comparative::Within => {}
+                }
+                match within_y_last {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Bottom,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Top,
+                    Comparative::Within => {}
+                }
+                match within_z_last {
+                    Comparative::Below => boundary_faces |= BoundaryFace::Back,
+                    Comparative::Above => boundary_faces |= BoundaryFace::Front,
+                    Comparative::Within => {}
+                }
+
+                Some(MapBoundaryEvent::Enter(MapBoundaryEventData {
+                    entity,
+                    boundary_faces,
+                }))
+            } else {
+                None
+            }
+        } else if !within_bounds {
+            Some(MapBoundaryEvent::Exit(MapBoundaryEventData {
                 entity,
                 boundary_faces,
             }))
