@@ -53,9 +53,7 @@ impl<'s> System<'s> for GamePlayEndTransitionDelaySystem {
 
         let game_play_ended = game_play_ec
             .read(game_play_event_rid)
-            .filter(|ev| **ev == GamePlayEvent::End)
-            .next()
-            .is_some();
+            .any(|ev| *ev == GamePlayEvent::End);
 
         if game_play_ended {
             *game_play_end_transition_delay_clock =

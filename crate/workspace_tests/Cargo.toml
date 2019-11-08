@@ -54,7 +54,7 @@ derive_deref = "1.1.0"
 energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
-enumflags2 = "0.6.0"
+enumflags2 = "0.6.1"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
@@ -71,7 +71,7 @@ game_play_model = { path = "../game_play_model" }
 game_play_stdio = { path = "../game_play_stdio" }
 game_stats_model = { path = "../game_stats_model" }
 hamcrest = "0.1.5"
-indexmap = { version = "1.2.0", features = ["serde-1"] }
+indexmap = { version = "1.3.0", features = ["serde-1"] }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
@@ -99,8 +99,8 @@ ron = "0.5.1"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
-serde = { version = "1.0.101", features = ["derive"] }
-serde_yaml = "0.8.9"
+serde = { version = "1.0.102", features = ["derive"] }
+serde_yaml = "0.8.11"
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_loading = { path = "../spawn_loading" }
@@ -115,8 +115,8 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.2"
-structopt-derive = "0.3.2"
+structopt = "0.3.3"
+structopt-derive = "0.3.3"
 strum = "0.16.0"
 strum_macros = "0.16.0"
 team_model = { path = "../team_model" }
@@ -132,7 +132,7 @@ ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
 ui_model_spi = { path = "../ui_model_spi" }
-winit = "0.19.3"
+winit = "0.19.5"
 
 [features]
 nightly = ["amethyst/nightly"]

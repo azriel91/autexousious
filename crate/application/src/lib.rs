@@ -10,12 +10,10 @@
 //! ```rust
 //! use application::{AppDir, AppFile};
 //!
-//! fn main() {
-//!     let path_to_resource = AppFile::find_in(AppDir::RESOURCES, "config.ron").unwrap();
+//! let path_to_resource = AppFile::find_in(AppDir::RESOURCES, "config.ron").unwrap();
 //!
-//!     println!("{:?}", path_to_resource);
-//!     // "/path/to/crate/application/resources/config.ron"
-//! }
+//! println!("{:?}", path_to_resource);
+//! // "/path/to/crate/application/resources/config.ron"
 //! ```
 //!
 //! [find_in]: resource/fn.find_in.html

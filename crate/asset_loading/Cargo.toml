@@ -14,11 +14,11 @@ application = { path = "../application" }
 asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 heck = "0.3.1"
-itertools = "0.8.0"
+itertools = "0.8.1"
 log = "0.4.8"
 object_type = { path = "../object_type" }
-serde = { version = "1.0.101", features = ["derive"] }
-serde_yaml = "0.8.9"
+serde = { version = "1.0.102", features = ["derive"] }
+serde_yaml = "0.8.11"
 strum = "0.16.0"
 
 [features]

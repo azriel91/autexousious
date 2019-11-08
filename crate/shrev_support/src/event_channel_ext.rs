@@ -16,7 +16,7 @@ where
     E: Event,
 {
     fn last_event(&self, event_rid: &mut ReaderId<E>) -> Option<&E> {
-        let events_iterator = self.read(event_rid);
+        let mut events_iterator = self.read(event_rid);
         let event_count = events_iterator.len();
 
         if event_count > 1 {
@@ -26,6 +26,6 @@ where
             );
         }
 
-        events_iterator.skip(event_count.saturating_sub(1)).next()
+        events_iterator.nth(event_count.saturating_sub(1))
     }
 }

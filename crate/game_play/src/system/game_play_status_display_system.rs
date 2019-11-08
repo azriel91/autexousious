@@ -100,8 +100,7 @@ impl GamePlayStatusDisplaySystem {
             WinOutcome::WinLoss { winning_team } => {
                 let winner = (teams, input_controlleds)
                     .join()
-                    .filter(|(team, _)| **team == winning_team)
-                    .next()
+                    .find(|(team, _)| **team == winning_team)
                     .map(|(team, input_controlled)| match team {
                         Team::Independent(..) => {
                             let controller_id = input_controlled.controller_id;

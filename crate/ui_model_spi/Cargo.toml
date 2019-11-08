@@ -11,8 +11,7 @@ test = false
 [dependencies]
 derivative = "1.0.3"
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.101", features = ["derive"] }
-sprite_model = { path = "../sprite_model" }
+serde = { version = "1.0.102", features = ["derive"] }
 strum = "0.16.0"
 strum_macros = "0.16.0"
 typename = "0.1.1"
