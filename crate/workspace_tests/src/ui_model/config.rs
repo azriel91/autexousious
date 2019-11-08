@@ -94,6 +94,10 @@ sequences:
     }
 
     fn sprite_frames() -> Vec<SpriteFrame> {
-        vec![SpriteFrame::new(Wait::new(2), SpriteRef::new(0, 0))]
+        vec![SpriteFrame {
+            wait: Wait::new(2),
+            sprite: SpriteRef::new(0, 0),
+            ..Default::default()
+        }]
     }
 }

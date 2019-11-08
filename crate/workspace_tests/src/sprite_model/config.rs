@@ -1,3 +1,4 @@
+mod sprite_frame;
 mod sprite_sheet_definition;
 
 #[cfg(test)]
