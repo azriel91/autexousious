@@ -54,9 +54,9 @@ use sequence_play::{
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequence, SpawnsSequenceHandles};
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::{
-    AssetSpritePositions, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
-    SpritePositions, SpriteRenderSequence, SpriteRenderSequenceHandles, TintSequence,
-    TintSequenceHandles,
+    AssetScaleSequenceHandles, AssetSpritePositions, AssetSpriteRenderSequenceHandles,
+    AssetTintSequenceHandles, ScaleSequence, ScaleSequenceHandles, SpritePositions,
+    SpriteRenderSequence, SpriteRenderSequenceHandles, TintSequence, TintSequenceHandles,
 };
 use sprite_play::SpritePositionUpdateSystem;
 use state_registry::StateId;
@@ -135,6 +135,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
         sequence_component_update_system!(AssetSpritePositions, SpritePositions);
         sequence_component_update_system!(AssetTintSequenceHandles, TintSequenceHandles);
+        sequence_component_update_system!(AssetScaleSequenceHandles, ScaleSequenceHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -173,6 +174,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(InteractionsSequence);
         frame_component_update_system!(SpawnsSequence);
         frame_component_update_system!(TintSequence);
+        frame_component_update_system!(ScaleSequence);
 
         builder.add(
             CharacterControlTransitionsUpdateSystem::new(),
