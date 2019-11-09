@@ -4,7 +4,7 @@ use derive_new::new;
 use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{SpriteRef, Tint};
+use crate::config::{Scale, SpriteRef, Tint};
 
 /// Frame with a `SpriteRef`.
 ///
@@ -18,6 +18,8 @@ pub struct SpriteFrame {
     pub sprite: SpriteRef,
     /// Tint to apply to the sprite.
     pub tint: Tint,
+    /// Scaling to apply to the sprite.
+    pub scale: Scale,
 }
 
 impl AsRef<Wait> for SpriteFrame {
@@ -35,5 +37,11 @@ impl AsRef<SpriteRef> for SpriteFrame {
 impl AsRef<Tint> for SpriteFrame {
     fn as_ref(&self) -> &Tint {
         &self.tint
+    }
+}
+
+impl AsRef<Scale> for SpriteFrame {
+    fn as_ref(&self) -> &Scale {
+        &self.scale
     }
 }

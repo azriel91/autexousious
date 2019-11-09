@@ -1,25 +1,22 @@
-use amethyst::{
-    assets::{AssetStorage, Handle, Loader},
-    renderer::{palette::Srgba, resources::Tint},
-};
+use amethyst::assets::{AssetStorage, Handle, Loader};
 use derivative::Derivative;
 use sequence_loading_spi::FrameComponentDataLoader;
-use sprite_model::{config, loaded::TintSequence};
+use sprite_model::{config::Scale, loaded::ScaleSequence};
 
-/// Loads `TintSequence`s from `Sequence` types whose `Frame`s contain a `Tint` value.
+/// Loads `ScaleSequence`s from `Sequence` types whose `Frame`s contain a `Scale` value.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct TintSequenceLoader<'s> {
+pub struct ScaleSequenceLoader<'s> {
     /// `Loader`.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
-    /// `TintSequence` assets.
+    /// `ScaleSequence` assets.
     #[derivative(Debug = "ignore")]
-    pub tint_sequence_assets: &'s AssetStorage<TintSequence>,
+    pub scale_sequence_assets: &'s AssetStorage<ScaleSequence>,
 }
 
-impl<'s> TintSequenceLoader<'s> {
-    /// Loads a `TintSequence` and returns its handle.
+impl<'s> ScaleSequenceLoader<'s> {
+    /// Loads a `ScaleSequence` and returns its handle.
     ///
     /// This is similar to calling the `FrameComponentDataLoader::load` trait method, with the
     /// difference that the resources are stored by an instantiation of this type, so they do not
@@ -27,14 +24,14 @@ impl<'s> TintSequenceLoader<'s> {
     pub fn load<SequenceIterator, FrameRef>(
         &self,
         sequence_iterator: SequenceIterator,
-    ) -> Handle<TintSequence>
+    ) -> Handle<ScaleSequence>
     where
         SequenceIterator: Iterator<Item = FrameRef>,
-        FrameRef: AsRef<config::Tint>,
+        FrameRef: AsRef<Scale>,
     {
         <Self as FrameComponentDataLoader>::load(
             self.loader,
-            self.tint_sequence_assets,
+            self.scale_sequence_assets,
             Self::frame_to_component,
             sequence_iterator,
         )
@@ -45,16 +42,15 @@ impl<'s> TintSequenceLoader<'s> {
     /// # Parameters
     ///
     /// * `frame_ref`: Reference to the frame.
-    pub fn frame_to_component<FrameRef>(frame_ref: FrameRef) -> Tint
+    pub fn frame_to_component<FrameRef>(frame_ref: FrameRef) -> Scale
     where
-        FrameRef: AsRef<config::Tint>,
+        FrameRef: AsRef<Scale>,
     {
-        let tint = *AsRef::<config::Tint>::as_ref(&frame_ref);
-        Tint(Srgba::new(tint.r, tint.g, tint.b, tint.a))
+        *AsRef::<Scale>::as_ref(&frame_ref)
     }
 }
 
-impl<'s> FrameComponentDataLoader for TintSequenceLoader<'s> {
-    type Component = Tint;
-    type ComponentData = TintSequence;
+impl<'s> FrameComponentDataLoader for ScaleSequenceLoader<'s> {
+    type Component = Scale;
+    type ComponentData = ScaleSequence;
 }

@@ -32,12 +32,15 @@ use sequence_model::{
     loaded::{AssetSequenceIdMappings, SequenceEndTransitions, WaitSequenceHandles},
 };
 use sprite_loading::{
-    SpritePositionsLoader, SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader,
-    TintSequenceHandlesLoader, TintSequenceLoader,
+    ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpritePositionsLoader,
+    SpriteRenderSequenceHandlesLoader, SpriteRenderSequenceLoader, TintSequenceHandlesLoader,
+    TintSequenceLoader,
 };
 use sprite_model::{
     config::{SpriteFrame, SpritePosition},
-    loaded::{SpritePositions, SpriteRenderSequenceHandles, TintSequenceHandles},
+    loaded::{
+        ScaleSequenceHandles, SpritePositions, SpriteRenderSequenceHandles, TintSequenceHandles,
+    },
 };
 use typename_derive::TypeName;
 use ui_menu_item_model::loaded::{UiMenuItem, UiMenuItems};
@@ -174,6 +177,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             character_control_transitions_assets,
             character_cts_assets,
             tint_sequence_assets,
+            scale_sequence_assets,
             asset_sequence_end_transitions,
             asset_wait_sequence_handles,
             asset_source_sequence_handles,
@@ -186,6 +190,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_background_layers,
             asset_sprite_positions,
             asset_tint_sequence_handles,
+            asset_scale_sequence_handles,
             asset_map_bounds,
             asset_margins,
             asset_ui_menu_items,
@@ -224,6 +229,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         let mut tint_sequence_handles_loader = TintSequenceHandlesLoader {
             tint_sequence_loader,
             asset_tint_sequence_handles,
+        };
+        let scale_sequence_loader = ScaleSequenceLoader {
+            loader,
+            scale_sequence_assets,
+        };
+        let mut scale_sequence_handles_loader = ScaleSequenceHandlesLoader {
+            scale_sequence_loader,
+            asset_scale_sequence_handles,
         };
         let sprite_render_sequence_loader = SpriteRenderSequenceLoader {
             loader,
@@ -380,12 +393,17 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         asset_id,
                         sprite_sheet_handles,
                     );
-                    sprite_positions_loader.load(background_definition.layers.values(), asset_id);
                     tint_sequence_handles_loader.load(
                         background_definition.layers.values(),
                         |layer| layer.sequence.frames.iter(),
                         asset_id,
                     );
+                    scale_sequence_handles_loader.load(
+                        background_definition.layers.values(),
+                        |layer| layer.sequence.frames.iter(),
+                        asset_id,
+                    );
+                    sprite_positions_loader.load(background_definition.layers.values(), asset_id);
 
                     // Background layers.
                     Self::load_background_layers(
@@ -609,6 +627,30 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     TintSequenceHandles::new(tint_sequence_handles)
                 };
                 asset_tint_sequence_handles.insert(asset_id, tint_sequence_handles);
+
+                let scale_sequence_handles = {
+                    let scale_sequence_loader =
+                        &scale_sequence_handles_loader.scale_sequence_loader;
+
+                    let mut scale_sequence_handles = Vec::new();
+
+                    if let Some(background_definition) = background_definition {
+                        scale_sequence_handles.extend(
+                            background_definition.layers.values().map(|layer| {
+                                scale_sequence_loader.load(layer.sequence.frames.iter())
+                            }),
+                        );
+                    }
+
+                    if let Some(ui_definition) = ui_definition {
+                        scale_sequence_handles.extend(ui_definition.sequences.values().map(
+                            |sequence| scale_sequence_loader.load(sequence.sequence.frames.iter()),
+                        ));
+                    };
+
+                    ScaleSequenceHandles::new(scale_sequence_handles)
+                };
+                asset_scale_sequence_handles.insert(asset_id, scale_sequence_handles);
             }
         }
     }
@@ -625,6 +667,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             interactions_sequence_assets,
             spawns_sequence_assets,
             tint_sequence_assets,
+            scale_sequence_assets,
             asset_wait_sequence_handles,
             asset_source_sequence_handles,
             asset_object_acceleration_sequence_handles,
@@ -633,6 +676,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_interactions_sequence_handles,
             asset_spawns_sequence_handles,
             asset_tint_sequence_handles,
+            asset_scale_sequence_handles,
             ..
         }: &SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
@@ -664,5 +708,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             )
             && sequence_component_loaded!(asset_spawns_sequence_handles, spawns_sequence_assets)
             && sequence_component_loaded!(asset_tint_sequence_handles, tint_sequence_assets)
+            && sequence_component_loaded!(asset_scale_sequence_handles, scale_sequence_assets)
     }
 }

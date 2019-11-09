@@ -4,7 +4,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use sprite_model::{
         config::SpritesDefinition,
-        loaded::{SpriteRenderSequence, TintSequence},
+        loaded::{ScaleSequence, SpriteRenderSequence, TintSequence},
     };
 
     use sprite_loading::SpriteLoadingBundle;
@@ -18,6 +18,7 @@ mod test {
                 world.read_resource::<AssetStorage<SpritesDefinition>>();
                 world.read_resource::<AssetStorage<SpriteRenderSequence>>();
                 world.read_resource::<AssetStorage<TintSequence>>();
+                world.read_resource::<AssetStorage<ScaleSequence>>();
             })
             .run()
     }

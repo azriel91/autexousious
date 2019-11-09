@@ -7,7 +7,7 @@ use amethyst::{
 use derive_new::new;
 use sprite_model::{
     config::SpritesDefinition,
-    loaded::{SpriteRenderSequence, TintSequence},
+    loaded::{ScaleSequence, SpriteRenderSequence, TintSequence},
 };
 
 /// Adds the following systems to the dispatcher:
@@ -15,6 +15,7 @@ use sprite_model::{
 /// * `Processor::<SpritesDefinition>`
 /// * `Processor::<SpriteRenderSequence>`
 /// * `Processor::<TintSequence>`
+/// * `Processor::<ScaleSequence>`
 #[derive(Debug, new)]
 pub struct SpriteLoadingBundle;
 
@@ -37,6 +38,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SpriteLoadingBundle {
         builder.add(
             Processor::<TintSequence>::new(),
             "tint_sequence_processor",
+            &["sprites_definition_processor"],
+        );
+        builder.add(
+            Processor::<ScaleSequence>::new(),
+            "scale_sequence_processor",
             &["sprites_definition_processor"],
         );
         Ok(())

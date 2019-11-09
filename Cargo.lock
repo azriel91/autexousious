@@ -4889,6 +4889,8 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
+ "numeric_newtype_derive 0.15.0",
  "sequence_model 0.15.0",
  "sequence_model_derive 0.15.0",
  "sequence_model_spi 0.15.0",
