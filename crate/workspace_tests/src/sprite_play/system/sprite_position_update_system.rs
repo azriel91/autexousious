@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod test {
     use amethyst::{
+        core::transform::TransformBundle,
         ecs::{Builder, Entity, WorldExt},
-        input::StringBindings,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -30,7 +30,8 @@ mod test {
             position: position_expected,
         }: ExpectedParams,
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<StringBindings>()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
             .with_system(
                 SpritePositionUpdateSystem::new(),
                 SpritePositionUpdateSystem::type_name(),
