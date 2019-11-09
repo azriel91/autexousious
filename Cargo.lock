@@ -64,24 +64,24 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.13.2"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_animation 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_audio 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_config 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_controls 0.7.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_input 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_locale 0.7.2 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_network 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_tiles 0.1.3 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_ui 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_utils 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_animation 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_audio 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_config 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_controls 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_input 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_locale 0.7.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_network 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_tiles 0.1.3 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_ui 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_utils 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "crossbeam-channel 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "dirs 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -101,14 +101,14 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.8.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_ui 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_ui 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -120,11 +120,11 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.9.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "crossbeam-queue 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -144,11 +144,11 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.8.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "cpal 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -160,7 +160,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.12.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -170,13 +170,13 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.7.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_input 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_input 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -186,11 +186,11 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.8.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
  "alga 0.9.2 (git+https://github.com/rustsim/alga.git?branch=dev)",
  "alga_derive 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -208,7 +208,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.6.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
  "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro-crate 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -221,7 +221,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.3.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
  "backtrace 0.3.40 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -229,12 +229,12 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.9.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_config 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_config 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -246,11 +246,11 @@ dependencies = [
 [[package]]
 name = "amethyst_locale"
 version = "0.7.2"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "fluent 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "unic-langid 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -259,10 +259,10 @@ dependencies = [
 [[package]]
 name = "amethyst_network"
 version = "0.6.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "bytes 0.4.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "laminar 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -271,14 +271,14 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.3.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_config 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_config 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -299,9 +299,9 @@ dependencies = [
 [[package]]
 name = "amethyst_test"
 version = "0.4.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -312,13 +312,13 @@ dependencies = [
 [[package]]
 name = "amethyst_tiles"
 version = "0.1.3"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "bitintr 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -335,16 +335,16 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.8.1"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_audio 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_input 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_audio 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_input 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "clipboard 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -368,15 +368,15 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.8.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_controls 0.7.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_controls 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -387,11 +387,11 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.3.0"
-source = "git+https://github.com/amethyst/amethyst.git#cc4b7de3e208a3561a60961e0fd3016f2f02a5ee"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint#44f163a6ff38d5e85bfde2edc40bcc5090a4cda7"
 dependencies = [
- "amethyst_config 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_config 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.19.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -427,7 +427,7 @@ dependencies = [
 name = "application"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -443,7 +443,7 @@ dependencies = [
 name = "application_event"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "character_selection_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
@@ -465,7 +465,7 @@ version = "0.15.0"
 name = "application_menu"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.15.0",
@@ -480,7 +480,7 @@ dependencies = [
 name = "application_robot"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_input 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -489,7 +489,7 @@ dependencies = [
 name = "application_state"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -501,8 +501,8 @@ dependencies = [
 name = "application_test_support"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "asset_loading 0.15.0",
  "asset_model 0.15.0",
@@ -544,7 +544,7 @@ dependencies = [
 name = "application_ui"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -606,7 +606,7 @@ dependencies = [
 name = "asset_derive"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -617,7 +617,7 @@ dependencies = [
 name = "asset_gfx_gen"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "integer-sqrt 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -626,7 +626,7 @@ dependencies = [
 name = "asset_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application 0.15.0",
  "asset_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -643,7 +643,7 @@ dependencies = [
 name = "asset_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_builder 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -694,7 +694,7 @@ dependencies = [
 name = "audio_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "audio_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -706,7 +706,7 @@ dependencies = [
 name = "audio_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -724,7 +724,7 @@ dependencies = [
 name = "audio_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "audio_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -742,7 +742,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "background_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "background_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -751,7 +751,7 @@ dependencies = [
 name = "background_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -769,7 +769,7 @@ dependencies = [
 name = "background_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "background_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -891,7 +891,7 @@ dependencies = [
 name = "camera_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -901,7 +901,7 @@ dependencies = [
 name = "camera_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "camera_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -946,7 +946,7 @@ dependencies = [
 name = "character_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "character_model 0.15.0",
  "charge_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -965,7 +965,7 @@ dependencies = [
 name = "character_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
@@ -998,7 +998,7 @@ dependencies = [
 name = "character_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "asset_model 0.15.0",
  "character_model 0.15.0",
@@ -1019,7 +1019,7 @@ dependencies = [
 name = "character_prefab"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "character_model 0.15.0",
  "charge_model 0.15.0",
@@ -1039,7 +1039,7 @@ dependencies = [
 name = "character_selection"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_state 0.15.0",
  "asset_model 0.15.0",
@@ -1057,7 +1057,7 @@ dependencies = [
 name = "character_selection_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1070,7 +1070,7 @@ dependencies = [
 name = "character_selection_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "asset_model 0.15.0",
  "character_selection_model 0.15.0",
@@ -1087,7 +1087,7 @@ dependencies = [
 name = "character_selection_ui"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_ui 0.15.0",
  "asset_model 0.15.0",
  "character_selection_model 0.15.0",
@@ -1108,7 +1108,7 @@ dependencies = [
 name = "charge_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -1122,7 +1122,7 @@ dependencies = [
 name = "charge_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "charge_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1136,7 +1136,7 @@ dependencies = [
 name = "chase_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1145,7 +1145,7 @@ dependencies = [
 name = "chase_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "chase_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1259,7 +1259,7 @@ dependencies = [
 name = "collision_audio_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_loading 0.15.0",
  "collision_audio_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1273,7 +1273,7 @@ dependencies = [
 name = "collision_audio_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1287,7 +1287,7 @@ dependencies = [
 name = "collision_audio_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "collision_audio_model 0.15.0",
  "collision_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1299,7 +1299,7 @@ dependencies = [
 name = "collision_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "collision_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1311,7 +1311,7 @@ dependencies = [
 name = "collision_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1339,7 +1339,7 @@ dependencies = [
 name = "collision_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "collision_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1605,7 +1605,7 @@ dependencies = [
 name = "debug_util_amethyst"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
 ]
 
 [[package]]
@@ -1762,7 +1762,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "energy_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -1775,7 +1775,7 @@ dependencies = [
 name = "energy_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "audio_model 0.15.0",
@@ -1803,7 +1803,7 @@ dependencies = [
 name = "energy_prefab"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "collision_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2032,7 +2032,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "frame_rate"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
 ]
 
 [[package]]
@@ -2061,7 +2061,7 @@ dependencies = [
 name = "game_input"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.15.0",
@@ -2077,7 +2077,7 @@ dependencies = [
 name = "game_input_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2092,7 +2092,7 @@ dependencies = [
 name = "game_input_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.15.0",
@@ -2110,7 +2110,7 @@ dependencies = [
 name = "game_input_ui"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.15.0",
@@ -2126,7 +2126,7 @@ dependencies = [
 name = "game_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_state 0.15.0",
  "asset_model 0.15.0",
@@ -2164,7 +2164,7 @@ dependencies = [
 name = "game_mode_selection"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_menu 0.15.0",
  "application_state 0.15.0",
@@ -2185,7 +2185,7 @@ dependencies = [
 name = "game_mode_selection_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_menu 0.15.0",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2198,7 +2198,7 @@ dependencies = [
 name = "game_mode_selection_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_menu 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2214,7 +2214,7 @@ dependencies = [
 name = "game_mode_selection_ui"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_menu 0.15.0",
  "application_ui 0.15.0",
  "asset_model 0.15.0",
@@ -2241,7 +2241,7 @@ dependencies = [
 name = "game_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_type 0.15.0",
 ]
@@ -2250,7 +2250,7 @@ dependencies = [
 name = "game_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_ui 0.15.0",
  "asset_model 0.15.0",
@@ -2304,7 +2304,7 @@ dependencies = [
 name = "game_play_hud"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_gfx_gen 0.15.0",
  "charge_model 0.15.0",
  "chase_model 0.15.0",
@@ -2319,7 +2319,7 @@ dependencies = [
 name = "game_play_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
@@ -2331,7 +2331,7 @@ dependencies = [
 name = "game_play_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_play_model 0.15.0",
@@ -2671,7 +2671,7 @@ dependencies = [
 name = "kinematic_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.15.0",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2683,7 +2683,7 @@ dependencies = [
 name = "kinematic_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2784,7 +2784,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application 0.15.0",
  "application_event 0.15.0",
  "application_state 0.15.0",
@@ -2857,7 +2857,7 @@ dependencies = [
 name = "logic_clock"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
@@ -2918,7 +2918,7 @@ dependencies = [
 name = "map_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.15.0",
@@ -2930,7 +2930,7 @@ dependencies = [
 name = "map_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "background_model 0.15.0",
@@ -2954,7 +2954,7 @@ dependencies = [
 name = "map_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "enumflags2 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2971,7 +2971,7 @@ dependencies = [
 name = "map_selection"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_state 0.15.0",
  "asset_model 0.15.0",
@@ -2988,7 +2988,7 @@ dependencies = [
 name = "map_selection_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2997,7 +2997,7 @@ dependencies = [
 name = "map_selection_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3014,7 +3014,7 @@ dependencies = [
 name = "map_selection_ui"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_ui 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3372,7 +3372,7 @@ dependencies = [
 name = "object_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "audio_loading 0.15.0",
  "audio_model 0.15.0",
@@ -3398,7 +3398,7 @@ dependencies = [
 name = "object_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "audio_model 0.15.0",
  "collision_model 0.15.0",
@@ -3425,7 +3425,7 @@ dependencies = [
 name = "object_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.15.0",
@@ -3442,7 +3442,7 @@ dependencies = [
 name = "object_prefab"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "collision_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3460,7 +3460,7 @@ dependencies = [
 name = "object_status_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
  "numeric_newtype_derive 0.15.0",
@@ -3471,7 +3471,7 @@ dependencies = [
 name = "object_status_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_status_model 0.15.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3482,8 +3482,8 @@ dependencies = [
 name = "object_test"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "audio_model 0.15.0",
  "collision_loading 0.15.0",
@@ -4484,7 +4484,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "sequence_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4497,7 +4497,7 @@ dependencies = [
 name = "sequence_loading_spi"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "sequence_model_spi 0.15.0",
 ]
 
@@ -4505,7 +4505,7 @@ dependencies = [
 name = "sequence_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "bimap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4537,7 +4537,7 @@ version = "0.15.0"
 name = "sequence_model_derive"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -4558,7 +4558,7 @@ dependencies = [
 name = "sequence_model_spi"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
 ]
@@ -4567,7 +4567,7 @@ dependencies = [
 name = "sequence_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4715,7 +4715,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "shrev_support"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -4776,7 +4776,7 @@ dependencies = [
 name = "spawn_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.15.0",
@@ -4788,7 +4788,7 @@ dependencies = [
 name = "spawn_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4807,7 +4807,7 @@ dependencies = [
 name = "spawn_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "character_model 0.15.0",
  "character_prefab 0.15.0",
@@ -4869,7 +4869,7 @@ dependencies = [
 name = "sprite_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_gfx_gen 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4883,12 +4883,14 @@ dependencies = [
 name = "sprite_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
+ "numeric_newtype_derive 0.15.0",
  "sequence_model 0.15.0",
  "sequence_model_derive 0.15.0",
  "sequence_model_spi 0.15.0",
@@ -4904,7 +4906,7 @@ dependencies = [
 name = "sprite_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.15.0",
@@ -4922,7 +4924,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "state_play"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "background_play 0.15.0",
  "camera_play 0.15.0",
@@ -4941,7 +4943,7 @@ dependencies = [
 name = "state_registry"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4988,7 +4990,7 @@ dependencies = [
 name = "stdio_command_stdio"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5004,7 +5006,7 @@ dependencies = [
 name = "stdio_input"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "application_input 0.15.0",
  "application_robot 0.15.0",
@@ -5031,7 +5033,7 @@ dependencies = [
 name = "stdio_spi"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application_event 0.15.0",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5157,7 +5159,7 @@ dependencies = [
 name = "team_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
  "numeric_newtype_derive 0.15.0",
@@ -5189,7 +5191,7 @@ dependencies = [
 name = "test_object_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "audio_model 0.15.0",
  "collision_model 0.15.0",
@@ -5287,7 +5289,7 @@ dependencies = [
 name = "tracker"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -5344,7 +5346,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "ui_audio_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_loading 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5358,7 +5360,7 @@ dependencies = [
 name = "ui_audio_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5372,7 +5374,7 @@ dependencies = [
 name = "ui_loading"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_model 0.15.0",
 ]
@@ -5381,7 +5383,7 @@ dependencies = [
 name = "ui_menu_item_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5400,7 +5402,7 @@ dependencies = [
 name = "ui_model"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5630,7 +5632,7 @@ dependencies = [
 name = "will"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application 0.15.0",
  "application_event 0.15.0",
  "application_input 0.15.0",
@@ -5750,8 +5752,8 @@ dependencies = [
 name = "workspace_tests"
 version = "0.15.0"
 dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "application 0.15.0",
  "application_event 0.15.0",
  "application_input 0.15.0",
@@ -5948,24 +5950,24 @@ dependencies = [
 "checksum alga 0.9.2 (git+https://github.com/rustsim/alga.git?branch=dev)" = "<none>"
 "checksum alga_derive 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f448d7130355515534b7d3af3aa8524365de18b11bbd1deceb06a5956c435f0b"
 "checksum alsa-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b0edcbbf9ef68f15ae1b620f722180b82a98b6f0628d30baa6b8d2a5abc87d58"
-"checksum amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_animation 0.8.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_assets 0.9.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_audio 0.8.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_config 0.12.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_controls 0.7.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_core 0.8.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_derive 0.6.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_error 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_input 0.9.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_locale 0.7.2 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_network 0.6.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_rendy 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_test 0.4.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_tiles 0.1.3 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_ui 0.8.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_utils 0.8.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_window 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
+"checksum amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_animation 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_assets 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_audio 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_config 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_controls 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_core 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_derive 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_input 0.9.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_locale 0.7.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_network 0.6.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_rendy 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_tiles 0.1.3 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_ui 0.8.1 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_utils 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
+"checksum amethyst_window 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)" = "<none>"
 "checksum andrew 0.2.1 (git+https://github.com/azriel91/andrew.git?branch=maintenance/update-dependencies)" = "<none>"
 "checksum android_glue 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "000444226fcff248f2bc4c7625be32c63caccfecc2723a2b9f78a7487a49c407"
 "checksum ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ee49baf6cb617b853aa8d93bf420db2383fab46d314482ca2803b40d5fde979b"

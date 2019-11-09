@@ -56,8 +56,16 @@ layers:
             Sequence::new(
                 SequenceEndTransition::None,
                 vec![
-                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
-                    SpriteFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
+                    SpriteFrame {
+                        wait: Wait::new(7),
+                        sprite: SpriteRef::new(0, 0),
+                        ..Default::default()
+                    },
+                    SpriteFrame {
+                        wait: Wait::new(7),
+                        sprite: SpriteRef::new(0, 1),
+                        ..Default::default()
+                    },
                 ],
             ),
         );
@@ -65,7 +73,11 @@ layers:
             SpritePosition::new(-1, -2, -3),
             Sequence::new(
                 SequenceEndTransition::None,
-                vec![SpriteFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+                vec![SpriteFrame {
+                    wait: Wait::new(1),
+                    sprite: SpriteRef::new(0, 0),
+                    ..Default::default()
+                }],
             ),
         );
         let mut layers = IndexMap::new();
