@@ -54,10 +54,11 @@ use sequence_play::{
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequence, SpawnsSequenceHandles};
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::{
-    AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpritePositions, SpriteRenderSequence,
-    SpriteRenderSequenceHandles,
+    AssetScaleSequenceHandles, AssetSpritePositions, AssetSpriteRenderSequenceHandles,
+    AssetTintSequenceHandles, ScaleSequence, ScaleSequenceHandles, SpritePositions,
+    SpriteRenderSequence, SpriteRenderSequenceHandles, TintSequence, TintSequenceHandles,
 };
-use sprite_play::SpritePositionUpdateSystem;
+use sprite_play::{SpritePositionUpdateSystem, SpriteScaleUpdateSystem};
 use state_registry::StateId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
@@ -133,6 +134,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(AssetSequenceEndTransitions, SequenceEndTransitions);
         sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
         sequence_component_update_system!(AssetSpritePositions, SpritePositions);
+        sequence_component_update_system!(AssetTintSequenceHandles, TintSequenceHandles);
+        sequence_component_update_system!(AssetScaleSequenceHandles, ScaleSequenceHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -170,6 +173,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(BodySequence);
         frame_component_update_system!(InteractionsSequence);
         frame_component_update_system!(SpawnsSequence);
+        frame_component_update_system!(TintSequence);
+        frame_component_update_system!(ScaleSequence);
 
         builder.add(
             CharacterControlTransitionsUpdateSystem::new(),
@@ -222,10 +227,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Component value update === //
 
-        //
+        // Sets `Position<f32>` to the `SpritePosition` value.
         builder.add(
             SpritePositionUpdateSystem::new(),
             &SpritePositionUpdateSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
+        // transform.scale_mut().{x/y/z} = `Scale`
+        builder.add(
+            SpriteScaleUpdateSystem::new(),
+            &SpriteScaleUpdateSystem::type_name(),
             &[],
         ); // kcov-ignore
 

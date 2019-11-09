@@ -1,1 +1,2 @@
 mod sprite_position_update_system;
+mod sprite_scale_update_system;

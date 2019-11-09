@@ -2,6 +2,6 @@
 
 //! Provides logic for sprite components at runtime.
 
-pub use crate::system::SpritePositionUpdateSystem;
+pub use crate::system::{SpritePositionUpdateSystem, SpriteScaleUpdateSystem};
 
 mod system;

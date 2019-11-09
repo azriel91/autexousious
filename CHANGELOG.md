@@ -2,11 +2,16 @@
 
 ## 0.16.0 (unreleased)
 
+### Added
+
+* Support `tint` and `scale` in `SpriteFrame`s. ([#185])
+
 ### Fixed
 
 * Delete entities that are spawned out of bounds. ([#184])
 
 [#184]: https://gitlab.com/azriel91/autexousious/issues/184
+[#185]: https://gitlab.com/azriel91/autexousious/issues/185
 
 ## 0.15.0 (2019-11-08)
 
