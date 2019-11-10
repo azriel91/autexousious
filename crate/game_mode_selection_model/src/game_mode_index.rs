@@ -19,8 +19,10 @@ use typename_derive::TypeName;
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum GameModeIndex {
-    /// Menu item for starting a game.
+    /// Starts a game.
     StartGame,
-    /// Menu item for exiting the application.
+    /// Opens control settings.
+    ControlSettings,
+    /// Exits the application.
     Exit,
 }

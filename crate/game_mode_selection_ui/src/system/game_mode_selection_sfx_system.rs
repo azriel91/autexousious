@@ -6,7 +6,7 @@ use amethyst::{
 };
 use application_menu::MenuEvent;
 use derive_new::new;
-use game_mode_selection_model::{GameModeIndex, GameModeSelectionEvent};
+use game_mode_selection_model::GameModeSelectionEvent;
 use typename_derive::TypeName;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
 
@@ -45,8 +45,7 @@ impl<'s> System<'s> for GameModeSelectionSfxSystem {
         if let Some(output) = output {
             events_iterator.for_each(|ev| {
                 let ui_sfx_id = match ev {
-                    MenuEvent::Select(GameModeIndex::StartGame)
-                    | MenuEvent::Select(GameModeIndex::Exit) => Some(UiSfxId::Confirm),
+                    MenuEvent::Select(..) => Some(UiSfxId::Confirm),
                     MenuEvent::Close => None,
                 };
 

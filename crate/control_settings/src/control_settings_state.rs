@@ -28,6 +28,7 @@ impl ControlSettingsState {
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for ControlSettingsState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        data.world.register::<Removal<ControlSettingsEntityId>>();
         data.world.insert(StateId::ControlSettings);
     }
 
