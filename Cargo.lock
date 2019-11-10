@@ -496,6 +496,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "state_support 0.15.0",
 ]
 
 [[package]]
@@ -1424,6 +1425,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "state_registry 0.15.0",
+ "state_support 0.15.0",
 ]
 
 [[package]]
@@ -4976,6 +4978,7 @@ dependencies = [
 name = "state_support"
 version = "0.15.0"
 dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
  "state_registry 0.15.0",
 ]

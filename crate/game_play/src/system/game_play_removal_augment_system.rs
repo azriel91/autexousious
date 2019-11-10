@@ -5,7 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_play_model::{GamePlayEntity, GamePlayEntityId};
+use game_play_model::GamePlayEntity;
 use spawn_model::play::SpawnEvent;
 use state_registry::StateId;
 use typename_derive::TypeName;
@@ -56,10 +56,7 @@ impl<'s> System<'s> for GamePlayRemovalAugmentSystem {
                 let entity_spawned = ev.entity_spawned;
 
                 game_play_entities
-                    .insert(
-                        entity_spawned,
-                        GamePlayEntity::new(GamePlayEntityId::default()),
-                    )
+                    .insert(entity_spawned, GamePlayEntity)
                     .expect("Failed to insert `GamePlayEntity` component.");
             });
         }

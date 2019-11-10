@@ -8,7 +8,7 @@ use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
-use game_play_model::{GamePlayEntityId, GamePlayEvent, GamePlayStatus};
+use game_play_model::{GamePlayEntity, GamePlayEvent, GamePlayStatus};
 use log::debug;
 use state_registry::StateId;
 
@@ -41,8 +41,8 @@ impl GamePlayState {
 
         removal::exec_removal(
             &*world.entities(),
-            &world.read_storage::<Removal<GamePlayEntityId>>(),
-            GamePlayEntityId::default(),
+            &world.read_storage::<Removal<GamePlayEntity>>(),
+            GamePlayEntity::default(),
         );
     }
 }

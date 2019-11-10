@@ -4,6 +4,10 @@ menu:
     text: "Start Game"
     sequence: "start_game_active"
 
+  - index: "control_settings"
+    text: "Control Settings"
+    sequence: "control_settings_inactive"
+
   - index: "exit"
     text: "Exit"
     sequence: "exit_inactive"
@@ -13,4 +17,5 @@ sequences:
     frames: []
   start_game_active: *empty_sequence
   start_game_selected: *empty_sequence
+  control_settings_inactive: *empty_sequence
   exit_inactive: *empty_sequence

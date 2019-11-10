@@ -11,9 +11,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_input_model::InputConfig;
-use game_play_model::{
-    play::GamePlayStatusEntity, GamePlayEntity, GamePlayEntityId, GamePlayEvent,
-};
+use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use team_model::play::Team;
 use typename_derive::TypeName;
@@ -197,10 +195,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
 
                     entities
                         .build_entity()
-                        .with(
-                            GamePlayEntity::new(GamePlayEntityId),
-                            &mut game_play_entities,
-                        )
+                        .with(GamePlayEntity, &mut game_play_entities)
                         .with(GamePlayStatusEntity, &mut game_play_status_entities)
                         .with(ui_transform, &mut ui_transforms)
                         .with(ui_text, &mut ui_texts)

@@ -3,9 +3,11 @@ mod tests {
     use std::{cell::RefCell, rc::Rc, sync::Arc};
 
     use amethyst::{
-        ecs::{Builder, ReadExpect, System, World, WorldExt, Write, WriteExpect},
+        ecs::{
+            storage::NullStorage, Builder, Component, ReadExpect, System, World, WorldExt, Write,
+            WriteExpect,
+        },
         shred::SystemData,
-        utils::removal::Removal,
         DataInit, GameData, GameDataBuilder, State, StateData, Trans,
     };
     use application_event::AppEvent;
@@ -76,36 +78,36 @@ mod tests {
         assert!(world.try_fetch::<Counter>().is_some());
     }
 
-    // === `Removal` component === //
+    // === State tag component === //
 
     #[test]
     fn on_start_registers_removal_component() {
-        let (mut world, mut game_data, _invocations, mut state) = setup_without_removal();
+        let (mut world, mut game_data, _invocations, mut state) = setup_without_tag();
 
         state.on_start(StateData::new(&mut world, &mut game_data));
 
-        world.read_storage::<Removal<()>>(); // panics if it is not registered.
+        world.read_storage::<MockEntity>(); // panics if it is not registered.
     }
 
-    macro_rules! test_delete_removal_entities {
+    macro_rules! test_delete_state_entities {
         ($test_name:ident, $method_name:ident) => {
             #[test]
             fn $test_name() {
                 let (mut world, mut game_data, _invocations, mut state) = setup_with_defaults();
-                let entity_with_removal = world.create_entity().with(Removal::new(())).build();
-                let entity_without_removal = world.create_entity().build();
+                let entity_with_state_tag = world.create_entity().with(MockEntity).build();
+                let entity_without_state_tag = world.create_entity().build();
 
                 state.$method_name(StateData::new(&mut world, &mut game_data));
                 world.maintain();
 
-                assert!(!world.is_alive(entity_with_removal));
-                assert!(world.is_alive(entity_without_removal));
+                assert!(!world.is_alive(entity_with_state_tag));
+                assert!(world.is_alive(entity_without_state_tag));
             }
         };
     }
 
-    test_delete_removal_entities!(on_stop_deletes_entities_with_removal_component, on_stop);
-    test_delete_removal_entities!(on_pause_deletes_entities_with_removal_component, on_pause);
+    test_delete_state_entities!(on_stop_deletes_entities_with_removal_component, on_stop);
+    test_delete_state_entities!(on_pause_deletes_entities_with_removal_component, on_pause);
 
     // === Dispatcher === //
 
@@ -152,7 +154,7 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState, ()>,
+        AppState<'a, 'b, MockState, MockEntity>,
     ) {
         setup(
             true,
@@ -162,11 +164,11 @@ mod tests {
         )
     }
 
-    fn setup_without_removal<'a, 'b>() -> (
+    fn setup_without_tag<'a, 'b>() -> (
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState, ()>,
+        AppState<'a, 'b, MockState, MockEntity>,
     ) {
         setup(
             false,
@@ -183,7 +185,7 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState, ()>,
+        AppState<'a, 'b, MockState, MockEntity>,
     )
     where
         Sys: for<'s> System<'s> + Send + Sync + 'a,
@@ -195,7 +197,7 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState, ()>,
+        AppState<'a, 'b, MockState, MockEntity>,
     ) {
         setup(
             true,
@@ -214,14 +216,15 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState, ()>,
+        AppState<'a, 'b, MockState, MockEntity>,
     )
     where
         Sys: for<'s> System<'s> + Send + Sync + 'a,
     {
         let mut world = World::new();
+
         if with_removal {
-            world.register::<Removal<()>>();
+            world.register::<MockEntity>();
         }
 
         world.insert(Arc::new(
@@ -265,6 +268,11 @@ mod tests {
 
         (world, game_data, invocations, state)
     }
+
+    /// ID tag for entities created in the `GamePlayState`.
+    #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
+    #[storage(NullStorage)]
+    struct MockEntity;
 
     #[derive(Default)]
     struct MockState {

@@ -5,14 +5,14 @@ use amethyst::{
         deferred_dispatcher_operation::{AddBundle, AddSystem, DispatcherOperation},
         SystemBundle,
     },
-    ecs::{Dispatcher, DispatcherBuilder, System, World, WorldExt},
-    utils::removal::{self, Removal},
+    ecs::{Component, Dispatcher, DispatcherBuilder, System, World, WorldExt},
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
+use state_support::StateEntityUtils;
 
 use crate::{AutexState, HookFn, HookableFn};
 
@@ -29,6 +29,7 @@ use crate::{AutexState, HookFn, HookableFn};
 /// # Type Parameters
 ///
 /// * `S`: `State` to delegate to.
+/// * `I`: `State` identifier component to identify entities to delete when the state is popped.
 ///
 /// [state_builder]: application_state/struct.AppStateBuilder.html
 #[derive(Derivative, new)]
@@ -36,7 +37,8 @@ use crate::{AutexState, HookFn, HookableFn};
 pub struct AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
-    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
+    I: Component,
+    I::Storage: Default,
 {
     /// Functions to instantiate state specific dispatcher systems.
     #[derivative(Debug = "ignore")]
@@ -50,14 +52,15 @@ where
     delegate: S,
     /// Functions to run at the beginning of the various `State` methods.
     hook_fns: HashMap<HookableFn, Vec<HookFn>>,
-    /// `PhantomData` for `Removal`.
+    /// `PhantomData` for state tag component.
     marker: PhantomData<I>,
 }
 
 impl<'a, 'b, S, I> AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
-    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
+    I: Component,
+    I::Storage: Default,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -84,24 +87,16 @@ where
             self.dispatcher = Some(dispatcher);
         }
     }
-
-    fn remove_entities(world: &mut World) {
-        removal::exec_removal(
-            &*world.entities(),
-            &world.read_storage::<Removal<I>>(),
-            I::default(),
-        ); // kcov-ignore
-    }
 }
 
 impl<'a, 'b, S, I> State<GameData<'a, 'b>, AppEvent> for AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
-    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
+    I: Component,
+    I::Storage: Default,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        // Register the `Removal<I>` component first, because hook functions may rely on it.
-        data.world.register::<Removal<I>>();
+        data.world.register::<I>();
 
         if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStart) {
             functions
@@ -120,7 +115,7 @@ where
                 .for_each(|function| function(&mut data.world));
         }
 
-        Self::remove_entities(&mut data.world);
+        StateEntityUtils::clear::<I>(&mut data.world);
 
         self.delegate.on_stop(data);
     }
@@ -132,7 +127,7 @@ where
                 .for_each(|function| function(&mut data.world));
         }
 
-        Self::remove_entities(&mut data.world);
+        StateEntityUtils::clear::<I>(&mut data.world);
 
         self.delegate.on_pause(data);
     }
@@ -194,7 +189,8 @@ where
 pub struct AppStateBuilder<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
-    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
+    I: Component,
+    I::Storage: Default,
 {
     /// Functions to instantiate state specific dispatcher systems.
     #[derivative(Debug = "ignore")]
@@ -206,14 +202,15 @@ where
     /// Functions to run at the beginning of the various `State` methods.
     #[new(default)]
     hook_fns: HashMap<HookableFn, Vec<HookFn>>,
-    /// `PhantomData` for `Removal`.
+    /// Marker for component to identify entities to delete.
     marker: PhantomData<I>,
 }
 
 impl<'a, 'b, S, I> AppStateBuilder<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
-    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
+    I: Component,
+    I::Storage: Default,
 {
     /// Registers a bundle whose systems to run in the `AppState`.
     ///

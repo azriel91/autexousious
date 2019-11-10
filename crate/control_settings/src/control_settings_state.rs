@@ -1,39 +1,30 @@
 use amethyst::{
-    ecs::{World, WorldExt},
+    ecs::WorldExt,
     input::{is_key_down, VirtualKeyCode},
-    utils::removal::{self, Removal},
+    utils::removal::Removal,
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
-use control_settings_model::{ControlSettingsEntityId, ControlSettingsEvent};
+use control_settings_model::{ControlSettingsEntity, ControlSettingsEvent};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
 use state_registry::StateId;
+use state_support::StateEntityUtils;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
 #[derivative(Debug)]
 pub struct ControlSettingsState;
 
-impl ControlSettingsState {
-    fn terminate_entities(&mut self, world: &mut World) {
-        removal::exec_removal(
-            &*world.entities(),
-            &world.read_storage::<Removal<ControlSettingsEntityId>>(),
-            ControlSettingsEntityId::default(),
-        );
-    }
-}
-
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for ControlSettingsState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        data.world.register::<Removal<ControlSettingsEntityId>>();
+        data.world.register::<Removal<ControlSettingsEntity>>();
         data.world.insert(StateId::ControlSettings);
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        self.terminate_entities(&mut data.world);
+        StateEntityUtils::clear::<ControlSettingsEntity>(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {

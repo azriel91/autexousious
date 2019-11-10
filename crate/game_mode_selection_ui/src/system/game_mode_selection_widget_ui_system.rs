@@ -16,9 +16,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_mode_selection_model::{
-    GameModeIndex, GameModeSelectionEntity, GameModeSelectionEntityId,
-};
+use game_mode_selection_model::{GameModeIndex, GameModeSelectionEntity};
 use log::debug;
 use sequence_model::{
     loaded::SequenceId,
@@ -220,10 +218,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                         entities
                             .build_entity()
-                            .with(
-                                GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                                game_mode_selection_entities,
-                            )
+                            .with(GameModeSelectionEntity, game_mode_selection_entities)
                             .with(MenuItem::new(index), menu_items)
                             .with(menu_item_widget_state, menu_item_widget_states)
                             .with(ui_transform, ui_transforms)
@@ -268,10 +263,7 @@ impl GameModeSelectionWidgetUiSystem {
                     let controller_id = index as ControllerId;
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(InputControlled::new(controller_id), input_controlleds)
                         .with(ControllerInput::default(), controller_inputs)
                         .build();
@@ -295,10 +287,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(ui_transform, ui_transforms)
                         .build()
                 };
@@ -329,10 +318,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(ui_transform, ui_transforms)
                         .with(ui_text, ui_texts)
                         .with(parent, parents)

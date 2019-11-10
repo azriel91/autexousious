@@ -1,6 +1,6 @@
-use amethyst::utils::removal::Removal;
+use amethyst::ecs::{storage::NullStorage, Component};
 
-use crate::MapSelectionEntityId;
-
-/// Marker type for entities to be deleted when the `MapSelectionState` is paused or stopped.
-pub type MapSelectionEntity = Removal<MapSelectionEntityId>;
+/// ID tag for entities created in the `MapSelectionState`.
+#[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
+#[storage(NullStorage)]
+pub struct MapSelectionEntity;
