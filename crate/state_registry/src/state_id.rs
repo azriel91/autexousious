@@ -21,6 +21,8 @@ pub enum StateId {
     None,
     /// `CharacterSelectionState` ID.
     CharacterSelection,
+    /// `ControlSettingsState` ID.
+    ControlSettings,
     /// `GameModeSelectionState` ID.
     GameModeSelection,
     /// `GameLoadingState` ID.
