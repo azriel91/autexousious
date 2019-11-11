@@ -1,4 +1,5 @@
 use derive_new::new;
+use kinematic_model::config::PositionInit;
 use sequence_model::config::SequenceNameString;
 use serde::{Deserialize, Serialize};
 use ui_model_spi::config::UiSequenceName;
@@ -12,6 +13,14 @@ pub struct UiMenuItem<I> {
     /// Text to display.
     #[serde(default)]
     pub text: String,
+    /// Position of the menu item.
+    pub position: PositionInit,
     /// `SequenceNameString` that the ui_menu_item should begin with.
     pub sequence: SequenceNameString<UiSequenceName>,
+}
+
+impl<I> AsRef<PositionInit> for UiMenuItem<I> {
+    fn as_ref(&self) -> &PositionInit {
+        &self.position
+    }
 }

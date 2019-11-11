@@ -42,6 +42,8 @@ where
     ///
     /// Used to output a warning if loading takes too long.
     stopwatch: Stopwatch,
+    /// Whether load warnings have been reported.
+    warnings_reported: bool,
     /// Lifetime tracker.
     phantom_data: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -55,6 +57,7 @@ where
         LoadingState {
             next_state: Some(next_state),
             stopwatch: Stopwatch::new(),
+            warnings_reported: false,
             phantom_data: PhantomData,
         }
     }
@@ -101,6 +104,7 @@ where
 
             // https://github.com/rust-lang/rust-clippy/issues/1524
             #[allow(clippy::let_and_return)]
+            let warnings_reported = self.warnings_reported;
             let asset_loading_complete = asset_type_mappings
                 .iter_ids_all()
                 .flat_map(|(_asset_type, asset_ids)| asset_ids.iter())
@@ -121,10 +125,13 @@ where
                                         asset_id
                                     )
                                 });
-                            warn!(
-                                "Asset `{}` has not completed loading. Load stage: `{:?}`",
-                                asset_slug, load_stage
-                            );
+                            if !warnings_reported {
+                                self.warnings_reported = true;
+                                warn!(
+                                    "Asset `{}` has not completed loading. Load stage: `{:?}`",
+                                    asset_slug, load_stage
+                                );
+                            }
                         }
                         Err(())
                     }

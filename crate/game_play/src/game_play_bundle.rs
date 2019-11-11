@@ -54,11 +54,11 @@ use sequence_play::{
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequence, SpawnsSequenceHandles};
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::{
-    AssetScaleSequenceHandles, AssetSpritePositions, AssetSpriteRenderSequenceHandles,
-    AssetTintSequenceHandles, ScaleSequence, ScaleSequenceHandles, SpritePositions,
-    SpriteRenderSequence, SpriteRenderSequenceHandles, TintSequence, TintSequenceHandles,
+    AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
+    ScaleSequence, ScaleSequenceHandles, SpriteRenderSequence, SpriteRenderSequenceHandles,
+    TintSequence, TintSequenceHandles,
 };
-use sprite_play::{SpritePositionUpdateSystem, SpriteScaleUpdateSystem};
+use sprite_play::SpriteScaleUpdateSystem;
 use state_registry::StateId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
@@ -133,7 +133,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(AssetSpawnsSequenceHandles, SpawnsSequenceHandles);
         sequence_component_update_system!(AssetSequenceEndTransitions, SequenceEndTransitions);
         sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
-        sequence_component_update_system!(AssetSpritePositions, SpritePositions);
         sequence_component_update_system!(AssetTintSequenceHandles, TintSequenceHandles);
         sequence_component_update_system!(AssetScaleSequenceHandles, ScaleSequenceHandles);
 
@@ -227,13 +226,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Component value update === //
 
-        // Sets `Position<f32>` to the `SpritePosition` value.
-        builder.add(
-            SpritePositionUpdateSystem::new(),
-            &SpritePositionUpdateSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-
         // transform.scale_mut().{x/y/z} = `Scale`
         builder.add(
             SpriteScaleUpdateSystem::new(),
@@ -305,7 +297,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
             &[
-                &SpritePositionUpdateSystem::type_name(),
                 &ObjectKinematicsUpdateSystem::type_name(),
                 &KeepWithinMapBoundsSystem::type_name(),
             ],

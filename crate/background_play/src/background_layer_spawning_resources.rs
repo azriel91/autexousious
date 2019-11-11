@@ -5,10 +5,9 @@ use amethyst::{
 };
 use background_model::loaded::AssetBackgroundLayers;
 use derivative::Derivative;
+use kinematic_model::loaded::AssetPositionInits;
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
-use sprite_model::loaded::{
-    AssetSpritePositions, AssetSpriteRenderSequenceHandles, SpriteRenderSequence,
-};
+use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
 
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
@@ -26,9 +25,9 @@ pub struct BackgroundLayerSpawningResources<'s> {
     /// `AssetSpriteRenderSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprite_render_sequence_handles: Read<'s, AssetSpriteRenderSequenceHandles>,
-    /// `AssetSpritePositions` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetSequenceEndTransitions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_end_transitions: Read<'s, AssetSequenceEndTransitions>,

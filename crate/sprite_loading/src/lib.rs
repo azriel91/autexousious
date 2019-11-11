@@ -5,7 +5,7 @@
 pub use crate::{
     scale_sequence_handles_loader::ScaleSequenceHandlesLoader,
     scale_sequence_loader::ScaleSequenceLoader, sprite_loader::SpriteLoader,
-    sprite_loading_bundle::SpriteLoadingBundle, sprite_positions_loader::SpritePositionsLoader,
+    sprite_loading_bundle::SpriteLoadingBundle,
     sprite_render_sequence_handles_loader::SpriteRenderSequenceHandlesLoader,
     sprite_render_sequence_loader::SpriteRenderSequenceLoader,
     sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
@@ -17,7 +17,6 @@ mod scale_sequence_handles_loader;
 mod scale_sequence_loader;
 mod sprite_loader;
 mod sprite_loading_bundle;
-mod sprite_positions_loader;
 mod sprite_render_sequence_handles_loader;
 mod sprite_render_sequence_loader;
 mod sprite_sheet_loader;

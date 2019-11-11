@@ -7,7 +7,6 @@ use amethyst::{
 use asset_model::loaded::{AssetId, AssetIdMappings};
 use kinematic_model::config::Position;
 use log::debug;
-use num_traits::FromPrimitive;
 use sequence_model::{
     loaded::WaitSequence,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
@@ -66,7 +65,7 @@ impl BackgroundLayerEntitySpawner {
             asset_background_layers,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            asset_sprite_positions,
+            asset_position_inits,
             asset_sequence_end_transitions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
@@ -74,7 +73,6 @@ impl BackgroundLayerEntitySpawner {
         BackgroundLayerComponentStorages {
             asset_ids,
             transparents,
-            sprite_positions,
             positions,
             transforms,
             waits,
@@ -93,7 +91,7 @@ impl BackgroundLayerEntitySpawner {
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
             asset_sprite_render_sequence_handles.get(asset_id);
-        let asset_sprite_positions = asset_sprite_positions.get(asset_id);
+        let asset_position_inits = asset_position_inits.get(asset_id);
         let asset_sequence_end_transitions = asset_sequence_end_transitions.get(asset_id);
 
         // Spawn sprite sequence entities
@@ -101,39 +99,32 @@ impl BackgroundLayerEntitySpawner {
             Some(asset_background_layers),
             Some(asset_wait_sequence_handles),
             Some(asset_sprite_render_sequence_handles),
-            Some(asset_sprite_positions),
+            Some(asset_position_inits),
             Some(asset_sequence_end_transitions),
         ) = (
             asset_background_layers,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            asset_sprite_positions,
+            asset_position_inits,
             asset_sequence_end_transitions,
         ) {
             asset_background_layers
                 .iter()
-                .zip(asset_sprite_positions.iter().copied())
+                .zip(asset_position_inits.iter().copied())
                 .zip(asset_wait_sequence_handles.iter())
                 .zip(asset_sprite_render_sequence_handles.iter())
                 .zip(asset_sequence_end_transitions.iter().copied())
                 .map(
                     |(
                         (
-                            ((background_layer, sprite_position), wait_sequence_handle),
+                            ((background_layer, position_init), wait_sequence_handle),
                             sprite_render_sequence_handle,
                         ),
                         sequence_end_transition,
                     )| {
                         let entity = entities.create();
 
-                        let translation = Vector3::new(
-                            f32::from_i32(sprite_position.x)
-                                .expect("Failed to convert i32 into `f32`."),
-                            f32::from_i32(sprite_position.y)
-                                .expect("Failed to convert i32 into `f32`."),
-                            f32::from_i32(sprite_position.z)
-                                .expect("Failed to convert i32 into `f32`."),
-                        );
+                        let translation = Into::<Vector3<f32>>::into(position_init);
                         let position = Position::from(translation);
                         let mut transform = Transform::default();
                         transform.set_translation(translation);
@@ -176,9 +167,6 @@ impl BackgroundLayerEntitySpawner {
                         transparents
                             .insert(entity, Transparent)
                             .expect("Failed to insert `Transparent` component.");
-                        sprite_positions
-                            .insert(entity, sprite_position)
-                            .expect("Failed to insert `SpritePosition` component.");
                         positions
                             .insert(entity, position)
                             .expect("Failed to insert `Position<f32>` component.");

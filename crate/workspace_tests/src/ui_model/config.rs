@@ -4,9 +4,10 @@ mod test {
 
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
-    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
+    use kinematic_model::config::PositionInit;
+    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
-    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef};
+    use sprite_model::config::{SpriteFrame, SpriteRef};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
     use ui_model_spi::config::UiSequenceName;
 
@@ -17,28 +18,27 @@ menu:
   # First item is active by default. The sequence here should correspond to the active status.
   - index: "start_game"
     text: "Start Game"
+    position: { x: -1, y: -2, z: -3 }
     sequence: "active"
 
   - index: "exit"
     text: "Exit"
+    position: { x: -1, y: -2, z: -3 }
     sequence: "exit_inactive"
 
 sequences:
   start_game_inactive:
     next: "none"
-    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
   active:
     next: "repeat"
-    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
   exit_inactive:
     next: "none"
-    position: { x: -1, y: -2, z: -3 }
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 "#;
@@ -48,43 +48,36 @@ sequences:
         let ui_definition = serde_yaml::from_str::<UiDefinition>(UI_MENU_YAML)
             .expect("Failed to deserialize `UiDefinition`.");
 
+        let position_init = PositionInit::new(-1, -2, -3);
         let ui_type = UiType::Menu(UiMenuItems::new(vec![
             UiMenuItem::new(
                 GameModeIndex::StartGame,
                 String::from("Start Game"),
+                position_init,
                 SequenceNameString::from(UiSequenceName::Active),
             ),
             UiMenuItem::new(
                 GameModeIndex::Exit,
                 String::from("Exit"),
+                position_init,
                 SequenceNameString::from_str("exit_inactive").expect(
                     "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
                 ),
             ),
         ]));
-        let sprite_position = SpritePosition::new(-1, -2, -3);
         let sequences = {
             let mut sequences = IndexMap::new();
             sequences.insert(
                 SequenceNameString::String(String::from("start_game_inactive")),
-                UiSequence::new(
-                    sprite_position,
-                    Sequence::new(SequenceEndTransition::None, sprite_frames()),
-                ),
+                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
             );
             sequences.insert(
                 SequenceNameString::Name(UiSequenceName::Active),
-                UiSequence::new(
-                    sprite_position,
-                    Sequence::new(SequenceEndTransition::Repeat, sprite_frames()),
-                ),
+                UiSequence::new(SequenceEndTransition::Repeat, sprite_frames()),
             );
             sequences.insert(
                 SequenceNameString::String(String::from("exit_inactive")),
-                UiSequence::new(
-                    sprite_position,
-                    Sequence::new(SequenceEndTransition::None, sprite_frames()),
-                ),
+                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
             );
             UiSequences::new(sequences)
         };

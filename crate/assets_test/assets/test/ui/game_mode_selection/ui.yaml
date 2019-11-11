@@ -2,14 +2,17 @@ menu:
   # First item is active by default. The sequence here should correspond to the active status.
   - index: "start_game"
     text: "Start Game"
+    position: { x: 300, y: 300, z: 10 }
     sequence: "start_game_active"
 
   - index: "control_settings"
     text: "Control Settings"
+    position: { x: 300, y: 250, z: 10 }
     sequence: "control_settings_inactive"
 
   - index: "exit"
     text: "Exit"
+    position: { x: 300, y: 200, z: 10 }
     sequence: "exit_inactive"
 
 sequences:

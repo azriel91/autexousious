@@ -18,6 +18,7 @@ derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
+kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 sequence_model = { path = "../sequence_model" }
 shrev_support = { path = "../shrev_support" }

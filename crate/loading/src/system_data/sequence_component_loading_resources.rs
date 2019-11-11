@@ -18,13 +18,15 @@ use collision_model::{
 };
 use derivative::Derivative;
 use game_mode_selection_model::GameModeIndex;
-use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
+use kinematic_model::loaded::{
+    AssetObjectAccelerationSequenceHandles, AssetPositionInits, ObjectAccelerationSequence,
+};
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
 use sprite_model::loaded::{
-    AssetScaleSequenceHandles, AssetSpritePositions, AssetSpriteRenderSequenceHandles,
-    AssetTintSequenceHandles, ScaleSequence, SpriteRenderSequence, TintSequence,
+    AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
+    ScaleSequence, SpriteRenderSequence, TintSequence,
 };
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
@@ -123,9 +125,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `AssetBackgroundLayers` resource.
     #[derivative(Debug = "ignore")]
     pub asset_background_layers: Write<'s, AssetBackgroundLayers>,
-    /// `AssetSpritePositions` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
+    pub asset_position_inits: Write<'s, AssetPositionInits>,
     /// `AssetTintSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_tint_sequence_handles: Write<'s, AssetTintSequenceHandles>,
@@ -231,9 +233,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     /// `AssetBackgroundLayers` resource.
     #[derivative(Debug = "ignore")]
     pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
-    /// `AssetSpritePositions` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetTintSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_tint_sequence_handles: Read<'s, AssetTintSequenceHandles>,

@@ -17,13 +17,13 @@ use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use game_mode_selection_model::{GameModeIndex, GameModeSelectionEntity};
+use kinematic_model::{config::Position, loaded::AssetPositionInits};
 use log::debug;
 use sequence_model::{
     loaded::SequenceId,
     play::{FrameIndexClock, FrameWaitClock},
 };
 use shrev_support::EventChannelExt;
-use sprite_model::{config::SpritePosition, loaded::AssetSpritePositions};
 use state_registry::StateIdUpdateEvent;
 use state_support::StateAssetUtils;
 use typename_derive::TypeName;
@@ -63,9 +63,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
-    /// `AssetSpritePositions` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,
@@ -75,9 +75,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
-    /// `SpritePosition` components.
+    /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
-    pub sprite_positions: WriteStorage<'s, SpritePosition>,
+    pub positions: WriteStorage<'s, Position<f32>>,
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
@@ -127,12 +127,13 @@ impl GameModeSelectionWidgetUiSystem {
         &mut self,
         GameModeSelectionWidgetUiSystemData {
             entities,
+            asset_id_mappings,
             asset_ui_menu_items,
-            asset_sprite_positions,
+            asset_position_inits,
             asset_ids,
             sequence_ids,
             transparents,
-            sprite_positions,
+            positions,
             transforms,
             frame_index_clocks,
             frame_wait_clocks,
@@ -160,9 +161,9 @@ impl GameModeSelectionWidgetUiSystem {
                 .expect("Failed to get regular font handle.");
 
             let ui_menu_items = asset_ui_menu_items.get(asset_id);
-            let asset_sprite_positions = asset_sprite_positions.get(asset_id);
-            if let (Some(ui_menu_items), Some(asset_sprite_positions)) =
-                (ui_menu_items, asset_sprite_positions)
+            let asset_position_inits = asset_position_inits.get(asset_id);
+            if let (Some(ui_menu_items), Some(asset_position_inits)) =
+                (ui_menu_items, asset_position_inits)
             {
                 let item_count = ui_menu_items.len();
                 let menu_items = ui_menu_items
@@ -171,17 +172,20 @@ impl GameModeSelectionWidgetUiSystem {
                     .map(|(order, ui_menu_item)| {
                         let index = ui_menu_item.index;
                         let sequence_id = ui_menu_item.sequence_id;
-                        let sprite_position = asset_sprite_positions
-                            .get(*sequence_id)
-                            .copied()
-                            .unwrap_or_else(|| {
+                        let position_init =
+                            asset_position_inits.get(order).copied().unwrap_or_else(|| {
+                                let asset_slug = asset_id_mappings
+                                    .slug(asset_id)
+                                    .expect("Expected `AssetSlug` to exist.");
+
                                 panic!(
-                                    "Expected `SpritePosition` to exist for \
-                                     sequence ID `{:?}` for asset ID `{:?}`",
-                                    sequence_id, asset_id
+                                    "Expected `PositionInit` to exist for \
+                                     sequence ID `{:?}` for asset `{}`, `{:?}`",
+                                    sequence_id, asset_slug, asset_id
                                 )
                             });
-                        let translation = Into::<Vector3<f32>>::into(sprite_position);
+                        let translation = Into::<Vector3<f32>>::into(position_init);
+                        let position = Position::from(translation);
                         let mut transform = Transform::default();
                         transform.set_translation(translation);
 
@@ -226,7 +230,7 @@ impl GameModeSelectionWidgetUiSystem {
                             .with(sequence_id, sequence_ids)
                             .with(asset_id, asset_ids)
                             .with(Transparent, transparents)
-                            .with(sprite_position, sprite_positions)
+                            .with(position, positions)
                             .with(transform, transforms)
                             .with(FrameIndexClock::new(1), frame_index_clocks)
                             .with(FrameWaitClock::new(1), frame_wait_clocks)

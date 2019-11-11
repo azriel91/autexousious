@@ -12,7 +12,7 @@ use sequence_model::{
     loaded::{SequenceEndTransition, SequenceId, WaitSequenceHandle},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use sprite_model::{config::SpritePosition, loaded::SpriteRenderSequenceHandle};
+use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 /// `SpriteSequence` component storages.
 #[derive(Derivative, SystemData)]
@@ -24,9 +24,6 @@ pub struct BackgroundLayerComponentStorages<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
-    /// `SpritePosition` components.
-    #[derivative(Debug = "ignore")]
-    pub sprite_positions: WriteStorage<'s, SpritePosition>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,

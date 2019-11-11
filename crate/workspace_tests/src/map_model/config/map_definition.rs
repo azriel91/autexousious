@@ -2,9 +2,10 @@
 mod test {
     use background_model::config::BackgroundDefinition;
     use indexmap::IndexMap;
-    use sequence_model::config::{Sequence, SequenceEndTransition, Wait};
+    use kinematic_model::config::PositionInit;
+    use sequence_model::config::{SequenceEndTransition, Wait};
     use serde_yaml;
-    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef, SpriteSequence};
+    use sprite_model::config::{SpriteFrame, SpriteItem, SpriteRef, SpriteSequence};
 
     use map_model::config::{MapBounds, MapDefinition, MapHeader};
 
@@ -51,9 +52,9 @@ layers:
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
         let header = MapHeader::new("Map with sprite sequence".to_string(), bounds);
-        let layer_0 = SpriteSequence::new(
-            SpritePosition::new(1, 4, 0),
-            Sequence::new(
+        let layer_0 = SpriteItem::new(
+            PositionInit::new(1, 4, 0),
+            SpriteSequence::new(
                 SequenceEndTransition::None,
                 vec![
                     SpriteFrame {
@@ -69,9 +70,9 @@ layers:
                 ],
             ),
         );
-        let layer_1 = SpriteSequence::new(
-            SpritePosition::new(-1, -2, -3),
-            Sequence::new(
+        let layer_1 = SpriteItem::new(
+            PositionInit::new(-1, -2, -3),
+            SpriteSequence::new(
                 SequenceEndTransition::None,
                 vec![SpriteFrame {
                     wait: Wait::new(1),
