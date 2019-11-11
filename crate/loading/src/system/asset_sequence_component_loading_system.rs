@@ -498,6 +498,9 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                             asset_ui_menu_items.insert(asset_id, ui_menu_items);
                         }
+                        UiType::ControlSettings(_control_settings) => {
+                            unimplemented!();
+                        }
                     }
                 }
 

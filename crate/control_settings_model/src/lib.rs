@@ -8,3 +8,5 @@ pub use crate::{
 
 mod control_settings_entity;
 mod control_settings_event;
+
+pub mod config;
