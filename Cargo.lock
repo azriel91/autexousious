@@ -2322,6 +2322,7 @@ dependencies = [
  "sprite_model 0.15.0",
  "sprite_play 0.15.0",
  "state_registry 0.15.0",
+ "state_support 0.15.0",
  "team_model 0.15.0",
  "tracker 0.15.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
