@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use amethyst::core::math::Vector3;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -12,6 +14,18 @@ pub struct PositionInit {
     pub y: i32,
     /// Initial Z coordinate.
     pub z: i32,
+}
+
+impl Add for PositionInit {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
 }
 
 impl Into<Vector3<f32>> for PositionInit {

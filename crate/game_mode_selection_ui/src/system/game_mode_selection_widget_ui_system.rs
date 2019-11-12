@@ -27,6 +27,7 @@ use shrev_support::EventChannelExt;
 use state_registry::StateIdUpdateEvent;
 use state_support::StateAssetUtils;
 use typename_derive::TypeName;
+use ui_label_model::loaded::AssetUiLabels;
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 /// Visible for testing.
@@ -60,6 +61,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Read<'s, AssetUiLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
@@ -128,6 +132,7 @@ impl GameModeSelectionWidgetUiSystem {
         GameModeSelectionWidgetUiSystemData {
             entities,
             asset_id_mappings,
+            asset_ui_labels,
             asset_ui_menu_items,
             asset_position_inits,
             asset_ids,
@@ -161,17 +166,27 @@ impl GameModeSelectionWidgetUiSystem {
                 .expect("Failed to get regular font handle.");
 
             let ui_menu_items = asset_ui_menu_items.get(asset_id);
+            let ui_labels = asset_ui_labels.get(asset_id);
             let asset_position_inits = asset_position_inits.get(asset_id);
-            if let (Some(ui_menu_items), Some(asset_position_inits)) =
-                (ui_menu_items, asset_position_inits)
+            if let (Some(ui_menu_items), Some(ui_labels), Some(asset_position_inits)) =
+                (ui_menu_items, ui_labels, asset_position_inits)
             {
-                let item_count = ui_menu_items.len();
                 let menu_items = ui_menu_items
                     .iter()
                     .enumerate()
                     .map(|(order, ui_menu_item)| {
                         let index = ui_menu_item.index;
                         let sequence_id = ui_menu_item.sequence_id;
+                        let ui_label = ui_labels.get(order).unwrap_or_else(|| {
+                            let asset_slug = asset_id_mappings
+                                .slug(asset_id)
+                                .expect("Expected `AssetSlug` to exist.");
+
+                            panic!(
+                                "Expected `UiLabel` to exist for asset `{}` (`{:?}`)",
+                                asset_slug, asset_id
+                            )
+                        });
                         let position_init =
                             asset_position_inits.get(order).copied().unwrap_or_else(|| {
                                 let asset_slug = asset_id_mappings
@@ -179,9 +194,8 @@ impl GameModeSelectionWidgetUiSystem {
                                     .expect("Expected `AssetSlug` to exist.");
 
                                 panic!(
-                                    "Expected `PositionInit` to exist for \
-                                     sequence ID `{:?}` for asset `{}`, `{:?}`",
-                                    sequence_id, asset_slug, asset_id
+                                    "Expected `PositionInit` to exist for asset `{}` (`{:?}`)",
+                                    asset_slug, asset_id
                                 )
                             });
                         let translation = Into::<Vector3<f32>>::into(position_init);
@@ -189,10 +203,10 @@ impl GameModeSelectionWidgetUiSystem {
                         let mut transform = Transform::default();
                         transform.set_translation(translation);
 
-                        let x = -LABEL_WIDTH / 2.;
-                        let y = ((item_count - order) as f32 * LABEL_HEIGHT)
-                            - (item_count as f32 * LABEL_HEIGHT / 2.);
-                        let z = 1.;
+                        let position_combined = position_init + ui_label.position;
+                        let x = position_combined.x as f32;
+                        let y = position_combined.y as f32;
+                        let z = position_combined.z as f32;
 
                         let ui_transform = UiTransform::new(
                             index.to_string(),
@@ -205,7 +219,7 @@ impl GameModeSelectionWidgetUiSystem {
                             LABEL_HEIGHT,
                         );
 
-                        let index_text = ui_menu_item.text.clone();
+                        let index_text = ui_label.text.clone();
                         let ui_text = UiText::new(
                             font.clone(),
                             index_text,

@@ -28,6 +28,7 @@ use sprite_model::loaded::{
     AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
     ScaleSequence, SpriteRenderSequence, TintSequence,
 };
+use ui_label_model::loaded::AssetUiLabels;
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
@@ -142,6 +143,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
 
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Write<'s, AssetUiLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Write<'s, AssetUiMenuItems<GameModeIndex>>,
@@ -250,6 +254,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
 
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Read<'s, AssetUiLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,

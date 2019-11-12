@@ -1,4 +1,5 @@
 use std::{any::type_name, str::FromStr};
+use ui_model::config::UiDefinition;
 
 use amethyst::renderer::SpriteRender;
 use asset_model::{
@@ -15,7 +16,6 @@ use character_model::{
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
 use energy_model::config::EnergySequence;
-use game_mode_selection_model::GameModeIndex;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::loaded::PositionInits;
 use loading_model::loaded::LoadStage;
@@ -41,7 +41,8 @@ use sprite_model::{
     loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
 use typename_derive::TypeName;
-use ui_menu_item_model::loaded::{UiMenuItem, UiMenuItems};
+use ui_label_loading::UiLabelsLoader;
+use ui_menu_item_loading::UiMenuItemsLoader;
 use ui_model::config::UiType;
 
 use crate::{
@@ -191,6 +192,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_scale_sequence_handles,
             asset_map_bounds,
             asset_margins,
+            asset_ui_labels,
             asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
@@ -253,6 +255,13 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         };
         let sequence_end_transition_mapper_sprite = SequenceEndTransitionMapper {
             asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
+        };
+
+        let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
+        let mut ui_menu_items_loader = UiMenuItemsLoader {
+            asset_id_mappings,
+            asset_sequence_id_mappings_ui,
+            asset_ui_menu_items,
         };
 
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
@@ -434,6 +443,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             ui_definition_assets.get(ui_definition_handle)
                         });
 
+                // `UiDefinition` specific asset data.
                 let position_inits = {
                     let mut position_inits = Vec::new();
                     if let Some(background_definition) = background_definition {
@@ -449,9 +459,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     ui_menu_items.iter(),
                                 ));
                             }
-                            UiType::ControlSettings(_control_settings) => {
-                                unimplemented!();
-                            }
+                            UiType::ControlSettings(_control_settings) => {}
                         }
                     }
 
@@ -459,51 +467,28 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 };
                 asset_position_inits.insert(asset_id, position_inits);
 
+                // `UiMenuItem`s
+                if let Some(UiDefinition {
+                    ui_type: UiType::Menu(ui_menu_items),
+                    ..
+                }) = ui_definition
+                {
+                    ui_menu_items_loader.load(ui_menu_items.iter(), asset_id);
+                }
+
+                // `UiLabel`s
                 if let Some(ui_definition) = ui_definition {
                     match &ui_definition.ui_type {
                         UiType::Menu(ui_menu_items) => {
-                            let ui_menu_items = ui_menu_items
-                                .iter()
-                                .map(|ui_menu_item| {
-                                    let sequence_id_mappings = asset_sequence_id_mappings_ui
-                                        .get(asset_id)
-                                        .unwrap_or_else(|| {
-                                            panic!(
-                                                "Expected `SequenceIdMappings<UiSequenceName>` \
-                                                 to exist for `{}`.",
-                                                asset_slug
-                                            )
-                                        });
-                                    let sequence = &ui_menu_item.sequence;
-                                    let sequence_id = sequence_id_mappings
-                                        .id(sequence)
-                                        .copied()
-                                        .unwrap_or_else(|| {
-                                            panic!(
-                                                "Expected `SequenceIdMapping` to exist for \
-                                                 sequence `{}` for asset `{}`.",
-                                                sequence, asset_slug
-                                            )
-                                        });
-
-                                    UiMenuItem::new(
-                                        ui_menu_item.index,
-                                        ui_menu_item.text.clone(),
-                                        sequence_id,
-                                    )
-                                })
-                                .collect::<Vec<UiMenuItem<GameModeIndex>>>();
-                            let ui_menu_items = UiMenuItems::new(ui_menu_items);
-
-                            asset_ui_menu_items.insert(asset_id, ui_menu_items);
+                            ui_labels_loader.load(ui_menu_items.iter(), asset_id);
                         }
-                        UiType::ControlSettings(_control_settings) => {
-                            unimplemented!();
+                        UiType::ControlSettings(control_settings) => {
+                            ui_labels_loader.load(std::iter::once(control_settings), asset_id);
                         }
                     }
                 }
 
-                // Load sequence components from `UiDefinition`.
+                // Sequence components from both `BackgroundDefinition` and `UiDefinition`.
                 let wait_sequence_handles = {
                     let wait_sequence_loader = &wait_sequence_handles_loader.wait_sequence_loader;
 

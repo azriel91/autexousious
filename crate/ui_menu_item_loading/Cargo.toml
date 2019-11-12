@@ -1,0 +1,17 @@
+[package]
+name = "ui_menu_item_loading"
+version = "0.16.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+asset_model = { path = "../asset_model" }
+derivative = "1.0.3"
+game_mode_selection_model = { path = "../game_mode_selection_model" }
+sequence_model = { path = "../sequence_model" }
+ui_menu_item_model = { path = "../ui_menu_item_model" }
+ui_model_spi = { path = "../ui_model_spi" }
