@@ -2,8 +2,8 @@ use asset_model::loaded::AssetId;
 use derivative::Derivative;
 
 use ui_label_model::{
-    config::UiLabel,
-    loaded::{AssetUiLabels, UiLabels},
+    config::{UiLabel, UiLabels},
+    loaded::AssetUiLabels,
 };
 
 /// Loads `UiLabel`s from items.
