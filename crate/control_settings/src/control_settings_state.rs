@@ -1,7 +1,6 @@
 use amethyst::{
     ecs::WorldExt,
     input::{is_key_down, VirtualKeyCode},
-    utils::removal::Removal,
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
@@ -19,7 +18,7 @@ pub struct ControlSettingsState;
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for ControlSettingsState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        data.world.register::<Removal<ControlSettingsEntity>>();
+        data.world.register::<ControlSettingsEntity>();
         data.world.insert(StateId::ControlSettings);
     }
 
