@@ -2246,6 +2246,7 @@ dependencies = [
  "application_menu 0.15.0",
  "application_ui 0.15.0",
  "asset_model 0.15.0",
+ "background_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.15.0",

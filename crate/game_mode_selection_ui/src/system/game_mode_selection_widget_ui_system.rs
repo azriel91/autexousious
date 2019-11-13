@@ -12,6 +12,7 @@ use amethyst::{
 use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::{AssetId, AssetIdMappings};
+use background_model::loaded::AssetBackgroundLayers;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -61,6 +62,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetBackgroundLayers` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
     /// `AssetUiLabels` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_labels: Read<'s, AssetUiLabels>,
@@ -131,7 +135,7 @@ impl GameModeSelectionWidgetUiSystem {
         &mut self,
         GameModeSelectionWidgetUiSystemData {
             entities,
-            asset_id_mappings,
+            asset_background_layers,
             asset_ui_labels,
             asset_ui_menu_items,
             asset_position_inits,
@@ -167,54 +171,40 @@ impl GameModeSelectionWidgetUiSystem {
 
             let ui_menu_items = asset_ui_menu_items.get(asset_id);
             let ui_labels = asset_ui_labels.get(asset_id);
-            let asset_position_inits = asset_position_inits.get(asset_id);
-            if let (Some(ui_menu_items), Some(ui_labels), Some(asset_position_inits)) =
-                (ui_menu_items, ui_labels, asset_position_inits)
+            let position_inits = asset_position_inits.get(asset_id);
+
+            // Hack: We need to correctly map the item components together.
+            let position_inits_to_skip = asset_background_layers
+                .get(asset_id)
+                .map(|background_layers| background_layers.len())
+                .unwrap_or(0);
+            // End Hack
+
+            if let (Some(ui_menu_items), Some(ui_labels), Some(position_inits)) =
+                (ui_menu_items, ui_labels, position_inits)
             {
                 let menu_items = ui_menu_items
                     .iter()
                     .enumerate()
-                    .map(|(order, ui_menu_item)| {
+                    .zip(ui_labels.iter())
+                    .zip(position_inits.iter().skip(position_inits_to_skip).copied())
+                    .map(|(((order, ui_menu_item), ui_label), position_init)| {
                         let index = ui_menu_item.index;
                         let sequence_id = ui_menu_item.sequence_id;
-                        let ui_label = ui_labels.get(order).unwrap_or_else(|| {
-                            let asset_slug = asset_id_mappings
-                                .slug(asset_id)
-                                .expect("Expected `AssetSlug` to exist.");
+                        let position_combined = position_init + ui_label.position;
 
-                            panic!(
-                                "Expected `UiLabel` to exist for asset `{}` (`{:?}`)",
-                                asset_slug, asset_id
-                            )
-                        });
-                        let position_init =
-                            asset_position_inits.get(order).copied().unwrap_or_else(|| {
-                                let asset_slug = asset_id_mappings
-                                    .slug(asset_id)
-                                    .expect("Expected `AssetSlug` to exist.");
-
-                                panic!(
-                                    "Expected `PositionInit` to exist for asset `{}` (`{:?}`)",
-                                    asset_slug, asset_id
-                                )
-                            });
-                        let translation = Into::<Vector3<f32>>::into(position_init);
+                        let translation = Into::<Vector3<f32>>::into(position_combined);
                         let position = Position::from(translation);
                         let mut transform = Transform::default();
                         transform.set_translation(translation);
 
-                        let position_combined = position_init + ui_label.position;
-                        let x = position_combined.x as f32;
-                        let y = position_combined.y as f32;
-                        let z = position_combined.z as f32;
-
                         let ui_transform = UiTransform::new(
                             index.to_string(),
-                            Anchor::Middle,
-                            Anchor::MiddleLeft,
-                            x,
-                            y,
-                            z,
+                            Anchor::BottomLeft,
+                            Anchor::BottomLeft,
+                            position.x,
+                            position.y,
+                            position.z,
                             LABEL_WIDTH,
                             LABEL_HEIGHT,
                         );
