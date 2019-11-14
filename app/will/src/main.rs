@@ -45,7 +45,7 @@ use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
-use state_play::{StateBackgroundSpawnSystem, StateCameraResetSystem, StateIdEventSystem};
+use state_play::{StateCameraResetSystem, StateIdEventSystem, StateUiSpawnSystem};
 use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -144,8 +144,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with(
-                StateBackgroundSpawnSystem::new(),
-                &StateBackgroundSpawnSystem::type_name(),
+                StateUiSpawnSystem::new(),
+                &StateUiSpawnSystem::type_name(),
                 &[&StateIdEventSystem::type_name()],
             )
             .with(
@@ -156,7 +156,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(
                 PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
                 "state_id_prev_tracker_system",
-                &[&StateBackgroundSpawnSystem::type_name()],
+                &[&StateUiSpawnSystem::type_name()],
             )
             .with_bundle(GamePlayBundle::new())?
             .with_bundle(

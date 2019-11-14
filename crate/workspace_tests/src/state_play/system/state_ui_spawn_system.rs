@@ -9,7 +9,7 @@ mod tests {
     use sequence_model::config::Wait;
     use state_registry::{StateId, StateIdUpdateEvent};
 
-    use state_play::{StateBackgroundSpawnSystem, StateBackgroundSpawnSystemData};
+    use state_play::{StateUiSpawnSystem, StateUiSpawnSystemData};
 
     #[test]
     fn does_not_spawn_entities_when_no_event_sent() -> Result<(), Error> {
@@ -105,8 +105,8 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(StateBackgroundSpawnSystem::new(), "", &[])
-            .with_setup(StateBackgroundSpawnSystemData::setup)
+            .with_system(StateUiSpawnSystem::new(), "", &[])
+            .with_setup(StateUiSpawnSystemData::setup)
             .with_effect(move |world| {
                 send_events(world, events);
             })
