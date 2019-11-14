@@ -3,8 +3,8 @@
 //! Provides behaviour logic for states.
 
 pub use crate::system::{
-    StateCameraResetSystem, StateCameraResetSystemData, StateIdEventSystem, StateIdEventSystemData,
-    StateUiSpawnSystem, StateUiSpawnSystemData,
+    StateBackgroundSpawnSystem, StateBackgroundSpawnSystemData, StateCameraResetSystem,
+    StateCameraResetSystemData, StateIdEventSystem, StateIdEventSystemData,
 };
 
 mod system;

@@ -18,16 +18,16 @@ use typename_derive::TypeName;
 
 /// Spawns state UI backgrounds when the `StateId` changes.
 #[derive(Debug, Default, TypeName, new)]
-pub struct StateUiSpawnSystem {
+pub struct StateBackgroundSpawnSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]
     state_id_update_event_rid: Option<ReaderId<StateIdUpdateEvent>>,
 }
 
-/// `StateUiSpawnSystemData`.
+/// `StateBackgroundSpawnSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct StateUiSpawnSystemData<'s> {
+pub struct StateBackgroundSpawnSystemData<'s> {
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
@@ -49,12 +49,12 @@ pub struct StateUiSpawnSystemData<'s> {
     pub lazy_update: Read<'s, LazyUpdate>,
 }
 
-impl<'s> System<'s> for StateUiSpawnSystem {
-    type SystemData = StateUiSpawnSystemData<'s>;
+impl<'s> System<'s> for StateBackgroundSpawnSystem {
+    type SystemData = StateBackgroundSpawnSystemData<'s>;
 
     fn run(
         &mut self,
-        StateUiSpawnSystemData {
+        StateBackgroundSpawnSystemData {
             entities,
             state_id_update_ec,
             mut state_ui_data,
