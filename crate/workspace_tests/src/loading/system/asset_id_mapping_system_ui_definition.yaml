@@ -3,7 +3,7 @@ menu:
   - index: "start_game"
     label: { text: "Start Game" }
     position: { x: 0, y: 0, z: 0 }
-    sequence: "active"
+    sprite: { sequence: "active" }
 
 sequences:
   start_game_inactive:

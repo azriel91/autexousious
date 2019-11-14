@@ -8,7 +8,7 @@ mod test {
     use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use sprite_model::config::{SpriteFrame, SpriteRef};
-    use ui_label_model::config::UiLabel;
+    use ui_label_model::config::{UiLabel, UiSpriteLabel};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
     use ui_model_spi::config::UiSequenceName;
 
@@ -20,12 +20,12 @@ menu:
   - index: "start_game"
     label: { text: "Start Game" }
     position: { x: -1, y: -2, z: -3 }
-    sequence: "active"
+    sprite: { sequence: "active" }
 
   - index: "exit"
     label: { position: { x: 1, y: 2, z: 3 }, text: "Exit" }
     position: { x: -1, y: -2, z: -3 }
-    sequence: "exit_inactive"
+    sprite: { sequence: "exit_inactive" }
 
 sequences:
   start_game_inactive:
@@ -54,14 +54,20 @@ sequences:
             UiMenuItem::new(
                 position_init,
                 UiLabel::new(PositionInit::new(0, 0, 0), String::from("Start Game")),
-                SequenceNameString::from(UiSequenceName::Active),
+                UiSpriteLabel::new(
+                    PositionInit::new(0, 0, 0),
+                    SequenceNameString::from(UiSequenceName::Active),
+                ),
                 GameModeIndex::StartGame,
             ),
             UiMenuItem::new(
                 position_init,
                 UiLabel::new(PositionInit::new(1, 2, 3), String::from("Exit")),
-                SequenceNameString::from_str("exit_inactive").expect(
-                    "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
+                UiSpriteLabel::new(
+                    PositionInit::new(0, 0, 0),
+                    SequenceNameString::from_str("exit_inactive").expect(
+                        "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
+                    ),
                 ),
                 GameModeIndex::Exit,
             ),

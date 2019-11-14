@@ -3,17 +3,17 @@ menu:
   - index: "start_game"
     label: { position: { x: 20, y: 20, z: 0 }, text: "Start Game" }
     position: { x: 300, y: 300, z: 10 }
-    sequence: "start_game_active"
+    sprite: { sequence: "start_game_active" }
 
   - index: "control_settings"
     label: { position: { x: 20, y: 20, z: 0 }, text: "Control Settings" }
     position: { x: 300, y: 250, z: 10 }
-    sequence: "control_settings_inactive"
+    sprite: { sequence: "control_settings_inactive" }
 
   - index: "exit"
     label: { position: { x: 20, y: 20, z: 0 }, text: "Exit" }
     position: { x: 300, y: 200, z: 10 }
-    sequence: "exit_inactive"
+    sprite: { sequence: "exit_inactive" }
 
 sequences:
   start_game_inactive: &empty_sequence

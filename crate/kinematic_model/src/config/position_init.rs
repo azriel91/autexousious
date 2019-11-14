@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
 
 use amethyst::core::math::Vector3;
 use derive_new::new;
@@ -21,6 +21,16 @@ impl Add for PositionInit {
 
     fn add(self, other: Self) -> Self {
         Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl AddAssign for PositionInit {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,

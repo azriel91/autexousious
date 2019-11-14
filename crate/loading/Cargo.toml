@@ -22,6 +22,7 @@ character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 collision_audio_model = { path = "../collision_audio_model" }
 collision_model = { path = "../collision_model" }
+control_settings_loading = { path = "../control_settings_loading" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }

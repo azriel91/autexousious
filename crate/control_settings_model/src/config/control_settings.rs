@@ -2,7 +2,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 use ui_label_model::config::UiLabel;
 
-use crate::config::KeyboardLayout;
+use crate::config::KeyboardSettings;
 
 /// Control Settings UI configuration.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -10,8 +10,8 @@ use crate::config::KeyboardLayout;
 pub struct ControlSettings {
     /// Control settings title.
     pub title: UiLabel,
-    /// Layout of the keyboard to render.
-    pub keyboard_layout: KeyboardLayout,
+    /// Keyboard settings.
+    pub keyboard: KeyboardSettings,
 }
 
 impl AsRef<UiLabel> for ControlSettings {

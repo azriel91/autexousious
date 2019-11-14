@@ -1,5 +1,4 @@
 use std::{any::type_name, str::FromStr};
-use ui_model::config::UiDefinition;
 
 use amethyst::renderer::SpriteRender;
 use asset_model::{
@@ -15,6 +14,7 @@ use character_model::{
     config::CharacterSequence,
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
+use control_settings_loading::KeyboardUiGen;
 use energy_model::config::EnergySequence;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::loaded::PositionInits;
@@ -41,9 +41,9 @@ use sprite_model::{
     loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
 use typename_derive::TypeName;
-use ui_label_loading::UiLabelsLoader;
+use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
 use ui_menu_item_loading::UiMenuItemsLoader;
-use ui_model::config::UiType;
+use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
@@ -193,6 +193,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_map_bounds,
             asset_margins,
             asset_ui_labels,
+            asset_ui_sprite_labels,
             asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
@@ -258,6 +259,11 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         };
 
         let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
+        let mut ui_sprite_labels_loader = UiSpriteLabelsLoader {
+            asset_id_mappings,
+            asset_sequence_id_mappings_ui,
+            asset_ui_sprite_labels,
+        };
         let mut ui_menu_items_loader = UiMenuItemsLoader {
             asset_id_mappings,
             asset_sequence_id_mappings_ui,
@@ -484,6 +490,21 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         }
                         UiType::ControlSettings(control_settings) => {
                             ui_labels_loader.load(std::iter::once(control_settings), asset_id);
+                        }
+                    }
+                }
+
+                // `UiSpriteLabel`s
+                if let Some(ui_definition) = ui_definition {
+                    match &ui_definition.ui_type {
+                        UiType::Menu(ui_menu_items) => {
+                            ui_sprite_labels_loader.load(ui_menu_items.iter(), asset_id);
+                        }
+                        UiType::ControlSettings(control_settings) => {
+                            let keyboard_ui_sprite_labels =
+                                KeyboardUiGen::generate(&control_settings.keyboard);
+                            ui_sprite_labels_loader
+                                .load(keyboard_ui_sprite_labels.iter(), asset_id);
                         }
                     }
                 }

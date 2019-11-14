@@ -68,7 +68,7 @@ impl<'s> UiMenuItemsLoader<'s> {
                             asset_slug
                         )
                     });
-                let sequence = &ui_menu_item.sequence;
+                let sequence = &ui_menu_item.sprite.sequence;
                 let sequence_id = sequence_id_mappings
                     .id(sequence)
                     .copied()
