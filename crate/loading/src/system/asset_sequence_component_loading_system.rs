@@ -35,7 +35,7 @@ use sprite_model::{
 };
 use typename_derive::TypeName;
 use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
-use ui_label_model::config::UiSpriteLabel;
+use ui_label_model::{config::UiSpriteLabel, loaded::UiSpriteLabels};
 use ui_menu_item_loading::UiMenuItemsLoader;
 use ui_model::config::{UiDefinition, UiType};
 
@@ -400,6 +400,16 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             ui_definition_assets.get(ui_definition_handle)
                         });
 
+                let keyboard_ui_sprite_labels = if let Some(UiDefinition {
+                    ui_type: UiType::ControlSettings(control_settings),
+                    ..
+                }) = ui_definition
+                {
+                    Some(KeyboardUiGen::generate(&control_settings.keyboard))
+                } else {
+                    None
+                };
+
                 // `UiDefinition` specific asset data.
                 // `PositionInit`s
                 let position_inits = {
@@ -417,7 +427,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     ui_menu_items.iter(),
                                 ));
                             }
-                            UiType::ControlSettings(_control_settings) => {}
+                            UiType::ControlSettings(_control_settings) => {
+                                let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
+                                    .as_ref()
+                                    .expect("Expected `keyboard_ui_sprite_labels` to exist.");
+                                position_inits.append(&mut PositionInitsLoader::items_to_datas(
+                                    keyboard_ui_sprite_labels.iter(),
+                                ));
+                            }
                         }
                     }
 
@@ -447,19 +464,63 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 }
 
                 // `UiSpriteLabel`s
-                if let Some(ui_definition) = ui_definition {
-                    match &ui_definition.ui_type {
-                        UiType::Menu(ui_menu_items) => {
-                            ui_sprite_labels_loader.load(ui_menu_items.iter(), asset_id);
-                        }
-                        UiType::ControlSettings(control_settings) => {
-                            let keyboard_ui_sprite_labels =
-                                KeyboardUiGen::generate(&control_settings.keyboard);
-                            ui_sprite_labels_loader
-                                .load(keyboard_ui_sprite_labels.iter(), asset_id);
+                let ui_sprite_labels = {
+                    let mut ui_sprite_labels = Vec::new();
+                    if let Some(background_definition) = background_definition {
+                        // Background layers.
+                        let layers_as_ui_sprite_label =
+                            background_definition
+                                .layers
+                                .iter()
+                                .map(|(sequence_string, layer)| {
+                                    let sequence_name_string = SequenceNameString::from_str(
+                                        sequence_string,
+                                    )
+                                    .expect("Expected `SequenceNameString::from_str` to succeed.");
+                                    UiSpriteLabel::new(layer.position, sequence_name_string)
+                                });
+                        let mut layers_as_ui_sprite_label = UiSpriteLabelsLoader::items_to_datas(
+                            asset_id_mappings,
+                            &mut ui_sprite_labels_loader.asset_sequence_id_mappings_sprite,
+                            asset_id,
+                            layers_as_ui_sprite_label,
+                        );
+                        ui_sprite_labels.append(&mut layers_as_ui_sprite_label);
+                    }
+
+                    if let Some(ui_definition) = ui_definition {
+                        match &ui_definition.ui_type {
+                            UiType::Menu(ui_menu_items) => {
+                                let mut ui_sprite_labels_menu =
+                                    UiSpriteLabelsLoader::items_to_datas(
+                                        asset_id_mappings,
+                                        &mut ui_sprite_labels_loader
+                                            .asset_sequence_id_mappings_sprite,
+                                        asset_id,
+                                        ui_menu_items.iter(),
+                                    );
+                                ui_sprite_labels.append(&mut ui_sprite_labels_menu);
+                            }
+                            UiType::ControlSettings(_control_settings) => {
+                                let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
+                                    .as_ref()
+                                    .expect("Expected `keyboard_ui_sprite_labels` to exist.");
+                                let mut keyboard_ui_sprite_labels =
+                                    UiSpriteLabelsLoader::items_to_datas(
+                                        asset_id_mappings,
+                                        &mut ui_sprite_labels_loader
+                                            .asset_sequence_id_mappings_sprite,
+                                        asset_id,
+                                        keyboard_ui_sprite_labels.iter(),
+                                    );
+                                ui_sprite_labels.append(&mut keyboard_ui_sprite_labels);
+                            }
                         }
                     }
-                }
+
+                    UiSpriteLabels::new(ui_sprite_labels)
+                };
+                asset_ui_sprite_labels.insert(asset_id, ui_sprite_labels);
 
                 // Sequence components from both `BackgroundDefinition` and `UiDefinition`.
                 let wait_sequence_handles = {
@@ -515,19 +576,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     )
                                 }),
                             );
-
-                            // Background layers.
-                            let layers_as_ui_sprite_label = background_definition
-                                .layers
-                                .iter()
-                                .map(|(sequence_string, layer)| {
-                                    let sequence_name_string = SequenceNameString::from_str(
-                                        sequence_string,
-                                    )
-                                    .expect("Expected `SequenceNameString::from_str` to succeed.");
-                                    UiSpriteLabel::new(layer.position, sequence_name_string)
-                                });
-                            ui_sprite_labels_loader.load(layers_as_ui_sprite_label, asset_id);
                         }
 
                         if let Some(ui_definition) = ui_definition {

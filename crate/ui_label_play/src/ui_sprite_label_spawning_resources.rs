@@ -4,7 +4,6 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use kinematic_model::loaded::AssetPositionInits;
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
 use ui_label_model::loaded::AssetUiSpriteLabels;
@@ -25,9 +24,6 @@ pub struct UiSpriteLabelSpawningResources<'s> {
     /// `AssetSpriteRenderSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprite_render_sequence_handles: Read<'s, AssetSpriteRenderSequenceHandles>,
-    /// `AssetPositionInits` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetSequenceEndTransitions` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_end_transitions: Read<'s, AssetSequenceEndTransitions>,

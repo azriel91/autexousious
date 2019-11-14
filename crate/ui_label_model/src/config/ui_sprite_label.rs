@@ -22,3 +22,9 @@ impl AsRef<UiSpriteLabel> for UiSpriteLabel {
         self
     }
 }
+
+impl AsRef<PositionInit> for UiSpriteLabel {
+    fn as_ref(&self) -> &PositionInit {
+        &self.position
+    }
+}

@@ -65,7 +65,6 @@ impl UiSpriteLabelEntitySpawner {
             asset_ui_sprite_labels,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            asset_position_inits,
             asset_sequence_end_transitions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
@@ -91,7 +90,6 @@ impl UiSpriteLabelEntitySpawner {
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
             asset_sprite_render_sequence_handles.get(asset_id);
-        let asset_position_inits = asset_position_inits.get(asset_id);
         let asset_sequence_end_transitions = asset_sequence_end_transitions.get(asset_id);
 
         // Spawn sprite sequence entities
@@ -99,99 +97,113 @@ impl UiSpriteLabelEntitySpawner {
             Some(asset_ui_sprite_labels),
             Some(asset_wait_sequence_handles),
             Some(asset_sprite_render_sequence_handles),
-            Some(asset_position_inits),
             Some(asset_sequence_end_transitions),
         ) = (
             asset_ui_sprite_labels,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
-            asset_position_inits,
             asset_sequence_end_transitions,
         ) {
             asset_ui_sprite_labels
                 .iter()
-                .zip(asset_position_inits.iter().copied())
-                .zip(asset_wait_sequence_handles.iter())
-                .zip(asset_sprite_render_sequence_handles.iter())
-                .zip(asset_sequence_end_transitions.iter().copied())
-                .map(
-                    |(
-                        (
-                            ((ui_sprite_label, position_init), wait_sequence_handle),
-                            sprite_render_sequence_handle,
-                        ),
-                        sequence_end_transition,
-                    )| {
-                        let entity = entities.create();
+                .map(|ui_sprite_label| {
+                    let sequence_id = ui_sprite_label.sequence_id;
+                    let wait_sequence_handle = asset_wait_sequence_handles
+                        .get(*sequence_id)
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Expected `WaitSequenceHandle` to exist for sequence ID: `{:?}`",
+                                sequence_id
+                            )
+                        });
+                    let sprite_render_sequence_handle = asset_sprite_render_sequence_handles
+                        .get(*sequence_id)
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Expected `SpriteRenderSequenceHandle` to exist for \
+                                 sequence ID: `{:?}`",
+                                sequence_id
+                            )
+                        });
+                    let sequence_end_transition = asset_sequence_end_transitions
+                        .get(*sequence_id)
+                        .copied()
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Expected `SequenceEndTransition` to exist for sequence ID: `{:?}`",
+                                sequence_id
+                            )
+                        });
 
-                        let translation = Into::<Vector3<f32>>::into(position_init);
-                        let position = Position::from(translation);
-                        let mut transform = Transform::default();
-                        transform.set_translation(translation);
+                    let entity = entities.create();
 
-                        let starting_frame_index = 0;
-                        let wait_sequence = wait_sequence_assets
-                            .get(wait_sequence_handle)
-                            .expect("Expected `WaitSequence` to be loaded.");
-                        let wait = <WaitSequence as ComponentDataExt>::to_owned(
-                            &wait_sequence[starting_frame_index],
-                        );
-                        waits
-                            .insert(entity, wait)
-                            .expect("Failed to insert `Wait` component.");
+                    let translation = Into::<Vector3<f32>>::into(ui_sprite_label.position);
+                    let position = Position::from(translation);
+                    let mut transform = Transform::default();
+                    transform.set_translation(translation);
 
-                        let sprite_render_sequence = sprite_render_sequence_assets
-                            .get(sprite_render_sequence_handle)
-                            .expect("Expected `SpriteRenderSequence` to be loaded.");
-                        let sprite_render = <SpriteRenderSequence as ComponentDataExt>::to_owned(
-                            &sprite_render_sequence[starting_frame_index],
-                        );
-                        sprite_renders
-                            .insert(entity, sprite_render)
-                            .expect("Failed to insert `SpriteRender` component.");
+                    let starting_frame_index = 0;
+                    let wait_sequence = wait_sequence_assets
+                        .get(wait_sequence_handle)
+                        .expect("Expected `WaitSequence` to be loaded.");
+                    let wait = <WaitSequence as ComponentDataExt>::to_owned(
+                        &wait_sequence[starting_frame_index],
+                    );
+                    waits
+                        .insert(entity, wait)
+                        .expect("Failed to insert `Wait` component.");
 
-                        let frame_index_clock = FrameIndexClock::new(wait_sequence.len());
-                        frame_index_clocks
-                            .insert(entity, frame_index_clock)
-                            .expect("Failed to insert frame_index_clock component.");
+                    let sprite_render_sequence = sprite_render_sequence_assets
+                        .get(sprite_render_sequence_handle)
+                        .expect("Expected `SpriteRenderSequence` to be loaded.");
+                    let sprite_render = <SpriteRenderSequence as ComponentDataExt>::to_owned(
+                        &sprite_render_sequence[starting_frame_index],
+                    );
+                    sprite_renders
+                        .insert(entity, sprite_render)
+                        .expect("Failed to insert `SpriteRender` component.");
 
-                        let frame_wait_clock = FrameWaitClock::new(*wait as usize);
-                        frame_wait_clocks
-                            .insert(entity, frame_wait_clock)
-                            .expect("Failed to insert frame_wait_clock component.");
+                    let frame_index_clock = FrameIndexClock::new(wait_sequence.len());
+                    frame_index_clocks
+                        .insert(entity, frame_index_clock)
+                        .expect("Failed to insert frame_index_clock component.");
 
-                        // Enable transparency for visibility sorting
-                        asset_ids
-                            .insert(entity, asset_id)
-                            .expect("Failed to insert `AssetId` component.");
-                        transparents
-                            .insert(entity, Transparent)
-                            .expect("Failed to insert `Transparent` component.");
-                        positions
-                            .insert(entity, position)
-                            .expect("Failed to insert `Position<f32>` component.");
-                        transforms
-                            .insert(entity, transform)
-                            .expect("Failed to insert `Transform` component.");
-                        sequence_ids
-                            .insert(entity, ui_sprite_label.sequence_id)
-                            .expect("Failed to insert `SequenceEndTransition` component.");
-                        sequence_end_transitions
-                            .insert(entity, sequence_end_transition)
-                            .expect("Failed to insert `SequenceEndTransition` component.");
-                        sequence_statuses
-                            .insert(entity, SequenceStatus::default())
-                            .expect("Failed to insert `SequenceStatus` component.");
-                        wait_sequence_handles
-                            .insert(entity, wait_sequence_handle.clone())
-                            .expect("Failed to insert `WaitSequenceHandle` component.");
-                        sprite_render_sequence_handles
-                            .insert(entity, sprite_render_sequence_handle.clone())
-                            .expect("Failed to insert `SpriteRenderSequenceHandle` component.");
+                    let frame_wait_clock = FrameWaitClock::new(*wait as usize);
+                    frame_wait_clocks
+                        .insert(entity, frame_wait_clock)
+                        .expect("Failed to insert frame_wait_clock component.");
 
-                        entity
-                    },
-                )
+                    // Enable transparency for visibility sorting
+                    asset_ids
+                        .insert(entity, asset_id)
+                        .expect("Failed to insert `AssetId` component.");
+                    transparents
+                        .insert(entity, Transparent)
+                        .expect("Failed to insert `Transparent` component.");
+                    positions
+                        .insert(entity, position)
+                        .expect("Failed to insert `Position<f32>` component.");
+                    transforms
+                        .insert(entity, transform)
+                        .expect("Failed to insert `Transform` component.");
+                    sequence_ids
+                        .insert(entity, sequence_id)
+                        .expect("Failed to insert `SequenceEndTransition` component.");
+                    sequence_end_transitions
+                        .insert(entity, sequence_end_transition)
+                        .expect("Failed to insert `SequenceEndTransition` component.");
+                    sequence_statuses
+                        .insert(entity, SequenceStatus::default())
+                        .expect("Failed to insert `SequenceStatus` component.");
+                    wait_sequence_handles
+                        .insert(entity, wait_sequence_handle.clone())
+                        .expect("Failed to insert `WaitSequenceHandle` component.");
+                    sprite_render_sequence_handles
+                        .insert(entity, sprite_render_sequence_handle.clone())
+                        .expect("Failed to insert `SpriteRenderSequenceHandle` component.");
+
+                    entity
+                })
                 .collect::<Vec<Entity>>()
         } else {
             Vec::new()
