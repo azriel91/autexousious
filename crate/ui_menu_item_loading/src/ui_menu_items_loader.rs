@@ -2,11 +2,11 @@ use asset_model::loaded::{AssetId, AssetIdMappings};
 use derivative::Derivative;
 use game_mode_selection_model::GameModeIndex;
 use sequence_model::loaded::AssetSequenceIdMappings;
+use sprite_model::config::SpriteSequenceName;
 use ui_menu_item_model::{
     config,
     loaded::{AssetUiMenuItems, UiMenuItem, UiMenuItems},
 };
-use ui_model_spi::config::UiSequenceName;
 
 /// Loads `UiMenuItem`s from items.
 #[derive(Derivative)]
@@ -15,7 +15,7 @@ pub struct UiMenuItemsLoader<'s> {
     /// `AssetIdMappings`.
     pub asset_id_mappings: &'s AssetIdMappings,
     /// `AssetSequenceIdMappings`.
-    pub asset_sequence_id_mappings_ui: &'s AssetSequenceIdMappings<UiSequenceName>,
+    pub asset_sequence_id_mappings_sprite: &'s AssetSequenceIdMappings<SpriteSequenceName>,
     /// `AssetUiMenuItems`.
     pub asset_ui_menu_items: &'s mut AssetUiMenuItems<GameModeIndex>,
 }
@@ -33,7 +33,7 @@ impl<'s> UiMenuItemsLoader<'s> {
     {
         let ui_menu_items = Self::items_to_datas(
             &self.asset_id_mappings,
-            &self.asset_sequence_id_mappings_ui,
+            &self.asset_sequence_id_mappings_sprite,
             asset_id,
             item_iterator,
         );
@@ -48,7 +48,7 @@ impl<'s> UiMenuItemsLoader<'s> {
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<'f, ItemIterator>(
         asset_id_mappings: &AssetIdMappings,
-        asset_sequence_id_mappings_ui: &AssetSequenceIdMappings<UiSequenceName>,
+        asset_sequence_id_mappings_sprite: &AssetSequenceIdMappings<SpriteSequenceName>,
         asset_id: AssetId,
         item_iterator: ItemIterator,
     ) -> UiMenuItems<GameModeIndex>
@@ -57,14 +57,14 @@ impl<'s> UiMenuItemsLoader<'s> {
     {
         let ui_menu_items = item_iterator
             .map(|ui_menu_item| {
-                let sequence_id_mappings = asset_sequence_id_mappings_ui
+                let sequence_id_mappings = asset_sequence_id_mappings_sprite
                     .get(asset_id)
                     .unwrap_or_else(|| {
                         let asset_slug = asset_id_mappings
                             .slug(asset_id)
                             .expect("Expected `AssetSlug` to exist.");
                         panic!(
-                            "Expected `SequenceIdMappings<UiSequenceName>` to exist for `{}`.",
+                            "Expected `SequenceIdMappings<SpriteSequenceName>` to exist for `{}`.",
                             asset_slug
                         )
                     });

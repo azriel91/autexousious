@@ -12,7 +12,6 @@ use amethyst::{
 use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::{AssetId, AssetIdMappings};
-use background_model::loaded::AssetBackgroundLayers;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -62,9 +61,6 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
-    /// `AssetBackgroundLayers` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
     /// `AssetUiLabels` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_labels: Read<'s, AssetUiLabels>,
@@ -135,7 +131,6 @@ impl GameModeSelectionWidgetUiSystem {
         &mut self,
         GameModeSelectionWidgetUiSystemData {
             entities,
-            asset_background_layers,
             asset_ui_labels,
             asset_ui_menu_items,
             asset_position_inits,
@@ -173,16 +168,13 @@ impl GameModeSelectionWidgetUiSystem {
             let ui_labels = asset_ui_labels.get(asset_id);
             let position_inits = asset_position_inits.get(asset_id);
 
-            // Hack: We need to correctly map the item components together.
-            let position_inits_to_skip = asset_background_layers
-                .get(asset_id)
-                .map(|background_layers| background_layers.len())
-                .unwrap_or(0);
-            // End Hack
-
             if let (Some(ui_menu_items), Some(ui_labels), Some(position_inits)) =
                 (ui_menu_items, ui_labels, position_inits)
             {
+                // Hack
+                let position_inits_to_skip = position_inits.len() - ui_labels.len();
+                // End hack.
+
                 let menu_items = ui_menu_items
                     .iter()
                     .enumerate()
@@ -252,8 +244,8 @@ impl GameModeSelectionWidgetUiSystem {
                     }
                     // Skip first menu item.
                     //
-                    // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the last
-                    // item.
+                    // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the
+                    // last item.
                     menu_items[..]
                         .iter()
                         .enumerate()

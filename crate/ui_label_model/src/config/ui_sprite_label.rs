@@ -4,7 +4,7 @@ use derive_new::new;
 use kinematic_model::config::PositionInit;
 use sequence_model::config::SequenceNameString;
 use serde::{Deserialize, Serialize};
-use ui_model_spi::config::UiSequenceName;
+use sprite_model::config::SpriteSequenceName;
 
 /// Defines a sprite sequence to display.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -14,7 +14,7 @@ pub struct UiSpriteLabel {
     #[serde(default)]
     pub position: PositionInit,
     /// `SequenceNameString` that the `UiSpriteLabel` should begin with.
-    pub sequence: SequenceNameString<UiSequenceName>,
+    pub sequence: SequenceNameString<SpriteSequenceName>,
 }
 
 impl AsRef<UiSpriteLabel> for UiSpriteLabel {

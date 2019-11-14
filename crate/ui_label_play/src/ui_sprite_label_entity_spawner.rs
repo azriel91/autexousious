@@ -14,13 +14,13 @@ use sequence_model::{
 use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
-use crate::{BackgroundLayerComponentStorages, BackgroundLayerSpawningResources};
+use crate::{UiSpriteLabelComponentStorages, UiSpriteLabelSpawningResources};
 
 /// Spawns sprite sequence entities into the world.
 #[derive(Debug)]
-pub struct BackgroundLayerEntitySpawner;
+pub struct UiSpriteLabelEntitySpawner;
 
-impl BackgroundLayerEntitySpawner {
+impl UiSpriteLabelEntitySpawner {
     /// Spawns entities for each of the sprite sequences of an asset.
     ///
     /// Idea: What if we could spawn two maps at the same time?
@@ -31,8 +31,8 @@ impl BackgroundLayerEntitySpawner {
     /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_world(world: &mut World, asset_id: AssetId) -> Vec<Entity> {
         // Hack: Need to move all systems into main dispatcher in order to not do this.
-        BackgroundLayerSpawningResources::setup(world);
-        BackgroundLayerComponentStorages::setup(world);
+        UiSpriteLabelSpawningResources::setup(world);
+        UiSpriteLabelComponentStorages::setup(world);
 
         {
             let asset_id_mappings = world.read_resource::<AssetIdMappings>();
@@ -46,8 +46,8 @@ impl BackgroundLayerEntitySpawner {
         }
 
         Self::spawn_system(
-            &BackgroundLayerSpawningResources::fetch(&world),
-            &mut BackgroundLayerComponentStorages::fetch(&world),
+            &UiSpriteLabelSpawningResources::fetch(&world),
+            &mut UiSpriteLabelComponentStorages::fetch(&world),
             asset_id,
         )
     }
@@ -56,21 +56,21 @@ impl BackgroundLayerEntitySpawner {
     ///
     /// # Parameters
     ///
-    /// * `background_layer_spawning_resources`: Resources to construct the map with.
-    /// * `background_layer_component_storages`: Component storages for the spawned entities.
+    /// * `ui_sprite_label_spawning_resources`: Resources to construct the map with.
+    /// * `ui_sprite_label_component_storages`: Component storages for the spawned entities.
     /// * `asset_id`: Asset ID of the sprite sequences.
     pub fn spawn_system<'res, 's>(
-        BackgroundLayerSpawningResources {
+        UiSpriteLabelSpawningResources {
             entities,
-            asset_background_layers,
+            asset_ui_sprite_labels,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
             asset_position_inits,
             asset_sequence_end_transitions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
-        }: &BackgroundLayerSpawningResources<'res>,
-        BackgroundLayerComponentStorages {
+        }: &UiSpriteLabelSpawningResources<'res>,
+        UiSpriteLabelComponentStorages {
             asset_ids,
             transparents,
             positions,
@@ -84,10 +84,10 @@ impl BackgroundLayerEntitySpawner {
             sprite_renders,
             wait_sequence_handles,
             sprite_render_sequence_handles,
-        }: &mut BackgroundLayerComponentStorages<'s>,
+        }: &mut UiSpriteLabelComponentStorages<'s>,
         asset_id: AssetId,
     ) -> Vec<Entity> {
-        let asset_background_layers = asset_background_layers.get(asset_id);
+        let asset_ui_sprite_labels = asset_ui_sprite_labels.get(asset_id);
         let asset_wait_sequence_handles = asset_wait_sequence_handles.get(asset_id);
         let asset_sprite_render_sequence_handles =
             asset_sprite_render_sequence_handles.get(asset_id);
@@ -96,19 +96,19 @@ impl BackgroundLayerEntitySpawner {
 
         // Spawn sprite sequence entities
         if let (
-            Some(asset_background_layers),
+            Some(asset_ui_sprite_labels),
             Some(asset_wait_sequence_handles),
             Some(asset_sprite_render_sequence_handles),
             Some(asset_position_inits),
             Some(asset_sequence_end_transitions),
         ) = (
-            asset_background_layers,
+            asset_ui_sprite_labels,
             asset_wait_sequence_handles,
             asset_sprite_render_sequence_handles,
             asset_position_inits,
             asset_sequence_end_transitions,
         ) {
-            asset_background_layers
+            asset_ui_sprite_labels
                 .iter()
                 .zip(asset_position_inits.iter().copied())
                 .zip(asset_wait_sequence_handles.iter())
@@ -117,7 +117,7 @@ impl BackgroundLayerEntitySpawner {
                 .map(
                     |(
                         (
-                            ((background_layer, position_init), wait_sequence_handle),
+                            ((ui_sprite_label, position_init), wait_sequence_handle),
                             sprite_render_sequence_handle,
                         ),
                         sequence_end_transition,
@@ -174,7 +174,7 @@ impl BackgroundLayerEntitySpawner {
                             .insert(entity, transform)
                             .expect("Failed to insert `Transform` component.");
                         sequence_ids
-                            .insert(entity, background_layer.sequence_id)
+                            .insert(entity, ui_sprite_label.sequence_id)
                             .expect("Failed to insert `SequenceEndTransition` component.");
                         sequence_end_transitions
                             .insert(entity, sequence_end_transition)

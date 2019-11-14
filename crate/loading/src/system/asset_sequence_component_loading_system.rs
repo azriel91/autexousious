@@ -1,14 +1,7 @@
-use std::{any::type_name, str::FromStr};
+use std::str::FromStr;
 
 use amethyst::renderer::SpriteRender;
-use asset_model::{
-    config::{AssetSlug, AssetType},
-    loaded::AssetId,
-};
-use background_model::{
-    config::BackgroundDefinition,
-    loaded::{AssetBackgroundLayers, BackgroundLayer, BackgroundLayers},
-};
+use asset_model::{config::AssetType, loaded::AssetId};
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::CharacterSequence,
@@ -29,8 +22,8 @@ use sequence_loading::{
     WaitSequenceLoader,
 };
 use sequence_model::{
-    config::{SequenceName, SequenceNameString},
-    loaded::{AssetSequenceIdMappings, SequenceEndTransitions, WaitSequenceHandles},
+    config::SequenceNameString,
+    loaded::{SequenceEndTransitions, WaitSequenceHandles},
 };
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
@@ -42,6 +35,7 @@ use sprite_model::{
 };
 use typename_derive::TypeName;
 use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
+use ui_label_model::config::UiSpriteLabel;
 use ui_menu_item_loading::UiMenuItemsLoader;
 use ui_model::config::{UiDefinition, UiType};
 
@@ -56,51 +50,6 @@ pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSeque
 /// `AssetSequenceComponentLoader`.
 #[derive(Debug, TypeName)]
 pub struct AssetSequenceComponentLoader;
-
-impl AssetSequenceComponentLoader {
-    fn load_background_layers<SeqName>(
-        asset_sequence_id_mappings: &AssetSequenceIdMappings<SeqName>,
-        asset_background_layers: &mut AssetBackgroundLayers,
-        asset_slug: &AssetSlug,
-        asset_id: AssetId,
-        background_definition: &BackgroundDefinition,
-    ) where
-        SeqName: SequenceName,
-    {
-        let background_layers = {
-            let sequence_id_mappings =
-                asset_sequence_id_mappings.get(asset_id).unwrap_or_else(|| {
-                    panic!(
-                        "Expected `SequenceIdMappings<{}>` to exist for `{}`.",
-                        type_name::<SeqName>(),
-                        asset_slug
-                    )
-                });
-            let background_layers = background_definition
-                .layers
-                .keys()
-                .map(|sequence_string| {
-                    let sequence = SequenceNameString::from_str(sequence_string)
-                        .expect("Expected `SequenceNameString::from_str` to succeed.");
-                    sequence_id_mappings
-                        .id(&sequence)
-                        .copied()
-                        .unwrap_or_else(|| {
-                            panic!(
-                                "Expected `SequenceIdMapping` to exist for \
-                                 sequence `{}` for asset `{}`.",
-                                sequence, asset_slug
-                            )
-                        })
-                })
-                .map(BackgroundLayer::new)
-                .collect::<Vec<BackgroundLayer>>();
-
-            BackgroundLayers::new(background_layers)
-        };
-        asset_background_layers.insert(asset_id, background_layers);
-    }
-}
 
 impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
     const LOAD_STAGE: LoadStage = LoadStage::SequenceComponentLoading;
@@ -154,7 +103,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     asset_sequence_id_mappings_sprite,
                     asset_sequence_id_mappings_character,
                     asset_sequence_id_mappings_energy,
-                    asset_sequence_id_mappings_ui,
                     ..
                 },
             texture_loading_resources_read:
@@ -186,7 +134,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_interactions_sequence_handles,
             asset_spawns_sequence_handles,
             asset_character_cts_handles,
-            asset_background_layers,
             asset_position_inits,
             asset_tint_sequence_handles,
             asset_scale_sequence_handles,
@@ -252,7 +199,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_position_inits,
         };
         let sequence_end_transition_mapper_ui = SequenceEndTransitionMapper {
-            asset_sequence_id_mappings: asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
         };
         let sequence_end_transition_mapper_sprite = SequenceEndTransitionMapper {
             asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
@@ -261,12 +208,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
         let mut ui_sprite_labels_loader = UiSpriteLabelsLoader {
             asset_id_mappings,
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             asset_ui_sprite_labels,
         };
         let mut ui_menu_items_loader = UiMenuItemsLoader {
             asset_id_mappings,
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             asset_ui_menu_items,
         };
 
@@ -418,14 +365,18 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     );
                     position_inits_loader.load(background_definition.layers.values(), asset_id);
 
-                    // Background layers.
-                    Self::load_background_layers(
-                        asset_sequence_id_mappings_sprite,
-                        asset_background_layers,
-                        asset_slug,
-                        asset_id,
-                        background_definition,
-                    );
+                    let layers_as_ui_sprite_label =
+                        background_definition
+                            .layers
+                            .iter()
+                            .map(|(sequence_string, layer)| {
+                                let sequence_name_string = SequenceNameString::from_str(
+                                    sequence_string,
+                                )
+                                .expect("Expected `SequenceNameString::from_str` to succeed.");
+                                UiSpriteLabel::new(layer.position, sequence_name_string)
+                            });
+                    ui_sprite_labels_loader.load(layers_as_ui_sprite_label, asset_id);
                 }
 
                 sequence_end_transitions_loader
@@ -450,6 +401,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         });
 
                 // `UiDefinition` specific asset data.
+                // `PositionInit`s
                 let position_inits = {
                     let mut position_inits = Vec::new();
                     if let Some(background_definition) = background_definition {
@@ -565,13 +517,17 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             );
 
                             // Background layers.
-                            Self::load_background_layers(
-                                asset_sequence_id_mappings_ui,
-                                asset_background_layers,
-                                asset_slug,
-                                asset_id,
-                                background_definition,
-                            );
+                            let layers_as_ui_sprite_label = background_definition
+                                .layers
+                                .iter()
+                                .map(|(sequence_string, layer)| {
+                                    let sequence_name_string = SequenceNameString::from_str(
+                                        sequence_string,
+                                    )
+                                    .expect("Expected `SequenceNameString::from_str` to succeed.");
+                                    UiSpriteLabel::new(layer.position, sequence_name_string)
+                                });
+                            ui_sprite_labels_loader.load(layers_as_ui_sprite_label, asset_id);
                         }
 
                         if let Some(ui_definition) = ui_definition {

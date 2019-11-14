@@ -7,7 +7,6 @@ use derivative::Derivative;
 use energy_model::config::EnergySequenceName;
 use sequence_model::loaded::AssetSequenceIdMappings;
 use sprite_model::config::SpriteSequenceName;
-use ui_model_spi::config::UiSequenceName;
 
 use crate::DefinitionLoadingResourcesRead;
 
@@ -27,9 +26,6 @@ pub struct IdMappingResources<'s> {
     /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_id_mappings_energy: Write<'s, AssetSequenceIdMappings<EnergySequenceName>>,
-    /// `AssetSequenceIdMappings<UiSequenceName>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_id_mappings_ui: Write<'s, AssetSequenceIdMappings<UiSequenceName>>,
 }
 
 /// `IdMappingResourcesRead`.
@@ -46,7 +42,4 @@ pub struct IdMappingResourcesRead<'s> {
     /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_id_mappings_energy: Read<'s, AssetSequenceIdMappings<EnergySequenceName>>,
-    /// `AssetSequenceIdMappings<UiSequenceName>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_id_mappings_ui: Read<'s, AssetSequenceIdMappings<UiSequenceName>>,
 }

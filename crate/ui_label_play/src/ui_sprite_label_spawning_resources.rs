@@ -3,22 +3,22 @@ use amethyst::{
     ecs::{Entities, Read, World},
     shred::{ResourceId, SystemData},
 };
-use background_model::loaded::AssetBackgroundLayers;
 use derivative::Derivative;
 use kinematic_model::loaded::AssetPositionInits;
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
+use ui_label_model::loaded::AssetUiSpriteLabels;
 
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct BackgroundLayerSpawningResources<'s> {
+pub struct UiSpriteLabelSpawningResources<'s> {
     /// `EntitiesRes` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `AssetBackgroundLayers` resource.
+    /// `AssetUiSpriteLabels` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
+    pub asset_ui_sprite_labels: Read<'s, AssetUiSpriteLabels>,
     /// `AssetWaitSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_wait_sequence_handles: Read<'s, AssetWaitSequenceHandles>,

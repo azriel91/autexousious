@@ -17,7 +17,7 @@ use sprite_model::loaded::SpriteRenderSequenceHandle;
 /// `SpriteSequence` component storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct BackgroundLayerComponentStorages<'s> {
+pub struct UiSpriteLabelComponentStorages<'s> {
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,

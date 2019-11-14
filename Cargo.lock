@@ -768,22 +768,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "background_play"
-version = "0.15.0"
-dependencies = [
- "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
- "asset_model 0.15.0",
- "background_model 0.15.0",
- "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "kinematic_model 0.15.0",
- "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "sequence_model 0.15.0",
- "sequence_model_spi 0.15.0",
- "sprite_model 0.15.0",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2168,7 +2152,6 @@ dependencies = [
  "application_state 0.15.0",
  "asset_model 0.15.0",
  "background_model 0.15.0",
- "background_play 0.15.0",
  "camera_model 0.15.0",
  "character_model 0.15.0",
  "character_prefab 0.15.0",
@@ -2195,6 +2178,7 @@ dependencies = [
  "team_model 0.15.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_label_play 0.16.0",
 ]
 
 [[package]]
@@ -2875,7 +2859,6 @@ dependencies = [
  "ui_menu_item_loading 0.16.0",
  "ui_menu_item_model 0.15.0",
  "ui_model 0.15.0",
- "ui_model_spi 0.15.0",
 ]
 
 [[package]]
@@ -4977,7 +4960,6 @@ version = "0.15.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
  "asset_model 0.15.0",
- "background_play 0.15.0",
  "camera_play 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4988,6 +4970,7 @@ dependencies = [
  "tracker 0.15.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_label_play 0.16.0",
 ]
 
 [[package]]
@@ -5429,8 +5412,8 @@ dependencies = [
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.15.0",
+ "sprite_model 0.15.0",
  "ui_label_model 0.16.0",
- "ui_model_spi 0.15.0",
 ]
 
 [[package]]
@@ -5446,11 +5429,27 @@ dependencies = [
  "sequence_model 0.15.0",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_model 0.15.0",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "ui_model_spi 0.15.0",
+]
+
+[[package]]
+name = "ui_label_play"
+version = "0.16.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "asset_model 0.15.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kinematic_model 0.15.0",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.15.0",
+ "sequence_model_spi 0.15.0",
+ "sprite_model 0.15.0",
+ "ui_label_model 0.16.0",
 ]
 
 [[package]]
@@ -5470,8 +5469,8 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_selection_model 0.15.0",
  "sequence_model 0.15.0",
+ "sprite_model 0.15.0",
  "ui_menu_item_model 0.15.0",
- "ui_model_spi 0.15.0",
 ]
 
 [[package]]
@@ -5492,7 +5491,6 @@ dependencies = [
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_label_model 0.16.0",
- "ui_model_spi 0.15.0",
 ]
 
 [[package]]
@@ -5515,20 +5513,6 @@ dependencies = [
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_menu_item_model 0.15.0",
- "ui_model_spi 0.15.0",
-]
-
-[[package]]
-name = "ui_model_spi"
-version = "0.15.0"
-dependencies = [
- "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "sequence_model 0.15.0",
- "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5977,7 +5961,6 @@ dependencies = [
  "ui_loading 0.15.0",
  "ui_menu_item_model 0.15.0",
  "ui_model 0.15.0",
- "ui_model_spi 0.15.0",
  "winit 0.19.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

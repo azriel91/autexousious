@@ -3,7 +3,7 @@ menu:
   - index: "start_game"
     label: { text: "Start Game" }
     position: { x: 0, y: 0, z: 0 }
-    sprite: { sequence: "active" }
+    sprite: { sequence: "start_game_active" }
 
 sequences:
   start_game_inactive:
@@ -11,7 +11,7 @@ sequences:
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
-  active:
+  start_game_active:
     next: "repeat"
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }

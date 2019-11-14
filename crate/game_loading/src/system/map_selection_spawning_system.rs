@@ -2,15 +2,14 @@ use amethyst::{
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
 };
-use background_play::{
-    BackgroundLayerComponentStorages, BackgroundLayerEntitySpawner,
-    BackgroundLayerSpawningResources,
-};
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
+use ui_label_play::{
+    UiSpriteLabelComponentStorages, UiSpriteLabelEntitySpawner, UiSpriteLabelSpawningResources,
+};
 
 use crate::GameLoadingStatus;
 
@@ -28,12 +27,12 @@ pub struct MapSelectionSpawningSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: Read<'s, MapSelection>,
-    /// `BackgroundLayerSpawningResources`.
+    /// `UiSpriteLabelSpawningResources`.
     #[derivative(Debug = "ignore")]
-    pub background_layer_spawning_resources: BackgroundLayerSpawningResources<'s>,
-    /// `BackgroundLayerComponentStorages`.
+    pub ui_sprite_label_spawning_resources: UiSpriteLabelSpawningResources<'s>,
+    /// `UiSpriteLabelComponentStorages`.
     #[derivative(Debug = "ignore")]
-    pub background_layer_component_storages: BackgroundLayerComponentStorages<'s>,
+    pub ui_sprite_label_component_storages: UiSpriteLabelComponentStorages<'s>,
     /// `GameEntities` resource.
     #[derivative(Debug = "ignore")]
     pub game_entities: Write<'s, GameEntities>,
@@ -47,8 +46,8 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         MapSelectionSpawningSystemData {
             mut game_loading_status,
             map_selection,
-            background_layer_spawning_resources,
-            mut background_layer_component_storages,
+            ui_sprite_label_spawning_resources,
+            mut ui_sprite_label_component_storages,
             mut game_entities,
         }: Self::SystemData,
     ) {
@@ -57,9 +56,9 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         }
 
         // TODO: implement Random
-        let map_layer_entities = BackgroundLayerEntitySpawner::spawn_system(
-            &background_layer_spawning_resources,
-            &mut background_layer_component_storages,
+        let map_layer_entities = UiSpriteLabelEntitySpawner::spawn_system(
+            &ui_sprite_label_spawning_resources,
+            &mut ui_sprite_label_component_storages,
             map_selection
                 .asset_id()
                 .expect("Expected `MapSelection` to contain ID."),

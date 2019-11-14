@@ -10,7 +10,6 @@ mod test {
     use sprite_model::config::{SpriteFrame, SpriteRef};
     use ui_label_model::config::{UiLabel, UiSpriteLabel};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
-    use ui_model_spi::config::UiSequenceName;
 
     use ui_model::config::{UiDefinition, UiSequence, UiSequences, UiType};
 
@@ -56,7 +55,7 @@ sequences:
                 UiLabel::new(PositionInit::new(0, 0, 0), String::from("Start Game")),
                 UiSpriteLabel::new(
                     PositionInit::new(0, 0, 0),
-                    SequenceNameString::from(UiSequenceName::Active),
+                    SequenceNameString::String(String::from("active")),
                 ),
                 GameModeIndex::StartGame,
             ),
@@ -79,7 +78,7 @@ sequences:
                 UiSequence::new(SequenceEndTransition::None, sprite_frames()),
             );
             sequences.insert(
-                SequenceNameString::Name(UiSequenceName::Active),
+                SequenceNameString::String(String::from("active")),
                 UiSequence::new(SequenceEndTransition::Repeat, sprite_frames()),
             );
             sequences.insert(

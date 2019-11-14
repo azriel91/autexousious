@@ -55,7 +55,6 @@ ui_label_model = { path = "../ui_label_model" }
 ui_menu_item_loading = { path = "../ui_menu_item_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
-ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]

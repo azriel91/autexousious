@@ -5,7 +5,6 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
-use background_model::loaded::AssetBackgroundLayers;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -123,9 +122,6 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
 
-    /// `AssetBackgroundLayers` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Write<'s, AssetBackgroundLayers>,
     /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
     pub asset_position_inits: Write<'s, AssetPositionInits>,
@@ -237,9 +233,6 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
 
-    /// `AssetBackgroundLayers` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
     /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
     pub asset_position_inits: Read<'s, AssetPositionInits>,
