@@ -35,7 +35,10 @@ use sprite_model::{
 };
 use typename_derive::TypeName;
 use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
-use ui_label_model::{config::UiSpriteLabel, loaded::UiSpriteLabels};
+use ui_label_model::{
+    config::{UiLabels, UiSpriteLabel},
+    loaded::UiSpriteLabels,
+};
 use ui_menu_item_loading::UiMenuItemsLoader;
 use ui_model::config::{UiDefinition, UiType};
 
@@ -206,7 +209,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
         };
 
-        let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
+        // let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
         let mut ui_sprite_labels_loader = UiSpriteLabelsLoader {
             asset_id_mappings,
             asset_sequence_id_mappings_sprite,
@@ -413,6 +416,16 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 } else {
                     None
                 };
+
+                // Hack
+                if let Some(ui_definition) = ui_definition.as_mut() {
+                    ui_definition.buttons.iter_mut().for_each(|ui_button| {
+                        ui_button.label.position += ui_button.position;
+                        ui_button.sprite.position += ui_button.position;
+                    });
+                }
+                // End hack
+
                 let ui_definition = ui_definition.as_ref();
 
                 // `UiDefinition` specific asset data.
@@ -458,14 +471,24 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 // `UiLabel`s
                 if let Some(ui_definition) = ui_definition {
+                    let mut ui_labels = Vec::new();
                     match &ui_definition.ui_type {
                         UiType::Menu(ui_menu_items) => {
-                            ui_labels_loader.load(ui_menu_items.iter(), asset_id);
+                            ui_labels
+                                .append(&mut UiLabelsLoader::items_to_datas(ui_menu_items.iter()));
                         }
                         UiType::ControlSettings(control_settings) => {
-                            ui_labels_loader.load(std::iter::once(control_settings), asset_id);
+                            ui_labels.append(&mut UiLabelsLoader::items_to_datas(std::iter::once(
+                                control_settings,
+                            )));
                         }
                     }
+                    ui_labels.append(&mut UiLabelsLoader::items_to_datas(
+                        ui_definition.buttons.iter(),
+                    ));
+
+                    let ui_labels = UiLabels::new(ui_labels);
+                    asset_ui_labels.insert(asset_id, ui_labels);
                 }
 
                 // `UiSpriteLabel`s
@@ -521,6 +544,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 ui_sprite_labels.append(&mut keyboard_ui_sprite_labels);
                             }
                         }
+
+                        let mut ui_sprite_labels_buttons = UiSpriteLabelsLoader::items_to_datas(
+                            asset_id_mappings,
+                            &mut ui_sprite_labels_loader.asset_sequence_id_mappings_sprite,
+                            asset_id,
+                            ui_definition.buttons.iter(),
+                        );
+                        ui_sprite_labels.append(&mut ui_sprite_labels_buttons);
                     }
 
                     UiSpriteLabels::new(ui_sprite_labels)
