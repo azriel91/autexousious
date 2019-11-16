@@ -14,6 +14,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
 serde = { version = "1.0.102", features = ["derive"] }
+sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
 
 [features]

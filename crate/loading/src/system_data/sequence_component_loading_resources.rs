@@ -16,6 +16,7 @@ use collision_model::{
     },
 };
 use derivative::Derivative;
+use game_input_model::InputConfig;
 use game_mode_selection_model::GameModeIndex;
 use kinematic_model::loaded::{
     AssetObjectAccelerationSequenceHandles, AssetPositionInits, ObjectAccelerationSequence,
@@ -42,6 +43,10 @@ pub struct SequenceComponentLoadingResources<'s> {
     pub id_mapping_resources_read: IdMappingResourcesRead<'s>,
     /// `TextureLoadingResourcesRead`.
     pub texture_loading_resources_read: TextureLoadingResourcesRead<'s>,
+
+    /// `InputConfig` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_config: Read<'s, InputConfig>,
 
     /// `Source`s assets.
     #[derivative(Debug = "ignore")]

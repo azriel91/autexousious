@@ -110,6 +110,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     asset_sprite_sheet_handles,
                     ..
                 },
+            input_config,
             source_assets,
             body_assets,
             interactions_assets,
@@ -393,22 +394,26 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         background_definition_assets.get(background_definition_handle)
                     });
 
-                let ui_definition =
-                    asset_ui_definition_handle
-                        .get(asset_id)
-                        .and_then(|ui_definition_handle| {
-                            ui_definition_assets.get(ui_definition_handle)
-                        });
+                let mut ui_definition = asset_ui_definition_handle
+                    .get(asset_id)
+                    .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
+                    .cloned();
 
                 let keyboard_ui_sprite_labels = if let Some(UiDefinition {
                     ui_type: UiType::ControlSettings(control_settings),
+                    sequences,
                     ..
-                }) = ui_definition
+                }) = ui_definition.as_mut()
                 {
-                    Some(KeyboardUiGen::generate(&control_settings.keyboard))
+                    Some(KeyboardUiGen::generate(
+                        &control_settings.keyboard,
+                        &input_config,
+                        sequences,
+                    ))
                 } else {
                     None
                 };
+                let ui_definition = ui_definition.as_ref();
 
                 // `UiDefinition` specific asset data.
                 // `PositionInit`s
