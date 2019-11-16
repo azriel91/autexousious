@@ -5416,6 +5416,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ui_button_model"
+version = "0.16.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "asset_model 0.15.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "kinematic_model 0.15.0",
+ "sequence_model 0.15.0",
+ "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_label_model 0.16.0",
+]
+
+[[package]]
 name = "ui_label_loading"
 version = "0.16.0"
 dependencies = [
@@ -5522,6 +5542,7 @@ dependencies = [
  "strum_macros 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_button_model 0.16.0",
  "ui_menu_item_model 0.15.0",
 ]
 
@@ -5967,6 +5988,7 @@ dependencies = [
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_loading 0.15.0",
  "ui_audio_model 0.15.0",
+ "ui_button_model 0.16.0",
  "ui_label_model 0.16.0",
  "ui_loading 0.15.0",
  "ui_menu_item_model 0.15.0",
