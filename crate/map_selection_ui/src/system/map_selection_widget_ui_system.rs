@@ -14,7 +14,7 @@ use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use log::debug;
-use map_selection_model::{MapSelection, MapSelectionEntity, MapSelectionEntityId};
+use map_selection_model::{MapSelection, MapSelectionEntity};
 use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
@@ -130,10 +130,7 @@ impl MapSelectionWidgetUiSystem {
 
             entities
                 .build_entity()
-                .with(
-                    MapSelectionEntity::new(MapSelectionEntityId),
-                    map_selection_entities,
-                )
+                .with(MapSelectionEntity, map_selection_entities)
                 .with(map_selection_widget, map_selection_widgets)
                 .with(ui_transform, ui_transforms)
                 .with(ui_text, ui_texts)
@@ -143,10 +140,7 @@ impl MapSelectionWidgetUiSystem {
                 let controller_id = index as ControllerId;
                 entities
                     .build_entity()
-                    .with(
-                        MapSelectionEntity::new(MapSelectionEntityId),
-                        map_selection_entities,
-                    )
+                    .with(MapSelectionEntity, map_selection_entities)
                     .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
                     .build();
@@ -170,10 +164,7 @@ impl MapSelectionWidgetUiSystem {
 
                 entities
                     .build_entity()
-                    .with(
-                        MapSelectionEntity::new(MapSelectionEntityId),
-                        map_selection_entities,
-                    )
+                    .with(MapSelectionEntity, map_selection_entities)
                     .with(ui_transform, ui_transforms)
                     .build()
             };
@@ -205,10 +196,7 @@ impl MapSelectionWidgetUiSystem {
 
                 entities
                     .build_entity()
-                    .with(
-                        MapSelectionEntity::new(MapSelectionEntityId),
-                        map_selection_entities,
-                    )
+                    .with(MapSelectionEntity, map_selection_entities)
                     .with(ui_transform, ui_transforms)
                     .with(ui_text, ui_texts)
                     .with(parent, parents)

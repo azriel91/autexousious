@@ -16,19 +16,18 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_mode_selection_model::{
-    GameModeIndex, GameModeSelectionEntity, GameModeSelectionEntityId,
-};
+use game_mode_selection_model::{GameModeIndex, GameModeSelectionEntity};
+use kinematic_model::{config::Position, loaded::AssetPositionInits};
 use log::debug;
 use sequence_model::{
     loaded::SequenceId,
     play::{FrameIndexClock, FrameWaitClock},
 };
 use shrev_support::EventChannelExt;
-use sprite_model::{config::SpritePosition, loaded::AssetSpritePositions};
 use state_registry::StateIdUpdateEvent;
 use state_support::StateAssetUtils;
 use typename_derive::TypeName;
+use ui_label_model::loaded::AssetUiLabels;
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 /// Visible for testing.
@@ -62,12 +61,15 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Read<'s, AssetUiLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
-    /// `AssetSpritePositions` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetId` components.
     #[derivative(Debug = "ignore")]
     pub asset_ids: WriteStorage<'s, AssetId>,
@@ -77,9 +79,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
-    /// `SpritePosition` components.
+    /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
-    pub sprite_positions: WriteStorage<'s, SpritePosition>,
+    pub positions: WriteStorage<'s, Position<f32>>,
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
@@ -129,12 +131,13 @@ impl GameModeSelectionWidgetUiSystem {
         &mut self,
         GameModeSelectionWidgetUiSystemData {
             entities,
+            asset_ui_labels,
             asset_ui_menu_items,
-            asset_sprite_positions,
+            asset_position_inits,
             asset_ids,
             sequence_ids,
             transparents,
-            sprite_positions,
+            positions,
             transforms,
             frame_index_clocks,
             frame_wait_clocks,
@@ -162,48 +165,43 @@ impl GameModeSelectionWidgetUiSystem {
                 .expect("Failed to get regular font handle.");
 
             let ui_menu_items = asset_ui_menu_items.get(asset_id);
-            let asset_sprite_positions = asset_sprite_positions.get(asset_id);
-            if let (Some(ui_menu_items), Some(asset_sprite_positions)) =
-                (ui_menu_items, asset_sprite_positions)
+            let ui_labels = asset_ui_labels.get(asset_id);
+            let position_inits = asset_position_inits.get(asset_id);
+
+            if let (Some(ui_menu_items), Some(ui_labels), Some(position_inits)) =
+                (ui_menu_items, ui_labels, position_inits)
             {
-                let item_count = ui_menu_items.len();
+                // Hack
+                let position_inits_to_skip = position_inits.len() - ui_labels.len();
+                // End hack.
+
                 let menu_items = ui_menu_items
                     .iter()
                     .enumerate()
-                    .map(|(order, ui_menu_item)| {
+                    .zip(ui_labels.iter())
+                    .zip(position_inits.iter().skip(position_inits_to_skip).copied())
+                    .map(|(((order, ui_menu_item), ui_label), position_init)| {
                         let index = ui_menu_item.index;
                         let sequence_id = ui_menu_item.sequence_id;
-                        let sprite_position = asset_sprite_positions
-                            .get(*sequence_id)
-                            .copied()
-                            .unwrap_or_else(|| {
-                                panic!(
-                                    "Expected `SpritePosition` to exist for \
-                                     sequence ID `{:?}` for asset ID `{:?}`",
-                                    sequence_id, asset_id
-                                )
-                            });
-                        let translation = Into::<Vector3<f32>>::into(sprite_position);
+                        let position_combined = position_init + ui_label.position;
+
+                        let translation = Into::<Vector3<f32>>::into(position_combined);
+                        let position = Position::from(translation);
                         let mut transform = Transform::default();
                         transform.set_translation(translation);
 
-                        let x = -LABEL_WIDTH / 2.;
-                        let y = ((item_count - order) as f32 * LABEL_HEIGHT)
-                            - (item_count as f32 * LABEL_HEIGHT / 2.);
-                        let z = 1.;
-
                         let ui_transform = UiTransform::new(
                             index.to_string(),
-                            Anchor::Middle,
-                            Anchor::MiddleLeft,
-                            x,
-                            y,
-                            z,
+                            Anchor::BottomLeft,
+                            Anchor::BottomLeft,
+                            position.x,
+                            position.y,
+                            position.z,
                             LABEL_WIDTH,
                             LABEL_HEIGHT,
                         );
 
-                        let index_text = ui_menu_item.text.clone();
+                        let index_text = ui_label.text.clone();
                         let ui_text = UiText::new(
                             font.clone(),
                             index_text,
@@ -220,10 +218,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                         entities
                             .build_entity()
-                            .with(
-                                GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                                game_mode_selection_entities,
-                            )
+                            .with(GameModeSelectionEntity, game_mode_selection_entities)
                             .with(MenuItem::new(index), menu_items)
                             .with(menu_item_widget_state, menu_item_widget_states)
                             .with(ui_transform, ui_transforms)
@@ -231,7 +226,7 @@ impl GameModeSelectionWidgetUiSystem {
                             .with(sequence_id, sequence_ids)
                             .with(asset_id, asset_ids)
                             .with(Transparent, transparents)
-                            .with(sprite_position, sprite_positions)
+                            .with(position, positions)
                             .with(transform, transforms)
                             .with(FrameIndexClock::new(1), frame_index_clocks)
                             .with(FrameWaitClock::new(1), frame_wait_clocks)
@@ -249,8 +244,8 @@ impl GameModeSelectionWidgetUiSystem {
                     }
                     // Skip first menu item.
                     //
-                    // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the last
-                    // item.
+                    // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the
+                    // last item.
                     menu_items[..]
                         .iter()
                         .enumerate()
@@ -268,10 +263,7 @@ impl GameModeSelectionWidgetUiSystem {
                     let controller_id = index as ControllerId;
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(InputControlled::new(controller_id), input_controlleds)
                         .with(ControllerInput::default(), controller_inputs)
                         .build();
@@ -295,10 +287,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(ui_transform, ui_transforms)
                         .build()
                 };
@@ -329,10 +318,7 @@ impl GameModeSelectionWidgetUiSystem {
 
                     entities
                         .build_entity()
-                        .with(
-                            GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                            game_mode_selection_entities,
-                        )
+                        .with(GameModeSelectionEntity, game_mode_selection_entities)
                         .with(ui_transform, ui_transforms)
                         .with(ui_text, ui_texts)
                         .with(parent, parents)

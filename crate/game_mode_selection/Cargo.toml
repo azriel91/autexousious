@@ -15,6 +15,7 @@ application_menu = { path = "../application_menu" }
 application_state = { path = "../application_state" }
 character_selection = { path = "../character_selection" }
 character_selection_ui = { path = "../character_selection_ui" }
+control_settings = { path = "../control_settings" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }

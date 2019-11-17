@@ -4,14 +4,13 @@ use amethyst::{
         Entities, Entity, Join, LazyUpdate, Read, ReadStorage, System, World, Write, WriteStorage,
     },
     shred::{ResourceId, SystemData},
-    utils::removal::Removal,
 };
 use camera_model::play::CameraTracked;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_play_hud::{CpBarPrefab, HpBarPrefab};
-use game_play_model::{GamePlayEntity, GamePlayEntityId};
+use game_play_model::GamePlayEntity;
 use kinematic_model::config::Position;
 use map_model::loaded::AssetMapBounds;
 use map_selection_model::MapSelection;
@@ -71,7 +70,7 @@ impl CharacterAugmentRectifySystem {
             .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[], &[])
             .expect("`HpBarPrefab` failed to augment entity.");
         game_play_entities
-            .insert(hp_bar_entity, Removal::new(GamePlayEntityId))
+            .insert(hp_bar_entity, GamePlayEntity)
             .expect("Failed to insert `GamePlayEntity` component.");
     }
 
@@ -89,7 +88,7 @@ impl CharacterAugmentRectifySystem {
             .add_to_entity(cp_bar_entity, &mut cp_bar_prefab_system_data, &[], &[])
             .expect("`CpBarPrefab` failed to augment entity.");
         game_play_entities
-            .insert(cp_bar_entity, Removal::new(GamePlayEntityId))
+            .insert(cp_bar_entity, GamePlayEntity)
             .expect("Failed to insert `GamePlayEntity` component.");
     }
 }

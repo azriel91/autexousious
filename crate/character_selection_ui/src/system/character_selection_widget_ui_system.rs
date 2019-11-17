@@ -6,9 +6,7 @@ use amethyst::{
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::AssetIdMappings;
-use character_selection_model::{
-    CharacterSelection, CharacterSelectionEntity, CharacterSelectionEntityId,
-};
+use character_selection_model::{CharacterSelection, CharacterSelectionEntity};
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -126,10 +124,7 @@ impl CharacterSelectionWidgetUiSystem {
 
                 entities
                     .build_entity()
-                    .with(
-                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
-                        character_selection_entities,
-                    )
+                    .with(CharacterSelectionEntity, character_selection_entities)
                     .with(character_selection_widget, character_selection_widgets)
                     .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
@@ -156,10 +151,7 @@ impl CharacterSelectionWidgetUiSystem {
 
                 entities
                     .build_entity()
-                    .with(
-                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
-                        character_selection_entities,
-                    )
+                    .with(CharacterSelectionEntity, character_selection_entities)
                     .with(ui_transform, ui_transforms)
                     .build()
             };
@@ -192,10 +184,7 @@ impl CharacterSelectionWidgetUiSystem {
 
                 entities
                     .build_entity()
-                    .with(
-                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
-                        character_selection_entities,
-                    )
+                    .with(CharacterSelectionEntity, character_selection_entities)
                     .with(ui_transform, ui_transforms)
                     .with(ui_text, ui_texts)
                     .with(parent, parents)

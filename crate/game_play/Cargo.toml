@@ -53,6 +53,7 @@ spawn_play = { path = "../spawn_play" }
 sprite_model = { path = "../sprite_model" }
 sprite_play = { path = "../sprite_play" }
 state_registry = { path = "../state_registry" }
+state_support = { path = "../state_support" }
 team_model = { path = "../team_model" }
 tracker = { path = "../tracker" }
 typename = "0.1.1"

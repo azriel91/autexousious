@@ -1,5 +1,6 @@
 use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
+use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
 use derive_more::From;
 use game_input_model::ControlInputEvent;
@@ -26,6 +27,8 @@ pub enum AppEvent {
     ///
     /// Note: This is defined in the `game_input*` crates.
     ControlInput(ControlInputEvent),
+    /// `control_settings` events.
+    ControlSettings(ControlSettingsEvent),
     /// `game_mode_selection` events.
     GameModeSelection(GameModeSelectionEvent),
     /// `game_play` events.

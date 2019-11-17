@@ -24,7 +24,7 @@ mod test {
     };
 
     // See `assets_test/assets/test/ui/game_mode_selection/ui.yaml`.
-    const GAME_MODE_MENU_ITEM_COUNT: usize = 2;
+    const GAME_MODE_MENU_ITEM_COUNT: usize = 3;
 
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
@@ -168,6 +168,26 @@ mod test {
                     if let Some(next) = siblings.next.as_ref() {
                         let next_menu_item = menu_items.get(*next);
                         assert_eq!(
+                            Some(MenuItem::new(GameModeIndex::ControlSettings)).as_ref(),
+                            next_menu_item
+                        );
+                    } else {
+                        panic!("Expected `StartGame` to have `next` sibling.")
+                    }
+                }
+                GameModeIndex::ControlSettings => {
+                    if let Some(previous) = siblings.previous.as_ref() {
+                        let previous_menu_item = menu_items.get(*previous);
+                        assert_eq!(
+                            Some(MenuItem::new(GameModeIndex::StartGame)).as_ref(),
+                            previous_menu_item
+                        );
+                    } else {
+                        panic!("Expected `ControlSettings` to have `previous` sibling.")
+                    }
+                    if let Some(next) = siblings.next.as_ref() {
+                        let next_menu_item = menu_items.get(*next);
+                        assert_eq!(
                             Some(MenuItem::new(GameModeIndex::Exit)).as_ref(),
                             next_menu_item
                         );
@@ -179,7 +199,7 @@ mod test {
                     if let Some(previous) = siblings.previous.as_ref() {
                         let previous_menu_item = menu_items.get(*previous);
                         assert_eq!(
-                            Some(MenuItem::new(GameModeIndex::StartGame)).as_ref(),
+                            Some(MenuItem::new(GameModeIndex::ControlSettings)).as_ref(),
                             previous_menu_item
                         );
                     } else {

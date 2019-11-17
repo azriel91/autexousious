@@ -1,6 +1,7 @@
 use asset_derive::Asset;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
+use ui_button_model::config::UiButtons;
 
 use crate::config::{UiSequences, UiType};
 
@@ -11,6 +12,9 @@ pub struct UiDefinition {
     /// Type of UI -- generic menu, character selection, map selection.
     #[serde(flatten)]
     pub ui_type: UiType,
+    /// Buttons in the UI.
+    #[serde(default)]
+    pub buttons: UiButtons,
     /// Sequences used by the UI type.
     #[serde(default)]
     pub sequences: UiSequences,

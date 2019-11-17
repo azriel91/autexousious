@@ -1,6 +1,6 @@
-use amethyst::utils::removal::Removal;
+use amethyst::ecs::{storage::NullStorage, Component};
 
-use crate::GamePlayEntityId;
-
-/// Marker type for entities to be deleted when the `GameModeSelectionState` is paused or stopped.
-pub type GamePlayEntity = Removal<GamePlayEntityId>;
+/// ID tag for entities created in the `GamePlayState`.
+#[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
+#[storage(NullStorage)]
+pub struct GamePlayEntity;

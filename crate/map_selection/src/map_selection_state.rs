@@ -9,7 +9,7 @@ use application_state::{AppState, AppStateBuilder, AutexState};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
+use map_selection_model::{MapSelection, MapSelectionEntity, MapSelectionEvent};
 use state_registry::StateId;
 
 use crate::MapSelectionStatus;
@@ -26,7 +26,7 @@ use crate::MapSelectionStatus;
 ///
 /// [state_builder]: map_selection_state/struct.MapSelectionStateBuilder.html
 pub type MapSelectionState<'a, 'b, F, S> =
-    AppState<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntityId>;
+    AppState<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntity>;
 
 /// Builder for a `MapSelectionState`.
 ///
@@ -38,7 +38,7 @@ pub type MapSelectionState<'a, 'b, F, S> =
 /// * `F`: Function to construct the state to return after map selection is complete.
 /// * `S`: `State` to delegate to.
 pub type MapSelectionStateBuilder<'a, 'b, F, S> =
-    AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntityId>;
+    AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntity>;
 
 /// Delegate `State` for map selection.
 ///

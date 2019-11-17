@@ -1,16 +1,16 @@
 use amethyst::{
     ecs::{Entity, World, WorldExt},
     input::{is_key_down, VirtualKeyCode},
-    utils::removal::{self, Removal},
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
-use game_play_model::{GamePlayEntityId, GamePlayEvent, GamePlayStatus};
+use game_play_model::{GamePlayEntity, GamePlayEvent, GamePlayStatus};
 use log::debug;
 use state_registry::StateId;
+use state_support::StateEntityUtils;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -39,11 +39,7 @@ impl GamePlayState {
                 .expect("Failed to delete game entity.");
         });
 
-        removal::exec_removal(
-            &*world.entities(),
-            &world.read_storage::<Removal<GamePlayEntityId>>(),
-            GamePlayEntityId::default(),
-        );
+        StateEntityUtils::clear::<GamePlayEntity>(world);
     }
 }
 
