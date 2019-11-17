@@ -1,9 +1,10 @@
 #[cfg(test)]
 mod test {
     use indexmap::IndexMap;
+    use kinematic_model::config::PositionInit;
     use sequence_model::config::{Sequence, SequenceEndTransition, Wait};
     use serde_yaml;
-    use sprite_model::config::{SpriteFrame, SpritePosition, SpriteRef, SpriteSequence};
+    use sprite_model::config::{SpriteFrame, SpriteItem, SpriteRef};
 
     use background_model::config::BackgroundDefinition;
 
@@ -41,8 +42,8 @@ layers:
             serde_yaml::from_str::<BackgroundDefinition>(BACKGROUND_WITH_SPRITE_SEQUENCES)
                 .expect("Failed to deserialize `BackgroundDefinition`.");
 
-        let layer_0 = SpriteSequence::new(
-            SpritePosition::new(1, 4, 0),
+        let layer_0 = SpriteItem::new(
+            PositionInit::new(1, 4, 0),
             Sequence::new(
                 SequenceEndTransition::None,
                 vec![
@@ -59,8 +60,8 @@ layers:
                 ],
             ),
         );
-        let layer_1 = SpriteSequence::new(
-            SpritePosition::new(-1, -2, -3),
+        let layer_1 = SpriteItem::new(
+            PositionInit::new(-1, -2, -3),
             Sequence::new(
                 SequenceEndTransition::None,
                 vec![SpriteFrame {

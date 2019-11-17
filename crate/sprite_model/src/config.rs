@@ -3,8 +3,8 @@
 pub use self::{
     scale::{Scale, SCALE_DEFAULT},
     sprite_frame::SpriteFrame,
+    sprite_item::SpriteItem,
     sprite_offset::SpriteOffset,
-    sprite_position::SpritePosition,
     sprite_ref::SpriteRef,
     sprite_sequence::SpriteSequence,
     sprite_sequence_name::SpriteSequenceName,
@@ -15,8 +15,8 @@ pub use self::{
 
 mod scale;
 mod sprite_frame;
+mod sprite_item;
 mod sprite_offset;
-mod sprite_position;
 mod sprite_ref;
 mod sprite_sequence;
 mod sprite_sequence_name;

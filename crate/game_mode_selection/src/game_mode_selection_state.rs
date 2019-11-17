@@ -4,7 +4,7 @@ use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
-use game_mode_selection_model::GameModeSelectionEntityId;
+use game_mode_selection_model::GameModeSelectionEntity;
 use log::debug;
 use state_registry::StateId;
 
@@ -17,14 +17,14 @@ use crate::GameModeSelectionTrans;
 ///
 /// [state_builder]: game_mode_selection_state/struct.GameModeSelectionStateBuilder.html
 pub type GameModeSelectionState =
-    AppState<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntityId>;
+    AppState<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntity>;
 
 /// Builder for a `GameModeSelectionState`.
 ///
 /// `SystemBundle`s to run in the `GameModeSelectionState`'s dispatcher are registered on this
 /// builder.
 pub type GameModeSelectionStateBuilder =
-    AppStateBuilder<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntityId>;
+    AppStateBuilder<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntity>;
 
 /// Delegate `State` for game mode selection.
 ///

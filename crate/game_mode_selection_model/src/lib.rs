@@ -4,11 +4,9 @@
 
 pub use crate::{
     game_mode_index::GameModeIndex, game_mode_selection_entity::GameModeSelectionEntity,
-    game_mode_selection_entity_id::GameModeSelectionEntityId,
     game_mode_selection_event::GameModeSelectionEvent,
 };
 
 mod game_mode_index;
 mod game_mode_selection_entity;
-mod game_mode_selection_entity_id;
 mod game_mode_selection_event;

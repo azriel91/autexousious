@@ -7,7 +7,7 @@ use amethyst::{
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use character_selection_model::{
-    CharacterSelectionEntityId, CharacterSelectionEvent, CharacterSelections,
+    CharacterSelectionEntity, CharacterSelectionEvent, CharacterSelections,
     CharacterSelectionsStatus,
 };
 use derivative::Derivative;
@@ -27,7 +27,7 @@ use state_registry::StateId;
 ///
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 pub type CharacterSelectionState<'a, 'b, F, S> =
-    AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>, CharacterSelectionEntityId>;
+    AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>, CharacterSelectionEntity>;
 
 /// Builder for a `CharacterSelectionState`.
 ///
@@ -42,7 +42,7 @@ pub type CharacterSelectionStateBuilder<'a, 'b, F, S> = AppStateBuilder<
     'a,
     'b,
     CharacterSelectionStateDelegate<'a, 'b, F, S>,
-    CharacterSelectionEntityId,
+    CharacterSelectionEntity,
 >;
 
 /// Delegate `State` for character selection.

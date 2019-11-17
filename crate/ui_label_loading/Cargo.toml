@@ -1,0 +1,16 @@
+[package]
+name = "ui_label_loading"
+version = "0.16.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+asset_model = { path = "../asset_model" }
+derivative = "1.0.3"
+sequence_model = { path = "../sequence_model" }
+sprite_model = { path = "../sprite_model" }
+ui_label_model = { path = "../ui_label_model" }

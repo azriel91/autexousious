@@ -67,7 +67,6 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
             asset_sequence_id_mappings_sprite,
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
-            asset_sequence_id_mappings_ui,
         }: &mut IdMappingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -173,7 +172,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                     }
                 };
 
-                asset_sequence_id_mappings_ui.insert(asset_id, sequence_id_mappings);
+                asset_sequence_id_mappings_sprite.insert(asset_id, sequence_id_mappings);
             }
         }
     }
@@ -200,7 +199,6 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
             asset_sequence_id_mappings_sprite,
             asset_sequence_id_mappings_character,
             asset_sequence_id_mappings_energy,
-            asset_sequence_id_mappings_ui,
         } = id_mapping_resources;
 
         let asset_type = asset_type_mappings
@@ -252,7 +250,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
             AssetType::Map => asset_sequence_id_mappings_sprite.get(asset_id).is_some(),
-            AssetType::Ui => asset_sequence_id_mappings_ui.get(asset_id).is_some(),
+            AssetType::Ui => asset_sequence_id_mappings_sprite.get(asset_id).is_some(),
         }
     }
 }

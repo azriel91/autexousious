@@ -5,7 +5,6 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
-use background_model::loaded::AssetBackgroundLayers;
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
 };
@@ -17,15 +16,19 @@ use collision_model::{
     },
 };
 use derivative::Derivative;
+use game_input_model::InputConfig;
 use game_mode_selection_model::GameModeIndex;
-use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
+use kinematic_model::loaded::{
+    AssetObjectAccelerationSequenceHandles, AssetPositionInits, ObjectAccelerationSequence,
+};
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
 use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
 use sprite_model::loaded::{
-    AssetScaleSequenceHandles, AssetSpritePositions, AssetSpriteRenderSequenceHandles,
-    AssetTintSequenceHandles, ScaleSequence, SpriteRenderSequence, TintSequence,
+    AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
+    ScaleSequence, SpriteRenderSequence, TintSequence,
 };
+use ui_label_model::loaded::{AssetUiLabels, AssetUiSpriteLabels};
 use ui_menu_item_model::loaded::AssetUiMenuItems;
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
@@ -40,6 +43,10 @@ pub struct SequenceComponentLoadingResources<'s> {
     pub id_mapping_resources_read: IdMappingResourcesRead<'s>,
     /// `TextureLoadingResourcesRead`.
     pub texture_loading_resources_read: TextureLoadingResourcesRead<'s>,
+
+    /// `InputConfig` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_config: Read<'s, InputConfig>,
 
     /// `Source`s assets.
     #[derivative(Debug = "ignore")]
@@ -120,12 +127,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
 
-    /// `AssetBackgroundLayers` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Write<'s, AssetBackgroundLayers>,
-    /// `AssetSpritePositions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Write<'s, AssetSpritePositions>,
+    pub asset_position_inits: Write<'s, AssetPositionInits>,
     /// `AssetTintSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_tint_sequence_handles: Write<'s, AssetTintSequenceHandles>,
@@ -140,6 +144,12 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
 
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Write<'s, AssetUiLabels>,
+    /// `AssetUiSpriteLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_sprite_labels: Write<'s, AssetUiSpriteLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Write<'s, AssetUiMenuItems<GameModeIndex>>,
@@ -228,12 +238,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
 
-    /// `AssetBackgroundLayers` resource.
+    /// `AssetPositionInits` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_background_layers: Read<'s, AssetBackgroundLayers>,
-    /// `AssetSpritePositions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_positions: Read<'s, AssetSpritePositions>,
+    pub asset_position_inits: Read<'s, AssetPositionInits>,
     /// `AssetTintSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_tint_sequence_handles: Read<'s, AssetTintSequenceHandles>,
@@ -248,6 +255,12 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
 
+    /// `AssetUiLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_labels: Read<'s, AssetUiLabels>,
+    /// `AssetUiSpriteLabels` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_ui_sprite_labels: Read<'s, AssetUiSpriteLabels>,
     /// `AssetUiMenuItems<GameModeIndex>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,

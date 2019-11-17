@@ -4,7 +4,8 @@ pub use self::{
     object_acceleration::ObjectAcceleration, object_acceleration_kind::ObjectAccelerationKind,
     object_acceleration_value::ObjectAccelerationValue,
     object_acceleration_value_expr::ObjectAccelerationValueExpr,
-    object_acceleration_value_multiplier::ObjectAccelerationValueMultiplier, vector3::Vector3,
+    object_acceleration_value_multiplier::ObjectAccelerationValueMultiplier,
+    position_init::PositionInit, vector3::Vector3,
 };
 
 mod object_acceleration;
@@ -12,6 +13,7 @@ mod object_acceleration_kind;
 mod object_acceleration_value;
 mod object_acceleration_value_expr;
 mod object_acceleration_value_multiplier;
+mod position_init;
 mod vector3;
 
 use std::{

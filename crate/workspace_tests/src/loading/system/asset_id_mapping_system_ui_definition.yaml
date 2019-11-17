@@ -1,8 +1,9 @@
 menu:
   # First item is active by default. The sequence here should correspond to the active status.
   - index: "start_game"
-    text: "Start Game"
-    sequence: "active"
+    label: { text: "Start Game" }
+    position: { x: 0, y: 0, z: 0 }
+    sprite: { sequence: "start_game_active" }
 
 sequences:
   start_game_inactive:
@@ -10,7 +11,7 @@ sequences:
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }
 
-  active:
+  start_game_active:
     next: "repeat"
     frames:
       - { wait: 2, sprite: { sheet: 0, index: 0 } }

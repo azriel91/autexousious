@@ -31,7 +31,6 @@ mod tests {
     use test_support::load_yaml;
     use ui_loading::UiLoadingBundle;
     use ui_model::config::UiDefinition;
-    use ui_model_spi::config::UiSequenceName;
 
     use loading::{
         AssetIdMapper, AssetIdMappingSystem, AssetLoadingResources, AssetPartLoader,
@@ -627,16 +626,16 @@ mod tests {
 
     fn assert_no_ui_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
         let IdMappingResources {
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             ..
         } = id_mapping_resources;
 
-        let sequence_id_mappings = asset_sequence_id_mappings_ui.get(asset_id);
+        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
 
         assert!(sequence_id_mappings.is_some());
 
-        let sequence_id_mappings =
-            sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
+        let sequence_id_mappings = sequence_id_mappings
+            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
         let sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
 
         assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
@@ -647,16 +646,16 @@ mod tests {
         asset_id: AssetId,
     ) {
         let IdMappingResources {
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             ..
         } = id_mapping_resources;
 
-        let sequence_id_mappings = asset_sequence_id_mappings_ui.get(asset_id);
+        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
 
         assert!(sequence_id_mappings.is_some());
 
-        let sequence_id_mappings =
-            sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
+        let sequence_id_mappings = sequence_id_mappings
+            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
         let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
         sequence_id_mappings_expected.insert(
             SequenceNameString::String(String::from("zero")),
@@ -672,23 +671,23 @@ mod tests {
 
     fn assert_ui_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
         let IdMappingResources {
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             ..
         } = id_mapping_resources;
 
-        let sequence_id_mappings = asset_sequence_id_mappings_ui.get(asset_id);
+        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
 
         assert!(sequence_id_mappings.is_some());
 
-        let sequence_id_mappings =
-            sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
+        let sequence_id_mappings = sequence_id_mappings
+            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
         let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
         sequence_id_mappings_expected.insert(
             SequenceNameString::String(String::from("start_game_inactive")),
             SequenceId(0),
         );
         sequence_id_mappings_expected.insert(
-            SequenceNameString::Name(UiSequenceName::Active),
+            SequenceNameString::String(String::from("start_game_active")),
             SequenceId(1),
         );
         sequence_id_mappings_expected.insert(
@@ -704,16 +703,16 @@ mod tests {
         asset_id: AssetId,
     ) {
         let IdMappingResources {
-            asset_sequence_id_mappings_ui,
+            asset_sequence_id_mappings_sprite,
             ..
         } = id_mapping_resources;
 
-        let sequence_id_mappings = asset_sequence_id_mappings_ui.get(asset_id);
+        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
 
         assert!(sequence_id_mappings.is_some());
 
-        let sequence_id_mappings =
-            sequence_id_mappings.expect("Expected `SequenceIdMappings<UiSequenceName>` to exist.");
+        let sequence_id_mappings = sequence_id_mappings
+            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
         let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
         sequence_id_mappings_expected.insert(
             SequenceNameString::String(String::from("zero")),
@@ -728,7 +727,7 @@ mod tests {
             SequenceId(2),
         );
         sequence_id_mappings_expected.insert(
-            SequenceNameString::Name(UiSequenceName::Active),
+            SequenceNameString::String(String::from("start_game_active")),
             SequenceId(3),
         );
         sequence_id_mappings_expected.insert(

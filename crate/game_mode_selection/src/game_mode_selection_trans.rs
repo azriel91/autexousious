@@ -4,6 +4,7 @@ use character_selection::{
     CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
 };
 use character_selection_ui::CharacterSelectionUiBundle;
+use control_settings::ControlSettingsState;
 use game_loading::GameLoadingState;
 use game_mode_selection_model::GameModeIndex;
 use game_play::GamePlayState;
@@ -56,6 +57,7 @@ impl GameModeSelectionTrans {
 
                 Trans::Push(character_selection_state)
             }
+            GameModeIndex::ControlSettings => Trans::Push(Box::new(ControlSettingsState::new())),
             GameModeIndex::Exit => Trans::Quit,
         }
     } // kcov-ignore
