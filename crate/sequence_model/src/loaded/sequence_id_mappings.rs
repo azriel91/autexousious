@@ -1,3 +1,5 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
+use asset_model::ItemComponent;
 use std::iter::FromIterator;
 
 use bimap::BiMap;
@@ -12,7 +14,8 @@ use crate::{
 /// Mappings from sequence name to ID, and ID to name.
 ///
 /// This is essentially a wrapper around `BiMap`, with the `name()` and `id()` methods.
-#[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new)]
+#[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new, ItemComponent)]
+#[storage(DenseVecStorage)]
 pub struct SequenceIdMappings<SeqName>
 where
     SeqName: config::SequenceName,

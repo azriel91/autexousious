@@ -1,12 +1,17 @@
 use std::ops::{Add, AddAssign};
 
-use amethyst::core::math::Vector3;
+use amethyst::{
+    core::math::Vector3,
+    ecs::{storage::DenseVecStorage, Component},
+};
+use asset_model::ItemComponent;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Position initializer for an entity.
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, ItemComponent, PartialEq, Eq, Serialize, new)]
 #[serde(default)]
+#[storage(DenseVecStorage)]
 pub struct PositionInit {
     /// Initial X coordinate.
     pub x: i32,

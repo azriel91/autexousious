@@ -5,4 +5,6 @@ use crate::loaded::UiMenuItem;
 
 /// Newtype for `Vec<UiMenuItem>`.
 #[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new)]
-pub struct UiMenuItems<I>(pub Vec<UiMenuItem<I>>);
+pub struct UiMenuItems<I>(pub Vec<UiMenuItem<I>>)
+where
+    I: Send + Sync + 'static;
