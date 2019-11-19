@@ -1,10 +1,13 @@
 use std::str::FromStr;
 
 use amethyst::{
-    ecs::{Builder, Entity, WorldExt},
+    ecs::{Builder, WorldExt},
     renderer::SpriteRender,
 };
-use asset_model::{config::AssetType, loaded::AssetId};
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetId, ItemId, ItemIds},
+};
 use audio_model::loaded::SourceSequenceHandles;
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
@@ -144,6 +147,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     ..
                 },
             asset_world,
+            asset_item_ids,
             input_config,
             source_assets,
             body_assets,
@@ -367,16 +371,22 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .insert(asset_id, interactions_sequence_handles.clone());
                 asset_spawns_sequence_handles.insert(asset_id, spawns_sequence_handles.clone());
 
-                let _item_entity = item_entity_builder
-                    .with(sequence_end_transitions)
-                    .with(wait_sequence_handles)
-                    .with(source_sequence_handles)
-                    .with(object_acceleration_sequence_handles)
-                    .with(sprite_render_sequence_handles)
-                    .with(body_sequence_handles)
-                    .with(interactions_sequence_handles)
-                    .with(spawns_sequence_handles)
-                    .build();
+                let item_id = {
+                    let item_entity = item_entity_builder
+                        .with(sequence_end_transitions)
+                        .with(wait_sequence_handles)
+                        .with(source_sequence_handles)
+                        .with(object_acceleration_sequence_handles)
+                        .with(sprite_render_sequence_handles)
+                        .with(body_sequence_handles)
+                        .with(interactions_sequence_handles)
+                        .with(spawns_sequence_handles)
+                        .build();
+                    ItemId::new(item_entity)
+                };
+
+                let item_ids = ItemIds::new(vec![item_id]);
+                asset_item_ids.insert(asset_id, item_ids);
             }
             AssetType::Map => {
                 let map_definition = asset_map_definition_handle
@@ -432,7 +442,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         )
                     });
 
-                let _item_entities = position_inits
+                let item_ids = position_inits
                     .0
                     .into_iter()
                     .zip(ui_sprite_labels.0.into_iter())
@@ -455,7 +465,11 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         item_entity_builder.build()
                     })
-                    .collect::<Vec<Entity>>();
+                    .map(ItemId::new)
+                    .collect::<Vec<ItemId>>();
+
+                let item_ids = ItemIds::new(item_ids);
+                asset_item_ids.insert(asset_id, item_ids);
 
                 // TODO: delete this block.
                 if let Some(sprite_sheet_handles) = sprite_sheet_handles {
@@ -548,6 +562,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 let ui_definition = ui_definition.as_ref();
 
+                let mut item_ids_all = ItemIds::default();
+
                 // Load item entities object-wise.
                 if let Some(background_definition) = background_definition {
                     let position_inits =
@@ -589,7 +605,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             )
                         });
 
-                    let _item_entities = position_inits
+                    let mut item_ids = position_inits
                         .0
                         .into_iter()
                         .zip(ui_sprite_labels.0.into_iter())
@@ -612,7 +628,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                             item_entity_builder.build()
                         })
-                        .collect::<Vec<Entity>>();
+                        .map(ItemId::new)
+                        .collect::<Vec<ItemId>>();
+
+                    item_ids_all.append(&mut item_ids)
                 }
                 if let Some(ui_definition) = ui_definition {
                     let UiDefinition {
@@ -647,7 +666,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let ui_sprite_labels = ui_sprite_labels_loader
                                 .items_to_datas(ui_menu_items_cfg.iter(), asset_id);
 
-                            let _item_entities = position_inits
+                            let mut item_ids = position_inits
                                 .0
                                 .into_iter()
                                 .zip(ui_sprite_labels.0.into_iter())
@@ -679,7 +698,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         item_entity_builder.build()
                                     },
                                 )
-                                .collect::<Vec<Entity>>();
+                                .map(ItemId::new)
+                                .collect::<Vec<ItemId>>();
+
+                            item_ids_all.append(&mut item_ids)
                         }
                         UiType::ControlSettings(control_settings) => {
                             let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
@@ -691,7 +713,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let ui_sprite_labels = ui_sprite_labels_loader
                                 .items_to_datas(keyboard_ui_sprite_labels.iter(), asset_id);
 
-                            let mut item_entities = position_inits
+                            let mut item_ids = position_inits
                                 .0
                                 .into_iter()
                                 .zip(ui_sprite_labels.0.into_iter())
@@ -714,22 +736,28 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                                     item_entity_builder.build()
                                 })
-                                .collect::<Vec<Entity>>();
+                                .map(ItemId::new)
+                                .collect::<Vec<ItemId>>();
 
                             // Create entity for title label.
                             let item_id_title = {
                                 let ui_label = control_settings.title.clone();
                                 let position_init = ui_label.position;
-                                asset_world
+                                let entity = asset_world
                                     .create_entity()
                                     .with(position_init)
                                     .with(ui_label)
-                                    .build()
+                                    .build();
+                                ItemId::new(entity)
                             };
-                            item_entities.push(item_id_title);
+                            item_ids.push(item_id_title);
+
+                            item_ids_all.append(&mut item_ids)
                         }
                     }
                 }
+
+                asset_item_ids.insert(asset_id, item_ids_all);
 
                 // --- TODO: Delete all code below this. --- //
 

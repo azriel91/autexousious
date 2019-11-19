@@ -4,7 +4,7 @@ use amethyst::{
     ecs::{Read, World, Write},
     shred::{ResourceId, SystemData},
 };
-use asset_model::play::AssetWorld;
+use asset_model::{loaded::AssetItemIds, play::AssetWorld};
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
 use character_model::loaded::{
     AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
@@ -48,6 +48,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `AssetWorld` for loaded item components.
     #[derivative(Debug = "ignore")]
     pub asset_world: Write<'s, AssetWorld>,
+    /// `AssetItemIds` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_item_ids: Write<'s, AssetItemIds>,
     /// `InputConfig` resource.
     #[derivative(Debug = "ignore")]
     pub input_config: Read<'s, InputConfig>,
@@ -179,6 +182,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     /// `AssetWorld` for loaded item components.
     #[derivative(Debug = "ignore")]
     pub asset_world: Read<'s, AssetWorld>,
+    /// `AssetItemIds` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_item_ids: Read<'s, AssetItemIds>,
 
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
