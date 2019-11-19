@@ -39,15 +39,29 @@ where
         SequenceRef: AsRef<Sequence<SeqName, Frm>>,
         Frm: AsRef<Wait>,
     {
-        let sequence_end_transitions = <Self as SequenceComponentDataLoader>::load(
+        let sequence_end_transitions = self.items_to_datas(sequences_iterator, asset_id);
+        self.asset_sequence_end_transitions
+            .insert(asset_id, sequence_end_transitions);
+    }
+
+    /// Maps items to `SequenceEndTransitions`.
+    pub fn items_to_datas<SequencesIterator, SequenceRef, Frm>(
+        &mut self,
+        sequences_iterator: SequencesIterator,
+        asset_id: AssetId,
+    ) -> SequenceEndTransitions
+    where
+        SequencesIterator: Iterator<Item = SequenceRef>,
+        SequenceRef: AsRef<Sequence<SeqName, Frm>>,
+        Frm: AsRef<Wait>,
+    {
+        <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 self.sequence_end_transition_mapper
                     .map(asset_id, sequence_ref)
             },
             sequences_iterator,
-        );
-        self.asset_sequence_end_transitions
-            .insert(asset_id, sequence_end_transitions);
+        )
     }
 }
 

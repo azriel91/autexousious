@@ -31,12 +31,7 @@ impl<'s> UiSpriteLabelsLoader<'s> {
         ItemIterator: Iterator<Item = ItemRef>,
         ItemRef: AsRef<config::UiSpriteLabel>,
     {
-        let ui_sprite_labels = Self::items_to_datas(
-            &self.asset_id_mappings,
-            &self.asset_sequence_id_mappings_sprite,
-            asset_id,
-            item_iterator,
-        );
+        let ui_sprite_labels = self.items_to_datas(item_iterator, asset_id);
 
         self.asset_ui_sprite_labels
             .insert(asset_id, ui_sprite_labels);
@@ -48,10 +43,9 @@ impl<'s> UiSpriteLabelsLoader<'s> {
     ///
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<ItemIterator, ItemRef>(
-        asset_id_mappings: &AssetIdMappings,
-        asset_sequence_id_mappings_sprite: &AssetSequenceIdMappings<SpriteSequenceName>,
-        asset_id: AssetId,
+        &self,
         item_iterator: ItemIterator,
+        asset_id: AssetId,
     ) -> UiSpriteLabels
     where
         ItemIterator: Iterator<Item = ItemRef>,
@@ -60,8 +54,8 @@ impl<'s> UiSpriteLabelsLoader<'s> {
         let ui_sprite_labels = item_iterator
             .map(|item_ref| {
                 Self::item_to_data(
-                    asset_id_mappings,
-                    asset_sequence_id_mappings_sprite,
+                    self.asset_id_mappings,
+                    self.asset_sequence_id_mappings_sprite,
                     asset_id,
                     item_ref,
                 )

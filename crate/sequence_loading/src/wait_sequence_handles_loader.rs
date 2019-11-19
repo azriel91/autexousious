@@ -44,7 +44,34 @@ impl<'s> WaitSequenceHandlesLoader<'s> {
         FrameRef: AsRef<Wait> + 'frame_ref,
         SequenceIterator: Iterator<Item = FrameRef>,
     {
-        let wait_sequence_handles = <Self as SequenceComponentDataLoader>::load(
+        let wait_sequence_handles =
+            self.items_to_datas(sequences_iterator, fn_sequences_to_sequence_iterator);
+        self.asset_wait_sequence_handles
+            .insert(asset_id, wait_sequence_handles);
+    }
+
+    /// Maps items to `WaitSequenceHandles`.
+    pub fn items_to_datas<
+        'seq_ref,
+        'frame_ref: 'seq_ref,
+        SequencesIterator,
+        SequenceRef,
+        FnSequencesToSequenceIterator,
+        SequenceIterator,
+        FrameRef,
+    >(
+        &mut self,
+        sequences_iterator: SequencesIterator,
+        fn_sequences_to_sequence_iterator: FnSequencesToSequenceIterator,
+    ) -> WaitSequenceHandles
+    where
+        SequencesIterator: Iterator<Item = SequenceRef>,
+        SequenceRef: 'seq_ref,
+        FnSequencesToSequenceIterator: Fn(SequenceRef) -> SequenceIterator,
+        FrameRef: AsRef<Wait> + 'frame_ref,
+        SequenceIterator: Iterator<Item = FrameRef>,
+    {
+        <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 self.wait_sequence_loader.load(
                     |frame| *AsRef::<Wait>::as_ref(&frame),
@@ -52,9 +79,7 @@ impl<'s> WaitSequenceHandlesLoader<'s> {
                 )
             },
             sequences_iterator,
-        );
-        self.asset_wait_sequence_handles
-            .insert(asset_id, wait_sequence_handles);
+        )
     }
 }
 

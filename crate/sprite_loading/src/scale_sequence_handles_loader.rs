@@ -44,15 +44,40 @@ impl<'s> ScaleSequenceHandlesLoader<'s> {
         FrameRef: AsRef<Scale> + 'frame_ref,
         SequenceIterator: Iterator<Item = FrameRef>,
     {
-        let scale_sequence_handles = <Self as SequenceComponentDataLoader>::load(
+        let scale_sequence_handles =
+            self.items_to_datas(sequences_iterator, fn_sequences_to_sequence_iterator);
+        self.asset_scale_sequence_handles
+            .insert(asset_id, scale_sequence_handles);
+    }
+
+    /// Maps items to `ScaleSequenceHandles`.
+    pub fn items_to_datas<
+        'seq_ref,
+        'frame_ref: 'seq_ref,
+        SequencesIterator,
+        SequenceRef,
+        FnSequencesToSequenceIterator,
+        SequenceIterator,
+        FrameRef,
+    >(
+        &mut self,
+        sequences_iterator: SequencesIterator,
+        fn_sequences_to_sequence_iterator: FnSequencesToSequenceIterator,
+    ) -> ScaleSequenceHandles
+    where
+        SequencesIterator: Iterator<Item = SequenceRef>,
+        SequenceRef: 'seq_ref,
+        FnSequencesToSequenceIterator: Fn(SequenceRef) -> SequenceIterator,
+        FrameRef: AsRef<Scale> + 'frame_ref,
+        SequenceIterator: Iterator<Item = FrameRef>,
+    {
+        <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 self.scale_sequence_loader
                     .load(fn_sequences_to_sequence_iterator(sequence_ref))
             },
             sequences_iterator,
-        );
-        self.asset_scale_sequence_handles
-            .insert(asset_id, scale_sequence_handles);
+        )
     }
 }
 

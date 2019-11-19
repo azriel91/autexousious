@@ -31,13 +31,7 @@ impl<'s> UiMenuItemsLoader<'s> {
     where
         ItemIterator: Iterator<Item = &'f config::UiMenuItem<GameModeIndex>>,
     {
-        let ui_menu_items = Self::items_to_datas(
-            &self.asset_id_mappings,
-            &self.asset_sequence_id_mappings_sprite,
-            asset_id,
-            item_iterator,
-        );
-
+        let ui_menu_items = self.items_to_datas(item_iterator, asset_id);
         self.asset_ui_menu_items.insert(asset_id, ui_menu_items);
     }
 
@@ -47,20 +41,21 @@ impl<'s> UiMenuItemsLoader<'s> {
     ///
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<'f, ItemIterator>(
-        asset_id_mappings: &AssetIdMappings,
-        asset_sequence_id_mappings_sprite: &AssetSequenceIdMappings<SpriteSequenceName>,
-        asset_id: AssetId,
+        &self,
         item_iterator: ItemIterator,
+        asset_id: AssetId,
     ) -> UiMenuItems<GameModeIndex>
     where
         ItemIterator: Iterator<Item = &'f config::UiMenuItem<GameModeIndex>>,
     {
         let ui_menu_items = item_iterator
             .map(|ui_menu_item| {
-                let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                let sequence_id_mappings = self
+                    .asset_sequence_id_mappings_sprite
                     .get(asset_id)
                     .unwrap_or_else(|| {
-                        let asset_slug = asset_id_mappings
+                        let asset_slug = self
+                            .asset_id_mappings
                             .slug(asset_id)
                             .expect("Expected `AssetSlug` to exist.");
                         panic!(
@@ -73,7 +68,8 @@ impl<'s> UiMenuItemsLoader<'s> {
                     .id(sequence)
                     .copied()
                     .unwrap_or_else(|| {
-                        let asset_slug = asset_id_mappings
+                        let asset_slug = self
+                            .asset_id_mappings
                             .slug(asset_id)
                             .expect("Expected `AssetSlug` to exist.");
                         panic!(
