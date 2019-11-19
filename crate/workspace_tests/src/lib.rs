@@ -28,6 +28,8 @@ mod asset_loading;
 #[cfg(test)]
 mod asset_model;
 #[cfg(test)]
+mod asset_play;
+#[cfg(test)]
 mod audio_loading;
 #[cfg(test)]
 mod audio_play;
