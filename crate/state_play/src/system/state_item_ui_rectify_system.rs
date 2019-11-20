@@ -2,6 +2,7 @@ use amethyst::{
     ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
+    ui::UiText,
 };
 use application_menu::{MenuItemWidgetState, Siblings};
 use asset_model::loaded::ItemId;
@@ -10,6 +11,8 @@ use derive_new::new;
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use typename_derive::TypeName;
+
+const FONT_COLOUR_ACTIVE: [f32; 4] = [0.9, 0.9, 1., 1.];
 
 /// Adds the `Siblings` component to `UiMenuItem` item entities.
 ///
@@ -38,6 +41,9 @@ pub struct StateItemUiRectifySystemData<'s> {
     /// `MenuItemWidgetState` components.
     #[derivative(Debug = "ignore")]
     pub menu_item_widget_states: WriteStorage<'s, MenuItemWidgetState>,
+    /// `UiText` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_texts: WriteStorage<'s, UiText>,
     /// `Siblings` components.
     #[derivative(Debug = "ignore")]
     pub siblingses: WriteStorage<'s, Siblings>,
@@ -53,6 +59,7 @@ impl<'s> System<'s> for StateItemUiRectifySystem {
             state_item_entities,
             item_ids,
             mut menu_item_widget_states,
+            mut ui_texts,
             mut siblingses,
         }: Self::SystemData,
     ) {
@@ -84,10 +91,13 @@ impl<'s> System<'s> for StateItemUiRectifySystem {
                 .collect::<Vec<Entity>>();
 
             // Set first menu item to be active.
-            if let Some(entity) = menu_item_entities.first() {
+            if let Some(entity) = menu_item_entities.first().copied() {
                 menu_item_widget_states
-                    .insert(*entity, MenuItemWidgetState::Active)
+                    .insert(entity, MenuItemWidgetState::Active)
                     .expect("Failed to insert `MenuItemWidgetState` component.");
+                if let Some(ui_text) = ui_texts.get_mut(entity) {
+                    ui_text.color = FONT_COLOUR_ACTIVE;
+                }
             }
 
             // Set previous and next siblings
