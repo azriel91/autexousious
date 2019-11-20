@@ -19,15 +19,12 @@ use typename_derive::TypeName;
 ///
 /// * `IC`: Type of item component data, e.g. `WaitSequenceHandles`.
 #[derive(Debug, Default, TypeName, new)]
-pub struct ItemComponentComponentAugmentSystem<'s, IC>
-where
-    IC: ItemComponent<'s> + Debug,
-{
+pub struct ItemComponentComponentAugmentSystem<IC> {
     /// Reader ID for the `ItemIdEvent` event channel.
     #[new(default)]
     item_id_rid: Option<ReaderId<ItemIdEvent>>,
     /// Marker.
-    phantom_data: PhantomData<&'s IC>,
+    phantom_data: PhantomData<IC>,
 }
 
 /// `ItemComponentComponentAugmentSystemData`.
@@ -48,7 +45,7 @@ where
     pub item_component_system_data: <IC as ItemComponent<'s>>::SystemData,
 }
 
-impl<'s, IC> System<'s> for ItemComponentComponentAugmentSystem<'s, IC>
+impl<'s, IC> System<'s> for ItemComponentComponentAugmentSystem<IC>
 where
     IC: ItemComponent<'s> + Debug,
 {
@@ -71,13 +68,9 @@ where
             .for_each(|ev| {
                 let ItemIdEvent::CreateOrUpdate { entity, item_id } = *ev;
                 let item_components = asset_world.read_storage::<IC>();
-                let item_component = item_components.get(item_id.0).unwrap_or_else(|| {
-                    panic!(
-                        "Expected storage to exist for `ItemComponent`: `{}`",
-                        std::any::type_name::<IC>()
-                    )
-                });
-                item_component.augment(&mut item_component_system_data, entity);
+                if let Some(item_component) = item_components.get(item_id.0) {
+                    item_component.augment(&mut item_component_system_data, entity);
+                }
             });
     }
 

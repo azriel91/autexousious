@@ -10,6 +10,7 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
+use typename_derive::TypeName;
 
 const FONT_COLOUR: [f32; 4] = [0.65, 0.65, 0.65, 1.];
 const FONT_SIZE: f32 = 30.;
@@ -17,7 +18,7 @@ const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT: f32 = 75.;
 
 /// Defines text to display.
-#[derive(Clone, Debug, Default, Deserialize, Component, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, Component, PartialEq, Serialize, TypeName, new)]
 #[serde(default, deny_unknown_fields)]
 #[storage(DenseVecStorage)]
 pub struct UiLabel {

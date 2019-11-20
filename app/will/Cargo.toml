@@ -13,7 +13,10 @@ application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_state = { path = "../../crate/application_state" }
 application_ui = { path = "../../crate/application_ui" }
+asset_model = { path = "../../crate/asset_model" }
+asset_play = { path = "../../crate/asset_play" }
 audio_loading = { path = "../../crate/audio_loading" }
+audio_model = { path = "../../crate/audio_model" }
 background_loading = { path = "../../crate/background_loading" }
 camera_play = { path = "../../crate/camera_play" }
 character_loading = { path = "../../crate/character_loading" }
@@ -31,18 +34,23 @@ game_input_model = { path = "../../crate/game_input_model" }
 game_input_stdio = { path = "../../crate/game_input_stdio" }
 game_input_ui = { path = "../../crate/game_input_ui" }
 game_mode_selection = { path = "../../crate/game_mode_selection" }
+game_mode_selection_model = { path = "../../crate/game_mode_selection_model" }
 game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play = { path = "../../crate/game_play" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
 kinematic_loading = { path = "../../crate/kinematic_loading" }
+kinematic_model = { path = "../../crate/kinematic_model" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 sequence_loading = { path = "../../crate/sequence_loading" }
+sequence_model = { path = "../../crate/sequence_model" }
 spawn_loading = { path = "../../crate/spawn_loading" }
+spawn_model = { path = "../../crate/spawn_model" }
 sprite_loading = { path = "../../crate/sprite_loading" }
+sprite_model = { path = "../../crate/sprite_model" }
 state_play = { path = "../../crate/state_play" }
 state_registry = { path = "../../crate/state_registry" }
 stdio_command_stdio = { path = "../../crate/stdio_command_stdio" }
@@ -53,7 +61,9 @@ structopt-derive = "0.3.3"
 tracker = { path = "../../crate/tracker" }
 typename = "0.1.1"
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
+ui_label_model = { path = "../../crate/ui_label_model" }
 ui_loading = { path = "../../crate/ui_loading" }
+ui_menu_item_model = { path = "../../crate/ui_menu_item_model" }
 
 [dev-dependencies]
 assert_cmd = "0.11.1"

@@ -8,9 +8,10 @@ use derive_new::new;
 use kinematic_model::config::PositionInit;
 use sequence_model::loaded::SequenceId;
 use serde::{Deserialize, Serialize};
+use typename_derive::TypeName;
 
 /// Defines a sprite sequence to display.
-#[derive(Clone, Debug, Deserialize, Component, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, Component, PartialEq, Serialize, TypeName, new)]
 #[serde(deny_unknown_fields)]
 #[storage(DenseVecStorage)]
 pub struct UiSpriteLabel {

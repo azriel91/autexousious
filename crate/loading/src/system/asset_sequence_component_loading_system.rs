@@ -536,8 +536,15 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     asset_sequence_end_transitions,
                 };
 
-                // Hack: Update `PositionInit`s for `UiDefinition.button`s
+                // Hack: Update `PositionInit`s for `UiDefinition.button`s and menu items.
                 if let Some(ui_definition) = ui_definition.as_mut() {
+                    if let UiType::Menu(ui_menu_items) = &mut ui_definition.ui_type {
+                        ui_menu_items.iter_mut().for_each(|ui_menu_item| {
+                            ui_menu_item.label.position += ui_menu_item.position;
+                            ui_menu_item.sprite.position += ui_menu_item.position;
+                        });
+                    }
+
                     ui_definition.buttons.iter_mut().for_each(|ui_button| {
                         ui_button.label.position += ui_button.position;
                         ui_button.sprite.position += ui_button.position;

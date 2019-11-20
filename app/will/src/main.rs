@@ -20,13 +20,17 @@ use amethyst::{
 use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
+use asset_play::{ItemComponentComponentAugmentSystem, ItemIdEventSystem};
 use audio_loading::AudioLoadingBundle;
+use audio_model::loaded::SourceSequenceHandles;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
+use character_model::loaded::CharacterCtsHandles;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
@@ -34,18 +38,28 @@ use game_input_model::{ControlBindings, InputConfig};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
 use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
+use game_mode_selection_model::GameModeIndex;
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
 use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use kinematic_loading::KinematicLoadingBundle;
+use kinematic_model::{config::PositionInit, loaded::ObjectAccelerationSequenceHandles};
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
+use sequence_model::loaded::{SequenceEndTransitions, WaitSequenceHandles};
 use spawn_loading::SpawnLoadingBundle;
+use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_loading::SpriteLoadingBundle;
-use state_play::{StateCameraResetSystem, StateIdEventSystem, StateUiSpawnSystem};
+use sprite_model::loaded::{
+    ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
+};
+use state_play::{
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiRectifySystem, StateUiSpawnSystem,
+};
 use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -54,7 +68,9 @@ use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
 use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
+use ui_label_model::{config::UiLabel, loaded::UiSpriteLabel};
 use ui_loading::UiLoadingBundle;
+use ui_menu_item_model::loaded::UiMenuItem;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -143,21 +159,125 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &StateIdEventSystem::type_name(),
                 &[],
             )
-            .with(
-                StateUiSpawnSystem::new(),
-                &StateUiSpawnSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
-            )
+            // .with(
+            //     StateUiSpawnSystem::new(),
+            //     &StateUiSpawnSystem::type_name(),
+            //     &[&StateIdEventSystem::type_name()],
+            // )
             .with(
                 StateCameraResetSystem::new(),
                 &StateCameraResetSystem::type_name(),
                 &[&StateIdEventSystem::type_name()],
             )
             .with(
+                StateItemSpawnSystem::new(),
+                &StateItemSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                ItemIdEventSystem::new(),
+                &ItemIdEventSystem::type_name(),
+                &[&StateItemSpawnSystem::type_name()],
+            )
+
+            // --- begin item component augmentation --- //
+            .with(
+                ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::new(),
+                &ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<WaitSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<WaitSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<SourceSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<SourceSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<ObjectAccelerationSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<ObjectAccelerationSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<SpriteRenderSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<SpriteRenderSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<BodySequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<BodySequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<InteractionsSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<InteractionsSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<SpawnsSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<SpawnsSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<PositionInit>::new(),
+                &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<TintSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<TintSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::new(),
+                &ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<UiLabel>::new(),
+                &ItemComponentComponentAugmentSystem::<UiLabel>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<UiSpriteLabel>::new(),
+                &ItemComponentComponentAugmentSystem::<UiSpriteLabel>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            .with(
+                ItemComponentComponentAugmentSystem::<UiMenuItem<GameModeIndex>>::new(),
+                &ItemComponentComponentAugmentSystem::<UiMenuItem<GameModeIndex>>::type_name(),
+                &[&ItemIdEventSystem::type_name()],
+            )
+            // --- end item component augmentation --- //
+            .with_barrier()
+
+            .with(
+                StateItemUiRectifySystem::new(),
+                &StateItemUiRectifySystem::type_name(),
+                &[&StateItemSpawnSystem::type_name()],
+            )
+            .with(
+                StateItemUiInputAugmentSystem::new(),
+                &StateItemUiInputAugmentSystem::type_name(),
+                &[&StateItemSpawnSystem::type_name()],
+            )
+
+            .with(
                 PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
                 "state_id_prev_tracker_system",
-                &[&StateUiSpawnSystem::type_name()],
+                &[
+                // &StateUiSpawnSystem::type_name()
+                ],
             )
+            .with_barrier()
             .with_bundle(GamePlayBundle::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
