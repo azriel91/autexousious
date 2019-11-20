@@ -4986,6 +4986,8 @@ dependencies = [
  "camera_play 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.15.0",
+ "game_input_model 0.15.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "shrev_support 0.15.0",
  "state_registry 0.15.0",

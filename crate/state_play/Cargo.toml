@@ -15,6 +15,8 @@ asset_model = { path = "../asset_model" }
 camera_play = { path = "../camera_play" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
+game_input = { path = "../game_input" }
+game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
 shrev_support = { path = "../shrev_support" }
 state_registry = { path = "../state_registry" }
