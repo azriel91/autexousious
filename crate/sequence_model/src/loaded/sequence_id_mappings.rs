@@ -1,8 +1,12 @@
-use amethyst::ecs::{storage::DenseVecStorage, Component};
-use asset_model::ItemComponent;
 use std::iter::FromIterator;
 
+use amethyst::{
+    ecs::{storage::DenseVecStorage, Component, Entity, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
+use asset_model::ItemComponent;
 use bimap::BiMap;
+use derivative::Derivative;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 
@@ -14,7 +18,7 @@ use crate::{
 /// Mappings from sequence name to ID, and ID to name.
 ///
 /// This is essentially a wrapper around `BiMap`, with the `name()` and `id()` methods.
-#[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new, ItemComponent)]
+#[derive(Clone, Debug, Default, Deref, DerefMut, Component, PartialEq, new)]
 #[storage(DenseVecStorage)]
 pub struct SequenceIdMappings<SeqName>
 where
@@ -96,5 +100,31 @@ where
             .map(|(index, sequence_name_string)| (sequence_name_string, SequenceId::new(index)));
 
         SequenceIdMappings::from_iter(iter)
+    }
+}
+
+/// `SequenceIdMappingsSystemData`.
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct SequenceIdMappingsSystemData<'s> {
+    /// `SequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
+}
+
+impl<'s, SeqName> ItemComponent<'s> for SequenceIdMappings<SeqName>
+where
+    SeqName: config::SequenceName,
+{
+    type SystemData = SequenceIdMappingsSystemData<'s>;
+
+    fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
+        let SequenceIdMappingsSystemData { sequence_ids } = system_data;
+
+        if !sequence_ids.contains(entity) {
+            sequence_ids
+                .insert(entity, SequenceId::new(0))
+                .expect("Failed to insert `SequenceId` component.");
+        }
     }
 }

@@ -5463,6 +5463,7 @@ name = "ui_label_model"
 version = "0.16.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "application_ui 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5520,6 +5521,7 @@ name = "ui_menu_item_model"
 version = "0.15.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "application_menu 0.15.0",
  "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",

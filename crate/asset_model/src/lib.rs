@@ -14,9 +14,10 @@
 //!
 //! [asset_index]: config/struct.AssetIndex.html
 
-// Alias to make it easier to identify item components.
-pub use amethyst::ecs::Component as ItemComponent;
+pub use crate::item_component::ItemComponent;
 
 pub mod config;
 pub mod loaded;
 pub mod play;
+
+mod item_component;

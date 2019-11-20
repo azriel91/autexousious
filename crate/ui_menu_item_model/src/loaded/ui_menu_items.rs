@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 
@@ -7,4 +9,4 @@ use crate::loaded::UiMenuItem;
 #[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new)]
 pub struct UiMenuItems<I>(pub Vec<UiMenuItem<I>>)
 where
-    I: Send + Sync + 'static;
+    I: Copy + Debug + PartialEq + Send + Sync + 'static;

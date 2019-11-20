@@ -6,6 +6,10 @@ use crate::loaded::BodySequenceHandle;
 
 /// Sequence of `BodySequenceHandle`s.
 #[sequence_component_data(BodySequenceHandle)]
-#[derive(ItemComponent)]
+#[derive(Component)]
 #[storage(DenseVecStorage)]
 pub struct BodySequenceHandles;
+
+impl<'s> ItemComponent<'s> for BodySequenceHandles {
+    type SystemData = ();
+}

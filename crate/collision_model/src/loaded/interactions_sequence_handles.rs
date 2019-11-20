@@ -6,6 +6,10 @@ use crate::loaded::InteractionsSequenceHandle;
 
 /// Sequence of `InteractionsSequenceHandle`s.
 #[sequence_component_data(InteractionsSequenceHandle)]
-#[derive(ItemComponent)]
+#[derive(Component)]
 #[storage(DenseVecStorage)]
 pub struct InteractionsSequenceHandles;
+
+impl<'s> ItemComponent<'s> for InteractionsSequenceHandles {
+    type SystemData = ();
+}

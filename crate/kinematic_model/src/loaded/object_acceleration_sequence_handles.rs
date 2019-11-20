@@ -6,6 +6,10 @@ use crate::loaded::ObjectAccelerationSequenceHandle;
 
 /// Sequence of `ObjectAccelerationSequenceHandle`s.
 #[sequence_component_data(ObjectAccelerationSequenceHandle)]
-#[derive(ItemComponent)]
+#[derive(Component)]
 #[storage(DenseVecStorage)]
 pub struct ObjectAccelerationSequenceHandles;
+
+impl<'s> ItemComponent<'s> for ObjectAccelerationSequenceHandles {
+    type SystemData = ();
+}

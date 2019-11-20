@@ -6,6 +6,10 @@ use crate::loaded::CharacterCtsHandle;
 
 /// Vector of `CharacterCtsHandle`s.
 #[sequence_component_data(CharacterCtsHandle)]
-#[derive(ItemComponent)]
+#[derive(Component)]
 #[storage(DenseVecStorage)]
 pub struct CharacterCtsHandles;
+
+impl<'s> ItemComponent<'s> for CharacterCtsHandles {
+    type SystemData = ();
+}

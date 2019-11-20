@@ -6,6 +6,10 @@ use crate::loaded::ScaleSequenceHandle;
 
 /// Sequence of `ScaleSequenceHandle`s.
 #[sequence_component_data(ScaleSequenceHandle)]
-#[derive(ItemComponent)]
+#[derive(Component)]
 #[storage(DenseVecStorage)]
 pub struct ScaleSequenceHandles;
+
+impl<'s> ItemComponent<'s> for ScaleSequenceHandles {
+    type SystemData = ();
+}
