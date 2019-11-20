@@ -4981,6 +4981,7 @@ name = "state_play"
 version = "0.15.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/azriel91/amethyst.git?branch=feature/impl-copy-partial-eq-for-tint)",
+ "application_menu 0.15.0",
  "asset_model 0.15.0",
  "camera_play 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
