@@ -2,6 +2,6 @@
 
 //! Provides logic for entities at runtime.
 
-pub use crate::system::ItemIdEventSystem;
+pub use crate::system::{ItemComponentComponentAugmentSystem, ItemIdEventSystem};
 
 mod system;
