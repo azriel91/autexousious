@@ -4978,7 +4978,6 @@ dependencies = [
  "tracker 0.15.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "ui_label_play 0.16.0",
 ]
 
 [[package]]

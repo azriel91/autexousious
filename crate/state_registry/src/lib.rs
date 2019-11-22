@@ -16,10 +16,9 @@
 
 pub use crate::{
     state_id::StateId, state_id_update_event::StateIdUpdateEvent,
-    state_item_entities::StateItemEntities, state_ui_data::StateUiData,
+    state_item_entities::StateItemEntities,
 };
 
 mod state_id;
 mod state_id_update_event;
 mod state_item_entities;
-mod state_ui_data;

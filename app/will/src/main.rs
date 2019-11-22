@@ -48,7 +48,7 @@ use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
     StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
-    StateItemUiInputAugmentSystem, StateItemUiRectifySystem, StateUiSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
 };
 use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
@@ -147,11 +147,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &StateIdEventSystem::type_name(),
                 &[],
             )
-            // .with(
-            //     StateUiSpawnSystem::new(),
-            //     &StateUiSpawnSystem::type_name(),
-            //     &[&StateIdEventSystem::type_name()],
-            // )
             .with(
                 StateCameraResetSystem::new(),
                 &StateCameraResetSystem::type_name(),
@@ -181,9 +176,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(
                 PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
                 "state_id_prev_tracker_system",
-                &[
-                // &StateUiSpawnSystem::type_name()
-                ],
+                &[],
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
