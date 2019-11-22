@@ -4,47 +4,25 @@ mod tests {
     use std::collections::HashMap;
 
     use amethyst::{
-        assets::Processor,
-        audio::Source,
-        core::TransformBundle,
         ecs::{Join, Read, ReadStorage, World, WorldExt},
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
-        window::ScreenDimensions,
         Error, State, StateData, Trans,
     };
-    use amethyst_test::{
-        AmethystApplication, GameUpdate, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
-    };
-    use application_event::{AppEvent, AppEventReader};
+    use amethyst_test::GameUpdate;
+    use application_test_support::AutexousiousApplication;
     use asset_model::{
         config::{AssetSlug, AssetType},
         loaded::{AssetIdMappings, AssetTypeMappings},
     };
-    use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
-    use audio_loading::AudioLoadingBundle;
-    use background_loading::BackgroundLoadingBundle;
-    use character_loading::CharacterLoadingBundle;
+    use assets_test::MAP_FADE_SLUG;
     use character_selection_model::CharacterSelections;
-    use collision_audio_loading::CollisionAudioLoadingBundle;
-    use collision_loading::CollisionLoadingBundle;
-    use energy_loading::EnergyLoadingBundle;
-    use game_input_model::ControlBindings;
     use game_play_hud::{CpBar, HpBar};
-    use kinematic_loading::KinematicLoadingBundle;
     use kinematic_model::config::Position;
-    use loading::{LoadingBundle, LoadingState};
     use loading_model::loaded::{AssetLoadStage, LoadStage};
-    use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_type::ObjectType;
-    use sequence_loading::SequenceLoadingBundle;
-    use spawn_loading::SpawnLoadingBundle;
-    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
-    use ui_audio_loading::UiAudioLoadingBundle;
-    use ui_loading::UiLoadingBundle;
 
     use game_loading::{
         CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData, CharacterAugmentStatus,
@@ -142,29 +120,8 @@ mod tests {
             slug: MAP_FADE_SLUG.clone(),
         };
 
-        AmethystApplication::blank()
-            .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
-            .with_ui_bundles::<ControlBindings>()
-            .with_system(Processor::<Source>::new(), "source_processor", &[])
-            .with_bundle(SpriteLoadingBundle::new())
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(AudioLoadingBundle::new())
-            .with_bundle(KinematicLoadingBundle::new())
-            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(CollisionLoadingBundle::new())
-            .with_bundle(SpawnLoadingBundle::new())
-            .with_bundle(BackgroundLoadingBundle::new())
-            .with_bundle(UiLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_bundle(CharacterLoadingBundle::new())
-            .with_bundle(EnergyLoadingBundle::new())
-            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_effect(|world| CharacterAugmentRectifySystemData::setup(world))
-            .with_state(|| LoadingState::new(PopState))
+        AutexousiousApplication::config_base()
+            .with_setup(CharacterAugmentRectifySystemData::setup)
             .with_state(|| wait_for_load)
             .with_effect(|world| setup_map_selection(world, &*MAP_FADE_SLUG))
             .with_effect(|world| {

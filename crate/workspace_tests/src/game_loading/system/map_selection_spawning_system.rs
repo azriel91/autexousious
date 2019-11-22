@@ -1,23 +1,17 @@
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        core::TransformBundle,
         ecs::{Read, SystemData, World, WorldExt},
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error, State, StateData, Trans,
     };
-    use amethyst_test::{AmethystApplication, GameUpdate};
+    use amethyst_test::GameUpdate;
+    use application_test_support::AutexousiousApplication;
     use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
-    use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
-    use background_loading::BackgroundLoadingBundle;
+    use assets_test::{MAP_EMPTY_SLUG, MAP_FADE_SLUG};
     use game_model::play::GameEntities;
-    use loading::LoadingBundle;
     use loading_model::loaded::{AssetLoadStage, LoadStage};
-    use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use sequence_loading::SequenceLoadingBundle;
-    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use game_loading::{
@@ -77,14 +71,7 @@ mod tests {
 
         let wait_for_load = WaitForLoad { slug: slug.clone() };
 
-        AmethystApplication::blank()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_bundle(SpriteLoadingBundle::new())
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(BackgroundLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+        AutexousiousApplication::config_base()
             .with_state(|| wait_for_load)
             .with_effect(setup_system_data)
             .with_effect(move |world| setup_map_selection(world, slug))

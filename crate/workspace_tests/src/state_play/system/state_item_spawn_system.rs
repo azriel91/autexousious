@@ -104,7 +104,7 @@ mod tests {
             entity_count_next,
         }: ExpectedParams,
     ) -> Result<(), Error> {
-        AutexousiousApplication::config_base()
+        AutexousiousApplication::state_base()
             .with_system(StateItemSpawnSystem::new(), "", &[])
             .with_setup(StateItemSpawnSystemData::setup)
             .with_effect(move |world| {

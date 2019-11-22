@@ -14,6 +14,7 @@ amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+asset_play = { path = "../asset_play" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
 background_loading = { path = "../background_loading" }
@@ -44,6 +45,10 @@ spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
+state_play = { path = "../state_play" }
+state_registry = { path = "../state_registry" }
+tracker = { path = "../tracker" }
+typename = "0.1.1"
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_loading = { path = "../ui_loading" }
 

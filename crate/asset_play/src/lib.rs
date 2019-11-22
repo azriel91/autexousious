@@ -2,6 +2,10 @@
 
 //! Provides logic for entities at runtime.
 
-pub use crate::system::{ItemComponentComponentAugmentSystem, ItemIdEventSystem};
+pub use crate::{
+    asset_play_bundle::AssetPlayBundle,
+    system::{ItemComponentComponentAugmentSystem, ItemIdEventSystem},
+};
 
+mod asset_play_bundle;
 mod system;

@@ -8,24 +8,18 @@ use asset_model::{
     config::AssetType,
     loaded::{AssetId, ItemId, ItemIds},
 };
-use audio_model::loaded::SourceSequenceHandles;
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::CharacterSequence,
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
-use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::EnergySequence;
-use game_mode_selection_model::GameModeIndex;
 use kinematic_loading::PositionInitsLoader;
-use kinematic_model::{
-    config::PositionInit,
-    loaded::{ObjectAccelerationSequenceHandles, PositionInits},
-};
+use kinematic_model::loaded::PositionInits;
 use loading_model::loaded::LoadStage;
 use log::debug;
-use map_model::{config::MapBounds, loaded::Margins};
+use map_model::loaded::Margins;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
@@ -37,7 +31,6 @@ use sequence_model::{
     config::SequenceNameString,
     loaded::{SequenceEndTransitions, WaitSequenceHandles},
 };
-use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
     SpriteRenderSequenceLoader, TintSequenceHandlesLoader, TintSequenceLoader,
@@ -49,11 +42,10 @@ use sprite_model::{
 use typename_derive::TypeName;
 use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
 use ui_label_model::{
-    config::{self, UiLabel, UiLabels},
-    loaded::{UiSpriteLabel, UiSpriteLabels},
+    config::{self, UiLabels},
+    loaded::UiSpriteLabels,
 };
 use ui_menu_item_loading::UiMenuItemsLoader;
-use ui_menu_item_model::loaded::UiMenuItem;
 use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
@@ -77,7 +69,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             asset_id_mappings, ..
         }: &mut AssetLoadingResources<'_>,
         SequenceComponentLoadingResources {
-            asset_world,
             asset_sequence_end_transitions,
             asset_wait_sequence_handles,
             asset_source_sequence_handles,
@@ -89,24 +80,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             ..
         }: &mut SequenceComponentLoadingResources<'_>,
     ) {
-        asset_world.register::<SequenceEndTransitions>();
-        asset_world.register::<WaitSequenceHandles>();
-        asset_world.register::<SourceSequenceHandles>();
-        asset_world.register::<ObjectAccelerationSequenceHandles>();
-        asset_world.register::<SpriteRenderSequenceHandles>();
-        asset_world.register::<BodySequenceHandles>();
-        asset_world.register::<InteractionsSequenceHandles>();
-        asset_world.register::<SpawnsSequenceHandles>();
-        asset_world.register::<CharacterCtsHandles>();
-        asset_world.register::<PositionInit>();
-        asset_world.register::<TintSequenceHandles>();
-        asset_world.register::<ScaleSequenceHandles>();
-        asset_world.register::<MapBounds>();
-        asset_world.register::<Margins>();
-        asset_world.register::<UiLabel>();
-        asset_world.register::<UiSpriteLabel>();
-        asset_world.register::<UiMenuItem<GameModeIndex>>();
-
         let capacity = asset_id_mappings.capacity();
         asset_sequence_end_transitions.set_capacity(capacity);
         asset_wait_sequence_handles.set_capacity(capacity);

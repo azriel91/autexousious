@@ -5,7 +5,7 @@ mod tests {
         shrev::{EventChannel, ReaderId},
         Error,
     };
-    use application_test_support::AutexousiousApplication;
+    use amethyst_test::AmethystApplication;
     use asset_model::{loaded::ItemId, play::ItemIdEvent};
 
     use asset_play::ItemIdEventSystem;
@@ -57,7 +57,7 @@ mod tests {
         item_id_alter_fn: fn(&mut World),
         item_id_events_expected_fn: fn(&mut World) -> Vec<ItemIdEvent>,
     ) -> Result<(), Error> {
-        AutexousiousApplication::game_base()
+        AmethystApplication::blank()
             .with_system(ItemIdEventSystem::new(), "", &[])
             .with_effect(entity_create_fn)
             .with_effect(register_reader)
@@ -66,7 +66,7 @@ mod tests {
                 let events_expected = item_id_events_expected_fn(world);
                 expect_events(world, events_expected);
             })
-            .run_isolated()
+            .run()
     }
 
     fn register_reader(world: &mut World) {

@@ -9,6 +9,7 @@ use amethyst::{
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::config::AssetType;
+use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
@@ -27,6 +28,13 @@ use object_type::ObjectType;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use state_play::{
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
+};
+use state_registry::StateId;
+use tracker::PrevTrackerSystem;
+use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
 
@@ -72,10 +80,45 @@ impl AutexousiousApplication {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
     }
 
+    /// Returns an application with game assets loaded, without `state_play` systems.
+    pub fn state_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
+    {
+        AutexousiousApplication::render_and_ui()
+            // On Windows, using `AudioBundle` causes a segfault.
+            // On Linux, using `AudioSystem` (which needs a default `Output` device) causes a panic.
+            //
+            // Our workaround is to just include the `Source` processor as that is what's needed to
+            // load the audio files.
+            //
+            // .with_bundle(AudioBundle::default())
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(AudioLoadingBundle::new())
+            .with_bundle(KinematicLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
+            .with_bundle(BackgroundLoadingBundle::new())
+            .with_bundle(UiLoadingBundle::new())
+            .with_bundle(MapLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CharacterSelectionBundle::new())
+            .with_bundle(AssetPlayBundle::new())
+            .with_state(|| LoadingState::new(PopState))
+    }
+
     /// Returns an application with game assets loaded.
     ///
     /// This function does not instantiate any game entities. If you want test entities (objects and
     /// map) to be instantiated, please use the `game_base` function.
+    ///
+    /// Note that this is not suitable to test systems that subscribe or write to
+    /// `StateIdUpdateEvent`s as this application base will also send events and spawn entities based on
+    /// those events.
     pub fn config_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
         AutexousiousApplication::render_and_ui()
@@ -102,6 +145,42 @@ impl AutexousiousApplication {
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
+            .with_system(
+                StateIdEventSystem::new(),
+                &StateIdEventSystem::type_name(),
+                &[],
+            )
+            .with_system(
+                StateCameraResetSystem::new(),
+                &StateCameraResetSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with_system(
+                StateItemSpawnSystem::new(),
+                &StateItemSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with_system(
+                ItemIdEventSystem::new(),
+                &ItemIdEventSystem::type_name(),
+                &[&StateItemSpawnSystem::type_name()],
+            )
+            .with_bundle(AssetPlayBundle::new())
+            .with_system(
+                StateItemUiRectifySystem::new(),
+                &StateItemUiRectifySystem::type_name(),
+                &[],
+            )
+            .with_system(
+                StateItemUiInputAugmentSystem::new(),
+                &StateItemUiInputAugmentSystem::type_name(),
+                &[],
+            )
+            .with_system(
+                PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
+                "state_id_prev_tracker_system",
+                &[],
+            )
             .with_state(|| LoadingState::new(PopState))
     }
 
