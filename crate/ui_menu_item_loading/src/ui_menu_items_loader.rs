@@ -1,23 +1,19 @@
 use asset_model::loaded::{AssetId, AssetIdMappings};
-use derivative::Derivative;
 use game_mode_selection_model::GameModeIndex;
 use sequence_model::loaded::AssetSequenceIdMappings;
 use sprite_model::config::SpriteSequenceName;
 use ui_menu_item_model::{
     config,
-    loaded::{AssetUiMenuItems, UiMenuItem, UiMenuItems},
+    loaded::{UiMenuItem, UiMenuItems},
 };
 
 /// Loads `UiMenuItem`s from items.
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct UiMenuItemsLoader<'s> {
     /// `AssetIdMappings`.
     pub asset_id_mappings: &'s AssetIdMappings,
     /// `AssetSequenceIdMappings`.
     pub asset_sequence_id_mappings_sprite: &'s AssetSequenceIdMappings<SpriteSequenceName>,
-    /// `AssetUiMenuItems`.
-    pub asset_ui_menu_items: &'s mut AssetUiMenuItems<GameModeIndex>,
 }
 
 impl<'s> UiMenuItemsLoader<'s> {
@@ -27,19 +23,6 @@ impl<'s> UiMenuItemsLoader<'s> {
     ///
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     /// * `asset_id`: Asset ID to store the asset data against.
-    pub fn load<'f, ItemIterator>(&mut self, item_iterator: ItemIterator, asset_id: AssetId)
-    where
-        ItemIterator: Iterator<Item = &'f config::UiMenuItem<GameModeIndex>>,
-    {
-        let ui_menu_items = self.items_to_datas(item_iterator, asset_id);
-        self.asset_ui_menu_items.insert(asset_id, ui_menu_items);
-    }
-
-    /// Maps items to `UiMenuItems`.
-    ///
-    /// # Parameters
-    ///
-    /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<'f, ItemIterator>(
         &self,
         item_iterator: ItemIterator,

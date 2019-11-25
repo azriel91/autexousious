@@ -1,24 +1,20 @@
 use asset_model::loaded::AssetId;
-use derivative::Derivative;
 use sequence_loading_spi::SequenceComponentDataLoader;
 use sequence_model::{
     config::{Sequence, SequenceName, Wait},
-    loaded::{AssetSequenceEndTransitions, SequenceEndTransition, SequenceEndTransitions},
+    loaded::{SequenceEndTransition, SequenceEndTransitions},
 };
 
 use crate::SequenceEndTransitionMapper;
 
 /// Loads `SequenceEndTransition`s from sequences.
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct SequenceEndTransitionsLoader<'s, SeqName>
 where
     SeqName: SequenceName,
 {
     /// `SequenceEndTransitionMapper`.
     pub sequence_end_transition_mapper: SequenceEndTransitionMapper<'s, SeqName>,
-    /// `AssetSequenceEndTransitions`.
-    pub asset_sequence_end_transitions: &'s mut AssetSequenceEndTransitions,
 }
 
 impl<'s, SeqName> SequenceEndTransitionsLoader<'s, SeqName>
@@ -30,23 +26,8 @@ where
     /// This is similar to calling the `SequenceComponentDataLoader::load` trait method, with the
     /// difference that the resources are stored by an instantiation of this type, so they do not
     /// need to be passed in when this method is called.
-    pub fn load<SequencesIterator, SequenceRef, Frm>(
-        &mut self,
-        sequences_iterator: SequencesIterator,
-        asset_id: AssetId,
-    ) where
-        SequencesIterator: Iterator<Item = SequenceRef>,
-        SequenceRef: AsRef<Sequence<SeqName, Frm>>,
-        Frm: AsRef<Wait>,
-    {
-        let sequence_end_transitions = self.items_to_datas(sequences_iterator, asset_id);
-        self.asset_sequence_end_transitions
-            .insert(asset_id, sequence_end_transitions);
-    }
-
-    /// Maps items to `SequenceEndTransitions`.
     pub fn items_to_datas<SequencesIterator, SequenceRef, Frm>(
-        &mut self,
+        &self,
         sequences_iterator: SequencesIterator,
         asset_id: AssetId,
     ) -> SequenceEndTransitions

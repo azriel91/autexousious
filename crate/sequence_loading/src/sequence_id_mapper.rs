@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
 use asset_model::{config::AssetSlug, loaded::AssetId};
-use derivative::Derivative;
 use log::error;
 use sequence_model::{
     config::{SequenceName, SequenceNameString},
@@ -9,8 +8,7 @@ use sequence_model::{
 };
 
 /// Maps `SequenceId`s from sequence strings.
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct SequenceIdMapper<'s, SeqName>
 where
     SeqName: SequenceName,

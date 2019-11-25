@@ -1,21 +1,16 @@
-use asset_model::loaded::AssetId;
-use derivative::Derivative;
 use sequence_loading_spi::SequenceComponentDataLoader;
 use sprite_model::{
     config::Scale,
-    loaded::{AssetScaleSequenceHandles, ScaleSequenceHandle, ScaleSequenceHandles},
+    loaded::{ScaleSequenceHandle, ScaleSequenceHandles},
 };
 
 use crate::ScaleSequenceLoader;
 
 /// Loads `ScaleSequenceHandle`s from collections of sequences that contain `Scale` values.
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct ScaleSequenceHandlesLoader<'s> {
     /// `ScaleSequenceLoader`.
     pub scale_sequence_loader: ScaleSequenceLoader<'s>,
-    /// `AssetScaleSequenceHandles`.
-    pub asset_scale_sequence_handles: &'s mut AssetScaleSequenceHandles,
 }
 
 impl<'s> ScaleSequenceHandlesLoader<'s> {
@@ -24,33 +19,6 @@ impl<'s> ScaleSequenceHandlesLoader<'s> {
     /// This is similar to calling the `SequenceComponentDataLoader::load` trait method, with the
     /// difference that the resources are stored by an instantiation of this type, so they do not
     /// need to be passed in when this method is called.
-    pub fn load<
-        'seq_ref,
-        'frame_ref: 'seq_ref,
-        SequencesIterator,
-        SequenceRef,
-        FnSequencesToSequenceIterator,
-        SequenceIterator,
-        FrameRef,
-    >(
-        &mut self,
-        sequences_iterator: SequencesIterator,
-        fn_sequences_to_sequence_iterator: FnSequencesToSequenceIterator,
-        asset_id: AssetId,
-    ) where
-        SequencesIterator: Iterator<Item = SequenceRef>,
-        SequenceRef: 'seq_ref,
-        FnSequencesToSequenceIterator: Fn(SequenceRef) -> SequenceIterator,
-        FrameRef: AsRef<Scale> + 'frame_ref,
-        SequenceIterator: Iterator<Item = FrameRef>,
-    {
-        let scale_sequence_handles =
-            self.items_to_datas(sequences_iterator, fn_sequences_to_sequence_iterator);
-        self.asset_scale_sequence_handles
-            .insert(asset_id, scale_sequence_handles);
-    }
-
-    /// Maps items to `ScaleSequenceHandles`.
     pub fn items_to_datas<
         'seq_ref,
         'frame_ref: 'seq_ref,
@@ -60,7 +28,7 @@ impl<'s> ScaleSequenceHandlesLoader<'s> {
         SequenceIterator,
         FrameRef,
     >(
-        &mut self,
+        &self,
         sequences_iterator: SequencesIterator,
         fn_sequences_to_sequence_iterator: FnSequencesToSequenceIterator,
     ) -> ScaleSequenceHandles

@@ -1,36 +1,11 @@
-use asset_model::loaded::AssetId;
-use derivative::Derivative;
-use kinematic_model::{
-    config::PositionInit,
-    loaded::{AssetPositionInits, PositionInits},
-};
+use kinematic_model::{config::PositionInit, loaded::PositionInits};
 
 /// Loads `PositionInit`s from items.
-#[derive(Derivative)]
-#[derivative(Debug)]
-pub struct PositionInitsLoader<'s> {
-    /// `AssetPositionInits`.
-    pub asset_position_inits: &'s mut AssetPositionInits,
-}
+#[derive(Debug)]
+pub struct PositionInitsLoader;
 
-impl<'s> PositionInitsLoader<'s> {
+impl PositionInitsLoader {
     /// Loads `PositionInits`.
-    ///
-    /// # Parameters
-    ///
-    /// * `item_iterator`: Iterator over the items from which to extract the asset data.
-    /// * `asset_id`: Asset ID to store the asset data against.
-    pub fn load<ItemIterator, ItemRef>(&mut self, item_iterator: ItemIterator, asset_id: AssetId)
-    where
-        ItemIterator: Iterator<Item = ItemRef>,
-        ItemRef: AsRef<PositionInit>,
-    {
-        let position_inits = Self::items_to_datas(item_iterator);
-
-        self.asset_position_inits.insert(asset_id, position_inits);
-    }
-
-    /// Maps items to `PositionInits`.
     ///
     /// # Parameters
     ///

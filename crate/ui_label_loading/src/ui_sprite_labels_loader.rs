@@ -1,22 +1,18 @@
 use asset_model::loaded::{AssetId, AssetIdMappings};
-use derivative::Derivative;
 use sequence_model::loaded::AssetSequenceIdMappings;
 use sprite_model::config::SpriteSequenceName;
 use ui_label_model::{
     config,
-    loaded::{AssetUiSpriteLabels, UiSpriteLabel, UiSpriteLabels},
+    loaded::{UiSpriteLabel, UiSpriteLabels},
 };
 
 /// Loads `UiSpriteLabel`s from items.
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct UiSpriteLabelsLoader<'s> {
     /// `AssetIdMappings`.
     pub asset_id_mappings: &'s AssetIdMappings,
     /// `AssetSequenceIdMappings`.
     pub asset_sequence_id_mappings_sprite: &'s AssetSequenceIdMappings<SpriteSequenceName>,
-    /// `AssetUiSpriteLabels`.
-    pub asset_ui_sprite_labels: &'s mut AssetUiSpriteLabels,
 }
 
 impl<'s> UiSpriteLabelsLoader<'s> {
@@ -26,22 +22,6 @@ impl<'s> UiSpriteLabelsLoader<'s> {
     ///
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     /// * `asset_id`: Asset ID to store the asset data against.
-    pub fn load<ItemIterator, ItemRef>(&mut self, item_iterator: ItemIterator, asset_id: AssetId)
-    where
-        ItemIterator: Iterator<Item = ItemRef>,
-        ItemRef: AsRef<config::UiSpriteLabel>,
-    {
-        let ui_sprite_labels = self.items_to_datas(item_iterator, asset_id);
-
-        self.asset_ui_sprite_labels
-            .insert(asset_id, ui_sprite_labels);
-    }
-
-    /// Maps items to `UiSpriteLabels`.
-    ///
-    /// # Parameters
-    ///
-    /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<ItemIterator, ItemRef>(
         &self,
         item_iterator: ItemIterator,

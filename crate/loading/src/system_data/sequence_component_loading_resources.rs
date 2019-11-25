@@ -5,32 +5,19 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use asset_model::{loaded::AssetItemIds, play::AssetWorld};
-use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
-use character_model::loaded::{
-    AssetCharacterCtsHandles, CharacterControlTransitions, CharacterCts,
-};
+use audio_model::loaded::SourceSequence;
+use character_model::loaded::{CharacterControlTransitions, CharacterCts};
 use collision_model::{
     config::{Body, Interactions},
-    loaded::{
-        AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequence,
-        InteractionsSequence,
-    },
+    loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
 use game_input_model::InputConfig;
-use game_mode_selection_model::GameModeIndex;
-use kinematic_model::loaded::{
-    AssetObjectAccelerationSequenceHandles, AssetPositionInits, ObjectAccelerationSequence,
-};
+use kinematic_model::loaded::ObjectAccelerationSequence;
 use map_model::loaded::{AssetMapBounds, AssetMargins};
-use sequence_model::loaded::{AssetSequenceEndTransitions, AssetWaitSequenceHandles, WaitSequence};
-use spawn_model::loaded::{AssetSpawnsSequenceHandles, Spawns, SpawnsSequence};
-use sprite_model::loaded::{
-    AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
-    ScaleSequence, SpriteRenderSequence, TintSequence,
-};
-use ui_label_model::loaded::{AssetUiLabels, AssetUiSpriteLabels};
-use ui_menu_item_model::loaded::AssetUiMenuItems;
+use sequence_model::loaded::WaitSequence;
+use spawn_model::loaded::{Spawns, SpawnsSequence};
+use sprite_model::loaded::{ScaleSequence, SpriteRenderSequence, TintSequence};
 
 use crate::{DefinitionLoadingResourcesRead, IdMappingResourcesRead, TextureLoadingResourcesRead};
 
@@ -104,62 +91,12 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub scale_sequence_assets: Read<'s, AssetStorage<ScaleSequence>>,
 
-    /// `AssetSequenceEndTransitions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_end_transitions: Write<'s, AssetSequenceEndTransitions>,
-    /// `AssetWaitSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_wait_sequence_handles: Write<'s, AssetWaitSequenceHandles>,
-    /// `AssetSourceSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_source_sequence_handles: Write<'s, AssetSourceSequenceHandles>,
-    /// `AssetObjectAccelerationSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_object_acceleration_sequence_handles:
-        Write<'s, AssetObjectAccelerationSequenceHandles>,
-    /// `AssetSpriteRenderSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_render_sequence_handles: Write<'s, AssetSpriteRenderSequenceHandles>,
-    /// `AssetBodySequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_body_sequence_handles: Write<'s, AssetBodySequenceHandles>,
-    /// `AssetInteractionsSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_interactions_sequence_handles: Write<'s, AssetInteractionsSequenceHandles>,
-    /// `AssetSpawnsSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_spawns_sequence_handles: Write<'s, AssetSpawnsSequenceHandles>,
-
-    /// `AssetCharacterCtsHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
-
-    /// `AssetPositionInits` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_position_inits: Write<'s, AssetPositionInits>,
-    /// `AssetTintSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_tint_sequence_handles: Write<'s, AssetTintSequenceHandles>,
-    /// `AssetScaleSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_scale_sequence_handles: Write<'s, AssetScaleSequenceHandles>,
-
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Write<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
-
-    /// `AssetUiLabels` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_labels: Write<'s, AssetUiLabels>,
-    /// `AssetUiSpriteLabels` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_sprite_labels: Write<'s, AssetUiSpriteLabels>,
-    /// `AssetUiMenuItems<GameModeIndex>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_menu_items: Write<'s, AssetUiMenuItems<GameModeIndex>>,
 }
 
 /// `SequenceComponentLoadingResourcesRead`.
@@ -222,60 +159,10 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub scale_sequence_assets: Read<'s, AssetStorage<ScaleSequence>>,
 
-    /// `AssetSequenceEndTransitions` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sequence_end_transitions: Read<'s, AssetSequenceEndTransitions>,
-    /// `AssetWaitSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_wait_sequence_handles: Read<'s, AssetWaitSequenceHandles>,
-    /// `AssetSourceSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_source_sequence_handles: Read<'s, AssetSourceSequenceHandles>,
-    /// `AssetObjectAccelerationSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_object_acceleration_sequence_handles:
-        Read<'s, AssetObjectAccelerationSequenceHandles>,
-    /// `AssetSpriteRenderSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_sprite_render_sequence_handles: Read<'s, AssetSpriteRenderSequenceHandles>,
-    /// `AssetBodySequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_body_sequence_handles: Read<'s, AssetBodySequenceHandles>,
-    /// `AssetInteractionsSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_interactions_sequence_handles: Read<'s, AssetInteractionsSequenceHandles>,
-    /// `AssetSpawnsSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_spawns_sequence_handles: Read<'s, AssetSpawnsSequenceHandles>,
-
-    /// `AssetCharacterCtsHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
-
-    /// `AssetPositionInits` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_position_inits: Read<'s, AssetPositionInits>,
-    /// `AssetTintSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_tint_sequence_handles: Read<'s, AssetTintSequenceHandles>,
-    /// `AssetScaleSequenceHandles` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_scale_sequence_handles: Read<'s, AssetScaleSequenceHandles>,
-
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Read<'s, AssetMargins>,
-
-    /// `AssetUiLabels` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_labels: Read<'s, AssetUiLabels>,
-    /// `AssetUiSpriteLabels` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_sprite_labels: Read<'s, AssetUiSpriteLabels>,
-    /// `AssetUiMenuItems<GameModeIndex>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_ui_menu_items: Read<'s, AssetUiMenuItems<GameModeIndex>>,
 }

@@ -22,7 +22,6 @@ sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.102", features = ["derive"] }
-slotmap = "0.4.0"
 strum = "0.16.0"
 strum_macros = "0.16.0"
 typename = "0.1.1"

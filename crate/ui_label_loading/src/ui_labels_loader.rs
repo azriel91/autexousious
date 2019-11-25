@@ -1,37 +1,11 @@
-use asset_model::loaded::AssetId;
-use derivative::Derivative;
-
-use ui_label_model::{
-    config::{UiLabel, UiLabels},
-    loaded::AssetUiLabels,
-};
+use ui_label_model::config::{UiLabel, UiLabels};
 
 /// Loads `UiLabel`s from items.
-#[derive(Derivative)]
-#[derivative(Debug)]
-pub struct UiLabelsLoader<'s> {
-    /// `AssetUiLabels`.
-    pub asset_ui_labels: &'s mut AssetUiLabels,
-}
+#[derive(Debug)]
+pub struct UiLabelsLoader;
 
-impl<'s> UiLabelsLoader<'s> {
+impl UiLabelsLoader {
     /// Loads `UiLabels`.
-    ///
-    /// # Parameters
-    ///
-    /// * `item_iterator`: Iterator over the items from which to extract the asset data.
-    /// * `asset_id`: Asset ID to store the asset data against.
-    pub fn load<ItemIterator, ItemRef>(&mut self, item_iterator: ItemIterator, asset_id: AssetId)
-    where
-        ItemIterator: Iterator<Item = ItemRef>,
-        ItemRef: AsRef<UiLabel>,
-    {
-        let ui_labels = Self::items_to_datas(item_iterator);
-
-        self.asset_ui_labels.insert(asset_id, ui_labels);
-    }
-
-    /// Maps items to `UiLabels`.
     ///
     /// # Parameters
     ///
