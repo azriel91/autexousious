@@ -21,7 +21,7 @@ use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
 use typename::TypeName;
-use ui_label_model::{config::UiLabel, loaded::UiSpriteLabel};
+use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::UiMenuItem;
 
 use crate::ItemComponentComponentAugmentSystem;
@@ -57,7 +57,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<TintSequenceHandles>();
         asset_world.register::<ScaleSequenceHandles>();
         asset_world.register::<UiLabel>();
-        asset_world.register::<UiSpriteLabel>();
         asset_world.register::<UiMenuItem<GameModeIndex>>();
 
         world.insert(asset_world);
@@ -151,11 +150,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<UiLabel>::new(),
             &ItemComponentComponentAugmentSystem::<UiLabel>::type_name(),
-            &[],
-        );
-        builder.add(
-            ItemComponentComponentAugmentSystem::<UiSpriteLabel>::new(),
-            &ItemComponentComponentAugmentSystem::<UiSpriteLabel>::type_name(),
             &[],
         );
         builder.add(

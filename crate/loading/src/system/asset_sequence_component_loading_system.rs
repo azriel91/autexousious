@@ -715,7 +715,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         // sequence_component_loaded!(SequenceId) &&
         // sequence_component_loaded!(SequenceEndTransitions) &&
         // sequence_component_loaded!(UiLabel) &&
-        // sequence_component_loaded!(UiSpriteLabel) &&
         // sequence_component_loaded!(UiMenuItem<GameModeIndex>)
 
         sequence_component_loaded!(WaitSequenceHandles, wait_sequence_assets)

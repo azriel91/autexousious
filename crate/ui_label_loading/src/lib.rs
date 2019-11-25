@@ -2,7 +2,6 @@
 
 //! Loading logic for `UiMenuItem`s.
 
-pub use crate::{ui_labels_loader::UiLabelsLoader, ui_sprite_labels_loader::UiSpriteLabelsLoader};
+pub use crate::ui_labels_loader::UiLabelsLoader;
 
 mod ui_labels_loader;
-mod ui_sprite_labels_loader;

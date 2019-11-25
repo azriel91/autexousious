@@ -11,5 +11,4 @@ test = false
 [dependencies]
 asset_model = { path = "../asset_model" }
 sequence_model = { path = "../sequence_model" }
-sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
