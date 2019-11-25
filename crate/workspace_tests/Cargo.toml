@@ -90,7 +90,6 @@ map_selection_ui = { path = "../map_selection_ui" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }
-object_prefab = { path = "../object_prefab" }
 object_status_model = { path = "../object_status_model" }
 object_status_play = { path = "../object_status_play" }
 object_type = { path = "../object_type" }

@@ -19,7 +19,6 @@ energy_prefab = { path = "../energy_prefab" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 object_model = { path = "../object_model" }
-object_prefab = { path = "../object_prefab" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
