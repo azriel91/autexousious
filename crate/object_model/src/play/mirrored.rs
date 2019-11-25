@@ -53,8 +53,10 @@ impl<'s> ItemComponent<'s> for Mirrored {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let MirroredSystemData { mirroreds } = system_data;
 
-        mirroreds
-            .insert(entity, *self)
-            .expect("Failed to insert `Mirrored` component.");
+        if mirroreds.get(entity).is_none() {
+            mirroreds
+                .insert(entity, *self)
+                .expect("Failed to insert `Mirrored` component.");
+        }
     }
 }

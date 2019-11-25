@@ -36,8 +36,10 @@ impl<'s> ItemComponent<'s> for Grounding {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let GroundingSystemData { groundings } = system_data;
 
-        groundings
-            .insert(entity, *self)
-            .expect("Failed to insert `Grounding` component.");
+        if groundings.get(entity).is_none() {
+            groundings
+                .insert(entity, *self)
+                .expect("Failed to insert `Grounding` component.");
+        }
     }
 }
