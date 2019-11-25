@@ -549,8 +549,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         UiType::Menu(ui_menu_items_cfg) => {
                             let position_inits =
                                 PositionInitsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let ui_menu_items = ui_menu_items_loader
-                                .items_to_datas(ui_menu_items_cfg.iter(), asset_id);
+                            let ui_menu_items =
+                                ui_menu_items_loader.items_to_datas(ui_menu_items_cfg.iter());
                             let ui_labels =
                                 UiLabelsLoader::items_to_datas(ui_menu_items_cfg.iter());
                             let sequence_id_inits = sequence_id_mapper_sprite.items_to_datas(

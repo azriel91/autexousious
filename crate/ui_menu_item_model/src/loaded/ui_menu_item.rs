@@ -8,7 +8,6 @@ use application_menu::{MenuItem, MenuItemWidgetState};
 use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
-use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
 /// Defines a UI menu item.
@@ -17,8 +16,6 @@ pub struct UiMenuItem<I>
 where
     I: Copy + Debug + PartialEq + Send + Sync + 'static,
 {
-    /// `SequenceId` that the `UIMenuItem` should begin with.
-    pub sequence_id: SequenceId,
     /// Menu index this item corresponds to.
     pub index: I,
 }
