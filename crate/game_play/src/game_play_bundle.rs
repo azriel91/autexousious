@@ -3,10 +3,10 @@ use amethyst::{
     ecs::{DispatcherBuilder, World},
     Error,
 };
-use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence, SourceSequenceHandles};
+use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::loaded::{AssetCharacterCtsHandles, CharacterCtsHandles};
+use character_model::loaded::CharacterCtsHandles;
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
 };
@@ -17,8 +17,7 @@ use charge_play::{
 use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{
-    AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequence, BodySequenceHandles,
-    InteractionsSequence, InteractionsSequenceHandles,
+    BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
 };
 use collision_play::{
     CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem, HitEffectSystem,
@@ -29,10 +28,7 @@ use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use kinematic_model::{
     config::Position,
-    loaded::{
-        AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence,
-        ObjectAccelerationSequenceHandles,
-    },
+    loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
 };
 use map_play::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
@@ -43,18 +39,14 @@ use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
 };
 use object_status_play::StunPointsReductionSystem;
-use sequence_model::loaded::{
-    AssetSequenceEndTransitions, AssetWaitSequenceHandles, SequenceEndTransitions, WaitSequence,
-    WaitSequenceHandles,
-};
+use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
 use sequence_play::{
     FrameComponentUpdateSystem, SequenceComponentUpdateSystem, SequenceEndTransitionSystem,
     SequenceStatusUpdateSystem, SequenceUpdateSystem,
 };
-use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequence, SpawnsSequenceHandles};
+use spawn_model::loaded::{SpawnsSequence, SpawnsSequenceHandles};
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::{
-    AssetScaleSequenceHandles, AssetSpriteRenderSequenceHandles, AssetTintSequenceHandles,
     ScaleSequence, ScaleSequenceHandles, SpriteRenderSequence, SpriteRenderSequenceHandles,
     TintSequence, TintSequenceHandles,
 };
@@ -89,52 +81,31 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         macro_rules! sequence_component_update_system {
-            ($component_asset_type:path, $component_data_type:path) => {
+            ($component_data_type:path) => {
                 let system_name = format!(
                     "{}{}",
-                    SequenceComponentUpdateSystem::<
-                        $component_asset_type,
-                        $component_data_type,
-                    >::type_name(),
-                    concat!(
-                        "<",
-                        stringify!($component_asset_type),
-                        ", ",
-                        stringify!($component_data_type),
-                        ">"
-                    )
+                    SequenceComponentUpdateSystem::<$component_data_type>::type_name(),
+                    concat!("<", stringify!($component_data_type), ">")
                 );
                 builder.add(
-                    SequenceComponentUpdateSystem::<
-                        $component_asset_type,
-                        $component_data_type,
-                    >::new(),
+                    SequenceComponentUpdateSystem::<$component_data_type>::new(),
                     &system_name,
                     &[&SequenceStatusUpdateSystem::type_name()],
                 ); // kcov-ignore
             };
         }
 
-        sequence_component_update_system!(AssetWaitSequenceHandles, WaitSequenceHandles);
-        sequence_component_update_system!(AssetSourceSequenceHandles, SourceSequenceHandles);
-        sequence_component_update_system!(
-            AssetObjectAccelerationSequenceHandles,
-            ObjectAccelerationSequenceHandles
-        );
-        sequence_component_update_system!(
-            AssetSpriteRenderSequenceHandles,
-            SpriteRenderSequenceHandles
-        );
-        sequence_component_update_system!(AssetBodySequenceHandles, BodySequenceHandles);
-        sequence_component_update_system!(
-            AssetInteractionsSequenceHandles,
-            InteractionsSequenceHandles
-        );
-        sequence_component_update_system!(AssetSpawnsSequenceHandles, SpawnsSequenceHandles);
-        sequence_component_update_system!(AssetSequenceEndTransitions, SequenceEndTransitions);
-        sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
-        sequence_component_update_system!(AssetTintSequenceHandles, TintSequenceHandles);
-        sequence_component_update_system!(AssetScaleSequenceHandles, ScaleSequenceHandles);
+        sequence_component_update_system!(WaitSequenceHandles);
+        sequence_component_update_system!(SourceSequenceHandles);
+        sequence_component_update_system!(ObjectAccelerationSequenceHandles);
+        sequence_component_update_system!(SpriteRenderSequenceHandles);
+        sequence_component_update_system!(BodySequenceHandles);
+        sequence_component_update_system!(InteractionsSequenceHandles);
+        sequence_component_update_system!(SpawnsSequenceHandles);
+        sequence_component_update_system!(SequenceEndTransitions);
+        sequence_component_update_system!(CharacterCtsHandles);
+        sequence_component_update_system!(TintSequenceHandles);
+        sequence_component_update_system!(ScaleSequenceHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
