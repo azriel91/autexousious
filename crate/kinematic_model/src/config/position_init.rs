@@ -82,11 +82,15 @@ impl<'s> ItemComponent<'s> for PositionInit {
         let mut transform = Transform::default();
         transform.set_translation(translation);
 
-        positions
-            .insert(entity, position)
-            .expect("Failed to insert `Position<f32>` component.");
-        transforms
-            .insert(entity, transform)
-            .expect("Failed to insert `Transform` component.");
+        if positions.get(entity).is_none() {
+            positions
+                .insert(entity, position)
+                .expect("Failed to insert `Position<f32>` component.");
+        }
+        if transforms.get(entity).is_none() {
+            transforms
+                .insert(entity, transform)
+                .expect("Failed to insert `Transform` component.");
+        }
     }
 }

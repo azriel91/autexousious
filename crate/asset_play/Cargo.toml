@@ -18,6 +18,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 kinematic_model = { path = "../kinematic_model" }
+object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }

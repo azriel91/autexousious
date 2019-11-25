@@ -9,8 +9,13 @@ use character_model::loaded::CharacterCtsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
-use kinematic_model::{config::PositionInit, loaded::ObjectAccelerationSequenceHandles};
-use sequence_model::loaded::{SequenceEndTransitions, WaitSequenceHandles};
+use kinematic_model::{
+    config::{PositionInit, VelocityInit},
+    loaded::ObjectAccelerationSequenceHandles,
+    play::PositionZAsY,
+};
+use object_model::play::{Grounding, Mirrored};
+use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
@@ -34,6 +39,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         let mut asset_world = AssetWorld::default();
+        asset_world.register::<PositionInit>();
+        asset_world.register::<VelocityInit>();
+        asset_world.register::<PositionZAsY>();
+        asset_world.register::<Mirrored>();
+        asset_world.register::<Grounding>();
+        asset_world.register::<SequenceId>();
         asset_world.register::<SequenceEndTransitions>();
         asset_world.register::<WaitSequenceHandles>();
         asset_world.register::<SourceSequenceHandles>();
@@ -43,7 +54,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<InteractionsSequenceHandles>();
         asset_world.register::<SpawnsSequenceHandles>();
         asset_world.register::<CharacterCtsHandles>();
-        asset_world.register::<PositionInit>();
         asset_world.register::<TintSequenceHandles>();
         asset_world.register::<ScaleSequenceHandles>();
         asset_world.register::<UiLabel>();
@@ -53,6 +63,36 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         world.insert(asset_world);
 
         builder.add_barrier();
+        builder.add(
+            ItemComponentComponentAugmentSystem::<PositionInit>::new(),
+            &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<VelocityInit>::new(),
+            &ItemComponentComponentAugmentSystem::<VelocityInit>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<PositionZAsY>::new(),
+            &ItemComponentComponentAugmentSystem::<PositionZAsY>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<Mirrored>::new(),
+            &ItemComponentComponentAugmentSystem::<Mirrored>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<Grounding>::new(),
+            &ItemComponentComponentAugmentSystem::<Grounding>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SequenceId>::new(),
+            &ItemComponentComponentAugmentSystem::<SequenceId>::type_name(),
+            &[],
+        );
         builder.add(
             ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::new(),
             &ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::type_name(),
@@ -96,11 +136,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::new(),
             &ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::type_name(),
-            &[],
-        );
-        builder.add(
-            ItemComponentComponentAugmentSystem::<PositionInit>::new(),
-            &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),
             &[],
         );
         builder.add(

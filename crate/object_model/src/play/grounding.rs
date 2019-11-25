@@ -1,9 +1,16 @@
-use amethyst::ecs::{storage::VecStorage, Component};
+use amethyst::ecs::{
+    shred::{ResourceId, SystemData},
+    storage::VecStorage,
+    Component, Entity, World, WriteStorage,
+};
+use asset_model::ItemComponent;
 use derivative::Derivative;
+use typename_derive::TypeName;
 
 /// State that tracks an object's attachment to the surrounding environment.
-#[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
+#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq, TypeName)]
 #[derivative(Default)]
+#[storage(VecStorage)]
 pub enum Grounding {
     /// Object is in the air.
     #[derivative(Default)]
@@ -14,8 +21,23 @@ pub enum Grounding {
     Underground,
 }
 
-/// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
-/// table.
-impl Component for Grounding {
-    type Storage = VecStorage<Self>;
+/// `GroundingSystemData`.
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct GroundingSystemData<'s> {
+    /// `Grounding` components.
+    #[derivative(Debug = "ignore")]
+    pub groundings: WriteStorage<'s, Grounding>,
+}
+
+impl<'s> ItemComponent<'s> for Grounding {
+    type SystemData = GroundingSystemData<'s>;
+
+    fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
+        let GroundingSystemData { groundings } = system_data;
+
+        groundings
+            .insert(entity, *self)
+            .expect("Failed to insert `Grounding` component.");
+    }
 }

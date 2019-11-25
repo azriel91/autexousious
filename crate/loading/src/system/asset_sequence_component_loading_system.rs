@@ -10,26 +10,33 @@ use asset_model::{
 };
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
-    config::CharacterSequence,
+    config::{CharacterSequence, CharacterSequenceName},
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
 use control_settings_loading::KeyboardUiGen;
-use energy_model::config::EnergySequence;
+use energy_model::config::{EnergySequence, EnergySequenceName};
 use kinematic_loading::PositionInitsLoader;
-use kinematic_model::loaded::PositionInits;
+use kinematic_model::{
+    config::{PositionInit, VelocityInit},
+    loaded::PositionInits,
+    play::PositionZAsY,
+};
 use loading_model::loaded::LoadStage;
-use log::debug;
+use log::{debug, warn};
 use map_model::loaded::Margins;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
-use object_model::loaded::Object;
+use object_model::{
+    loaded::Object,
+    play::{Grounding, Mirrored},
+};
 use object_type::ObjectType;
 use sequence_loading::{
-    SequenceEndTransitionMapper, SequenceEndTransitionsLoader, WaitSequenceHandlesLoader,
-    WaitSequenceLoader,
+    SequenceEndTransitionMapper, SequenceEndTransitionsLoader, SequenceIdMapper,
+    WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
 use sequence_model::{
     config::SequenceNameString,
-    loaded::{SequenceEndTransitions, WaitSequenceHandles},
+    loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles},
 };
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
@@ -174,6 +181,9 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         debug!("Loading `{}` sequence components.", asset_slug);
 
+        let sequence_id_mapper_sprite = SequenceIdMapper {
+            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
+        };
         let wait_sequence_loader = WaitSequenceLoader {
             loader,
             wait_sequence_assets,
@@ -256,7 +266,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     sprite_sheet_handles,
                 };
 
-                let object = match object_type {
+                let (sequence_id_init, object) = match object_type {
                     ObjectType::Character => {
                         let character_definition = asset_character_definition_handle
                             .get(asset_id)
@@ -268,6 +278,21 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         let sequence_id_mappings = asset_sequence_id_mappings_character
                             .get(asset_id)
                             .expect("Expected `SequenceIdMapping` to be loaded.");
+                        let sequence_id_init = {
+                            let sequence_name_default = CharacterSequenceName::default();
+                            sequence_id_mappings
+                                .id_by_name(sequence_name_default)
+                                .copied()
+                                .unwrap_or_else(|| {
+                                    warn!(
+                                        "`{}` sequence ID not found for asset: `{}`. \
+                                         Falling back to first declared sequence.",
+                                        sequence_name_default, asset_slug
+                                    );
+
+                                    SequenceId::new(0)
+                                })
+                        };
 
                         let cts_loader_params = CtsLoaderParams {
                             loader: &*loader,
@@ -301,10 +326,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         item_entity_builder = item_entity_builder.with(character_cts_handles);
 
-                        ObjectLoader::load::<CharacterSequence>(
+                        let object = ObjectLoader::load::<CharacterSequence>(
                             object_loader_params,
                             &character_definition.object_definition,
-                        )
+                        );
+
+                        (sequence_id_init, object)
                     }
                     ObjectType::Energy => {
                         let energy_definition = asset_energy_definition_handle
@@ -314,10 +341,31 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             })
                             .expect("Expected `EnergyDefinition` to be loaded.");
 
-                        ObjectLoader::load::<EnergySequence>(
+                        let sequence_id_mappings = asset_sequence_id_mappings_energy
+                            .get(asset_id)
+                            .expect("Expected `SequenceIdMapping` to be loaded.");
+                        let sequence_id_init = {
+                            let sequence_name_default = EnergySequenceName::default();
+                            sequence_id_mappings
+                                .id_by_name(sequence_name_default)
+                                .copied()
+                                .unwrap_or_else(|| {
+                                    warn!(
+                                        "`{}` sequence ID not found for asset: `{}`. \
+                                         Falling back to first declared sequence.",
+                                        sequence_name_default, asset_slug
+                                    );
+
+                                    SequenceId::new(0)
+                                })
+                        };
+
+                        let object = ObjectLoader::load::<EnergySequence>(
                             object_loader_params,
                             &energy_definition.object_definition,
-                        )
+                        );
+
+                        (sequence_id_init, object)
                     }
                     ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
                 };
@@ -346,6 +394,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 let item_id = {
                     let item_entity = item_entity_builder
+                        .with(PositionInit::new(0, 0, 0))
+                        .with(VelocityInit::new(0, 0, 0))
+                        .with(PositionZAsY)
+                        .with(Mirrored::default())
+                        .with(Grounding::default())
+                        .with(sequence_id_init)
                         .with(sequence_end_transitions)
                         .with(wait_sequence_handles)
                         .with(source_sequence_handles)
@@ -378,20 +432,11 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 let position_inits =
                     PositionInitsLoader::items_to_datas(background_definition.layers.values());
-                let ui_sprite_labels = {
-                    let layers_as_ui_sprite_label =
-                        background_definition
-                            .layers
-                            .iter()
-                            .map(|(sequence_string, layer)| {
-                                let sequence_name_string = SequenceNameString::from_str(
-                                    sequence_string,
-                                )
-                                .expect("Expected `SequenceNameString::from_str` to succeed.");
-                                config::UiSpriteLabel::new(layer.position, sequence_name_string)
-                            });
-                    ui_sprite_labels_loader.items_to_datas(layers_as_ui_sprite_label, asset_id)
-                };
+                let sequence_id_inits = sequence_id_mapper_sprite.strings_to_ids(
+                    asset_slug,
+                    background_definition.layers.keys(),
+                    asset_id,
+                );
                 let sequence_end_transitions = sequence_end_transitions_loader
                     .items_to_datas(background_definition.layers.values(), asset_id);
                 let wait_sequence_handles = wait_sequence_handles_loader
@@ -418,12 +463,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 let item_ids = position_inits
                     .0
                     .into_iter()
-                    .zip(ui_sprite_labels.0.into_iter())
-                    .map(|(position_init, ui_sprite_label)| {
+                    .zip(sequence_id_inits.into_iter())
+                    .map(|(position_init, sequence_id_init)| {
                         let mut item_entity_builder = asset_world
                             .create_entity()
                             .with(position_init)
-                            .with(ui_sprite_label)
+                            .with(sequence_id_init)
                             .with(sequence_end_transitions.clone())
                             .with(wait_sequence_handles.clone())
                             .with(tint_sequence_handles.clone())
@@ -502,7 +547,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 let mut ui_definition = asset_ui_definition_handle
                     .get(asset_id)
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
-                    .cloned();
+                    .cloned(); // Clone so that we don't mutate the actual read data.
 
                 let mut sequence_end_transitions_loader = SequenceEndTransitionsLoader {
                     sequence_end_transition_mapper: sequence_end_transition_mapper_sprite,
@@ -548,20 +593,11 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 if let Some(background_definition) = background_definition {
                     let position_inits =
                         PositionInitsLoader::items_to_datas(background_definition.layers.values());
-                    let ui_sprite_labels = {
-                        let layers_as_ui_sprite_label =
-                            background_definition
-                                .layers
-                                .iter()
-                                .map(|(sequence_string, layer)| {
-                                    let sequence_name_string = SequenceNameString::from_str(
-                                        sequence_string,
-                                    )
-                                    .expect("Expected `SequenceNameString::from_str` to succeed.");
-                                    config::UiSpriteLabel::new(layer.position, sequence_name_string)
-                                });
-                        ui_sprite_labels_loader.items_to_datas(layers_as_ui_sprite_label, asset_id)
-                    };
+                    let sequence_id_inits = sequence_id_mapper_sprite.strings_to_ids(
+                        asset_slug,
+                        background_definition.layers.keys(),
+                        asset_id,
+                    );
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(background_definition.layers.values(), asset_id);
                     let wait_sequence_handles = wait_sequence_handles_loader
@@ -588,12 +624,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     let mut item_ids = position_inits
                         .0
                         .into_iter()
-                        .zip(ui_sprite_labels.0.into_iter())
-                        .map(|(position_init, ui_sprite_label)| {
+                        .zip(sequence_id_inits.into_iter())
+                        .map(|(position_init, sequence_id_init)| {
                             let mut item_entity_builder = asset_world
                                 .create_entity()
                                 .with(position_init)
-                                .with(ui_sprite_label)
+                                .with(sequence_id_init)
                                 .with(sequence_end_transitions.clone())
                                 .with(wait_sequence_handles.clone())
                                 .with(tint_sequence_handles.clone())
@@ -643,24 +679,29 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .items_to_datas(ui_menu_items_cfg.iter(), asset_id);
                             let ui_labels =
                                 UiLabelsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let ui_sprite_labels = ui_sprite_labels_loader
-                                .items_to_datas(ui_menu_items_cfg.iter(), asset_id);
+                            let sequence_id_inits = sequence_id_mapper_sprite.items_to_datas(
+                                asset_slug,
+                                ui_menu_items_cfg
+                                    .iter()
+                                    .map(|ui_menu_item| &ui_menu_item.sprite.sequence),
+                                asset_id,
+                            );
 
                             let mut item_ids = position_inits
                                 .0
                                 .into_iter()
-                                .zip(ui_sprite_labels.0.into_iter())
+                                .zip(sequence_id_inits.into_iter())
                                 .zip(ui_menu_items.0.into_iter())
                                 .zip(ui_labels.0.into_iter())
                                 .map(
                                     |(
-                                        ((position_init, ui_sprite_label), ui_menu_item),
+                                        ((position_init, sequence_id_init), ui_menu_item),
                                         ui_label,
                                     )| {
                                         let mut item_entity_builder = asset_world
                                             .create_entity()
                                             .with(position_init)
-                                            .with(ui_sprite_label)
+                                            .with(sequence_id_init)
                                             .with(ui_menu_item)
                                             .with(ui_label)
                                             .with(sequence_end_transitions.clone())
@@ -690,18 +731,23 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let position_inits = PositionInitsLoader::items_to_datas(
                                 keyboard_ui_sprite_labels.iter(),
                             );
-                            let ui_sprite_labels = ui_sprite_labels_loader
-                                .items_to_datas(keyboard_ui_sprite_labels.iter(), asset_id);
+                            let sequence_id_inits = sequence_id_mapper_sprite.items_to_datas(
+                                asset_slug,
+                                keyboard_ui_sprite_labels
+                                    .iter()
+                                    .map(|ui_sprite_label| &ui_sprite_label.sequence),
+                                asset_id,
+                            );
 
                             let mut item_ids = position_inits
                                 .0
                                 .into_iter()
-                                .zip(ui_sprite_labels.0.into_iter())
-                                .map(|(position_init, ui_sprite_label)| {
+                                .zip(sequence_id_inits.into_iter())
+                                .map(|(position_init, sequence_id_init)| {
                                     let mut item_entity_builder = asset_world
                                         .create_entity()
                                         .with(position_init)
-                                        .with(ui_sprite_label)
+                                        .with(sequence_id_init)
                                         .with(sequence_end_transitions.clone())
                                         .with(wait_sequence_handles.clone())
                                         .with(tint_sequence_handles.clone())
