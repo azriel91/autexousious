@@ -2,6 +2,7 @@ use amethyst::{
     ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
+use asset_model::loaded::{AssetId, AssetIdMappings, AssetItemIds, ItemId};
 use character_prefab::{
     CharacterComponentStorages, CharacterEntityAugmenter, CharacterSpawningResources,
 };
@@ -10,7 +11,6 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
-use object_prefab::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectSpawningResources};
 use object_type::ObjectType;
 use team_model::play::{IndependentCounter, Team};
 use typename_derive::TypeName;
@@ -37,12 +37,18 @@ pub struct CharacterSelectionSpawningSystemData<'s> {
     /// `IndependentCounter` resource.
     #[derivative(Debug = "ignore")]
     pub independent_counter: Write<'s, IndependentCounter>,
-    /// `ObjectSpawningResources`.
+    /// `AssetItemIds` resource.
     #[derivative(Debug = "ignore")]
-    pub object_spawning_resources: ObjectSpawningResources<'s>,
-    /// `ObjectComponentStorages`.
+    pub asset_item_ids: Read<'s, AssetItemIds>,
+    /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub object_component_storages: ObjectComponentStorages<'s>,
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetId` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_ids: WriteStorage<'s, AssetId>,
+    /// `ItemId` components.
+    #[derivative(Debug = "ignore")]
+    pub item_ids: WriteStorage<'s, ItemId>,
     /// `CharacterSpawningResources`.
     #[derivative(Debug = "ignore")]
     pub character_spawning_resources: CharacterSpawningResources<'s>,
@@ -70,8 +76,10 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             character_selections,
             mut game_loading_status,
             mut independent_counter,
-            object_spawning_resources,
-            mut object_component_storages,
+            asset_item_ids,
+            asset_id_mappings,
+            mut asset_ids,
+            mut item_ids,
             character_spawning_resources,
             mut character_component_storages,
             mut input_controlleds,
@@ -87,20 +95,35 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .selections
             .iter()
             .map(|(controller_id, asset_id)| {
+                let asset_id = *asset_id;
+                let asset_slug = asset_id_mappings.slug(asset_id).unwrap_or_else(|| {
+                    panic!(
+                        "Expected `AssetSlug` to exist for `AssetId`: {:?}",
+                        asset_id
+                    )
+                });
+                let item_ids_character = asset_item_ids.get(asset_id).unwrap_or_else(|| {
+                    panic!("Expected `ItemIds` to exist for asset: `{}`", asset_slug);
+                });
+                let item_id = item_ids_character.first().copied().unwrap_or_else(|| {
+                    panic!("Expected `ItemId` to exist for asset: `{}`", asset_slug)
+                });
+
                 let entity = entities.create();
-                ObjectEntityAugmenter::augment(
-                    &object_spawning_resources,
-                    &mut object_component_storages,
-                    *asset_id,
-                    entity,
-                );
+
                 CharacterEntityAugmenter::augment(
                     &character_spawning_resources,
                     &mut character_component_storages,
-                    *asset_id,
+                    asset_id,
                     entity,
                 );
 
+                asset_ids
+                    .insert(entity, asset_id)
+                    .expect("Failed to insert `AssetId` for character.");
+                item_ids
+                    .insert(entity, item_id)
+                    .expect("Failed to insert `ItemId` for character.");
                 input_controlleds
                     .insert(entity, InputControlled::new(*controller_id))
                     .expect("Failed to insert `InputControlled` for character.");
