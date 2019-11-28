@@ -14,5 +14,10 @@
 //!
 //! [asset_index]: config/struct.AssetIndex.html
 
+pub use crate::item_component::ItemComponent;
+
 pub mod config;
 pub mod loaded;
+pub mod play;
+
+mod item_component;

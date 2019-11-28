@@ -40,6 +40,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
             &MenuItemWidgetInputSystem::<GameModeIndex>::type_name(),
             &[],
         ); // kcov-ignore
+
         builder.add(
             GameModeSelectionWidgetUiSystem::new(),
             &GameModeSelectionWidgetUiSystem::type_name(),

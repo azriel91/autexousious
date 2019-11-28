@@ -1,12 +1,12 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write},
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use asset_model::{
     config::AssetType,
-    loaded::{AssetIdMappings, AssetTypeMappings},
+    loaded::{AssetId, AssetIdMappings, AssetItemIds, AssetTypeMappings, ItemId},
 };
 use character_prefab::{
     CharacterComponentStorages, CharacterEntityAugmenter, CharacterSpawningResources,
@@ -15,7 +15,6 @@ use derivative::Derivative;
 use derive_new::new;
 use energy_prefab::{EnergyComponentStorages, EnergyEntityAugmenter};
 use log::error;
-use object_prefab::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectSpawningResources};
 use object_type::ObjectType;
 use sequence_model::play::SequenceUpdateEvent;
 use spawn_model::{
@@ -44,12 +43,15 @@ pub struct SpawnGameObjectResources<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
-    /// `ObjectSpawningResources`.
+    /// `AssetItemIds` resource.
     #[derivative(Debug = "ignore")]
-    pub object_spawning_resources: ObjectSpawningResources<'s>,
-    /// `ObjectComponentStorages`.
+    pub asset_item_ids: Read<'s, AssetItemIds>,
+    /// `AssetId` components.
     #[derivative(Debug = "ignore")]
-    pub object_component_storages: ObjectComponentStorages<'s>,
+    pub asset_ids: WriteStorage<'s, AssetId>,
+    /// `ItemId` components.
+    #[derivative(Debug = "ignore")]
+    pub item_ids: WriteStorage<'s, ItemId>,
     /// `CharacterSpawningResources`.
     #[derivative(Debug = "ignore")]
     pub character_spawning_resources: CharacterSpawningResources<'s>,
@@ -87,8 +89,9 @@ impl SpawnGameObjectSystem {
             entities,
             asset_id_mappings,
             asset_type_mappings,
-            object_spawning_resources,
-            object_component_storages,
+            asset_item_ids,
+            asset_ids,
+            item_ids,
             character_spawning_resources,
             character_component_storages,
             energy_component_storages,
@@ -99,17 +102,33 @@ impl SpawnGameObjectSystem {
     ) {
         spawns.iter().for_each(|spawn| {
             let asset_id = spawn.object;
-            let asset_type = asset_type_mappings
-                .get(asset_id)
-                .unwrap_or_else(|| panic!("`AssetType` not found for `{:?}`.", asset_id));
+            let asset_slug = asset_id_mappings.slug(asset_id).unwrap_or_else(|| {
+                panic!(
+                    "Expected `AssetSlug` to exist for `AssetId`: {:?}",
+                    asset_id
+                )
+            });
+            let item_ids_character = asset_item_ids.get(asset_id).unwrap_or_else(|| {
+                panic!("Expected `ItemIds` to exist for asset: `{}`", asset_slug);
+            });
+            let item_id = item_ids_character.first().copied().unwrap_or_else(|| {
+                panic!("Expected `ItemId` to exist for asset: `{}`", asset_slug)
+            });
+
+            let asset_type = asset_type_mappings.get(asset_id).unwrap_or_else(|| {
+                panic!(
+                    "`AssetType` not found for `{:?}`, slug: `{}`.",
+                    asset_id, asset_slug
+                )
+            });
             let entity_spawned = entities.create();
 
-            ObjectEntityAugmenter::augment(
-                object_spawning_resources,
-                object_component_storages,
-                asset_id,
-                entity_spawned,
-            );
+            asset_ids
+                .insert(entity_spawned, asset_id)
+                .expect("Failed to insert `AssetId`.");
+            item_ids
+                .insert(entity_spawned, item_id)
+                .expect("Failed to insert `ItemId`.");
 
             match asset_type {
                 AssetType::Object(ObjectType::Character) => {

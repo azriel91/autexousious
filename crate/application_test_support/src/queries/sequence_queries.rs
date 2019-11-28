@@ -2,20 +2,20 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{World, WorldExt},
 };
-use asset_model::config::AssetSlug;
+use asset_model::{config::AssetSlug, loaded::AssetItemIds, play::AssetWorld};
 use character_model::loaded::{
-    AssetCharacterCtsHandles, CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
+    CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle, CharacterCtsHandles,
 };
 use collision_model::loaded::{
-    AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequenceHandle,
-    InteractionsSequenceHandle,
+    BodySequenceHandle, BodySequenceHandles, InteractionsSequenceHandle,
+    InteractionsSequenceHandles,
 };
 use sequence_model::loaded::{
-    AssetSequenceEndTransitions, AssetWaitSequenceHandles, SequenceEndTransition, SequenceId,
-    WaitSequenceHandle,
+    SequenceEndTransition, SequenceEndTransitions, SequenceId, WaitSequenceHandle,
+    WaitSequenceHandles,
 };
-use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequenceHandle};
-use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequenceHandle};
+use spawn_model::loaded::{SpawnsSequenceHandle, SpawnsSequenceHandles};
+use sprite_model::loaded::{SpriteRenderSequenceHandle, SpriteRenderSequenceHandles};
 
 use crate::AssetQueries;
 
@@ -39,16 +39,23 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> CharacterCtsHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_character_cts_handles = world.read_resource::<AssetCharacterCtsHandles>();
-        let character_cts_handles =
-            asset_character_cts_handles
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `CharacterCtsHandles` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let character_cts_handles = asset_world
+            .read_storage::<CharacterCtsHandles>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `CharacterCtsHandles` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
         character_cts_handles
             .get(*sequence_id)
@@ -102,23 +109,30 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> SequenceEndTransition {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_sequence_end_transitions = world.read_resource::<AssetSequenceEndTransitions>();
-        let sequence_end_transitions =
-            asset_sequence_end_transitions
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `SequenceEndTransitions` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let sequence_end_transitions = asset_world
+            .read_storage::<SequenceEndTransitions>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SequenceEndTransitions` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
         sequence_end_transitions
             .get(*sequence_id)
             .copied()
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `SequenceEndTransition` for sequence ID `{:?}` to exist.",
+                    "Expected `SequenceEndTransition` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -139,22 +153,29 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> WaitSequenceHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_wait_sequence_handles = world.read_resource::<AssetWaitSequenceHandles>();
-        let wait_sequence_handles =
-            asset_wait_sequence_handles
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `WaitSequenceHandles` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let wait_sequence_handles = asset_world
+            .read_storage::<WaitSequenceHandles>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `WaitSequenceHandles` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
         wait_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `WaitSequenceHandle` for sequence ID `{:?}` to exist.",
+                    "Expected `WaitSequenceHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -176,22 +197,29 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> SpriteRenderSequenceHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_sprite_render_handles = world.read_resource::<AssetSpriteRenderSequenceHandles>();
-        let sprite_render_handles =
-            asset_sprite_render_handles
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `SpriteRenderSequenceHandles` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let sprite_render_sequence_handles = asset_world
+            .read_storage::<SpriteRenderSequenceHandles>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SpriteRenderSequenceHandles` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
-        sprite_render_handles
+        sprite_render_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `SpriteRenderSequenceHandle` for sequence ID `{:?}` to exist.",
+                    "Expected `SpriteRenderSequenceHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -213,22 +241,29 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> BodySequenceHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_body_sequence_handles = world.read_resource::<AssetBodySequenceHandles>();
-        let body_sequence_handles =
-            asset_body_sequence_handles
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `BodySequenceHandles` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let body_sequence_handles = asset_world
+            .read_storage::<BodySequenceHandles>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `BodySequenceHandles` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
         body_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `BodySequenceHandle` for sequence ID `{:?}` to exist.",
+                    "Expected `BodySequenceHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -250,14 +285,21 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> InteractionsSequenceHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_interactions_sequence_handles =
-            world.read_resource::<AssetInteractionsSequenceHandles>();
-        let interactions_sequence_handles = asset_interactions_sequence_handles
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
             .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let interactions_sequence_handles = asset_world
+            .read_storage::<InteractionsSequenceHandles>()
+            .get(item_id_first.0)
+            .cloned()
             .unwrap_or_else(|| {
                 panic!(
                     "Expected `InteractionsSequenceHandles` to exist for `{:?}`.",
-                    asset_id
+                    asset_slug
                 )
             });
 
@@ -265,7 +307,7 @@ impl SequenceQueries {
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `InteractionsSequenceHandle` for sequence ID `{:?}` to exist.",
+                    "Expected `InteractionsSequenceHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -287,22 +329,29 @@ impl SequenceQueries {
         sequence_id: SequenceId,
     ) -> SpawnsSequenceHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
-        let asset_spawns_sequence_handles = world.read_resource::<AssetSpawnsSequenceHandles>();
-        let spawns_sequence_handles =
-            asset_spawns_sequence_handles
-                .get(asset_id)
-                .unwrap_or_else(|| {
-                    panic!(
-                        "Expected `SpawnsSequenceHandles` to exist for `{:?}`.",
-                        asset_id
-                    )
-                });
+        let asset_world = world.read_resource::<AssetWorld>();
+        let asset_item_ids = world.read_resource::<AssetItemIds>();
+        let item_id_first = asset_item_ids
+            .get(asset_id)
+            .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
+            .first()
+            .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
+        let spawns_sequence_handles = asset_world
+            .read_storage::<SpawnsSequenceHandles>()
+            .get(item_id_first.0)
+            .cloned()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SpawnsSequenceHandles` to exist for `{:?}`.",
+                    asset_slug
+                )
+            });
 
         spawns_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `SpawnsSequenceHandle` for sequence ID `{:?}` to exist.",
+                    "Expected `SpawnsSequenceHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })

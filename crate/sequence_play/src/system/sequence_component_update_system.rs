@@ -1,129 +1,94 @@
-use std::{
-    fmt::Debug,
-    marker::PhantomData,
-    ops::{Deref, Index},
-};
+use std::{fmt::Debug, marker::PhantomData, ops::Deref};
 
 use amethyst::{
-    ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
+    ecs::{Entity, Read, ReadStorage, System, World, WorldExt, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::loaded::AssetId;
+use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
-use slotmap::{SecondaryMap, SparseSecondaryMap};
-
-/// Extensions to allow slotmap inner types to be accessed.
-pub trait AssetScdExt<V> {
-    /// Returns the component if it exists.
-    fn get(&self, asset_id: AssetId) -> Option<&V>;
-}
-
-impl<V> AssetScdExt<V> for SecondaryMap<AssetId, V> {
-    fn get(&self, asset_id: AssetId) -> Option<&V> {
-        self.get(asset_id)
-    }
-}
-
-impl<V> AssetScdExt<V> for SparseSecondaryMap<AssetId, V> {
-    fn get(&self, asset_id: AssetId) -> Option<&V> {
-        self.get(asset_id)
-    }
-}
 
 /// Updates the sequence component based on the current sequence ID.
 ///
 /// # Type Parameters
 ///
-/// * `AssetScd`: Resource type that the sequence component data is stored in, e.g. `AssetMargins`.
-/// * `SCD`: Type of sequence component data, e.g. `SequenceEndTransitions`.
+/// * `ICSCD`: Item component which is also sequence component data, e.g. `SequenceEndTransitions`.
 #[derive(Debug, Default, NamedType, new)]
-pub struct SequenceComponentUpdateSystem<AssetScd, SCD>
-where
-    AssetScd: AssetScdExt<SCD> + Index<AssetId, Output = SCD>,
-    SCD: ComponentDataExt
-        + Debug
-        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
-{
+pub struct SequenceComponentUpdateSystem<ICSCD> {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
     reader_id: Option<ReaderId<SequenceUpdateEvent>>,
     /// Marker.
-    phantom_data: PhantomData<(AssetScd, SCD)>,
+    phantom_data: PhantomData<ICSCD>,
 }
 
 /// `SequenceComponentUpdateSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SequenceComponentUpdateSystemData<'s, AssetScd, SCD>
+pub struct SequenceComponentUpdateSystemData<'s, ICSCD>
 where
-    AssetScd: AssetScdExt<SCD> + Default + Index<AssetId, Output = SCD> + Send + Sync + 'static,
-    SCD: ComponentDataExt
+    ICSCD: ItemComponent<'s>
+        + ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
+        + Deref<Target = SequenceComponentData<<ICSCD as ComponentDataExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `AssetId` components.
+    /// `ItemId` components.
     #[derivative(Debug = "ignore")]
-    pub asset_ids: ReadStorage<'s, AssetId>,
-    /// `AssetScd` resource.
+    pub item_ids: ReadStorage<'s, ItemId>,
+    /// `AssetWorld` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_scd: Read<'s, AssetScd>,
+    pub asset_world: Read<'s, AssetWorld>,
     /// Frame `Component` storages.
     #[derivative(Debug = "ignore")]
-    pub sequence_components: WriteStorage<'s, <SCD as ComponentDataExt>::Component>,
+    pub sequence_components: WriteStorage<'s, <ICSCD as ComponentDataExt>::Component>,
 }
 
-impl<AssetScd, SCD> SequenceComponentUpdateSystem<AssetScd, SCD>
+impl<ICSCD> SequenceComponentUpdateSystem<ICSCD>
 where
-    AssetScd: AssetScdExt<SCD> + Index<AssetId, Output = SCD>,
-    SCD: ComponentDataExt
+    ICSCD: ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
+        + Deref<Target = SequenceComponentData<<ICSCD as ComponentDataExt>::Component>>,
 {
     fn update_component(
-        sequence_components: &mut WriteStorage<<SCD as ComponentDataExt>::Component>,
-        sequence_component_data: &SCD,
+        sequence_components: &mut WriteStorage<<ICSCD as ComponentDataExt>::Component>,
+        sequence_component_data: &ICSCD,
         entity: Entity,
         sequence_id: SequenceId,
     ) {
-        let component = sequence_component_data
+        if let Some(component) = sequence_component_data
             .get(*sequence_id)
-            .map(SCD::to_owned)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Expected sequence component to exist for sequence ID: `{}`",
-                    sequence_id
-                )
-            });
-        sequence_components
-            .insert(entity, component)
-            .expect("Failed to insert sequence component.");
+            .map(ICSCD::to_owned)
+        {
+            sequence_components
+                .insert(entity, component)
+                .expect("Failed to insert sequence component.");
+        }
     }
 }
 
-impl<'s, AssetScd, SCD> System<'s> for SequenceComponentUpdateSystem<AssetScd, SCD>
+impl<'s, ICSCD> System<'s> for SequenceComponentUpdateSystem<ICSCD>
 where
-    AssetScd: AssetScdExt<SCD> + Default + Index<AssetId, Output = SCD> + Send + Sync + 'static,
-    SCD: ComponentDataExt
+    ICSCD: ItemComponent<'s>
+        + ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
+        + Deref<Target = SequenceComponentData<<ICSCD as ComponentDataExt>::Component>>,
 {
-    type SystemData = SequenceComponentUpdateSystemData<'s, AssetScd, SCD>;
+    type SystemData = SequenceComponentUpdateSystemData<'s, ICSCD>;
 
     fn run(
         &mut self,
         SequenceComponentUpdateSystemData {
             sequence_update_ec,
-            asset_ids,
-            asset_scd,
+            item_ids,
+            asset_world,
             mut sequence_components,
         }: Self::SystemData,
     ) {
@@ -145,9 +110,10 @@ where
                 }
             })
             .for_each(|(entity, sequence_id)| {
-                let sequence_component_data = asset_ids
+                let item_components = asset_world.read_storage::<ICSCD>();
+                let sequence_component_data = item_ids
                     .get(entity)
-                    .and_then(|asset_id| asset_scd.get(*asset_id));
+                    .and_then(|item_id| item_components.get(item_id.0));
 
                 // Some entities will have sequence update events, but not this particular sequence
                 // component data asset.

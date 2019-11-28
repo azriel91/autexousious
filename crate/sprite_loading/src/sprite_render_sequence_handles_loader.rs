@@ -2,13 +2,10 @@ use amethyst::{
     assets::Handle,
     renderer::{SpriteRender, SpriteSheet},
 };
-use asset_model::loaded::AssetId;
 use sequence_loading_spi::SequenceComponentDataLoader;
 use sprite_model::{
     config::SpriteRef,
-    loaded::{
-        AssetSpriteRenderSequenceHandles, SpriteRenderSequenceHandle, SpriteRenderSequenceHandles,
-    },
+    loaded::{SpriteRenderSequenceHandle, SpriteRenderSequenceHandles},
 };
 
 use crate::SpriteRenderSequenceLoader;
@@ -18,8 +15,6 @@ use crate::SpriteRenderSequenceLoader;
 pub struct SpriteRenderSequenceHandlesLoader<'s> {
     /// `SpriteRenderSequenceLoader`.
     pub sprite_render_sequence_loader: SpriteRenderSequenceLoader<'s>,
-    /// `AssetSpriteRenderSequenceHandles`.
-    pub asset_sprite_render_sequence_handles: &'s mut AssetSpriteRenderSequenceHandles,
 }
 
 impl<'s> SpriteRenderSequenceHandlesLoader<'s> {
@@ -28,7 +23,7 @@ impl<'s> SpriteRenderSequenceHandlesLoader<'s> {
     /// This is similar to calling the `SequenceComponentDataLoader::load` trait method, with the
     /// difference that the resources are stored by an instantiation of this type, so they do not
     /// need to be passed in when this method is called.
-    pub fn load<
+    pub fn items_to_datas<
         'seq_ref,
         'frame_ref: 'seq_ref,
         SequencesIterator,
@@ -37,19 +32,19 @@ impl<'s> SpriteRenderSequenceHandlesLoader<'s> {
         SequenceIterator,
         FrameRef,
     >(
-        &mut self,
+        &self,
         sequences_iterator: SequencesIterator,
         fn_sequences_to_sequence_iterator: FnSequencesToSequenceIterator,
-        asset_id: AssetId,
         sprite_sheet_handles: &[Handle<SpriteSheet>],
-    ) where
+    ) -> SpriteRenderSequenceHandles
+    where
         SequencesIterator: Iterator<Item = SequenceRef>,
         SequenceRef: 'seq_ref,
         FnSequencesToSequenceIterator: Fn(SequenceRef) -> SequenceIterator,
         FrameRef: AsRef<SpriteRef> + 'frame_ref,
         SequenceIterator: Iterator<Item = FrameRef>,
     {
-        let sprite_render_sequence_handles = <Self as SequenceComponentDataLoader>::load(
+        <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 self.sprite_render_sequence_loader.load(
                     |frame| {
@@ -66,9 +61,7 @@ impl<'s> SpriteRenderSequenceHandlesLoader<'s> {
                 )
             },
             sequences_iterator,
-        );
-        self.asset_sprite_render_sequence_handles
-            .insert(asset_id, sprite_render_sequence_handles);
+        )
     }
 }
 

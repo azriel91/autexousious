@@ -7,6 +7,7 @@ mod tests {
         Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication};
+    use asset_model::loaded::AssetId;
     use assets_test::{CHAR_BAT_SLUG, ENERGY_SQUARE_SLUG};
     use kinematic_model::config::{Position, Velocity};
     use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
@@ -133,8 +134,8 @@ mod tests {
     }
 
     fn assert_object_count(world: &mut World, count: usize) {
-        let positions = world.read_storage::<Position<f32>>();
-        assert_eq!(count, positions.count());
+        let asset_ids = world.read_storage::<AssetId>();
+        assert_eq!(count, asset_ids.count());
     }
 
     fn assert_events(world: &mut World, event_count: usize) {

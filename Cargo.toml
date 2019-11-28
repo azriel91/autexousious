@@ -6,10 +6,6 @@ members = ["app/*", "crate/*"]
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
 
-[patch."https://github.com/amethyst/amethyst.git"]
-amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/impl-copy-partial-eq-for-tint" }
-amethyst_test = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/impl-copy-partial-eq-for-tint" }
-
 [patch.crates-io]
 # https://github.com/trimental/andrew/pull/2
 andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance/update-dependencies" }
