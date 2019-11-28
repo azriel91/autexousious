@@ -1,4 +1,4 @@
-use amethyst::ecs::{Builder, WorldExt};
+use amethyst::ecs::{Builder, Entity, WorldExt};
 use asset_model::{
     config::AssetType,
     loaded::{AssetId, ItemId, ItemIds},
@@ -32,6 +32,7 @@ use sequence_loading::{
     WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
 use sequence_model::loaded::{SequenceId, WaitSequenceHandles};
+use smallvec::SmallVec;
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
@@ -436,11 +437,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             ui_menu_item.sprite.position += ui_menu_item.position;
                         });
                     }
-
-                    ui_definition.buttons.iter_mut().for_each(|ui_button| {
-                        ui_button.label.position += ui_button.position;
-                        ui_button.sprite.position += ui_button.position;
-                    });
                 }
                 // End hack
 
@@ -464,6 +460,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 let mut item_ids_all = ItemIds::default();
 
                 // Load item entities object-wise.
+                // `BackgroundDefinition`.
                 if let Some(background_definition) = background_definition {
                     let position_inits =
                         PositionInitsLoader::items_to_datas(background_definition.layers.values());
@@ -523,11 +520,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                     item_ids_all.append(&mut item_ids)
                 }
+
+                // `UiDefinition`.
                 if let Some(ui_definition) = ui_definition {
                     let UiDefinition {
                         ui_type, sequences, ..
                     } = ui_definition;
 
+                    // TODO: Sequences per item instead of per asset.
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(sequences.values(), asset_id);
                     let wait_sequence_handles = wait_sequence_handles_loader
@@ -544,6 +544,57 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 sprite_sheet_handles,
                             )
                         });
+
+                    // `UiButton`s
+                    let mut item_ids_button = ui_definition
+                        .buttons
+                        .iter()
+                        .flat_map(|ui_button| {
+                            let mut ui_label = ui_button.label.clone();
+                            ui_label.position += ui_button.position;
+                            let position_init = ui_label.position;
+                            let item_entity_text = asset_world
+                                .create_entity()
+                                .with(position_init)
+                                .with(ui_label)
+                                .build();
+
+                            let ui_sprite_label = &ui_button.sprite;
+                            let position_init = ui_button.position + ui_sprite_label.position;
+                            let sequence_id_init = sequence_id_mapper_sprite.item_to_data(
+                                asset_slug,
+                                &ui_sprite_label.sequence,
+                                asset_id,
+                            );
+                            let item_entity_sprite = {
+                                let mut item_entity_builder = asset_world
+                                    .create_entity()
+                                    .with(position_init)
+                                    .with(sequence_id_init)
+                                    .with(sequence_end_transitions.clone())
+                                    .with(wait_sequence_handles.clone())
+                                    .with(tint_sequence_handles.clone())
+                                    .with(scale_sequence_handles.clone());
+
+                                if let Some(sprite_render_sequence_handles) =
+                                    sprite_render_sequence_handles.clone()
+                                {
+                                    item_entity_builder =
+                                        item_entity_builder.with(sprite_render_sequence_handles);
+                                }
+
+                                item_entity_builder.build()
+                            };
+
+                            let item_entities = SmallVec::<[Entity; 2]>::from_buf([
+                                item_entity_text,
+                                item_entity_sprite,
+                            ]);
+                            item_entities.into_iter()
+                        })
+                        .map(ItemId::new)
+                        .collect::<Vec<ItemId>>();
+                    item_ids_all.append(&mut item_ids_button);
 
                     match ui_type {
                         UiType::Menu(ui_menu_items_cfg) => {
