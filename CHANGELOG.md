@@ -6,6 +6,12 @@
 
 * Support `tint` and `scale` in `SpriteFrame`s. ([#185])
 * UI for control settings displays input configuration buttons. ([#178])
+* Use `AssetWorld` to store item components. ([#186])
+* Multiple entities spawned per asset via `ItemId`. ([#186])
+
+### Removed
+
+* `ObjectEntityAugmenter` replaced by by `ItemComponent::augment`. ([#186])
 
 ### Fixed
 
@@ -14,6 +20,7 @@
 [#178]: https://gitlab.com/azriel91/autexousious/issues/178
 [#184]: https://gitlab.com/azriel91/autexousious/issues/184
 [#185]: https://gitlab.com/azriel91/autexousious/issues/185
+[#186]: https://gitlab.com/azriel91/autexousious/issues/186
 
 ## 0.15.0 (2019-11-08)
 
