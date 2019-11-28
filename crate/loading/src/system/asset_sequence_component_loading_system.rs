@@ -1,3 +1,5 @@
+use std::{iter::FromIterator, str::FromStr};
+
 use amethyst::ecs::{Builder, Entity, WorldExt};
 use asset_model::{
     config::AssetType,
@@ -31,15 +33,19 @@ use sequence_loading::{
     SequenceEndTransitionMapper, SequenceEndTransitionsLoader, SequenceIdMapper,
     WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
-use sequence_model::loaded::{SequenceId, WaitSequenceHandles};
+use sequence_model::{
+    config::SequenceNameString,
+    loaded::{SequenceId, SequenceIdMappings, WaitSequenceHandles},
+};
 use smallvec::SmallVec;
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
     SpriteRenderSequenceLoader, TintSequenceHandlesLoader, TintSequenceLoader,
 };
-use sprite_model::loaded::{
-    ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
+use sprite_model::{
+    config::SpriteSequenceName,
+    loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
 use typename_derive::TypeName;
 use ui_label_loading::UiLabelsLoader;
@@ -130,9 +136,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         debug!("Loading `{}` sequence components.", asset_slug);
 
-        let sequence_id_mapper_sprite = SequenceIdMapper {
-            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
-        };
         let wait_sequence_loader = WaitSequenceLoader {
             loader,
             wait_sequence_assets,
@@ -164,11 +167,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         let sequence_end_transition_mapper_sprite = SequenceEndTransitionMapper {
             asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
-        };
-
-        let ui_menu_items_loader = UiMenuItemsLoader {
-            asset_id_mappings,
-            asset_sequence_id_mappings_sprite,
         };
 
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
@@ -350,10 +348,13 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                 let position_inits =
                     PositionInitsLoader::items_to_datas(background_definition.layers.values());
-                let sequence_id_inits = sequence_id_mapper_sprite.strings_to_ids(
+                let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                    .get(asset_id)
+                    .expect("Expected `SequenceIdMappings` to be loaded.");
+                let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::strings_to_ids(
+                    sequence_id_mappings,
                     asset_slug,
                     background_definition.layers.keys(),
-                    asset_id,
                 );
                 let sequence_end_transitions = sequence_end_transitions_loader
                     .items_to_datas(background_definition.layers.values(), asset_id);
@@ -462,12 +463,19 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 // Load item entities object-wise.
                 // `BackgroundDefinition`.
                 if let Some(background_definition) = background_definition {
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(
+                        background_definition.layers.keys().map(|sequence_string| {
+                            SequenceNameString::from_str(sequence_string)
+                                .expect("Expected `SequenceNameString::from_str` to succeed.")
+                        }),
+                    );
+
                     let position_inits =
                         PositionInitsLoader::items_to_datas(background_definition.layers.values());
-                    let sequence_id_inits = sequence_id_mapper_sprite.strings_to_ids(
+                    let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::strings_to_ids(
+                        &sequence_id_mappings,
                         asset_slug,
                         background_definition.layers.keys(),
-                        asset_id,
                     );
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(background_definition.layers.values(), asset_id);
@@ -527,6 +535,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         ui_type, sequences, ..
                     } = ui_definition;
 
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
+
                     // TODO: Sequences per item instead of per asset.
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(sequences.values(), asset_id);
@@ -561,11 +571,12 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                             let ui_sprite_label = &ui_button.sprite;
                             let position_init = ui_button.position + ui_sprite_label.position;
-                            let sequence_id_init = sequence_id_mapper_sprite.item_to_data(
-                                asset_slug,
-                                &ui_sprite_label.sequence,
-                                asset_id,
-                            );
+                            let sequence_id_init =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    &sequence_id_mappings,
+                                    asset_slug,
+                                    &ui_sprite_label.sequence,
+                                );
                             let item_entity_sprite = {
                                 let mut item_entity_builder = asset_world
                                     .create_entity()
@@ -601,16 +612,17 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let position_inits =
                                 PositionInitsLoader::items_to_datas(ui_menu_items_cfg.iter());
                             let ui_menu_items =
-                                ui_menu_items_loader.items_to_datas(ui_menu_items_cfg.iter());
+                                UiMenuItemsLoader::items_to_datas(ui_menu_items_cfg.iter());
                             let ui_labels =
                                 UiLabelsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let sequence_id_inits = sequence_id_mapper_sprite.items_to_datas(
-                                asset_slug,
-                                ui_menu_items_cfg
-                                    .iter()
-                                    .map(|ui_menu_item| &ui_menu_item.sprite.sequence),
-                                asset_id,
-                            );
+                            let sequence_id_inits =
+                                SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                                    &sequence_id_mappings,
+                                    asset_slug,
+                                    ui_menu_items_cfg
+                                        .iter()
+                                        .map(|ui_menu_item| &ui_menu_item.sprite.sequence),
+                                );
 
                             let mut item_ids = position_inits
                                 .0
@@ -656,13 +668,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let position_inits = PositionInitsLoader::items_to_datas(
                                 keyboard_ui_sprite_labels.iter(),
                             );
-                            let sequence_id_inits = sequence_id_mapper_sprite.items_to_datas(
-                                asset_slug,
-                                keyboard_ui_sprite_labels
-                                    .iter()
-                                    .map(|ui_sprite_label| &ui_sprite_label.sequence),
-                                asset_id,
-                            );
+                            let sequence_id_inits =
+                                SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                                    &sequence_id_mappings,
+                                    asset_slug,
+                                    keyboard_ui_sprite_labels
+                                        .iter()
+                                        .map(|ui_sprite_label| &ui_sprite_label.sequence),
+                                );
 
                             let mut item_ids = position_inits
                                 .0

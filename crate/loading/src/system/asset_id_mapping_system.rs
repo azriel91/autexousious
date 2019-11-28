@@ -1,4 +1,3 @@
-use sprite_model::config::SpriteSequenceName;
 use std::{iter::FromIterator, str::FromStr};
 
 use amethyst::assets::ProgressCounter;
@@ -9,6 +8,7 @@ use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition
 use object_type::ObjectType;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use serde::{Deserialize, Serialize};
+use sprite_model::config::SpriteSequenceName;
 use typename_derive::TypeName;
 
 use crate::{

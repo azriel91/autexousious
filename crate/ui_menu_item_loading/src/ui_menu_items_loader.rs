@@ -1,7 +1,4 @@
-use asset_model::loaded::AssetIdMappings;
 use game_mode_selection_model::GameModeIndex;
-use sequence_model::loaded::AssetSequenceIdMappings;
-use sprite_model::config::SpriteSequenceName;
 use ui_menu_item_model::{
     config,
     loaded::{UiMenuItem, UiMenuItems},
@@ -9,21 +6,15 @@ use ui_menu_item_model::{
 
 /// Loads `UiMenuItem`s from items.
 #[derive(Debug)]
-pub struct UiMenuItemsLoader<'s> {
-    /// `AssetIdMappings`.
-    pub asset_id_mappings: &'s AssetIdMappings,
-    /// `AssetSequenceIdMappings`.
-    pub asset_sequence_id_mappings_sprite: &'s AssetSequenceIdMappings<SpriteSequenceName>,
-}
+pub struct UiMenuItemsLoader;
 
-impl<'s> UiMenuItemsLoader<'s> {
+impl UiMenuItemsLoader {
     /// Loads `UiMenuItems`.
     ///
     /// # Parameters
     ///
     /// * `item_iterator`: Iterator over the items from which to extract the asset data.
     pub fn items_to_datas<'f, ItemIterator>(
-        &self,
         item_iterator: ItemIterator,
     ) -> UiMenuItems<GameModeIndex>
     where
