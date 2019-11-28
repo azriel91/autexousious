@@ -2869,9 +2869,7 @@ dependencies = [
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_model 0.15.0",
- "ui_label_loading 0.16.0",
  "ui_label_model 0.16.0",
- "ui_menu_item_loading 0.16.0",
  "ui_menu_item_model 0.15.0",
  "ui_model 0.15.0",
 ]
@@ -5409,15 +5407,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ui_label_loading"
-version = "0.16.0"
-dependencies = [
- "asset_model 0.15.0",
- "sequence_model 0.15.0",
- "ui_label_model 0.16.0",
-]
-
-[[package]]
 name = "ui_label_model"
 version = "0.16.0"
 dependencies = [
@@ -5444,17 +5433,6 @@ dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_model 0.15.0",
-]
-
-[[package]]
-name = "ui_menu_item_loading"
-version = "0.16.0"
-dependencies = [
- "asset_model 0.15.0",
- "game_mode_selection_model 0.15.0",
- "sequence_model 0.15.0",
- "sprite_model 0.15.0",
- "ui_menu_item_model 0.15.0",
 ]
 
 [[package]]
