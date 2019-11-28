@@ -1,10 +1,12 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 use crate::config::MapBounds;
 
 /// Coordinates of the limits of the playable area.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, new, Component)]
+#[storage(DenseVecStorage)]
 pub struct Margins {
     /// X coordinate of the map's left boundary.
     pub left: f32,

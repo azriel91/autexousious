@@ -1,43 +1,21 @@
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::Processor,
-        audio::Source,
-        core::TransformBundle,
         ecs::{Join, ReadStorage, System, World, WorldExt},
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
-        window::ScreenDimensions,
         Error,
     };
-    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
-    use application_event::{AppEvent, AppEventReader};
+    use application_test_support::AutexousiousApplication;
     use asset_model::{
         config::AssetType,
         loaded::{AssetId, AssetTypeMappings},
     };
-    use assets_test::ASSETS_PATH;
-    use audio_loading::AudioLoadingBundle;
-    use background_loading::BackgroundLoadingBundle;
-    use character_loading::CharacterLoadingBundle;
     use character_selection_model::CharacterSelections;
-    use collision_audio_loading::CollisionAudioLoadingBundle;
-    use collision_loading::CollisionLoadingBundle;
-    use energy_loading::EnergyLoadingBundle;
     use game_input::InputControlled;
-    use game_input_model::ControlBindings;
     use game_model::play::GameEntities;
-    use kinematic_loading::KinematicLoadingBundle;
-    use loading::{LoadingBundle, LoadingState};
-    use map_loading::MapLoadingBundle;
     use object_type::ObjectType;
-    use sequence_loading::SequenceLoadingBundle;
-    use spawn_loading::SpawnLoadingBundle;
-    use sprite_loading::SpriteLoadingBundle;
     use team_model::play::{IndependentCounter, Team};
     use typename::TypeName;
-    use ui_audio_loading::UiAudioLoadingBundle;
-    use ui_loading::UiLoadingBundle;
 
     use game_loading::{
         CharacterAugmentStatus, CharacterSelectionSpawningSystem, GameLoadingStatus,
@@ -151,31 +129,8 @@ mod tests {
     }
 
     fn run_test(setup_fn: fn(&mut World), assertion_fn: fn(&mut World)) -> Result<(), Error> {
-        AmethystApplication::blank()
-            .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
-            .with_ui_bundles::<ControlBindings>()
-            .with_system(Processor::<Source>::new(), "source_processor", &[])
-            .with_bundle(SpriteLoadingBundle::new())
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(AudioLoadingBundle::new())
-            .with_bundle(KinematicLoadingBundle::new())
-            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(CollisionLoadingBundle::new())
-            .with_bundle(SpawnLoadingBundle::new())
-            .with_bundle(BackgroundLoadingBundle::new())
-            .with_bundle(UiLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_bundle(CharacterLoadingBundle::new())
-            .with_bundle(EnergyLoadingBundle::new())
-            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_state(|| LoadingState::new(PopState))
-            .with_effect(|world| {
-                <CharacterSelectionSpawningSystem as System>::SystemData::setup(world)
-            })
+        AutexousiousApplication::config_base()
+            .with_effect(<CharacterSelectionSpawningSystem as System>::SystemData::setup)
             .with_effect(setup_fn)
             .with_system_single(
                 CharacterSelectionSpawningSystem,

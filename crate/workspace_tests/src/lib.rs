@@ -28,6 +28,8 @@ mod asset_loading;
 #[cfg(test)]
 mod asset_model;
 #[cfg(test)]
+mod asset_play;
+#[cfg(test)]
 mod audio_loading;
 #[cfg(test)]
 mod audio_play;
@@ -121,8 +123,6 @@ mod object_loading;
 mod object_model;
 #[cfg(test)]
 mod object_play;
-#[cfg(test)]
-mod object_prefab;
 #[cfg(test)]
 mod object_status_play;
 #[cfg(test)]

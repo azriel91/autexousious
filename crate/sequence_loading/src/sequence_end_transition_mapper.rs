@@ -1,45 +1,35 @@
-use std::{any::type_name, str::FromStr};
+use std::{marker::PhantomData, str::FromStr};
 
-use asset_model::loaded::AssetId;
+use asset_model::config::AssetSlug;
 use sequence_model::{
     config::{self, Sequence, SequenceName, SequenceNameString, Wait},
-    loaded::{AssetSequenceIdMappings, SequenceEndTransition},
+    loaded::{SequenceEndTransition, SequenceIdMappings},
 };
 
 /// Maps `config::SequenceEndTransition` into `loaded::SequenceEndTransition`.
 #[derive(Debug)]
-pub struct SequenceEndTransitionMapper<'s, SeqName>
+pub struct SequenceEndTransitionMapper<SeqName>
 where
     SeqName: SequenceName,
 {
-    /// `AssetSequenceIdMappings<SeqName>`.
-    pub asset_sequence_id_mappings: &'s AssetSequenceIdMappings<SeqName>,
+    /// Marker.
+    marker: PhantomData<SeqName>,
 }
 
-impl<'s, SeqName> SequenceEndTransitionMapper<'s, SeqName>
+impl<SeqName> SequenceEndTransitionMapper<SeqName>
 where
     SeqName: SequenceName,
 {
     /// Maps a `config::SequenceEndTransition` to `loaded::SequenceEndTransition`.
     pub fn map<SequenceRef, Frm>(
-        &self,
-        asset_id: AssetId,
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        asset_slug: &AssetSlug,
         sequence_ref: SequenceRef,
     ) -> SequenceEndTransition
     where
         SequenceRef: AsRef<Sequence<SeqName, Frm>>,
         Frm: AsRef<Wait>,
     {
-        let sequence_id_mappings = self
-            .asset_sequence_id_mappings
-            .get(asset_id)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Expected `SequenceIdMappings<{}>` to exist for asset ID: `{:?}`.",
-                    type_name::<SeqName>(),
-                    asset_id
-                )
-            });
         let sequence = AsRef::<Sequence<SeqName, Frm>>::as_ref(&sequence_ref);
 
         match &sequence.next {
@@ -52,8 +42,8 @@ where
                     .copied()
                     .unwrap_or_else(|| {
                         panic!(
-                            "Invalid sequence specified: `{}` for asset ID: `{:?}`.",
-                            sequence_name_string, asset_id
+                            "Invalid sequence specified: `{}` for asset `{}`.",
+                            sequence_name_string, asset_slug
                         )
                     });
                 SequenceEndTransition::SequenceId(sequence_id)
@@ -70,8 +60,8 @@ where
     ///
     /// Panics if the sequence end transition is a `SequenceName` instead of a `String`.
     pub fn map_disparate<SequenceRef, SeqNameLocal, Frm>(
-        &self,
-        asset_id: AssetId,
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        asset_slug: &AssetSlug,
         sequence_ref: SequenceRef,
     ) -> SequenceEndTransition
     where
@@ -79,16 +69,6 @@ where
         SeqNameLocal: SequenceName,
         Frm: AsRef<Wait>,
     {
-        let sequence_id_mappings = self
-            .asset_sequence_id_mappings
-            .get(asset_id)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Expected `SequenceIdMappings<{}>` to exist for asset ID: `{:?}`.",
-                    type_name::<SeqName>(),
-                    asset_id
-                )
-            });
         let sequence = AsRef::<Sequence<SeqNameLocal, Frm>>::as_ref(&sequence_ref);
 
         match &sequence.next {
@@ -112,8 +92,8 @@ where
                     .copied()
                     .unwrap_or_else(|| {
                         panic!(
-                            "Invalid sequence specified: `{}` for asset ID: `{:?}`.",
-                            sequence_name_string, asset_id
+                            "Invalid sequence specified: `{}` for asset `{}`.",
+                            sequence_name_string, asset_slug
                         )
                     });
                 SequenceEndTransition::SequenceId(sequence_id)

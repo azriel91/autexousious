@@ -108,6 +108,10 @@ where
     type SystemData = AssetPartLoaderSystemData<'s, R>;
 
     fn run(&mut self, mut asset_part_loader_system_data: Self::SystemData) {
+        R::preprocess(
+            &mut asset_part_loader_system_data.asset_loading_resources,
+            &mut asset_part_loader_system_data.asset_part_resources,
+        );
         self.process_assets_queued(&mut asset_part_loader_system_data);
         self.process_assets_in_progress(&mut asset_part_loader_system_data);
     }

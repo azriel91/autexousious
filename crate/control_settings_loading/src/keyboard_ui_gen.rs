@@ -26,8 +26,9 @@ impl KeyboardUiGen {
             .get(&keyboard_settings.layout)
             .unwrap_or_else(|| {
                 panic!(
-                    "Keyboard layout `{:?}` specified, but `\"{:?}\"` not found in \
-                     `layout_positions`."
+                    "Keyboard layout `{layout:?}` specified, but `\"{layout:?}\"` not found in \
+                     `layout_positions`.",
+                    layout = keyboard_settings.layout
                 )
             });
 

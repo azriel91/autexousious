@@ -1,45 +1,53 @@
-use std::str::FromStr;
+use std::{iter::FromIterator, str::FromStr};
 
-use amethyst::renderer::SpriteRender;
-use asset_model::{config::AssetType, loaded::AssetId};
+use amethyst::ecs::{Builder, Entity, WorldExt};
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetId, ItemId, ItemIds},
+};
+use audio_model::loaded::SourceSequenceHandles;
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
-    config::CharacterSequence,
+    config::{CharacterSequence, CharacterSequenceName},
     loaded::{CharacterCtsHandle, CharacterCtsHandles},
 };
+use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
-use energy_model::config::EnergySequence;
+use energy_model::config::{EnergySequence, EnergySequenceName};
 use kinematic_loading::PositionInitsLoader;
-use kinematic_model::loaded::PositionInits;
+use kinematic_model::{
+    config::{PositionInit, VelocityInit},
+    loaded::ObjectAccelerationSequenceHandles,
+    play::PositionZAsY,
+};
 use loading_model::loaded::LoadStage;
-use log::debug;
+use log::{debug, warn};
 use map_model::loaded::Margins;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
-use object_model::loaded::Object;
+use object_model::{
+    loaded::Object,
+    play::{Grounding, Mirrored},
+};
 use object_type::ObjectType;
 use sequence_loading::{
-    SequenceEndTransitionMapper, SequenceEndTransitionsLoader, WaitSequenceHandlesLoader,
-    WaitSequenceLoader,
+    SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
 use sequence_model::{
     config::SequenceNameString,
-    loaded::{SequenceEndTransitions, WaitSequenceHandles},
+    loaded::{SequenceId, SequenceIdMappings, WaitSequenceHandles},
 };
+use smallvec::SmallVec;
+use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_loading::{
     ScaleSequenceHandlesLoader, ScaleSequenceLoader, SpriteRenderSequenceHandlesLoader,
     SpriteRenderSequenceLoader, TintSequenceHandlesLoader, TintSequenceLoader,
 };
 use sprite_model::{
-    config::SpriteFrame,
+    config::SpriteSequenceName,
     loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
 use typename_derive::TypeName;
-use ui_label_loading::{UiLabelsLoader, UiSpriteLabelsLoader};
-use ui_label_model::{
-    config::{UiLabels, UiSpriteLabel},
-    loaded::UiSpriteLabels,
-};
-use ui_menu_item_loading::UiMenuItemsLoader;
+use ui_menu_item_model::loaded::UiMenuItem;
 use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
@@ -57,33 +65,6 @@ pub struct AssetSequenceComponentLoader;
 impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
     const LOAD_STAGE: LoadStage = LoadStage::SequenceComponentLoading;
     type SystemData = SequenceComponentLoadingResources<'s>;
-
-    fn preprocess(
-        AssetLoadingResources {
-            asset_id_mappings, ..
-        }: &mut AssetLoadingResources<'_>,
-        SequenceComponentLoadingResources {
-            asset_sequence_end_transitions,
-            asset_wait_sequence_handles,
-            asset_source_sequence_handles,
-            asset_object_acceleration_sequence_handles,
-            asset_sprite_render_sequence_handles,
-            asset_body_sequence_handles,
-            asset_interactions_sequence_handles,
-            asset_spawns_sequence_handles,
-            ..
-        }: &mut SequenceComponentLoadingResources<'_>,
-    ) {
-        let capacity = asset_id_mappings.capacity();
-        asset_sequence_end_transitions.set_capacity(capacity);
-        asset_wait_sequence_handles.set_capacity(capacity);
-        asset_source_sequence_handles.set_capacity(capacity);
-        asset_object_acceleration_sequence_handles.set_capacity(capacity);
-        asset_sprite_render_sequence_handles.set_capacity(capacity);
-        asset_body_sequence_handles.set_capacity(capacity);
-        asset_interactions_sequence_handles.set_capacity(capacity);
-        asset_spawns_sequence_handles.set_capacity(capacity);
-    }
 
     fn process(
         asset_loading_resources: &mut AssetLoadingResources<'_>,
@@ -113,6 +94,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     asset_sprite_sheet_handles,
                     ..
                 },
+            asset_world,
+            asset_item_ids,
             input_config,
             source_assets,
             body_assets,
@@ -129,23 +112,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             character_cts_assets,
             tint_sequence_assets,
             scale_sequence_assets,
-            asset_sequence_end_transitions,
-            asset_wait_sequence_handles,
-            asset_source_sequence_handles,
-            asset_object_acceleration_sequence_handles,
-            asset_sprite_render_sequence_handles,
-            asset_body_sequence_handles,
-            asset_interactions_sequence_handles,
-            asset_spawns_sequence_handles,
-            asset_character_cts_handles,
-            asset_position_inits,
-            asset_tint_sequence_handles,
-            asset_scale_sequence_handles,
             asset_map_bounds,
             asset_margins,
-            asset_ui_labels,
-            asset_ui_sprite_labels,
-            asset_ui_menu_items,
         }: &mut SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
     ) {
@@ -164,7 +132,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             .slug(asset_id)
             .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");
 
-        debug!("Loading `{}` sequence components.", asset_slug,);
+        debug!("Loading `{}` sequence components.", asset_slug);
 
         let wait_sequence_loader = WaitSequenceLoader {
             loader,
@@ -172,58 +140,34 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         };
         let mut wait_sequence_handles_loader = WaitSequenceHandlesLoader {
             wait_sequence_loader,
-            asset_wait_sequence_handles,
         };
         let tint_sequence_loader = TintSequenceLoader {
             loader,
             tint_sequence_assets,
         };
-        let mut tint_sequence_handles_loader = TintSequenceHandlesLoader {
+        let tint_sequence_handles_loader = TintSequenceHandlesLoader {
             tint_sequence_loader,
-            asset_tint_sequence_handles,
         };
         let scale_sequence_loader = ScaleSequenceLoader {
             loader,
             scale_sequence_assets,
         };
-        let mut scale_sequence_handles_loader = ScaleSequenceHandlesLoader {
+        let scale_sequence_handles_loader = ScaleSequenceHandlesLoader {
             scale_sequence_loader,
-            asset_scale_sequence_handles,
         };
         let sprite_render_sequence_loader = SpriteRenderSequenceLoader {
             loader,
             sprite_render_sequence_assets,
         };
-        let mut sprite_render_sequence_handles_loader = SpriteRenderSequenceHandlesLoader {
+        let sprite_render_sequence_handles_loader = SpriteRenderSequenceHandlesLoader {
             sprite_render_sequence_loader,
-            asset_sprite_render_sequence_handles,
-        };
-
-        let mut position_inits_loader = PositionInitsLoader {
-            asset_position_inits,
-        };
-        let sequence_end_transition_mapper_ui = SequenceEndTransitionMapper {
-            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
-        };
-        let sequence_end_transition_mapper_sprite = SequenceEndTransitionMapper {
-            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
-        };
-
-        // let mut ui_labels_loader = UiLabelsLoader { asset_ui_labels };
-        let mut ui_sprite_labels_loader = UiSpriteLabelsLoader {
-            asset_id_mappings,
-            asset_sequence_id_mappings_sprite,
-            asset_ui_sprite_labels,
-        };
-        let mut ui_menu_items_loader = UiMenuItemsLoader {
-            asset_id_mappings,
-            asset_sequence_id_mappings_sprite,
-            asset_ui_menu_items,
         };
 
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
         match asset_type {
             AssetType::Object(object_type) => {
+                let mut item_entity_builder = asset_world.create_entity();
+
                 let sprite_sheet_handles = sprite_sheet_handles
                     .expect("Expected `SpriteSheetHandles` to exist for object.");
                 let object_loader_params = ObjectLoaderParams {
@@ -246,7 +190,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     sprite_sheet_handles,
                 };
 
-                let object = match object_type {
+                let (sequence_id_init, object) = match object_type {
                     ObjectType::Character => {
                         let character_definition = asset_character_definition_handle
                             .get(asset_id)
@@ -258,6 +202,21 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         let sequence_id_mappings = asset_sequence_id_mappings_character
                             .get(asset_id)
                             .expect("Expected `SequenceIdMapping` to be loaded.");
+                        let sequence_id_init = {
+                            let sequence_name_default = CharacterSequenceName::default();
+                            sequence_id_mappings
+                                .id_by_name(sequence_name_default)
+                                .copied()
+                                .unwrap_or_else(|| {
+                                    warn!(
+                                        "`{}` sequence ID not found for asset: `{}`. \
+                                         Falling back to first declared sequence.",
+                                        sequence_name_default, asset_slug
+                                    );
+
+                                    SequenceId::new(0)
+                                })
+                        };
 
                         let cts_loader_params = CtsLoaderParams {
                             loader: &*loader,
@@ -287,12 +246,15 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .collect::<Vec<CharacterCtsHandle>>();
                             CharacterCtsHandles::new(character_cts_handles)
                         };
-                        asset_character_cts_handles.insert(asset_id, character_cts_handles);
 
-                        ObjectLoader::load::<CharacterSequence>(
+                        item_entity_builder = item_entity_builder.with(character_cts_handles);
+
+                        let object = ObjectLoader::load::<CharacterSequence>(
                             object_loader_params,
                             &character_definition.object_definition,
-                        )
+                        );
+
+                        (sequence_id_init, object)
                     }
                     ObjectType::Energy => {
                         let energy_definition = asset_energy_definition_handle
@@ -302,10 +264,31 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             })
                             .expect("Expected `EnergyDefinition` to be loaded.");
 
-                        ObjectLoader::load::<EnergySequence>(
+                        let sequence_id_mappings = asset_sequence_id_mappings_energy
+                            .get(asset_id)
+                            .expect("Expected `SequenceIdMapping` to be loaded.");
+                        let sequence_id_init = {
+                            let sequence_name_default = EnergySequenceName::default();
+                            sequence_id_mappings
+                                .id_by_name(sequence_name_default)
+                                .copied()
+                                .unwrap_or_else(|| {
+                                    warn!(
+                                        "`{}` sequence ID not found for asset: `{}`. \
+                                         Falling back to first declared sequence.",
+                                        sequence_name_default, asset_slug
+                                    );
+
+                                    SequenceId::new(0)
+                                })
+                        };
+
+                        let object = ObjectLoader::load::<EnergySequence>(
                             object_loader_params,
                             &energy_definition.object_definition,
-                        )
+                        );
+
+                        (sequence_id_init, object)
                     }
                     ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
                 };
@@ -320,16 +303,28 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     spawns_sequence_handles,
                 } = object;
 
-                asset_sequence_end_transitions.insert(asset_id, sequence_end_transitions);
-                asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
-                asset_source_sequence_handles.insert(asset_id, source_sequence_handles);
-                asset_object_acceleration_sequence_handles
-                    .insert(asset_id, object_acceleration_sequence_handles);
-                asset_sprite_render_sequence_handles
-                    .insert(asset_id, sprite_render_sequence_handles);
-                asset_body_sequence_handles.insert(asset_id, body_sequence_handles);
-                asset_interactions_sequence_handles.insert(asset_id, interactions_sequence_handles);
-                asset_spawns_sequence_handles.insert(asset_id, spawns_sequence_handles);
+                let item_id = {
+                    let item_entity = item_entity_builder
+                        .with(PositionInit::new(0, 0, 0))
+                        .with(VelocityInit::new(0, 0, 0))
+                        .with(PositionZAsY)
+                        .with(Mirrored::default())
+                        .with(Grounding::default())
+                        .with(sequence_id_init)
+                        .with(sequence_end_transitions)
+                        .with(wait_sequence_handles)
+                        .with(source_sequence_handles)
+                        .with(object_acceleration_sequence_handles)
+                        .with(sprite_render_sequence_handles)
+                        .with(body_sequence_handles)
+                        .with(interactions_sequence_handles)
+                        .with(spawns_sequence_handles)
+                        .build();
+                    ItemId::new(item_entity)
+                };
+
+                let item_ids = ItemIds::new(vec![item_id]);
+                asset_item_ids.insert(asset_id, item_ids);
             }
             AssetType::Map => {
                 let map_definition = asset_map_definition_handle
@@ -339,55 +334,87 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     })
                     .expect("Expected `MapDefinition` to be loaded.");
 
-                let mut sequence_end_transitions_loader = SequenceEndTransitionsLoader {
-                    sequence_end_transition_mapper: sequence_end_transition_mapper_sprite,
-                    asset_sequence_end_transitions,
+                let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                    .get(asset_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Expected `SequenceIdMappings<SpriteSequenceName>` to exist for asset `{}`.",
+                            asset_slug
+                        )
+                    });
+
+                let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
+                    sequence_id_mappings,
                 };
 
                 let background_definition = &map_definition.background;
-                if let Some(sprite_sheet_handles) = sprite_sheet_handles {
-                    wait_sequence_handles_loader.load(
-                        background_definition.layers.values(),
-                        |layer| layer.sequence.frames.iter(),
-                        asset_id,
-                    );
-                    sprite_render_sequence_handles_loader.load(
-                        background_definition.layers.values(),
-                        |layer| layer.sequence.frames.iter(),
-                        asset_id,
-                        sprite_sheet_handles,
-                    );
-                    tint_sequence_handles_loader.load(
-                        background_definition.layers.values(),
-                        |layer| layer.sequence.frames.iter(),
-                        asset_id,
-                    );
-                    scale_sequence_handles_loader.load(
-                        background_definition.layers.values(),
-                        |layer| layer.sequence.frames.iter(),
-                        asset_id,
-                    );
-                    position_inits_loader.load(background_definition.layers.values(), asset_id);
 
-                    let layers_as_ui_sprite_label =
-                        background_definition
-                            .layers
-                            .iter()
-                            .map(|(sequence_string, layer)| {
-                                let sequence_name_string = SequenceNameString::from_str(
-                                    sequence_string,
-                                )
-                                .expect("Expected `SequenceNameString::from_str` to succeed.");
-                                UiSpriteLabel::new(layer.position, sequence_name_string)
-                            });
-                    ui_sprite_labels_loader.load(layers_as_ui_sprite_label, asset_id);
-                }
+                let position_inits =
+                    PositionInitsLoader::items_to_datas(background_definition.layers.values());
+                let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                    .get(asset_id)
+                    .expect("Expected `SequenceIdMappings` to be loaded.");
+                let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::strings_to_ids(
+                    sequence_id_mappings,
+                    asset_slug,
+                    background_definition.layers.keys(),
+                );
+                let sequence_end_transitions = sequence_end_transitions_loader
+                    .items_to_datas(background_definition.layers.values(), asset_slug);
+                let wait_sequence_handles = wait_sequence_handles_loader
+                    .items_to_datas(background_definition.layers.values(), |layer| {
+                        layer.sequence.frames.iter()
+                    });
+                let tint_sequence_handles = tint_sequence_handles_loader
+                    .items_to_datas(background_definition.layers.values(), |layer| {
+                        layer.sequence.frames.iter()
+                    });
+                let scale_sequence_handles = scale_sequence_handles_loader
+                    .items_to_datas(background_definition.layers.values(), |layer| {
+                        layer.sequence.frames.iter()
+                    });
+                let sprite_render_sequence_handles =
+                    sprite_sheet_handles.map(|sprite_sheet_handles| {
+                        sprite_render_sequence_handles_loader.items_to_datas(
+                            background_definition.layers.values(),
+                            |layer| layer.sequence.frames.iter(),
+                            sprite_sheet_handles,
+                        )
+                    });
 
-                sequence_end_transitions_loader
-                    .load(background_definition.layers.values(), asset_id);
+                let item_ids = position_inits
+                    .0
+                    .into_iter()
+                    .zip(sequence_id_inits.into_iter())
+                    .map(|(position_init, sequence_id_init)| {
+                        let mut item_entity_builder = asset_world
+                            .create_entity()
+                            .with(position_init)
+                            .with(sequence_id_init)
+                            .with(sequence_end_transitions.clone())
+                            .with(wait_sequence_handles.clone())
+                            .with(tint_sequence_handles.clone())
+                            .with(scale_sequence_handles.clone());
 
-                let margins = Margins::from(map_definition.header.bounds);
-                asset_map_bounds.insert(asset_id, map_definition.header.bounds);
+                        if let Some(sprite_render_sequence_handles) =
+                            sprite_render_sequence_handles.clone()
+                        {
+                            item_entity_builder =
+                                item_entity_builder.with(sprite_render_sequence_handles);
+                        }
+
+                        item_entity_builder.build()
+                    })
+                    .map(ItemId::new)
+                    .collect::<Vec<ItemId>>();
+
+                let item_ids = ItemIds::new(item_ids);
+                asset_item_ids.insert(asset_id, item_ids);
+
+                let map_bounds = map_definition.header.bounds;
+                asset_map_bounds.insert(asset_id, map_bounds);
+
+                let margins = Margins::from(map_bounds);
                 asset_margins.insert(asset_id, margins);
             }
             AssetType::Ui => {
@@ -400,7 +427,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 let mut ui_definition = asset_ui_definition_handle
                     .get(asset_id)
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
-                    .cloned();
+                    .cloned(); // Clone so that we don't mutate the actual read data.
 
                 let keyboard_ui_sprite_labels = if let Some(UiDefinition {
                     ui_type: UiType::ControlSettings(control_settings),
@@ -417,290 +444,282 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     None
                 };
 
-                // Hack
-                if let Some(ui_definition) = ui_definition.as_mut() {
-                    ui_definition.buttons.iter_mut().for_each(|ui_button| {
-                        ui_button.label.position += ui_button.position;
-                        ui_button.sprite.position += ui_button.position;
-                    });
-                }
-                // End hack
-
                 let ui_definition = ui_definition.as_ref();
 
-                // `UiDefinition` specific asset data.
-                // `PositionInit`s
-                let position_inits = {
-                    let mut position_inits = Vec::new();
-                    if let Some(background_definition) = background_definition {
-                        position_inits.append(&mut PositionInitsLoader::items_to_datas(
-                            background_definition.layers.values(),
-                        ));
-                    }
+                let mut item_ids_all = ItemIds::default();
 
-                    if let Some(ui_definition) = ui_definition {
-                        match &ui_definition.ui_type {
-                            UiType::Menu(ui_menu_items) => {
-                                position_inits.append(&mut PositionInitsLoader::items_to_datas(
-                                    ui_menu_items.iter(),
-                                ));
+                // Load item entities object-wise.
+                // `BackgroundDefinition`.
+                if let Some(background_definition) = background_definition {
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(
+                        background_definition.layers.keys().map(|sequence_string| {
+                            SequenceNameString::from_str(sequence_string)
+                                .expect("Expected `SequenceNameString::from_str` to succeed.")
+                        }),
+                    );
+                    let sequence_id_mappings = &sequence_id_mappings;
+                    let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
+                        sequence_id_mappings,
+                    };
+
+                    let position_inits =
+                        PositionInitsLoader::items_to_datas(background_definition.layers.values());
+                    let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::strings_to_ids(
+                        sequence_id_mappings,
+                        asset_slug,
+                        background_definition.layers.keys(),
+                    );
+                    let sequence_end_transitions = sequence_end_transitions_loader
+                        .items_to_datas(background_definition.layers.values(), asset_slug);
+                    let wait_sequence_handles = wait_sequence_handles_loader
+                        .items_to_datas(background_definition.layers.values(), |layer| {
+                            layer.sequence.frames.iter()
+                        });
+                    let tint_sequence_handles = tint_sequence_handles_loader
+                        .items_to_datas(background_definition.layers.values(), |layer| {
+                            layer.sequence.frames.iter()
+                        });
+                    let scale_sequence_handles = scale_sequence_handles_loader
+                        .items_to_datas(background_definition.layers.values(), |layer| {
+                            layer.sequence.frames.iter()
+                        });
+                    let sprite_render_sequence_handles =
+                        sprite_sheet_handles.map(|sprite_sheet_handles| {
+                            sprite_render_sequence_handles_loader.items_to_datas(
+                                background_definition.layers.values(),
+                                |layer| layer.sequence.frames.iter(),
+                                sprite_sheet_handles,
+                            )
+                        });
+
+                    let mut item_ids = position_inits
+                        .0
+                        .into_iter()
+                        .zip(sequence_id_inits.into_iter())
+                        .map(|(position_init, sequence_id_init)| {
+                            let mut item_entity_builder = asset_world
+                                .create_entity()
+                                .with(position_init)
+                                .with(sequence_id_init)
+                                .with(sequence_end_transitions.clone())
+                                .with(wait_sequence_handles.clone())
+                                .with(tint_sequence_handles.clone())
+                                .with(scale_sequence_handles.clone());
+
+                            if let Some(sprite_render_sequence_handles) =
+                                sprite_render_sequence_handles.clone()
+                            {
+                                item_entity_builder =
+                                    item_entity_builder.with(sprite_render_sequence_handles);
                             }
-                            UiType::ControlSettings(_control_settings) => {
-                                let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
-                                    .as_ref()
-                                    .expect("Expected `keyboard_ui_sprite_labels` to exist.");
-                                position_inits.append(&mut PositionInitsLoader::items_to_datas(
-                                    keyboard_ui_sprite_labels.iter(),
-                                ));
-                            }
-                        }
-                    }
 
-                    PositionInits::new(position_inits)
-                };
-                asset_position_inits.insert(asset_id, position_inits);
+                            item_entity_builder.build()
+                        })
+                        .map(ItemId::new)
+                        .collect::<Vec<ItemId>>();
 
-                // `UiMenuItem`s
-                if let Some(UiDefinition {
-                    ui_type: UiType::Menu(ui_menu_items),
-                    ..
-                }) = ui_definition
-                {
-                    ui_menu_items_loader.load(ui_menu_items.iter(), asset_id);
+                    item_ids_all.append(&mut item_ids)
                 }
 
-                // `UiLabel`s
+                // `UiDefinition`.
                 if let Some(ui_definition) = ui_definition {
-                    let mut ui_labels = Vec::new();
-                    match &ui_definition.ui_type {
-                        UiType::Menu(ui_menu_items) => {
-                            ui_labels
-                                .append(&mut UiLabelsLoader::items_to_datas(ui_menu_items.iter()));
+                    let UiDefinition {
+                        ui_type, sequences, ..
+                    } = ui_definition;
+
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
+                    let sequence_id_mappings = &sequence_id_mappings;
+                    let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
+                        sequence_id_mappings,
+                    };
+
+                    // TODO: Sequences per item instead of per asset.
+                    let sequence_end_transitions = sequence_end_transitions_loader
+                        .items_to_datas(sequences.values(), asset_slug);
+                    let wait_sequence_handles = wait_sequence_handles_loader
+                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                    let tint_sequence_handles = tint_sequence_handles_loader
+                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                    let scale_sequence_handles = scale_sequence_handles_loader
+                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                    let sprite_render_sequence_handles =
+                        sprite_sheet_handles.map(|sprite_sheet_handles| {
+                            sprite_render_sequence_handles_loader.items_to_datas(
+                                sequences.values(),
+                                |sequence| sequence.frames.iter(),
+                                sprite_sheet_handles,
+                            )
+                        });
+
+                    // `UiButton`s
+                    let mut item_ids_button = ui_definition
+                        .buttons
+                        .iter()
+                        .flat_map(|ui_button| {
+                            let mut ui_label = ui_button.label.clone();
+                            ui_label.position += ui_button.position;
+                            let position_init = ui_label.position;
+                            let item_entity_text = asset_world
+                                .create_entity()
+                                .with(position_init)
+                                .with(ui_label)
+                                .build();
+
+                            let ui_sprite_label = &ui_button.sprite;
+                            let position_init = ui_button.position + ui_sprite_label.position;
+                            let sequence_id_init =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    &ui_sprite_label.sequence,
+                                );
+                            let item_entity_sprite = {
+                                let mut item_entity_builder = asset_world
+                                    .create_entity()
+                                    .with(position_init)
+                                    .with(sequence_id_init)
+                                    .with(sequence_end_transitions.clone())
+                                    .with(wait_sequence_handles.clone())
+                                    .with(tint_sequence_handles.clone())
+                                    .with(scale_sequence_handles.clone());
+
+                                if let Some(sprite_render_sequence_handles) =
+                                    sprite_render_sequence_handles.clone()
+                                {
+                                    item_entity_builder =
+                                        item_entity_builder.with(sprite_render_sequence_handles);
+                                }
+
+                                item_entity_builder.build()
+                            };
+
+                            let item_entities = SmallVec::<[Entity; 2]>::from_buf([
+                                item_entity_text,
+                                item_entity_sprite,
+                            ]);
+                            item_entities.into_iter()
+                        })
+                        .map(ItemId::new)
+                        .collect::<Vec<ItemId>>();
+                    item_ids_all.append(&mut item_ids_button);
+
+                    match ui_type {
+                        UiType::Menu(ui_menu_items_cfg) => {
+                            let mut item_ids = ui_menu_items_cfg
+                                .iter()
+                                .flat_map(|ui_menu_item_cfg| {
+                                    let mut ui_label = ui_menu_item_cfg.label.clone();
+                                    ui_label.position += ui_menu_item_cfg.position;
+                                    let ui_menu_item = UiMenuItem::new(ui_menu_item_cfg.index);
+                                    let position_init = ui_label.position;
+                                    let item_entity_text = asset_world
+                                        .create_entity()
+                                        .with(position_init)
+                                        .with(ui_label)
+                                        .with(ui_menu_item)
+                                        .build();
+
+                                    let ui_sprite_label = &ui_menu_item_cfg.sprite;
+                                    let position_init =
+                                        ui_menu_item_cfg.position + ui_sprite_label.position;
+                                    let sequence_id_init =
+                                        SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                            sequence_id_mappings,
+                                            asset_slug,
+                                            &ui_sprite_label.sequence,
+                                        );
+                                    let item_entity_sprite = {
+                                        let mut item_entity_builder = asset_world
+                                            .create_entity()
+                                            .with(position_init)
+                                            .with(sequence_id_init)
+                                            .with(sequence_end_transitions.clone())
+                                            .with(wait_sequence_handles.clone())
+                                            .with(tint_sequence_handles.clone())
+                                            .with(scale_sequence_handles.clone());
+
+                                        if let Some(sprite_render_sequence_handles) =
+                                            sprite_render_sequence_handles.clone()
+                                        {
+                                            item_entity_builder = item_entity_builder
+                                                .with(sprite_render_sequence_handles);
+                                        }
+
+                                        item_entity_builder.build()
+                                    };
+
+                                    let item_entities = SmallVec::<[Entity; 2]>::from_buf([
+                                        item_entity_text,
+                                        item_entity_sprite,
+                                    ]);
+                                    item_entities.into_iter()
+                                })
+                                .map(ItemId::new)
+                                .collect::<Vec<ItemId>>();
+
+                            item_ids_all.append(&mut item_ids)
                         }
                         UiType::ControlSettings(control_settings) => {
-                            ui_labels.append(&mut UiLabelsLoader::items_to_datas(std::iter::once(
-                                control_settings,
-                            )));
+                            let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
+                                .as_ref()
+                                .expect("Expected `keyboard_ui_sprite_labels` to exist.");
+                            let position_inits = PositionInitsLoader::items_to_datas(
+                                keyboard_ui_sprite_labels.iter(),
+                            );
+                            let sequence_id_inits =
+                                SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    keyboard_ui_sprite_labels
+                                        .iter()
+                                        .map(|ui_sprite_label| &ui_sprite_label.sequence),
+                                );
+
+                            let mut item_ids = position_inits
+                                .0
+                                .into_iter()
+                                .zip(sequence_id_inits.into_iter())
+                                .map(|(position_init, sequence_id_init)| {
+                                    let mut item_entity_builder = asset_world
+                                        .create_entity()
+                                        .with(position_init)
+                                        .with(sequence_id_init)
+                                        .with(sequence_end_transitions.clone())
+                                        .with(wait_sequence_handles.clone())
+                                        .with(tint_sequence_handles.clone())
+                                        .with(scale_sequence_handles.clone());
+
+                                    if let Some(sprite_render_sequence_handles) =
+                                        sprite_render_sequence_handles.clone()
+                                    {
+                                        item_entity_builder = item_entity_builder
+                                            .with(sprite_render_sequence_handles);
+                                    }
+
+                                    item_entity_builder.build()
+                                })
+                                .map(ItemId::new)
+                                .collect::<Vec<ItemId>>();
+
+                            // Create entity for title label.
+                            let item_id_title = {
+                                let ui_label = control_settings.title.clone();
+                                let position_init = ui_label.position;
+                                let entity = asset_world
+                                    .create_entity()
+                                    .with(position_init)
+                                    .with(ui_label)
+                                    .build();
+                                ItemId::new(entity)
+                            };
+                            item_ids.push(item_id_title);
+
+                            item_ids_all.append(&mut item_ids)
                         }
                     }
-                    ui_labels.append(&mut UiLabelsLoader::items_to_datas(
-                        ui_definition.buttons.iter(),
-                    ));
-
-                    let ui_labels = UiLabels::new(ui_labels);
-                    asset_ui_labels.insert(asset_id, ui_labels);
                 }
 
-                // `UiSpriteLabel`s
-                let ui_sprite_labels = {
-                    let mut ui_sprite_labels = Vec::new();
-                    if let Some(background_definition) = background_definition {
-                        // Background layers.
-                        let layers_as_ui_sprite_label =
-                            background_definition
-                                .layers
-                                .iter()
-                                .map(|(sequence_string, layer)| {
-                                    let sequence_name_string = SequenceNameString::from_str(
-                                        sequence_string,
-                                    )
-                                    .expect("Expected `SequenceNameString::from_str` to succeed.");
-                                    UiSpriteLabel::new(layer.position, sequence_name_string)
-                                });
-                        let mut layers_as_ui_sprite_label = UiSpriteLabelsLoader::items_to_datas(
-                            asset_id_mappings,
-                            &mut ui_sprite_labels_loader.asset_sequence_id_mappings_sprite,
-                            asset_id,
-                            layers_as_ui_sprite_label,
-                        );
-                        ui_sprite_labels.append(&mut layers_as_ui_sprite_label);
-                    }
-
-                    if let Some(ui_definition) = ui_definition {
-                        match &ui_definition.ui_type {
-                            UiType::Menu(ui_menu_items) => {
-                                let mut ui_sprite_labels_menu =
-                                    UiSpriteLabelsLoader::items_to_datas(
-                                        asset_id_mappings,
-                                        &mut ui_sprite_labels_loader
-                                            .asset_sequence_id_mappings_sprite,
-                                        asset_id,
-                                        ui_menu_items.iter(),
-                                    );
-                                ui_sprite_labels.append(&mut ui_sprite_labels_menu);
-                            }
-                            UiType::ControlSettings(_control_settings) => {
-                                let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
-                                    .as_ref()
-                                    .expect("Expected `keyboard_ui_sprite_labels` to exist.");
-                                let mut keyboard_ui_sprite_labels =
-                                    UiSpriteLabelsLoader::items_to_datas(
-                                        asset_id_mappings,
-                                        &mut ui_sprite_labels_loader
-                                            .asset_sequence_id_mappings_sprite,
-                                        asset_id,
-                                        keyboard_ui_sprite_labels.iter(),
-                                    );
-                                ui_sprite_labels.append(&mut keyboard_ui_sprite_labels);
-                            }
-                        }
-
-                        let mut ui_sprite_labels_buttons = UiSpriteLabelsLoader::items_to_datas(
-                            asset_id_mappings,
-                            &mut ui_sprite_labels_loader.asset_sequence_id_mappings_sprite,
-                            asset_id,
-                            ui_definition.buttons.iter(),
-                        );
-                        ui_sprite_labels.append(&mut ui_sprite_labels_buttons);
-                    }
-
-                    UiSpriteLabels::new(ui_sprite_labels)
-                };
-                asset_ui_sprite_labels.insert(asset_id, ui_sprite_labels);
-
-                // Sequence components from both `BackgroundDefinition` and `UiDefinition`.
-                let wait_sequence_handles = {
-                    let wait_sequence_loader = &wait_sequence_handles_loader.wait_sequence_loader;
-
-                    let mut wait_sequence_handles = Vec::new();
-
-                    if let Some(background_definition) = background_definition {
-                        wait_sequence_handles.extend(background_definition.layers.values().map(
-                            |layer| {
-                                wait_sequence_loader
-                                    .load(|frame| frame.wait, layer.sequence.frames.iter())
-                            },
-                        ));
-                    }
-
-                    if let Some(ui_definition) = ui_definition {
-                        wait_sequence_handles.extend(ui_definition.sequences.values().map(
-                            |sequence| {
-                                wait_sequence_loader
-                                    .load(|frame| frame.wait, sequence.frames.iter())
-                            },
-                        ));
-                    };
-
-                    WaitSequenceHandles::new(wait_sequence_handles)
-                };
-                asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
-
-                if let Some(sprite_sheet_handles) = sprite_sheet_handles {
-                    let sprite_render_sequence_handles = {
-                        let sprite_frame_to_sprite_render = |frame: &SpriteFrame| {
-                            let sprite_ref = &frame.sprite;
-                            let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
-                            let sprite_number = sprite_ref.index;
-                            SpriteRender {
-                                sprite_sheet,
-                                sprite_number,
-                            }
-                        };
-
-                        let sprite_render_sequence_loader =
-                            &sprite_render_sequence_handles_loader.sprite_render_sequence_loader;
-
-                        let mut sprite_render_sequence_handles = Vec::new();
-
-                        if let Some(background_definition) = background_definition {
-                            sprite_render_sequence_handles.extend(
-                                background_definition.layers.values().map(|layer| {
-                                    sprite_render_sequence_loader.load(
-                                        sprite_frame_to_sprite_render,
-                                        layer.sequence.frames.iter(),
-                                    )
-                                }),
-                            );
-                        }
-
-                        if let Some(ui_definition) = ui_definition {
-                            sprite_render_sequence_handles.extend(
-                                ui_definition.sequences.values().map(|sequence| {
-                                    sprite_render_sequence_loader
-                                        .load(sprite_frame_to_sprite_render, sequence.frames.iter())
-                                }),
-                            );
-                        }
-
-                        SpriteRenderSequenceHandles::new(sprite_render_sequence_handles)
-                    };
-
-                    asset_sprite_render_sequence_handles
-                        .insert(asset_id, sprite_render_sequence_handles);
-                }
-
-                let sequence_end_transitions = {
-                    let mut sequence_end_transitions = Vec::new();
-
-                    if let Some(background_definition) = background_definition {
-                        sequence_end_transitions.extend(background_definition.layers.values().map(
-                            |layer| {
-                                sequence_end_transition_mapper_ui.map_disparate(asset_id, layer)
-                            },
-                        ));
-                    }
-
-                    if let Some(ui_definition) = ui_definition {
-                        sequence_end_transitions.extend(ui_definition.sequences.values().map(
-                            |sequence| sequence_end_transition_mapper_ui.map(asset_id, sequence),
-                        ));
-                    };
-
-                    SequenceEndTransitions::new(sequence_end_transitions)
-                };
-                asset_sequence_end_transitions.insert(asset_id, sequence_end_transitions);
-
-                let tint_sequence_handles = {
-                    let tint_sequence_loader = &tint_sequence_handles_loader.tint_sequence_loader;
-
-                    let mut tint_sequence_handles = Vec::new();
-
-                    if let Some(background_definition) = background_definition {
-                        tint_sequence_handles.extend(
-                            background_definition.layers.values().map(|layer| {
-                                tint_sequence_loader.load(layer.sequence.frames.iter())
-                            }),
-                        );
-                    }
-
-                    if let Some(ui_definition) = ui_definition {
-                        tint_sequence_handles.extend(
-                            ui_definition
-                                .sequences
-                                .values()
-                                .map(|sequence| tint_sequence_loader.load(sequence.frames.iter())),
-                        );
-                    };
-
-                    TintSequenceHandles::new(tint_sequence_handles)
-                };
-                asset_tint_sequence_handles.insert(asset_id, tint_sequence_handles);
-
-                let scale_sequence_handles =
-                    {
-                        let scale_sequence_loader =
-                            &scale_sequence_handles_loader.scale_sequence_loader;
-
-                        let mut scale_sequence_handles = Vec::new();
-
-                        if let Some(background_definition) = background_definition {
-                            scale_sequence_handles.extend(
-                                background_definition.layers.values().map(|layer| {
-                                    scale_sequence_loader.load(layer.sequence.frames.iter())
-                                }),
-                            );
-                        }
-
-                        if let Some(ui_definition) = ui_definition {
-                            scale_sequence_handles.extend(ui_definition.sequences.values().map(
-                                |sequence| scale_sequence_loader.load(sequence.frames.iter()),
-                            ));
-                        };
-
-                        ScaleSequenceHandles::new(scale_sequence_handles)
-                    };
-                asset_scale_sequence_handles.insert(asset_id, scale_sequence_handles);
+                asset_item_ids.insert(asset_id, item_ids_all);
             }
         }
     }
@@ -709,6 +728,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
     fn is_complete(
         _: &AssetLoadingResources<'_>,
         SequenceComponentLoadingResources {
+            asset_world,
+            asset_item_ids,
             wait_sequence_assets,
             source_sequence_assets,
             object_acceleration_sequence_assets,
@@ -716,48 +737,63 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             body_sequence_assets,
             interactions_sequence_assets,
             spawns_sequence_assets,
+            character_cts_assets,
             tint_sequence_assets,
             scale_sequence_assets,
-            asset_wait_sequence_handles,
-            asset_source_sequence_handles,
-            asset_object_acceleration_sequence_handles,
-            asset_sprite_render_sequence_handles,
-            asset_body_sequence_handles,
-            asset_interactions_sequence_handles,
-            asset_spawns_sequence_handles,
-            asset_tint_sequence_handles,
-            asset_scale_sequence_handles,
             ..
         }: &SequenceComponentLoadingResources<'_>,
         asset_id: AssetId,
     ) -> bool {
         macro_rules! sequence_component_loaded {
-            ($handleses:ident, $assets:ident) => {{
-                if let Some(handles) = $handleses.get(asset_id) {
-                    handles.iter().all(|handle| $assets.get(handle).is_some())
+            ($item_component:path, $assets:ident) => {{
+                if let Some(item_ids) = asset_item_ids.get(asset_id) {
+                    item_ids
+                        .iter()
+                        .copied()
+                        .try_fold((), |_, item_id| {
+                            let handleses = asset_world.read_storage::<$item_component>();
+                            if let Some(handles) = handleses.get(item_id.0) {
+                                if handles.iter().all(|handle| $assets.get(handle).is_some()) {
+                                    Ok(())
+                                } else {
+                                    Err(())
+                                }
+                            } else {
+                                Ok(())
+                            }
+                        })
+                        .is_ok()
                 } else {
                     true
                 }
             }};
         };
 
-        sequence_component_loaded!(asset_wait_sequence_handles, wait_sequence_assets)
-            && sequence_component_loaded!(asset_source_sequence_handles, source_sequence_assets)
+        // sequence_component_loaded!(PositionInit) &&
+        // sequence_component_loaded!(VelocityInit) &&
+        // sequence_component_loaded!(PositionZAsY) &&
+        // sequence_component_loaded!(Mirrored) &&
+        // sequence_component_loaded!(Grounding) &&
+        // sequence_component_loaded!(SequenceId) &&
+        // sequence_component_loaded!(SequenceEndTransitions) &&
+        // sequence_component_loaded!(UiLabel) &&
+        // sequence_component_loaded!(UiMenuItem<GameModeIndex>)
+
+        sequence_component_loaded!(WaitSequenceHandles, wait_sequence_assets)
+            && sequence_component_loaded!(SourceSequenceHandles, source_sequence_assets)
             && sequence_component_loaded!(
-                asset_object_acceleration_sequence_handles,
+                ObjectAccelerationSequenceHandles,
                 object_acceleration_sequence_assets
             )
             && sequence_component_loaded!(
-                asset_sprite_render_sequence_handles,
+                SpriteRenderSequenceHandles,
                 sprite_render_sequence_assets
             )
-            && sequence_component_loaded!(asset_body_sequence_handles, body_sequence_assets)
-            && sequence_component_loaded!(
-                asset_interactions_sequence_handles,
-                interactions_sequence_assets
-            )
-            && sequence_component_loaded!(asset_spawns_sequence_handles, spawns_sequence_assets)
-            && sequence_component_loaded!(asset_tint_sequence_handles, tint_sequence_assets)
-            && sequence_component_loaded!(asset_scale_sequence_handles, scale_sequence_assets)
+            && sequence_component_loaded!(BodySequenceHandles, body_sequence_assets)
+            && sequence_component_loaded!(InteractionsSequenceHandles, interactions_sequence_assets)
+            && sequence_component_loaded!(SpawnsSequenceHandles, spawns_sequence_assets)
+            && sequence_component_loaded!(CharacterCtsHandles, character_cts_assets)
+            && sequence_component_loaded!(TintSequenceHandles, tint_sequence_assets)
+            && sequence_component_loaded!(ScaleSequenceHandles, scale_sequence_assets)
     }
 }

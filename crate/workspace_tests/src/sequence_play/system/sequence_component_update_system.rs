@@ -6,9 +6,10 @@ mod tests {
         Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication, SequenceQueries};
+    use asset_model::loaded::AssetItemIds;
     use assets_test::CHAR_BAT_SLUG;
     use sequence_model::{
-        loaded::{AssetWaitSequenceHandles, SequenceId, WaitSequenceHandle, WaitSequenceHandles},
+        loaded::{SequenceId, WaitSequenceHandle, WaitSequenceHandles},
         play::SequenceUpdateEvent,
     };
 
@@ -34,17 +35,16 @@ mod tests {
 
     fn run_test(
         sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
-        with_asset_id: bool,
+        with_item_id: bool,
         sequence_id_expected: SequenceId,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(
-                SequenceComponentUpdateSystem::<AssetWaitSequenceHandles, WaitSequenceHandles>::new(
-                ),
+                SequenceComponentUpdateSystem::<WaitSequenceHandles>::new(),
                 "",
                 &[],
             )
-            .with_effect(move |world| initial_values(world, with_asset_id))
+            .with_effect(move |world| initial_values(world, with_item_id))
             .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
@@ -60,12 +60,24 @@ mod tests {
             .run_isolated()
     }
 
-    fn initial_values(world: &mut World, with_asset_id: bool) {
+    fn initial_values(world: &mut World, with_item_id: bool) {
         let entity = {
             let wait_sequence_handle =
                 SequenceQueries::wait_sequence_handle(world, &*CHAR_BAT_SLUG, SEQUENCE_ID_PREV);
-            let asset_id = if with_asset_id {
-                Some(AssetQueries::id(world, &*CHAR_BAT_SLUG))
+
+            let item_id = if with_item_id {
+                let asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
+                let item_id = {
+                    let asset_item_ids = world.read_resource::<AssetItemIds>();
+                    let item_ids = asset_item_ids
+                        .get(asset_id)
+                        .expect("Expected `ItemIds` to exist.");
+                    item_ids
+                        .first()
+                        .copied()
+                        .expect("Expected at least one `ItemId` to exist.")
+                };
+                Some(item_id)
             } else {
                 None
             };
@@ -75,8 +87,8 @@ mod tests {
                 .with(SEQUENCE_ID_CURRENT)
                 .with(wait_sequence_handle);
 
-            if let Some(asset_id) = asset_id {
-                entity_builder = entity_builder.with(asset_id);
+            if let Some(item_id) = item_id {
+                entity_builder = entity_builder.with(item_id);
             }
 
             entity_builder.build()

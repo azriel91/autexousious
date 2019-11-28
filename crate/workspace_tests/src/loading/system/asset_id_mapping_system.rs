@@ -12,11 +12,8 @@ mod tests {
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     };
-    use assets_test::{
-        CHAR_BAT_SLUG, ENERGY_SQUARE_SLUG, MAP_EMPTY_SLUG, UI_CHARACTER_SELECTION_SLUG,
-    };
+    use assets_test::{CHAR_BAT_SLUG, ENERGY_SQUARE_SLUG, MAP_EMPTY_SLUG};
     use background_loading::BackgroundLoadingBundle;
-    use background_model::config::BackgroundDefinition;
     use character_loading::CharacterLoadingBundle;
     use character_model::config::{CharacterDefinition, CharacterSequenceName};
     use energy_loading::EnergyLoadingBundle;
@@ -30,7 +27,6 @@ mod tests {
     };
     use test_support::load_yaml;
     use ui_loading::UiLoadingBundle;
-    use ui_model::config::UiDefinition;
 
     use loading::{
         AssetIdMapper, AssetIdMappingSystem, AssetLoadingResources, AssetPartLoader,
@@ -295,133 +291,6 @@ mod tests {
         )
     }
 
-    #[test]
-    fn inserts_empty_ui_mappings() -> Result<(), Error> {
-        run_test(
-            SetupParams {
-                asset_paramses: vec![AssetParams {
-                    asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
-                    asset_type: AssetType::Ui,
-                    fn_insert_definition: Box::new(|_, _, _| {}),
-                }],
-            },
-            ExpectedParams {
-                fn_assertions: vec![assert_no_ui_ids_mapped],
-            },
-        )
-    }
-
-    #[test]
-    fn maps_background_ids() -> Result<(), Error> {
-        let background_definition = load_yaml!(
-            "asset_id_mapping_system_background_definition.yaml",
-            BackgroundDefinition
-        );
-
-        run_test(
-            SetupParams {
-                asset_paramses: vec![AssetParams {
-                    asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
-                    asset_type: AssetType::Ui,
-                    fn_insert_definition: Box::new(
-                        |loader, definition_loading_resources, asset_id| {
-                            let DefinitionLoadingResources {
-                                background_definition_assets,
-                                asset_background_definition_handle,
-                                ..
-                            } = definition_loading_resources;
-
-                            let background_definition_handle = loader.load_from_data(
-                                background_definition,
-                                (),
-                                background_definition_assets,
-                            );
-                            asset_background_definition_handle
-                                .insert(asset_id, background_definition_handle);
-                        },
-                    ),
-                }],
-            },
-            ExpectedParams {
-                fn_assertions: vec![assert_background_ids_mapped],
-            },
-        )
-    }
-
-    #[test]
-    fn maps_ui_ids() -> Result<(), Error> {
-        let ui_definition = load_yaml!("asset_id_mapping_system_ui_definition.yaml", UiDefinition);
-
-        run_test(
-            SetupParams {
-                asset_paramses: vec![AssetParams {
-                    asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
-                    asset_type: AssetType::Ui,
-                    fn_insert_definition: Box::new(
-                        |loader, definition_loading_resources, asset_id| {
-                            let DefinitionLoadingResources {
-                                ui_definition_assets,
-                                asset_ui_definition_handle,
-                                ..
-                            } = definition_loading_resources;
-
-                            let ui_definition_handle =
-                                loader.load_from_data(ui_definition, (), ui_definition_assets);
-                            asset_ui_definition_handle.insert(asset_id, ui_definition_handle);
-                        },
-                    ),
-                }],
-            },
-            ExpectedParams {
-                fn_assertions: vec![assert_ui_ids_mapped],
-            },
-        )
-    }
-
-    #[test]
-    fn maps_background_and_ui_ids() -> Result<(), Error> {
-        let background_definition = load_yaml!(
-            "asset_id_mapping_system_background_definition.yaml",
-            BackgroundDefinition
-        );
-        let ui_definition = load_yaml!("asset_id_mapping_system_ui_definition.yaml", UiDefinition);
-
-        run_test(
-            SetupParams {
-                asset_paramses: vec![AssetParams {
-                    asset_slug: UI_CHARACTER_SELECTION_SLUG.clone(),
-                    asset_type: AssetType::Ui,
-                    fn_insert_definition: Box::new(
-                        |loader, definition_loading_resources, asset_id| {
-                            let DefinitionLoadingResources {
-                                background_definition_assets,
-                                ui_definition_assets,
-                                asset_background_definition_handle,
-                                asset_ui_definition_handle,
-                                ..
-                            } = definition_loading_resources;
-
-                            let background_definition_handle = loader.load_from_data(
-                                background_definition,
-                                (),
-                                background_definition_assets,
-                            );
-                            asset_background_definition_handle
-                                .insert(asset_id, background_definition_handle);
-
-                            let ui_definition_handle =
-                                loader.load_from_data(ui_definition, (), ui_definition_assets);
-                            asset_ui_definition_handle.insert(asset_id, ui_definition_handle);
-                        },
-                    ),
-                }],
-            },
-            ExpectedParams {
-                fn_assertions: vec![assert_background_and_ui_ids_mapped],
-            },
-        )
-    }
-
     fn run_test(
         SetupParams { asset_paramses }: SetupParams,
         ExpectedParams { fn_assertions }: ExpectedParams,
@@ -619,120 +488,6 @@ mod tests {
         sequence_id_mappings_expected.insert(
             SequenceNameString::String(String::from("one")),
             SequenceId(1),
-        );
-
-        assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
-    }
-
-    fn assert_no_ui_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
-        let IdMappingResources {
-            asset_sequence_id_mappings_sprite,
-            ..
-        } = id_mapping_resources;
-
-        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
-
-        assert!(sequence_id_mappings.is_some());
-
-        let sequence_id_mappings = sequence_id_mappings
-            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
-        let sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
-
-        assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
-    }
-
-    fn assert_background_ids_mapped(
-        id_mapping_resources: &IdMappingResources<'_>,
-        asset_id: AssetId,
-    ) {
-        let IdMappingResources {
-            asset_sequence_id_mappings_sprite,
-            ..
-        } = id_mapping_resources;
-
-        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
-
-        assert!(sequence_id_mappings.is_some());
-
-        let sequence_id_mappings = sequence_id_mappings
-            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
-        let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("zero")),
-            SequenceId(0),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("one")),
-            SequenceId(1),
-        );
-
-        assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
-    }
-
-    fn assert_ui_ids_mapped(id_mapping_resources: &IdMappingResources<'_>, asset_id: AssetId) {
-        let IdMappingResources {
-            asset_sequence_id_mappings_sprite,
-            ..
-        } = id_mapping_resources;
-
-        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
-
-        assert!(sequence_id_mappings.is_some());
-
-        let sequence_id_mappings = sequence_id_mappings
-            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
-        let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_inactive")),
-            SequenceId(0),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_active")),
-            SequenceId(1),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_selected")),
-            SequenceId(2),
-        );
-
-        assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);
-    }
-
-    fn assert_background_and_ui_ids_mapped(
-        id_mapping_resources: &IdMappingResources<'_>,
-        asset_id: AssetId,
-    ) {
-        let IdMappingResources {
-            asset_sequence_id_mappings_sprite,
-            ..
-        } = id_mapping_resources;
-
-        let sequence_id_mappings = asset_sequence_id_mappings_sprite.get(asset_id);
-
-        assert!(sequence_id_mappings.is_some());
-
-        let sequence_id_mappings = sequence_id_mappings
-            .expect("Expected `SequenceIdMappings<SpriteSequenceName>` to exist.");
-        let mut sequence_id_mappings_expected = SequenceIdMappings::with_capacity(10);
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("zero")),
-            SequenceId(0),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("one")),
-            SequenceId(1),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_inactive")),
-            SequenceId(2),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_active")),
-            SequenceId(3),
-        );
-        sequence_id_mappings_expected.insert(
-            SequenceNameString::String(String::from("start_game_selected")),
-            SequenceId(4),
         );
 
         assert_eq!(&sequence_id_mappings_expected, sequence_id_mappings);

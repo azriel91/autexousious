@@ -20,6 +20,7 @@ use amethyst::{
 use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
+use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
@@ -45,7 +46,10 @@ use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
-use state_play::{StateCameraResetSystem, StateIdEventSystem, StateUiSpawnSystem};
+use state_play::{
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
+};
 use state_registry::StateId;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -144,20 +148,37 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with(
-                StateUiSpawnSystem::new(),
-                &StateUiSpawnSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
-            )
-            .with(
                 StateCameraResetSystem::new(),
                 &StateCameraResetSystem::type_name(),
                 &[&StateIdEventSystem::type_name()],
             )
             .with(
+                StateItemSpawnSystem::new(),
+                &StateItemSpawnSystem::type_name(),
+                &[&StateIdEventSystem::type_name()],
+            )
+            .with(
+                ItemIdEventSystem::new(),
+                &ItemIdEventSystem::type_name(),
+                &[&StateItemSpawnSystem::type_name()],
+            )
+            .with_bundle(AssetPlayBundle::new())?
+            .with(
+                StateItemUiRectifySystem::new(),
+                &StateItemUiRectifySystem::type_name(),
+                &[],
+            )
+            .with(
+                StateItemUiInputAugmentSystem::new(),
+                &StateItemUiInputAugmentSystem::type_name(),
+                &[],
+            )
+            .with(
                 PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
                 "state_id_prev_tracker_system",
-                &[&StateUiSpawnSystem::type_name()],
+                &[],
             )
+            .with_barrier()
             .with_bundle(GamePlayBundle::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()

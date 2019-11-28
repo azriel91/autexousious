@@ -3,9 +3,8 @@ mod test {
     use std::collections::HashMap;
 
     use amethyst::{
-        ecs::{Join, ReadStorage, World, WorldExt, WriteStorage},
+        ecs::{Join, ReadStorage, World, WriteStorage},
         input::{Axis as InputAxis, Button},
-        shrev::EventChannel,
         ui::UiText,
         winit::VirtualKeyCode,
         Error,
@@ -15,7 +14,7 @@ mod test {
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
-    use state_registry::{StateId, StateIdUpdateEvent};
+    use state_registry::StateId;
     use strum::IntoEnumIterator;
     use typename::TypeName;
 
@@ -35,7 +34,7 @@ mod test {
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_effect(send_state_id_update_event)
+            .with_effect(|world| world.insert(StateId::GameModeSelection))
             .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             .with_assertion(|world| assert_siblings_correct(world))
             .run_isolated()
@@ -44,14 +43,13 @@ mod test {
     #[test]
     fn updates_idle_menu_item_colour() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_resource(input_config())
             // Set up UI
             .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_effect(send_state_id_update_event)
+            .with_effect(|world| world.insert(StateId::GameModeSelection))
             .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to idle.
             .with_effect(|world| {
@@ -78,18 +76,17 @@ mod test {
                 GameModeSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_effect(send_state_id_update_event)
+            .with_effect(|world| world.insert(StateId::GameModeSelection))
             .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to active.
             .with_effect(|world| {
                 let mut menu_item_widget_states =
                     world.system_data::<WriteStorage<'_, MenuItemWidgetState>>();
-                let menu_item_widget_state = (&mut menu_item_widget_states)
+                (&mut menu_item_widget_states)
                     .join()
-                    .next()
-                    .expect("Expected entity with `MenuItemWidgetState` component.");
-
-                *menu_item_widget_state = MenuItemWidgetState::Active;
+                    .for_each(|menu_item_widget_state| {
+                        *menu_item_widget_state = MenuItemWidgetState::Active;
+                    });
             })
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_ACTIVE))
             .run_isolated()
@@ -122,11 +119,6 @@ mod test {
         let mut actions = HashMap::new();
         actions.insert(ControlAction::Jump, Button::Key(keys[2]));
         ControllerConfig::new(axes, actions)
-    }
-
-    fn send_state_id_update_event(world: &mut World) {
-        let mut state_id_update_ec = world.write_resource::<EventChannel<StateIdUpdateEvent>>();
-        state_id_update_ec.single_write(StateIdUpdateEvent::new(StateId::GameModeSelection, None));
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
