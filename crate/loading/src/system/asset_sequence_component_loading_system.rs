@@ -47,8 +47,7 @@ use sprite_model::{
     loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
 use typename_derive::TypeName;
-use ui_label_loading::UiLabelsLoader;
-use ui_menu_item_loading::UiMenuItemsLoader;
+use ui_menu_item_model::loaded::UiMenuItem;
 use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
@@ -430,17 +429,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
                     .cloned(); // Clone so that we don't mutate the actual read data.
 
-                // Hack: Update `PositionInit`s for `UiDefinition.button`s and menu items.
-                if let Some(ui_definition) = ui_definition.as_mut() {
-                    if let UiType::Menu(ui_menu_items) = &mut ui_definition.ui_type {
-                        ui_menu_items.iter_mut().for_each(|ui_menu_item| {
-                            ui_menu_item.label.position += ui_menu_item.position;
-                            ui_menu_item.sprite.position += ui_menu_item.position;
-                        });
-                    }
-                }
-                // End hack
-
                 let keyboard_ui_sprite_labels = if let Some(UiDefinition {
                     ui_type: UiType::ControlSettings(control_settings),
                     sequences,
@@ -617,38 +605,34 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                     match ui_type {
                         UiType::Menu(ui_menu_items_cfg) => {
-                            let position_inits =
-                                PositionInitsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let ui_menu_items =
-                                UiMenuItemsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let ui_labels =
-                                UiLabelsLoader::items_to_datas(ui_menu_items_cfg.iter());
-                            let sequence_id_inits =
-                                SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
-                                    sequence_id_mappings,
-                                    asset_slug,
-                                    ui_menu_items_cfg
-                                        .iter()
-                                        .map(|ui_menu_item| &ui_menu_item.sprite.sequence),
-                                );
+                            let mut item_ids = ui_menu_items_cfg
+                                .iter()
+                                .flat_map(|ui_menu_item_cfg| {
+                                    let mut ui_label = ui_menu_item_cfg.label.clone();
+                                    ui_label.position += ui_menu_item_cfg.position;
+                                    let ui_menu_item = UiMenuItem::new(ui_menu_item_cfg.index);
+                                    let position_init = ui_label.position;
+                                    let item_entity_text = asset_world
+                                        .create_entity()
+                                        .with(position_init)
+                                        .with(ui_label)
+                                        .with(ui_menu_item)
+                                        .build();
 
-                            let mut item_ids = position_inits
-                                .0
-                                .into_iter()
-                                .zip(sequence_id_inits.into_iter())
-                                .zip(ui_menu_items.0.into_iter())
-                                .zip(ui_labels.0.into_iter())
-                                .map(
-                                    |(
-                                        ((position_init, sequence_id_init), ui_menu_item),
-                                        ui_label,
-                                    )| {
+                                    let ui_sprite_label = &ui_menu_item_cfg.sprite;
+                                    let position_init =
+                                        ui_menu_item_cfg.position + ui_sprite_label.position;
+                                    let sequence_id_init =
+                                        SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                            sequence_id_mappings,
+                                            asset_slug,
+                                            &ui_sprite_label.sequence,
+                                        );
+                                    let item_entity_sprite = {
                                         let mut item_entity_builder = asset_world
                                             .create_entity()
                                             .with(position_init)
                                             .with(sequence_id_init)
-                                            .with(ui_menu_item)
-                                            .with(ui_label)
                                             .with(sequence_end_transitions.clone())
                                             .with(wait_sequence_handles.clone())
                                             .with(tint_sequence_handles.clone())
@@ -662,8 +646,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         }
 
                                         item_entity_builder.build()
-                                    },
-                                )
+                                    };
+
+                                    let item_entities = SmallVec::<[Entity; 2]>::from_buf([
+                                        item_entity_text,
+                                        item_entity_sprite,
+                                    ]);
+                                    item_entities.into_iter()
+                                })
                                 .map(ItemId::new)
                                 .collect::<Vec<ItemId>>();
 
