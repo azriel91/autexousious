@@ -30,8 +30,7 @@ use object_model::{
 };
 use object_type::ObjectType;
 use sequence_loading::{
-    SequenceEndTransitionMapper, SequenceEndTransitionsLoader, SequenceIdMapper,
-    WaitSequenceHandlesLoader, WaitSequenceLoader,
+    SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
 use sequence_model::{
     config::SequenceNameString,
@@ -163,10 +162,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
         };
         let sprite_render_sequence_handles_loader = SpriteRenderSequenceHandlesLoader {
             sprite_render_sequence_loader,
-        };
-
-        let sequence_end_transition_mapper_sprite = SequenceEndTransitionMapper {
-            asset_sequence_id_mappings: asset_sequence_id_mappings_sprite,
         };
 
         let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
@@ -340,8 +335,17 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     })
                     .expect("Expected `MapDefinition` to be loaded.");
 
+                let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                    .get(asset_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Expected `SequenceIdMappings<SpriteSequenceName>` to exist for asset `{}`.",
+                            asset_slug
+                        )
+                    });
+
                 let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
-                    sequence_end_transition_mapper: sequence_end_transition_mapper_sprite,
+                    sequence_id_mappings,
                 };
 
                 let background_definition = &map_definition.background;
@@ -357,7 +361,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     background_definition.layers.keys(),
                 );
                 let sequence_end_transitions = sequence_end_transitions_loader
-                    .items_to_datas(background_definition.layers.values(), asset_id);
+                    .items_to_datas(background_definition.layers.values(), asset_slug);
                 let wait_sequence_handles = wait_sequence_handles_loader
                     .items_to_datas(background_definition.layers.values(), |layer| {
                         layer.sequence.frames.iter()
@@ -426,10 +430,6 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
                     .cloned(); // Clone so that we don't mutate the actual read data.
 
-                let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
-                    sequence_end_transition_mapper: sequence_end_transition_mapper_sprite,
-                };
-
                 // Hack: Update `PositionInit`s for `UiDefinition.button`s and menu items.
                 if let Some(ui_definition) = ui_definition.as_mut() {
                     if let UiType::Menu(ui_menu_items) = &mut ui_definition.ui_type {
@@ -469,16 +469,20 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .expect("Expected `SequenceNameString::from_str` to succeed.")
                         }),
                     );
+                    let sequence_id_mappings = &sequence_id_mappings;
+                    let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
+                        sequence_id_mappings,
+                    };
 
                     let position_inits =
                         PositionInitsLoader::items_to_datas(background_definition.layers.values());
                     let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::strings_to_ids(
-                        &sequence_id_mappings,
+                        sequence_id_mappings,
                         asset_slug,
                         background_definition.layers.keys(),
                     );
                     let sequence_end_transitions = sequence_end_transitions_loader
-                        .items_to_datas(background_definition.layers.values(), asset_id);
+                        .items_to_datas(background_definition.layers.values(), asset_slug);
                     let wait_sequence_handles = wait_sequence_handles_loader
                         .items_to_datas(background_definition.layers.values(), |layer| {
                             layer.sequence.frames.iter()
@@ -536,10 +540,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     } = ui_definition;
 
                     let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
+                    let sequence_id_mappings = &sequence_id_mappings;
+                    let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
+                        sequence_id_mappings,
+                    };
 
                     // TODO: Sequences per item instead of per asset.
                     let sequence_end_transitions = sequence_end_transitions_loader
-                        .items_to_datas(sequences.values(), asset_id);
+                        .items_to_datas(sequences.values(), asset_slug);
                     let wait_sequence_handles = wait_sequence_handles_loader
                         .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
                     let tint_sequence_handles = tint_sequence_handles_loader
@@ -573,7 +581,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             let position_init = ui_button.position + ui_sprite_label.position;
                             let sequence_id_init =
                                 SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-                                    &sequence_id_mappings,
+                                    sequence_id_mappings,
                                     asset_slug,
                                     &ui_sprite_label.sequence,
                                 );
@@ -617,7 +625,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 UiLabelsLoader::items_to_datas(ui_menu_items_cfg.iter());
                             let sequence_id_inits =
                                 SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
-                                    &sequence_id_mappings,
+                                    sequence_id_mappings,
                                     asset_slug,
                                     ui_menu_items_cfg
                                         .iter()
@@ -670,7 +678,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             );
                             let sequence_id_inits =
                                 SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
-                                    &sequence_id_mappings,
+                                    sequence_id_mappings,
                                     asset_slug,
                                     keyboard_ui_sprite_labels
                                         .iter()
