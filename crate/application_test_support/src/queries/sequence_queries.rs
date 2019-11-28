@@ -129,13 +129,13 @@ impl SequenceQueries {
 
         sequence_end_transitions
             .get(*sequence_id)
+            .copied()
             .unwrap_or_else(|| {
                 panic!(
                     "Expected `SequenceEndTransition` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
-            .clone()
     }
 
     /// Returns the `WaitSequenceHandle` for the specified sequence ID.

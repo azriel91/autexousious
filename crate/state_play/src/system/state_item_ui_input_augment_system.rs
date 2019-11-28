@@ -71,8 +71,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             let menu_items_exist = state_item_entities
                 .entities
                 .iter()
-                .filter(|entity| menu_item_widget_states.get(**entity).is_some())
-                .next()
+                .find(|entity| menu_item_widget_states.get(**entity).is_some())
                 .is_some();
 
             // This creates another entity for each controller, which is an odd implementation.
