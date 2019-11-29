@@ -9,16 +9,16 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::loaded::{
-        CharacterControlTransition, CharacterControlTransitions, CharacterControlTransitionsHandle,
-        CharacterCtsHandle,
+        CharacterControlTransition, CharacterCtsHandle, CharacterInputReactions,
+        CharacterInputReactionsHandle,
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ActionPress, ControlTransition, ControlTransitions, SequenceId},
+        loaded::{ActionPress, ControlTransition, InputReactions, SequenceId},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
-    use character_play::CharacterControlTransitionsUpdateSystem;
+    use character_play::CharacterInputReactionsUpdateSystem;
 
     #[test]
     fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
@@ -43,7 +43,7 @@ mod tests {
         sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
+            .with_system(CharacterInputReactionsUpdateSystem::new(), "", &[])
             .with_effect(move |world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
@@ -69,7 +69,7 @@ mod tests {
             _entities,
             _sequence_ids,
             mut frame_index_clocks,
-            _character_control_transitions_handles,
+            _character_input_reactions_handles,
             mut character_cts_handles,
         ) = world.system_data::<TestSystemData>();
 
@@ -86,36 +86,36 @@ mod tests {
 
     fn expect_transitions(
         world: &mut World,
-        expected_character_control_transitions: CharacterControlTransitions,
+        expected_character_input_reactions: CharacterInputReactions,
     ) {
         let (
-            character_control_transitions_assets,
-            character_control_transitions_handles,
+            character_input_reactions_assets,
+            character_input_reactions_handles,
             sequence_statuses,
         ) = world.system_data::<(
-            Read<AssetStorage<CharacterControlTransitions>>,
-            ReadStorage<CharacterControlTransitionsHandle>,
+            Read<AssetStorage<CharacterInputReactions>>,
+            ReadStorage<CharacterInputReactionsHandle>,
             ReadStorage<SequenceId>,
         )>();
 
-        (&character_control_transitions_handles, &sequence_statuses)
+        (&character_input_reactions_handles, &sequence_statuses)
             .join()
             // kcov-ignore-start
-            .for_each(|(character_control_transitions_handle, _sequence_status)| {
-                let character_control_transitions = character_control_transitions_assets
-                    .get(character_control_transitions_handle)
-                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+            .for_each(|(character_input_reactions_handle, _sequence_status)| {
+                let character_input_reactions = character_input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
 
                 assert_eq!(
-                    &expected_character_control_transitions,
-                    character_control_transitions
+                    &expected_character_input_reactions,
+                    character_input_reactions
                 );
             });
         // kcov-ignore-end
     }
 
-    fn transitions() -> CharacterControlTransitions {
-        CharacterControlTransitions::new(ControlTransitions::new(vec![
+    fn transitions() -> CharacterInputReactions {
+        CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition::new(
                 ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Attack,
@@ -143,7 +143,7 @@ mod tests {
             entities,
             sequence_ids,
             frame_index_clocks,
-            character_control_transitions_handles,
+            character_input_reactions_handles,
             character_cts_handles,
         ) = world.system_data::<TestSystemData>();
 
@@ -151,7 +151,7 @@ mod tests {
             &entities,
             &sequence_ids,
             &frame_index_clocks,
-            &character_control_transitions_handles,
+            &character_input_reactions_handles,
             &character_cts_handles,
         )
             .join()
@@ -171,14 +171,14 @@ mod tests {
             entities,
             _sequence_ids,
             frame_index_clocks,
-            character_control_transitions_handles,
+            character_input_reactions_handles,
             character_cts_handles,
         ) = world.system_data::<TestSystemData>();
 
         (
             &entities,
             &frame_index_clocks,
-            &character_control_transitions_handles,
+            &character_input_reactions_handles,
             &character_cts_handles,
         )
             .join()
@@ -198,7 +198,7 @@ mod tests {
         Entities<'s>,
         ReadStorage<'s, SequenceId>,
         WriteStorage<'s, FrameIndexClock>,
-        WriteStorage<'s, CharacterControlTransitionsHandle>,
+        WriteStorage<'s, CharacterInputReactionsHandle>,
         WriteStorage<'s, CharacterCtsHandle>,
     );
 }

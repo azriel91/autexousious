@@ -15,8 +15,8 @@ mod tests {
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName},
         loaded::{
-            CharacterControlTransitions, CharacterControlTransitionsHandle, CharacterCts,
-            CharacterCtsHandle,
+            CharacterCts, CharacterCtsHandle, CharacterInputReactions,
+            CharacterInputReactionsHandle,
         },
     };
     use charge_model::{
@@ -34,7 +34,7 @@ mod tests {
         loaded::{SequenceId, SequenceIdMappings},
     };
 
-    use character_play::CharacterControlTransitionsTransitionSystem;
+    use character_play::CharacterInputReactionsTransitionSystem;
 
     #[test]
     fn inserts_transition_for_action_press_event() -> Result<(), Error> {
@@ -367,20 +367,20 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
+            .with_system(CharacterInputReactionsTransitionSystem::new(), "", &[])
             .with_effect(register_reader)
             .with_effect(move |world| {
                 let character_cts_handle = {
-                    let (loader, character_control_transitions_assets, character_cts_assets) =
-                        world.system_data::<(
+                    let (loader, character_input_reactions_assets, character_cts_assets) = world
+                        .system_data::<(
                             ReadExpect<'_, Loader>,
-                            Read<'_, AssetStorage<CharacterControlTransitions>>,
+                            Read<'_, AssetStorage<CharacterInputReactions>>,
                             Read<'_, AssetStorage<CharacterCts>>,
                         )>();
 
                     let cts_loader_params = CtsLoaderParams {
                         loader: &loader,
-                        character_control_transitions_assets: &character_control_transitions_assets,
+                        character_input_reactions_assets: &character_input_reactions_assets,
                         character_cts_assets: &character_cts_assets,
                     };
                     let test_character_sequence = test_character_sequence();
@@ -397,7 +397,7 @@ mod tests {
             })
             // Allow `AssetStorage`s to process loaded data.
             .with_effect(move |world| {
-                let character_control_transitions_handle = {
+                let character_input_reactions_handle = {
                     let character_cts_assets =
                         world.system_data::<Read<'_, AssetStorage<CharacterCts>>>();
 
@@ -409,7 +409,7 @@ mod tests {
                         .first()
                         .expect(
                             "Expected `character_cts` to contain one \
-                             `character_control_transitions_handle`.",
+                             `character_input_reactions_handle`.",
                         )
                         .clone()
                 };
@@ -418,7 +418,7 @@ mod tests {
                 {
                     let TestSystemData {
                         mut sequence_ids,
-                        mut character_control_transitions_handles,
+                        mut character_input_reactions_handles,
                         mut health_pointses,
                         mut skill_pointses,
                         mut charge_tracker_clocks,
@@ -429,9 +429,9 @@ mod tests {
                     sequence_ids
                         .insert(entity, sequence_id_setup)
                         .expect("Failed to insert `SequenceId` component.");
-                    character_control_transitions_handles
-                        .insert(entity, character_control_transitions_handle)
-                        .expect("Failed to insert `CharacterControlTransitionsHandle` component.");
+                    character_input_reactions_handles
+                        .insert(entity, character_input_reactions_handle)
+                        .expect("Failed to insert `CharacterInputReactionsHandle` component.");
                     health_pointses
                         .insert(entity, HealthPoints::new(100))
                         .expect("Failed to insert `HealthPoints` component.");
@@ -604,7 +604,7 @@ mod tests {
         #[derivative(Debug = "ignore")]
         sequence_ids: WriteStorage<'s, SequenceId>,
         #[derivative(Debug = "ignore")]
-        character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
+        character_input_reactions_handles: WriteStorage<'s, CharacterInputReactionsHandle>,
         #[derivative(Debug = "ignore")]
         health_pointses: WriteStorage<'s, HealthPoints>,
         #[derivative(Debug = "ignore")]

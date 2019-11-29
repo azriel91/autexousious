@@ -7,9 +7,7 @@ pub use crate::{
     character_sequence_updater::CharacterSequenceUpdater,
     mirrored_updater::MirroredUpdater,
     run_counter_updater::RunCounterUpdater,
-    system::{
-        CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
-    },
+    system::{CharacterInputReactionsTransitionSystem, CharacterInputReactionsUpdateSystem},
     system_data::ControlTransitionRequirementSystemData,
 };
 

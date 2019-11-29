@@ -4,7 +4,7 @@ use amethyst::{
 };
 use asset_model::{config::AssetSlug, loaded::AssetItemIds, play::AssetWorld};
 use character_model::loaded::{
-    CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle, CharacterCtsHandles,
+    CharacterCts, CharacterCtsHandle, CharacterCtsHandles, CharacterInputReactionsHandle,
 };
 use collision_model::loaded::{
     BodySequenceHandle, BodySequenceHandles, InteractionsSequenceHandle,
@@ -68,7 +68,7 @@ impl SequenceQueries {
             .clone()
     }
 
-    /// Returns the `CharacterControlTransitionsHandle` for the specified sequence ID.
+    /// Returns the `CharacterInputReactionsHandle` for the specified sequence ID.
     ///
     /// This function assumes the character for the specified slug is instantiated in the world.
     ///
@@ -78,12 +78,12 @@ impl SequenceQueries {
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
     /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
     /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
-    pub fn character_control_transitions_handle(
+    pub fn character_input_reactions_handle(
         world: &World,
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
         frame_index: usize,
-    ) -> CharacterControlTransitionsHandle {
+    ) -> CharacterInputReactionsHandle {
         let character_cts_handle = Self::character_cts_handle(world, asset_slug, sequence_id);
 
         let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();

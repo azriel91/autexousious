@@ -8,7 +8,7 @@ use crate::config::{ControlTransition, SequenceName};
 #[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[derivative(Default)]
 #[serde(deny_unknown_fields)]
-pub struct ControlTransitions<SeqName, Req = ()>
+pub struct InputReactions<SeqName, Req = ()>
 where
     SeqName: SequenceName,
     Req: Default,

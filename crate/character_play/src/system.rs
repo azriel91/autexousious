@@ -1,7 +1,7 @@
 pub use self::{
-    character_control_transitions_transition_system::CharacterControlTransitionsTransitionSystem,
-    character_control_transitions_update_system::CharacterControlTransitionsUpdateSystem,
+    character_input_reactions_transition_system::CharacterInputReactionsTransitionSystem,
+    character_input_reactions_update_system::CharacterInputReactionsUpdateSystem,
 };
 
-mod character_control_transitions_transition_system;
-mod character_control_transitions_update_system;
+mod character_input_reactions_transition_system;
+mod character_input_reactions_update_system;

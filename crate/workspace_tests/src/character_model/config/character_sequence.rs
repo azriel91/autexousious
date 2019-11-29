@@ -8,11 +8,11 @@ mod tests {
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterControlTransitions, CharacterFrame, CharacterSequence, CharacterSequenceName,
+        CharacterFrame, CharacterInputReactions, CharacterSequence, CharacterSequenceName,
     };
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
-    const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"---
+    const SEQUENCE_WITH_INPUT_REACTIONS: &str = r#"---
 transitions:
   press_defend: "stand_attack_1"
 
@@ -34,8 +34,8 @@ frames:
     }
 
     #[test]
-    fn sequence_with_control_transitions() {
-        let sequence = serde_yaml::from_str::<CharacterSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
+    fn sequence_with_input_reactions() {
+        let sequence = serde_yaml::from_str::<CharacterSequence>(SEQUENCE_WITH_INPUT_REACTIONS)
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![CharacterFrame::new(
@@ -44,7 +44,7 @@ frames:
                 sprite: SpriteRef::new(0, 4),
                 ..Default::default()
             },
-            CharacterControlTransitions {
+            CharacterInputReactions {
                 press_attack: Some(ControlTransition::SequenceNameString(
                     SequenceNameString::Name(CharacterSequenceName::StandAttack0),
                 )),
@@ -55,7 +55,7 @@ frames:
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let character_control_transitions = CharacterControlTransitions {
+        let character_input_reactions = CharacterInputReactions {
             press_defend: Some(ControlTransition::SequenceNameString(
                 SequenceNameString::Name(CharacterSequenceName::StandAttack1),
             )),
@@ -67,7 +67,7 @@ frames:
                 frames,
                 ..Default::default()
             },
-            Some(character_control_transitions),
+            Some(character_input_reactions),
         );
 
         assert_eq!(expected, sequence);

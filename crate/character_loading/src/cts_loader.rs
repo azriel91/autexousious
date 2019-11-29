@@ -9,7 +9,7 @@ use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition, SequenceIdMappings,
+        FallbackTransition, InputReactions, SequenceIdMappings,
     },
 };
 
@@ -24,7 +24,7 @@ impl CtsLoader {
     pub fn load(
         CtsLoaderParams {
             loader,
-            character_control_transitions_assets,
+            character_input_reactions_assets,
             character_cts_assets,
         }: &CtsLoaderParams,
         sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
@@ -40,29 +40,29 @@ impl CtsLoader {
                     sequence_default.and_then(|sequence| sequence.transitions.as_ref());
                 Self::config_to_loaded_transitions_handle(
                     loader,
-                    character_control_transitions_assets,
+                    character_input_reactions_assets,
                     sequence_id_mappings,
                     config_transitions_default,
                     sequence.transitions.as_ref(),
                     &frame.transitions,
                 )
             })
-            .collect::<Vec<loaded::CharacterControlTransitionsHandle>>();
+            .collect::<Vec<loaded::CharacterInputReactionsHandle>>();
 
         let character_cts = CharacterCts::new(cts);
 
         loader.load_from_data(character_cts, (), character_cts_assets)
     }
 
-    /// Maps `config::CharacterControlTransitions` to `loaded::CharacterControlTransitions`
+    /// Maps `config::CharacterInputReactions` to `loaded::CharacterInputReactions`
     fn config_to_loaded_transitions_handle(
         loader: &Loader,
-        character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
+        character_input_reactions_assets: &AssetStorage<loaded::CharacterInputReactions>,
         sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
-        config_transitions_default: Option<&config::CharacterControlTransitions>,
-        config_transitions_sequence: Option<&config::CharacterControlTransitions>,
-        config_transitions_frame: &config::CharacterControlTransitions,
-    ) -> loaded::CharacterControlTransitionsHandle {
+        config_transitions_default: Option<&config::CharacterInputReactions>,
+        config_transitions_sequence: Option<&config::CharacterInputReactions>,
+        config_transitions_frame: &config::CharacterInputReactions,
+    ) -> loaded::CharacterInputReactionsHandle {
         let mut loaded_transitions = Vec::new();
 
         macro_rules! push_transitions {
@@ -325,13 +325,13 @@ impl CtsLoader {
         // Fallback transition.
         push_fallback_transition!(fallback, Fallback);
 
-        let character_control_transitions =
-            loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
+        let character_input_reactions =
+            loaded::CharacterInputReactions::new(InputReactions::new(loaded_transitions));
 
         loader.load_from_data(
-            character_control_transitions,
+            character_input_reactions,
             (),
-            character_control_transitions_assets,
+            character_input_reactions_assets,
         )
     }
 }

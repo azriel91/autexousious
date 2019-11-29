@@ -6,7 +6,7 @@ use amethyst::{
 };
 use asset_model::{loaded::AssetItemIds, play::AssetWorld};
 use audio_model::loaded::SourceSequence;
-use character_model::loaded::{CharacterControlTransitions, CharacterCts};
+use character_model::loaded::{CharacterCts, CharacterInputReactions};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
@@ -77,9 +77,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
-    /// `CharacterControlTransitions` assets.
+    /// `CharacterInputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
+    pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,
     /// `CharacterCts` assets.
     #[derivative(Debug = "ignore")]
     pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
@@ -145,9 +145,9 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
-    /// `CharacterControlTransitions` assets.
+    /// `CharacterInputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
+    pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,
     /// `CharacterCts` assets.
     #[derivative(Debug = "ignore")]
     pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,

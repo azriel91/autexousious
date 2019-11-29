@@ -8,8 +8,8 @@ pub use self::{
     axis_transition::AxisTransition,
     control_transition::ControlTransition,
     control_transition_like::ControlTransitionLike,
-    control_transitions::ControlTransitions,
     fallback_transition::FallbackTransition,
+    input_reactions::InputReactions,
     sequence_end_transition::SequenceEndTransition,
     sequence_end_transitions::SequenceEndTransitions,
     sequence_id::SequenceId,
@@ -25,8 +25,8 @@ mod asset_sequence_id_mappings;
 mod axis_transition;
 mod control_transition;
 mod control_transition_like;
-mod control_transitions;
 mod fallback_transition;
+mod input_reactions;
 mod sequence_end_transition;
 mod sequence_end_transitions;
 mod sequence_id;

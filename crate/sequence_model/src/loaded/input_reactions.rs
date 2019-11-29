@@ -8,6 +8,6 @@ use crate::loaded::{ControlTransition, ControlTransitionLike};
 /// Sequence transitions upon control input.
 #[derive(Clone, Debug, Derivative, Deref, DerefMut, From, PartialEq, Eq, new)]
 #[derivative(Default(bound = ""))]
-pub struct ControlTransitions<C = ControlTransition>(pub Vec<C>)
+pub struct InputReactions<C = ControlTransition>(pub Vec<C>)
 where
     C: ControlTransitionLike + Send + Sync + 'static;

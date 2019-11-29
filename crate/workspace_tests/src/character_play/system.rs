@@ -1,2 +1,2 @@
-mod character_control_transitions_transition_system;
-mod character_control_transitions_update_system;
+mod character_input_reactions_transition_system;
+mod character_input_reactions_update_system;

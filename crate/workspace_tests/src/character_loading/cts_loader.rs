@@ -14,8 +14,7 @@ mod tests {
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
         loaded::{
-            CharacterControlTransition, CharacterControlTransitions, CharacterCts,
-            CharacterCtsHandle,
+            CharacterControlTransition, CharacterCts, CharacterCtsHandle, CharacterInputReactions,
         },
     };
     use charge_model::config::ChargePoints;
@@ -27,7 +26,7 @@ mod tests {
         config::SequenceNameString,
         loaded::{
             ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-            ControlTransitions, FallbackTransition, SequenceId, SequenceIdMappings,
+            FallbackTransition, InputReactions, SequenceId, SequenceIdMappings,
         },
     };
 
@@ -45,29 +44,29 @@ mod tests {
         run_test(
             test_character_sequence(),
             sequence_default,
-            |character_cts, character_control_transitions_assets| {
-                let expected_character_control_transitions = expected_control_transitions_0();
-                let character_control_transitions_handle = character_cts
+            |character_cts, character_input_reactions_assets| {
+                let expected_character_input_reactions = expected_input_reactions_0();
+                let character_input_reactions_handle = character_cts
                     .get(0)
-                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
-                let character_control_transitions = character_control_transitions_assets
-                    .get(character_control_transitions_handle)
-                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = character_input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
                 assert_eq!(
-                    &expected_character_control_transitions,
-                    character_control_transitions
+                    &expected_character_input_reactions,
+                    character_input_reactions
                 );
 
-                let expected_character_control_transitions = expected_control_transitions_1();
-                let character_control_transitions_handle = character_cts
+                let expected_character_input_reactions = expected_input_reactions_1();
+                let character_input_reactions_handle = character_cts
                     .get(1)
-                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
-                let character_control_transitions = character_control_transitions_assets
-                    .get(character_control_transitions_handle)
-                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = character_input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
                 assert_eq!(
-                    &expected_character_control_transitions,
-                    character_control_transitions
+                    &expected_character_input_reactions,
+                    character_input_reactions
                 );
             },
         )
@@ -76,7 +75,7 @@ mod tests {
     fn run_test(
         sequence: CharacterSequence,
         sequence_default: Option<&'static CharacterSequence>,
-        assertion_fn: fn(&CharacterCts, &AssetStorage<CharacterControlTransitions>),
+        assertion_fn: fn(&CharacterCts, &AssetStorage<CharacterInputReactions>),
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
@@ -85,11 +84,11 @@ mod tests {
             .with_bundle(CharacterLoadingBundle::new())
             .with_effect(move |world| {
                 let character_cts_handle = {
-                    let (loader, character_control_transitions_assets, character_cts_assets) =
+                    let (loader, character_input_reactions_assets, character_cts_assets) =
                         world.system_data::<TestSystemData>();
                     let character_loader_params = CtsLoaderParams {
                         loader: &loader,
-                        character_control_transitions_assets: &character_control_transitions_assets,
+                        character_input_reactions_assets: &character_input_reactions_assets,
                         character_cts_assets: &character_cts_assets,
                     };
 
@@ -111,10 +110,10 @@ mod tests {
                     .expect("Expected `CharacterCts` to be loaded.");
 
                 // Assert the values for each handle.
-                let character_control_transitions_assets =
-                    world.read_resource::<AssetStorage<CharacterControlTransitions>>();
+                let character_input_reactions_assets =
+                    world.read_resource::<AssetStorage<CharacterInputReactions>>();
 
-                assertion_fn(character_cts, &character_control_transitions_assets);
+                assertion_fn(character_cts, &character_input_reactions_assets);
             })
             .run_isolated()
     }
@@ -204,8 +203,8 @@ mod tests {
     }
 
     // Should overwrite and inherit sequence transitions.
-    fn expected_control_transitions_0() -> CharacterControlTransitions {
-        CharacterControlTransitions::new(ControlTransitions::new(vec![
+    fn expected_input_reactions_0() -> CharacterInputReactions {
+        CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
@@ -311,8 +310,8 @@ mod tests {
     }
 
     // Should inherit from sequence transitions.
-    fn expected_control_transitions_1() -> CharacterControlTransitions {
-        CharacterControlTransitions::new(ControlTransitions::new(vec![
+    fn expected_input_reactions_1() -> CharacterInputReactions {
+        CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
@@ -389,7 +388,7 @@ mod tests {
 
     type TestSystemData<'s> = (
         ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<CharacterControlTransitions>>,
+        Read<'s, AssetStorage<CharacterInputReactions>>,
         Read<'s, AssetStorage<CharacterCts>>,
     );
 }

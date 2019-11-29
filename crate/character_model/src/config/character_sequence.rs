@@ -2,7 +2,7 @@ use derive_new::new;
 use object_model::config::{GameObjectSequence, ObjectSequence};
 use serde::{Deserialize, Serialize};
 
-use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceName};
+use crate::config::{CharacterFrame, CharacterInputReactions, CharacterSequenceName};
 
 /// Represents an independent action sequence of a character.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
@@ -15,7 +15,7 @@ pub struct CharacterSequence {
     ///
     /// This is shared by all frames in the sequence, unless overridden.
     #[serde(default)]
-    pub transitions: Option<CharacterControlTransitions>,
+    pub transitions: Option<CharacterInputReactions>,
 }
 
 impl GameObjectSequence for CharacterSequence {

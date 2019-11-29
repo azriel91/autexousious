@@ -108,7 +108,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             body_sequence_assets,
             interactions_sequence_assets,
             spawns_sequence_assets,
-            character_control_transitions_assets,
+            character_input_reactions_assets,
             character_cts_assets,
             tint_sequence_assets,
             scale_sequence_assets,
@@ -220,8 +220,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         let cts_loader_params = CtsLoaderParams {
                             loader: &*loader,
-                            character_control_transitions_assets:
-                                &*character_control_transitions_assets,
+                            character_input_reactions_assets: &*character_input_reactions_assets,
                             character_cts_assets: &*character_cts_assets,
                         };
 

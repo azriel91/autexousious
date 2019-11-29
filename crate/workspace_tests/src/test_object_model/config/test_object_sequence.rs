@@ -8,7 +8,7 @@ mod tests {
     use test_object_model::config::{TestObjectFrame, TestObjectSequence};
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
-    const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"---
+    const SEQUENCE_WITH_INPUT_REACTIONS: &str = r#"---
 frames:
   - wait: 2
     sprite: { sheet: 0, index: 4 }
@@ -24,10 +24,9 @@ frames:
     }
 
     #[test]
-    fn sequence_with_control_transitions() {
-        let sequence =
-            serde_yaml::from_str::<TestObjectSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
-                .expect("Failed to deserialize sequence.");
+    fn sequence_with_input_reactions() {
+        let sequence = serde_yaml::from_str::<TestObjectSequence>(SEQUENCE_WITH_INPUT_REACTIONS)
+            .expect("Failed to deserialize sequence.");
 
         let frames = vec![TestObjectFrame::new(ObjectFrame {
             wait: Wait::new(2),

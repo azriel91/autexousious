@@ -19,7 +19,7 @@ mod test {
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
+        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterSequence,
         CharacterSequenceName, ControlTransitionRequirement,
     };
 
@@ -119,7 +119,7 @@ sequences:
                 }]),
                 ..Default::default()
             },
-            CharacterControlTransitions {
+            CharacterInputReactions {
                 press_attack: Some(ControlTransition::SequenceNameString(
                     SequenceNameString::Name(CharacterSequenceName::StandAttack0),
                 )),
@@ -153,7 +153,7 @@ sequences:
             }, // kcov-ignore
         )];
 
-        let character_control_transitions = CharacterControlTransitions {
+        let character_input_reactions = CharacterInputReactions {
             press_defend: Some(ControlTransition::SequenceNameString(
                 SequenceNameString::Name(CharacterSequenceName::StandAttack1),
             )),
@@ -167,7 +167,7 @@ sequences:
                 frames,
                 ..Default::default()
             },
-            Some(character_control_transitions),
+            Some(character_input_reactions),
         )
     }
 
@@ -178,7 +178,7 @@ sequences:
                 sprite: SpriteRef::new(1, 3),
                 ..Default::default()
             },
-            CharacterControlTransitions {
+            CharacterInputReactions {
                 press_attack: Some(ControlTransition::SequenceNameString(
                     SequenceNameString::String(String::from("custom_sequence_1")),
                 )),
@@ -196,7 +196,7 @@ sequences:
             }, // kcov-ignore
         )];
 
-        let character_control_transitions = CharacterControlTransitions {
+        let character_input_reactions = CharacterInputReactions {
             press_defend: Some(ControlTransition::SequenceNameString(
                 SequenceNameString::String(String::from("custom_sequence_4")),
             )),
@@ -210,7 +210,7 @@ sequences:
                 frames,
                 ..Default::default()
             },
-            Some(character_control_transitions),
+            Some(character_input_reactions),
         )
     }
 

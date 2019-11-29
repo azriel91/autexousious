@@ -3,11 +3,11 @@ use derivative::Derivative;
 use derive_deref::{Deref, DerefMut};
 use derive_more::From;
 use derive_new::new;
-use sequence_model::loaded::ControlTransitions;
+use sequence_model::loaded::InputReactions;
 
 use crate::loaded::CharacterControlTransition;
 
 /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Asset, Clone, Debug, Derivative, Deref, DerefMut, From, PartialEq, new)]
 #[derivative(Default(bound = ""))]
-pub struct CharacterControlTransitions(pub ControlTransitions<CharacterControlTransition>);
+pub struct CharacterInputReactions(pub InputReactions<CharacterControlTransition>);

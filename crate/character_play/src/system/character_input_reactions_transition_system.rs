@@ -7,7 +7,7 @@ use amethyst::{
 use approx::{relative_eq, relative_ne};
 use character_model::{
     config::{ControlTransitionRequirement, ControlTransitionRequirementParams},
-    loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
+    loaded::{CharacterInputReactions, CharacterInputReactionsHandle},
 };
 use charge_model::play::ChargeUseEvent;
 use derivative::Derivative;
@@ -27,7 +27,7 @@ use crate::ControlTransitionRequirementSystemData;
 
 /// Updates `SequenceId` based on `ControlInputEvent`s and held buttons.
 #[derive(Debug, Default, NamedType, new)]
-pub struct CharacterControlTransitionsTransitionSystem {
+pub struct CharacterInputReactionsTransitionSystem {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
@@ -38,32 +38,32 @@ pub struct CharacterControlTransitionsTransitionSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct CharacterControlTransitionsTransitionSystemData<'s> {
+pub struct CharacterInputReactionsTransitionSystemData<'s> {
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
-    /// `CharacterControlTransitionsTransitionResources`.
-    pub character_control_transitions_transition_resources:
-        CharacterControlTransitionsTransitionResources<'s>,
+    /// `CharacterInputReactionsTransitionResources`.
+    pub character_input_reactions_transition_resources:
+        CharacterInputReactionsTransitionResources<'s>,
     /// `ControlTransitionRequirementSystemData`.
     pub control_transition_requirement_system_data: ControlTransitionRequirementSystemData<'s>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct CharacterControlTransitionsTransitionResources<'s> {
+pub struct CharacterInputReactionsTransitionResources<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
-    /// `CharacterControlTransitionsHandle` components.
+    /// `CharacterInputReactionsHandle` components.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_handles: ReadStorage<'s, CharacterControlTransitionsHandle>,
-    /// `CharacterControlTransitions` assets.
+    pub character_input_reactions_handles: ReadStorage<'s, CharacterInputReactionsHandle>,
+    /// `CharacterInputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
+    pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,
     /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: WriteStorage<'s, SequenceId>,
@@ -72,17 +72,17 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
     pub charge_use_ec: Write<'s, EventChannel<ChargeUseEvent>>,
 }
 
-impl CharacterControlTransitionsTransitionSystem {
+impl CharacterInputReactionsTransitionSystem {
     fn handle_action_event(
         &mut self,
-        CharacterControlTransitionsTransitionResources {
+        CharacterInputReactionsTransitionResources {
             entities: ref _entities,
             ref controller_inputs,
-            ref character_control_transitions_handles,
-            ref character_control_transitions_assets,
+            ref character_input_reactions_handles,
+            ref character_input_reactions_assets,
             ref mut sequence_ids,
             ref mut charge_use_ec,
-        }: &mut CharacterControlTransitionsTransitionResources,
+        }: &mut CharacterInputReactionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         ControlActionEventData {
             entity,
@@ -92,15 +92,15 @@ impl CharacterControlTransitionsTransitionSystem {
     ) {
         self.processed_entities.add(entity.id());
 
-        if let (Some(character_control_transitions_handle), Some(controller_input)) = (
-            character_control_transitions_handles.get(entity),
+        if let (Some(character_input_reactions_handle), Some(controller_input)) = (
+            character_input_reactions_handles.get(entity),
             controller_inputs.get(entity),
         ) {
-            let character_control_transitions = character_control_transitions_assets
-                .get(character_control_transitions_handle)
-                .expect("Expected `CharacterControlTransitions` to be loaded.");
+            let character_input_reactions = character_input_reactions_assets
+                .get(character_input_reactions_handle)
+                .expect("Expected `CharacterInputReactions` to be loaded.");
 
-            let transition_sequence_id = character_control_transitions
+            let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
                     let control_transition = *character_control_transition.control_transition();
@@ -156,14 +156,14 @@ impl CharacterControlTransitionsTransitionSystem {
 
     fn handle_axis_event(
         &mut self,
-        CharacterControlTransitionsTransitionResources {
+        CharacterInputReactionsTransitionResources {
             entities: ref _entities,
             ref controller_inputs,
-            ref character_control_transitions_handles,
-            ref character_control_transitions_assets,
+            ref character_input_reactions_handles,
+            ref character_input_reactions_assets,
             ref mut sequence_ids,
             ref mut charge_use_ec,
-        }: &mut CharacterControlTransitionsTransitionResources,
+        }: &mut CharacterInputReactionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         AxisMoveEventData {
             entity,
@@ -173,15 +173,15 @@ impl CharacterControlTransitionsTransitionSystem {
     ) {
         self.processed_entities.add(entity.id());
 
-        if let (Some(character_control_transitions_handle), Some(controller_input)) = (
-            character_control_transitions_handles.get(entity),
+        if let (Some(character_input_reactions_handle), Some(controller_input)) = (
+            character_input_reactions_handles.get(entity),
             controller_inputs.get(entity),
         ) {
-            let character_control_transitions = character_control_transitions_assets
-                .get(character_control_transitions_handle)
-                .expect("Expected `CharacterControlTransitions` to be loaded.");
+            let character_input_reactions = character_input_reactions_assets
+                .get(character_input_reactions_handle)
+                .expect("Expected `CharacterInputReactions` to be loaded.");
 
-            let transition_sequence_id = character_control_transitions
+            let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
                     let control_transition = *character_control_transition.control_transition();
@@ -229,35 +229,35 @@ impl CharacterControlTransitionsTransitionSystem {
         }
     }
 
-    /// Processes `CharacterControlTransitions` for entities without any `ControlInputEvent`.
+    /// Processes `CharacterInputReactions` for entities without any `ControlInputEvent`.
     ///
     /// Checks the `ControllerInput` state for any `Hold` and `Fallback` transitions.
     fn process_hold_and_fallback_transitions(
         &self,
-        CharacterControlTransitionsTransitionResources {
+        CharacterInputReactionsTransitionResources {
             ref entities,
             ref controller_inputs,
-            ref character_control_transitions_handles,
-            ref character_control_transitions_assets,
+            ref character_input_reactions_handles,
+            ref character_input_reactions_assets,
             ref mut sequence_ids,
             ref mut charge_use_ec,
-        }: &mut CharacterControlTransitionsTransitionResources,
+        }: &mut CharacterInputReactionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
     ) {
         (
             entities,
-            character_control_transitions_handles,
+            character_input_reactions_handles,
             controller_inputs,
             !&self.processed_entities,
         )
             .join()
             .for_each(
-                |(entity, character_control_transitions_handle, controller_input, _)| {
-                    let character_control_transitions = character_control_transitions_assets
-                        .get(character_control_transitions_handle)
-                        .expect("Expected `CharacterControlTransitions` to be loaded.");
+                |(entity, character_input_reactions_handle, controller_input, _)| {
+                    let character_input_reactions = character_input_reactions_assets
+                        .get(character_input_reactions_handle)
+                        .expect("Expected `CharacterInputReactions` to be loaded.");
 
-                    let transition_sequence_id = character_control_transitions
+                    let transition_sequence_id = character_input_reactions
                         .iter()
                         .filter_map(|character_control_transition| {
                             let control_transition =
@@ -454,14 +454,14 @@ impl CharacterControlTransitionsTransitionSystem {
     }
 }
 
-impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
-    type SystemData = CharacterControlTransitionsTransitionSystemData<'s>;
+impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
+    type SystemData = CharacterInputReactionsTransitionSystemData<'s>;
 
     fn run(
         &mut self,
-        CharacterControlTransitionsTransitionSystemData {
+        CharacterInputReactionsTransitionSystemData {
             control_input_ec,
-            mut character_control_transitions_transition_resources,
+            mut character_input_reactions_transition_resources,
             control_transition_requirement_system_data,
         }: Self::SystemData,
     ) {
@@ -477,7 +477,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
             .for_each(|ev| match ev {
                 ControlInputEvent::ControlActionPress(control_action_event_data) => {
                     self.handle_action_event(
-                        &mut character_control_transitions_transition_resources,
+                        &mut character_input_reactions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
                         true,
@@ -485,7 +485,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 }
                 ControlInputEvent::ControlActionRelease(control_action_event_data) => {
                     self.handle_action_event(
-                        &mut character_control_transitions_transition_resources,
+                        &mut character_input_reactions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
                         false,
@@ -493,7 +493,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 }
                 ControlInputEvent::AxisMoved(axis_move_event_data) => {
                     self.handle_axis_event(
-                        &mut character_control_transitions_transition_resources,
+                        &mut character_input_reactions_transition_resources,
                         &control_transition_requirement_system_data,
                         *axis_move_event_data,
                     );
@@ -501,7 +501,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
             });
 
         self.process_hold_and_fallback_transitions(
-            &mut character_control_transitions_transition_resources,
+            &mut character_input_reactions_transition_resources,
             &control_transition_requirement_system_data,
         );
     }
