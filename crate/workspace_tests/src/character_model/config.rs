@@ -27,12 +27,12 @@ mod test {
 sequences:
   stand:
     next: 'walk'
-    transitions: { press_defend: 'stand_attack_1' }
+    input_reactions: { press_defend: 'stand_attack_1' }
     frames:
       - wait: 5
         sprite: { sheet: 1, index: 3 }
         body: [{ box: { x: 25, y: 11, w: 31, h: 68 } }]
-        transitions:
+        input_reactions:
           press_attack: 'stand_attack_0'
           release_attack:
             - { next: 'walk', requirements: [{ charge: 90 }] }
@@ -42,11 +42,11 @@ sequences:
 
   custom_sequence_0:
     next: 'custom_sequence_1'
-    transitions: { press_defend: 'custom_sequence_4' }
+    input_reactions: { press_defend: 'custom_sequence_4' }
     frames:
       - wait: 5
         sprite: { sheet: 1, index: 3 }
-        transitions:
+        input_reactions:
           press_attack: 'custom_sequence_1'
           release_attack:
             - { next: 'custom_sequence_2' }

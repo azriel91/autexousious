@@ -1,6 +1,7 @@
 # Used in `ControlTransitionsSequenceLoader` test.
-transitions:
-  # need to copy from character_transitions_default, as TOML doesn't support overriding to `None`.
+input_reactions:
+  # need to copy from character_input_reactions_default, as TOML doesn't support overriding to
+  # `None`.
   press_attack: "stand_attack_0"
   hold_jump: "jump"
   hold_special: "dash_forward"
@@ -17,7 +18,7 @@ transitions:
   fallback: { next: "run_stop", requirements: [{ input_dir_x: "not_same" }] }
 
 frames:
-  - transitions:
+  - input_reactions:
       # override sequence
       press_attack: "stand_attack_1"
       # override sequence

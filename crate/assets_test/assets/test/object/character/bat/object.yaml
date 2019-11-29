@@ -5,14 +5,14 @@ sequences:
   stand: # 0
     # Used in the following tests:
     #
-    # * `CharacterControlTransitionsTransitionSystem`
-    transitions:
+    # * `CharacterInputReactionsTransitionSystem`
+    input_reactions:
       press_attack: stand_attack_0
     frames:
       - wait: 1
         sprite: { sheet: 0, index: 5 }
         body: [box: { x: 169, y: 5, w: 12, h: 20 }]
-        transitions:
+        input_reactions:
           press_jump: jump
           hold_jump:
             next: dash_forward
@@ -29,7 +29,7 @@ sequences:
       - wait: 1
         sprite: { sheet: 0, index: 5 }
         body: [box: { x: 169, y: 5, w: 12, h: 20 }]
-        transitions:
+        input_reactions:
           press_attack: stand_attack_1
 
   stand_attack_0: # 1
@@ -66,7 +66,7 @@ sequences:
           - hit:
               hp_damage: 20
             bounds: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: stand_attack_1
 
   stand_attack_1: # 2
@@ -205,12 +205,12 @@ sequences:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
         body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: jump_attack
       - wait: 1
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: jump_attack
 
   jump_descend: # 10
@@ -218,12 +218,12 @@ sequences:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
         body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: jump_attack
       - wait: 1
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: jump_attack
 
   jump_descend_land: # 11
@@ -310,12 +310,12 @@ sequences:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
         body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
       - wait: 1
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
 
   dash_forward_ascend: # 14
@@ -323,12 +323,12 @@ sequences:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
         body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
       - wait: 1
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
 
   dash_forward_descend: # 15
@@ -336,12 +336,12 @@ sequences:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
         body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
       - wait: 1
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
+        input_reactions:
           press_attack: dash_attack
 
   dash_back: # 16

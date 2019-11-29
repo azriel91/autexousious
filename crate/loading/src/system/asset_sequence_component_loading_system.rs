@@ -6,7 +6,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use audio_model::loaded::SourceSequenceHandles;
-use character_loading::{IrsLoader, IrsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
+use character_loading::{IrsLoader, IrsLoaderParams, CHARACTER_INPUT_REACTIONS_DEFAULT};
 use character_model::{
     config::{CharacterSequence, CharacterSequenceName},
     loaded::{CharacterIrsHandle, CharacterIrsHandles},
@@ -230,7 +230,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .sequences
                                 .iter()
                                 .map(|(sequence_id, sequence)| {
-                                    let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+                                    let sequence_default = CHARACTER_INPUT_REACTIONS_DEFAULT
                                         .object_definition
                                         .sequences
                                         .get(sequence_id);

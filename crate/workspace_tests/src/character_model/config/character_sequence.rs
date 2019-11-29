@@ -13,13 +13,13 @@ mod tests {
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
     const SEQUENCE_WITH_INPUT_REACTIONS: &str = r#"---
-transitions:
+input_reactions:
   press_defend: "stand_attack_1"
 
 frames:
   - wait: 2
     sprite: { sheet: 0, index: 4 }
-    transitions:
+    input_reactions:
       press_attack: "stand_attack_0"
       hold_jump: { next: "jump" }
 "#;

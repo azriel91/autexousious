@@ -3,13 +3,13 @@
 //! Processes character configuration into the loaded character model.
 
 pub use crate::{
+    character_input_reactions_default::CHARACTER_INPUT_REACTIONS_DEFAULT,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
-    character_transitions_default::CHARACTER_TRANSITIONS_DEFAULT,
     irs_loader::IrsLoader,
     irs_loader_params::IrsLoaderParams,
 };
 
+mod character_input_reactions_default;
 mod character_loading_bundle;
-mod character_transitions_default;
 mod irs_loader;
 mod irs_loader_params;

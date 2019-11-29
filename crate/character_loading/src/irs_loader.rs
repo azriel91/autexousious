@@ -37,14 +37,14 @@ impl IrsLoader {
             .iter()
             .map(|frame| {
                 let config_transitions_default =
-                    sequence_default.and_then(|sequence| sequence.transitions.as_ref());
+                    sequence_default.and_then(|sequence| sequence.input_reactions.as_ref());
                 Self::config_to_loaded_transitions_handle(
                     loader,
                     character_input_reactions_assets,
                     sequence_id_mappings,
                     config_transitions_default,
-                    sequence.transitions.as_ref(),
-                    &frame.transitions,
+                    sequence.input_reactions.as_ref(),
+                    &frame.input_reactions,
                 )
             })
             .collect::<Vec<loaded::CharacterInputReactionsHandle>>();

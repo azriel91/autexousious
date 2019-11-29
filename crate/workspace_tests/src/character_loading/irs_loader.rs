@@ -31,12 +31,12 @@ mod tests {
     };
 
     use character_loading::{
-        CharacterLoadingBundle, IrsLoader, IrsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT,
+        CharacterLoadingBundle, IrsLoader, IrsLoaderParams, CHARACTER_INPUT_REACTIONS_DEFAULT,
     };
 
     #[test]
     fn loads_irses() -> Result<(), Error> {
-        let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+        let sequence_default = CHARACTER_INPUT_REACTIONS_DEFAULT
             .object_definition
             .sequences
             .get(&SequenceNameString::Name(CharacterSequenceName::Stand));
@@ -202,7 +202,7 @@ mod tests {
         sequence_id_mappings
     }
 
-    // Should overwrite and inherit sequence transitions.
+    // Should overwrite and inherit sequence input reactions.
     fn expected_input_reactions_0() -> CharacterInputReactions {
         CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition {
@@ -309,7 +309,7 @@ mod tests {
         ]))
     }
 
-    // Should inherit from sequence transitions.
+    // Should inherit from sequence input reactions.
     fn expected_input_reactions_1() -> CharacterInputReactions {
         CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition {

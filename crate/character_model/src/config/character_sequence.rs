@@ -15,7 +15,7 @@ pub struct CharacterSequence {
     ///
     /// This is shared by all frames in the sequence, unless overridden.
     #[serde(default)]
-    pub transitions: Option<CharacterInputReactions>,
+    pub input_reactions: Option<CharacterInputReactions>,
 }
 
 impl GameObjectSequence for CharacterSequence {

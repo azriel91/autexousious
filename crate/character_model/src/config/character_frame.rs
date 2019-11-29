@@ -13,7 +13,7 @@ pub struct CharacterFrame {
     pub object_frame: ObjectFrame,
     /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
     #[serde(default)]
-    pub transitions: CharacterInputReactions,
+    pub input_reactions: CharacterInputReactions,
 }
 
 impl GameObjectFrame for CharacterFrame {
