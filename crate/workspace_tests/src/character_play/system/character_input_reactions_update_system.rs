@@ -9,8 +9,8 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::loaded::{
-        CharacterControlTransition, CharacterCtsHandle, CharacterInputReactions,
-        CharacterInputReactionsHandle,
+        CharacterControlTransition, CharacterInputReactions, CharacterInputReactionsHandle,
+        CharacterIrsHandle,
     };
     use game_input_model::ControlAction;
     use sequence_model::{
@@ -45,12 +45,12 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(CharacterInputReactionsUpdateSystem::new(), "", &[])
             .with_effect(move |world| {
-                let character_cts_handle = SequenceQueries::character_cts_handle(
+                let character_irs_handle = SequenceQueries::character_irs_handle(
                     world,
                     &*CHAR_BAT_SLUG,
                     SequenceId::new(1),
                 );
-                initial_values(world, frame_index_clock, character_cts_handle)
+                initial_values(world, frame_index_clock, character_irs_handle)
             })
             .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
@@ -63,23 +63,23 @@ mod tests {
     fn initial_values(
         world: &mut World,
         frame_index_clock_setup: FrameIndexClock,
-        character_cts_handle_initial: CharacterCtsHandle,
+        character_irs_handle_initial: CharacterIrsHandle,
     ) {
         let (
             _entities,
             _sequence_ids,
             mut frame_index_clocks,
             _character_input_reactions_handles,
-            mut character_cts_handles,
+            mut character_irs_handles,
         ) = world.system_data::<TestSystemData>();
 
-        (&mut frame_index_clocks, &mut character_cts_handles)
+        (&mut frame_index_clocks, &mut character_irs_handles)
             .join()
             // kcov-ignore-start
-            .for_each(|(frame_index_clock, character_cts_handle)| {
+            .for_each(|(frame_index_clock, character_irs_handle)| {
                 *frame_index_clock = frame_index_clock_setup;
 
-                *character_cts_handle = character_cts_handle_initial.clone();
+                *character_irs_handle = character_irs_handle_initial.clone();
             });
         // kcov-ignore-end
     }
@@ -144,7 +144,7 @@ mod tests {
             sequence_ids,
             frame_index_clocks,
             character_input_reactions_handles,
-            character_cts_handles,
+            character_irs_handles,
         ) = world.system_data::<TestSystemData>();
 
         (
@@ -152,7 +152,7 @@ mod tests {
             &sequence_ids,
             &frame_index_clocks,
             &character_input_reactions_handles,
-            &character_cts_handles,
+            &character_irs_handles,
         )
             .join()
             // kcov-ignore-start
@@ -172,14 +172,14 @@ mod tests {
             _sequence_ids,
             frame_index_clocks,
             character_input_reactions_handles,
-            character_cts_handles,
+            character_irs_handles,
         ) = world.system_data::<TestSystemData>();
 
         (
             &entities,
             &frame_index_clocks,
             &character_input_reactions_handles,
-            &character_cts_handles,
+            &character_irs_handles,
         )
             .join()
             // kcov-ignore-start
@@ -199,6 +199,6 @@ mod tests {
         ReadStorage<'s, SequenceId>,
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, CharacterInputReactionsHandle>,
-        WriteStorage<'s, CharacterCtsHandle>,
+        WriteStorage<'s, CharacterIrsHandle>,
     );
 }

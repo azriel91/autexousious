@@ -2,8 +2,8 @@ use sequence_model_derive::frame_component_data;
 
 use crate::loaded::CharacterInputReactionsHandle;
 
-/// Sequence of sequence transitions upon control input.
+/// Sequence of input reactions.
 ///
-/// CTS is short for control transitions sequence.
+/// IRS is short for `InputReactionsSequence`.
 #[frame_component_data(CharacterInputReactionsHandle)]
-pub struct CharacterCts;
+pub struct CharacterIrs;

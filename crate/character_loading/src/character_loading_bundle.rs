@@ -6,7 +6,7 @@ use amethyst::{
 };
 use character_model::{
     config::CharacterDefinition,
-    loaded::{CharacterCts, CharacterInputReactions},
+    loaded::{CharacterInputReactions, CharacterIrs},
 };
 use derive_new::new;
 
@@ -17,7 +17,7 @@ pub const CHARACTER_PROCESSOR: &str = "character_processor";
 ///
 /// * `Processor::<CharacterDefinition>`
 /// * `Processor::<CharacterInputReactions>`
-/// * `Processor::<CharacterCts>`
+/// * `Processor::<CharacterIrs>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
 
@@ -38,8 +38,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             &["character_definition_processor"],
         ); // kcov-ignore
         builder.add(
-            Processor::<CharacterCts>::new(),
-            "character_cts_processor",
+            Processor::<CharacterIrs>::new(),
+            "character_irs_processor",
             &["character_input_reactions_processor"],
         ); // kcov-ignore
         Ok(())

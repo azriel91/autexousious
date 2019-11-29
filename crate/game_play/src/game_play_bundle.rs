@@ -6,7 +6,7 @@ use amethyst::{
 use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::loaded::CharacterCtsHandles;
+use character_model::loaded::CharacterIrsHandles;
 use character_play::{
     CharacterInputReactionsTransitionSystem, CharacterInputReactionsUpdateSystem,
 };
@@ -103,7 +103,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(InteractionsSequenceHandles);
         sequence_component_update_system!(SpawnsSequenceHandles);
         sequence_component_update_system!(SequenceEndTransitions);
-        sequence_component_update_system!(CharacterCtsHandles);
+        sequence_component_update_system!(CharacterIrsHandles);
         sequence_component_update_system!(TintSequenceHandles);
         sequence_component_update_system!(ScaleSequenceHandles);
 

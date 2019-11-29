@@ -4,7 +4,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use character_model::loaded::{CharacterCts, CharacterCtsHandle, CharacterInputReactionsHandle};
+use character_model::loaded::{CharacterInputReactionsHandle, CharacterIrs, CharacterIrsHandle};
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
@@ -26,12 +26,12 @@ pub struct CharacterInputReactionsUpdateSystemData<'s> {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `CharacterCtsHandle` component storage.
+    /// `CharacterIrsHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub character_cts_handles: ReadStorage<'s, CharacterCtsHandle>,
-    /// `CharacterCts` assets.
+    pub character_irs_handles: ReadStorage<'s, CharacterIrsHandle>,
+    /// `CharacterIrs` assets.
     #[derivative(Debug = "ignore")]
-    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
+    pub character_irs_assets: Read<'s, AssetStorage<CharacterIrs>>,
     /// `CharacterInputReactionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_input_reactions_handles: WriteStorage<'s, CharacterInputReactionsHandle>,
@@ -47,8 +47,8 @@ impl<'s> System<'s> for CharacterInputReactionsUpdateSystem {
         &mut self,
         CharacterInputReactionsUpdateSystemData {
             sequence_update_ec,
-            character_cts_handles,
-            character_cts_assets,
+            character_irs_handles,
+            character_irs_assets,
             mut character_input_reactions_handles,
             character_sequence_names,
         }: Self::SystemData,
@@ -74,20 +74,20 @@ impl<'s> System<'s> for CharacterInputReactionsUpdateSystem {
                 let frame_index = ev.frame_index();
 
                 // `SequenceUpdateEvent`s are also sent for non-object entities such as map layers
-                if let Some(character_cts_handle) = character_cts_handles.get(entity) {
-                    let character_cts = character_cts_assets
-                        .get(character_cts_handle)
-                        .expect("Expected `CharacterCts` to be loaded.");
+                if let Some(character_irs_handle) = character_irs_handles.get(entity) {
+                    let character_irs = character_irs_assets
+                        .get(character_irs_handle)
+                        .expect("Expected `CharacterIrs` to be loaded.");
 
-                    if frame_index < character_cts.len() {
-                        let character_input_reactions_handle = &character_cts[frame_index];
+                    if frame_index < character_irs.len() {
+                        let character_input_reactions_handle = &character_irs[frame_index];
 
                         character_input_reactions_handles
                             .insert(entity, character_input_reactions_handle.clone())
                             .expect("Failed to insert `CharacterInputReactions` component.");
                     } else {
                         let character_sequence_name = character_sequence_names.get(entity).expect(
-                            "Expected entity with `CharacterCtsHandle` \
+                            "Expected entity with `CharacterIrsHandle` \
                              to have `SequenceId`.",
                         );
 

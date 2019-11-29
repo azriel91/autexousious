@@ -1,7 +1,7 @@
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence, CharacterSequenceName},
-    loaded::{self, CharacterControlTransition, CharacterCts, CharacterCtsHandle},
+    loaded::{self, CharacterControlTransition, CharacterIrs, CharacterIrsHandle},
 };
 use game_input_model::{Axis, ControlAction};
 use object_model::config::GameObjectSequence;
@@ -13,25 +13,25 @@ use sequence_model::{
     },
 };
 
-use crate::CtsLoaderParams;
+use crate::IrsLoaderParams;
 
-/// Loads control transitions configuration into the loaded model.
+/// Loads `InputReactionsSequence` configuration into the loaded model.
 #[derive(Debug)]
-pub enum CtsLoader {}
+pub enum IrsLoader {}
 
-impl CtsLoader {
-    /// Extracts a `CharacterCts` from a `CharacterSequence`.
+impl IrsLoader {
+    /// Extracts a `CharacterIrs` from a `CharacterSequence`.
     pub fn load(
-        CtsLoaderParams {
+        IrsLoaderParams {
             loader,
             character_input_reactions_assets,
-            character_cts_assets,
-        }: &CtsLoaderParams,
+            character_irs_assets,
+        }: &IrsLoaderParams,
         sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
         sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
-    ) -> CharacterCtsHandle {
-        let cts = sequence
+    ) -> CharacterIrsHandle {
+        let irs = sequence
             .object_sequence()
             .frames
             .iter()
@@ -49,9 +49,9 @@ impl CtsLoader {
             })
             .collect::<Vec<loaded::CharacterInputReactionsHandle>>();
 
-        let character_cts = CharacterCts::new(cts);
+        let character_irs = CharacterIrs::new(irs);
 
-        loader.load_from_data(character_cts, (), character_cts_assets)
+        loader.load_from_data(character_irs, (), character_irs_assets)
     }
 
     /// Maps `config::CharacterInputReactions` to `loaded::CharacterInputReactions`

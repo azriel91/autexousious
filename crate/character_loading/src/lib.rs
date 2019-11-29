@@ -5,11 +5,11 @@
 pub use crate::{
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
     character_transitions_default::CHARACTER_TRANSITIONS_DEFAULT,
-    cts_loader::CtsLoader,
-    cts_loader_params::CtsLoaderParams,
+    irs_loader::IrsLoader,
+    irs_loader_params::IrsLoaderParams,
 };
 
 mod character_loading_bundle;
 mod character_transitions_default;
-mod cts_loader;
-mod cts_loader_params;
+mod irs_loader;
+mod irs_loader_params;

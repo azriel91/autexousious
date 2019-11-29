@@ -2,7 +2,7 @@
 mod test {
     use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
-    use character_model::{config::CharacterDefinition, loaded::CharacterCts};
+    use character_model::{config::CharacterDefinition, loaded::CharacterIrs};
 
     use character_loading::CharacterLoadingBundle;
 
@@ -13,7 +13,7 @@ mod test {
             .with_assertion(|world| {
                 // Panics if the Processors are not added.
                 world.read_resource::<AssetStorage<CharacterDefinition>>();
-                world.read_resource::<AssetStorage<CharacterCts>>();
+                world.read_resource::<AssetStorage<CharacterIrs>>();
             })
             .run()
     }

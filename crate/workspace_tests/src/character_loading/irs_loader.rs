@@ -14,7 +14,7 @@ mod tests {
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
         loaded::{
-            CharacterControlTransition, CharacterCts, CharacterCtsHandle, CharacterInputReactions,
+            CharacterControlTransition, CharacterInputReactions, CharacterIrs, CharacterIrsHandle,
         },
     };
     use charge_model::config::ChargePoints;
@@ -31,11 +31,11 @@ mod tests {
     };
 
     use character_loading::{
-        CharacterLoadingBundle, CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT,
+        CharacterLoadingBundle, IrsLoader, IrsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT,
     };
 
     #[test]
-    fn loads_ctss() -> Result<(), Error> {
+    fn loads_irses() -> Result<(), Error> {
         let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
             .object_definition
             .sequences
@@ -44,9 +44,9 @@ mod tests {
         run_test(
             test_character_sequence(),
             sequence_default,
-            |character_cts, character_input_reactions_assets| {
+            |character_irs, character_input_reactions_assets| {
                 let expected_character_input_reactions = expected_input_reactions_0();
-                let character_input_reactions_handle = character_cts
+                let character_input_reactions_handle = character_irs
                     .get(0)
                     .expect("Expected `CharacterInputReactionsHandle` to exist.");
                 let character_input_reactions = character_input_reactions_assets
@@ -58,7 +58,7 @@ mod tests {
                 );
 
                 let expected_character_input_reactions = expected_input_reactions_1();
-                let character_input_reactions_handle = character_cts
+                let character_input_reactions_handle = character_irs
                     .get(1)
                     .expect("Expected `CharacterInputReactionsHandle` to exist.");
                 let character_input_reactions = character_input_reactions_assets
@@ -75,7 +75,7 @@ mod tests {
     fn run_test(
         sequence: CharacterSequence,
         sequence_default: Option<&'static CharacterSequence>,
-        assertion_fn: fn(&CharacterCts, &AssetStorage<CharacterInputReactions>),
+        assertion_fn: fn(&CharacterIrs, &AssetStorage<CharacterInputReactions>),
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
@@ -83,37 +83,37 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_effect(move |world| {
-                let character_cts_handle = {
-                    let (loader, character_input_reactions_assets, character_cts_assets) =
+                let character_irs_handle = {
+                    let (loader, character_input_reactions_assets, character_irs_assets) =
                         world.system_data::<TestSystemData>();
-                    let character_loader_params = CtsLoaderParams {
+                    let character_loader_params = IrsLoaderParams {
                         loader: &loader,
                         character_input_reactions_assets: &character_input_reactions_assets,
-                        character_cts_assets: &character_cts_assets,
+                        character_irs_assets: &character_irs_assets,
                     };
 
-                    CtsLoader::load(
+                    IrsLoader::load(
                         &character_loader_params,
                         &sequence_id_mappings(),
                         sequence_default,
                         &sequence,
                     )
                 };
-                world.insert(character_cts_handle);
+                world.insert(character_irs_handle);
             })
             .with_effect(|_| {}) // Allow texture to load.
             .with_assertion(move |world| {
-                let character_cts_handle = world.read_resource::<CharacterCtsHandle>().clone();
-                let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
-                let character_cts = character_cts_assets
-                    .get(&character_cts_handle)
-                    .expect("Expected `CharacterCts` to be loaded.");
+                let character_irs_handle = world.read_resource::<CharacterIrsHandle>().clone();
+                let character_irs_assets = world.read_resource::<AssetStorage<CharacterIrs>>();
+                let character_irs = character_irs_assets
+                    .get(&character_irs_handle)
+                    .expect("Expected `CharacterIrs` to be loaded.");
 
                 // Assert the values for each handle.
                 let character_input_reactions_assets =
                     world.read_resource::<AssetStorage<CharacterInputReactions>>();
 
-                assertion_fn(character_cts, &character_input_reactions_assets);
+                assertion_fn(character_irs, &character_input_reactions_assets);
             })
             .run_isolated()
     }
@@ -389,6 +389,6 @@ mod tests {
     type TestSystemData<'s> = (
         ReadExpect<'s, Loader>,
         Read<'s, AssetStorage<CharacterInputReactions>>,
-        Read<'s, AssetStorage<CharacterCts>>,
+        Read<'s, AssetStorage<CharacterIrs>>,
     );
 }

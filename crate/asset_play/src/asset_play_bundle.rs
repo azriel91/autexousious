@@ -5,7 +5,7 @@ use amethyst::{
 };
 use asset_model::play::AssetWorld;
 use audio_model::loaded::SourceSequenceHandles;
-use character_model::loaded::CharacterCtsHandles;
+use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
@@ -53,7 +53,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<BodySequenceHandles>();
         asset_world.register::<InteractionsSequenceHandles>();
         asset_world.register::<SpawnsSequenceHandles>();
-        asset_world.register::<CharacterCtsHandles>();
+        asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<TintSequenceHandles>();
         asset_world.register::<ScaleSequenceHandles>();
         asset_world.register::<UiLabel>();
@@ -133,8 +133,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::type_name(),
+            ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::new(),
+            &ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::type_name(),
             &[],
         );
         builder.add(

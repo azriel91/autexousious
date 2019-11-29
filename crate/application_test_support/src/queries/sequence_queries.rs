@@ -4,7 +4,7 @@ use amethyst::{
 };
 use asset_model::{config::AssetSlug, loaded::AssetItemIds, play::AssetWorld};
 use character_model::loaded::{
-    CharacterCts, CharacterCtsHandle, CharacterCtsHandles, CharacterInputReactionsHandle,
+    CharacterInputReactionsHandle, CharacterIrs, CharacterIrsHandle, CharacterIrsHandles,
 };
 use collision_model::loaded::{
     BodySequenceHandle, BodySequenceHandles, InteractionsSequenceHandle,
@@ -24,7 +24,7 @@ use crate::AssetQueries;
 pub struct SequenceQueries;
 
 impl SequenceQueries {
-    /// Returns the `CharacterCtsHandle` for the specified sequence ID.
+    /// Returns the `CharacterIrsHandle` for the specified sequence ID.
     ///
     /// This function assumes the character for the specified slug is instantiated in the world.
     ///
@@ -32,12 +32,12 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
-    pub fn character_cts_handle(
+    /// * `sequence_id`: Sequence ID whose `CharacterIrsHandle` to retrieve.
+    pub fn character_irs_handle(
         world: &World,
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
-    ) -> CharacterCtsHandle {
+    ) -> CharacterIrsHandle {
         let asset_id = AssetQueries::id(world, &asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
@@ -46,22 +46,22 @@ impl SequenceQueries {
             .unwrap_or_else(|| panic!("Expected `ItemIds` to exist for `{:?}`.", asset_slug))
             .first()
             .unwrap_or_else(|| panic!("Expected one `ItemId` to exist for `{:?}`.", asset_slug));
-        let character_cts_handles = asset_world
-            .read_storage::<CharacterCtsHandles>()
+        let character_irs_handles = asset_world
+            .read_storage::<CharacterIrsHandles>()
             .get(item_id_first.0)
             .cloned()
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `CharacterCtsHandles` to exist for `{:?}`.",
+                    "Expected `CharacterIrsHandles` to exist for `{:?}`.",
                     asset_slug
                 )
             });
 
-        character_cts_handles
+        character_irs_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `CharacterCtsHandle` to exist for sequence ID: `{:?}`.",
+                    "Expected `CharacterIrsHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -76,7 +76,7 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterIrsHandle` to retrieve.
     /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
     pub fn character_input_reactions_handle(
         world: &World,
@@ -84,14 +84,14 @@ impl SequenceQueries {
         sequence_id: SequenceId,
         frame_index: usize,
     ) -> CharacterInputReactionsHandle {
-        let character_cts_handle = Self::character_cts_handle(world, asset_slug, sequence_id);
+        let character_irs_handle = Self::character_irs_handle(world, asset_slug, sequence_id);
 
-        let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
-        let character_cts = character_cts_assets
-            .get(&character_cts_handle)
-            .expect("Expected `CharacterCts` to be loaded.");
+        let character_irs_assets = world.read_resource::<AssetStorage<CharacterIrs>>();
+        let character_irs = character_irs_assets
+            .get(&character_irs_handle)
+            .expect("Expected `CharacterIrs` to be loaded.");
 
-        character_cts[frame_index].clone()
+        character_irs[frame_index].clone()
     }
 
     /// Returns the `SequenceEndTransition` for the specified sequence ID.

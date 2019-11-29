@@ -11,12 +11,12 @@ mod tests {
     };
     use application::IoUtils;
     use application_test_support::AutexousiousApplication;
-    use character_loading::{CtsLoader, CtsLoaderParams};
+    use character_loading::{IrsLoader, IrsLoaderParams};
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName},
         loaded::{
-            CharacterCts, CharacterCtsHandle, CharacterInputReactions,
-            CharacterInputReactionsHandle,
+            CharacterInputReactions, CharacterInputReactionsHandle, CharacterIrs,
+            CharacterIrsHandle,
         },
     };
     use charge_model::{
@@ -370,45 +370,45 @@ mod tests {
             .with_system(CharacterInputReactionsTransitionSystem::new(), "", &[])
             .with_effect(register_reader)
             .with_effect(move |world| {
-                let character_cts_handle = {
-                    let (loader, character_input_reactions_assets, character_cts_assets) = world
+                let character_irs_handle = {
+                    let (loader, character_input_reactions_assets, character_irs_assets) = world
                         .system_data::<(
                             ReadExpect<'_, Loader>,
                             Read<'_, AssetStorage<CharacterInputReactions>>,
-                            Read<'_, AssetStorage<CharacterCts>>,
+                            Read<'_, AssetStorage<CharacterIrs>>,
                         )>();
 
-                    let cts_loader_params = CtsLoaderParams {
+                    let irs_loader_params = IrsLoaderParams {
                         loader: &loader,
                         character_input_reactions_assets: &character_input_reactions_assets,
-                        character_cts_assets: &character_cts_assets,
+                        character_irs_assets: &character_irs_assets,
                     };
                     let test_character_sequence = test_character_sequence();
 
-                    CtsLoader::load(
-                        &cts_loader_params,
+                    IrsLoader::load(
+                        &irs_loader_params,
                         &sequence_id_mappings(),
                         None,
                         &test_character_sequence,
                     )
                 };
 
-                world.insert(character_cts_handle);
+                world.insert(character_irs_handle);
             })
             // Allow `AssetStorage`s to process loaded data.
             .with_effect(move |world| {
                 let character_input_reactions_handle = {
-                    let character_cts_assets =
-                        world.system_data::<Read<'_, AssetStorage<CharacterCts>>>();
+                    let character_irs_assets =
+                        world.system_data::<Read<'_, AssetStorage<CharacterIrs>>>();
 
-                    let character_cts_handle = world.read_resource::<CharacterCtsHandle>().clone();
-                    let character_cts = character_cts_assets
-                        .get(&character_cts_handle)
-                        .expect("Expected `character_cts` to be loaded.");
-                    character_cts
+                    let character_irs_handle = world.read_resource::<CharacterIrsHandle>().clone();
+                    let character_irs = character_irs_assets
+                        .get(&character_irs_handle)
+                        .expect("Expected `character_irs` to be loaded.");
+                    character_irs
                         .first()
                         .expect(
-                            "Expected `character_cts` to contain one \
+                            "Expected `character_irs` to contain one \
                              `character_input_reactions_handle`.",
                         )
                         .clone()
