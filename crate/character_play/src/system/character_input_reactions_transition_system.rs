@@ -19,8 +19,8 @@ use game_input_model::{
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-    ControlTransitionLike, FallbackTransition, SequenceId,
+    ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransitionLike,
+    FallbackTransition, InputReaction, SequenceId,
 };
 
 use crate::ControlTransitionRequirementSystemData;
@@ -103,12 +103,12 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
-                    let control_transition = *character_control_transition.control_transition();
+                    let input_reaction = *character_control_transition.input_reaction();
                     let control_transition_requirements =
                         &character_control_transition.control_transition_requirements;
 
-                    match control_transition {
-                        ControlTransition::ActionPress(ActionPress {
+                    match input_reaction {
+                        InputReaction::ActionPress(ActionPress {
                             action,
                             sequence_id,
                         }) => {
@@ -118,7 +118,7 @@ impl CharacterInputReactionsTransitionSystem {
                                 None
                             }
                         }
-                        ControlTransition::ActionRelease(ActionRelease {
+                        InputReaction::ActionRelease(ActionRelease {
                             action,
                             sequence_id,
                         }) => {
@@ -128,7 +128,7 @@ impl CharacterInputReactionsTransitionSystem {
                                 None
                             }
                         }
-                        ControlTransition::ActionHold(action_hold) => {
+                        InputReaction::ActionHold(action_hold) => {
                             Self::hold_transition_action(action_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
                         }
@@ -184,26 +184,26 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
-                    let control_transition = *character_control_transition.control_transition();
+                    let input_reaction = *character_control_transition.input_reaction();
                     let control_transition_requirements =
                         &character_control_transition.control_transition_requirements;
 
-                    match control_transition {
-                        ControlTransition::AxisPress(AxisTransition { axis, sequence_id }) => {
+                    match input_reaction {
+                        InputReaction::AxisPress(AxisTransition { axis, sequence_id }) => {
                             if relative_ne!(0., value) && control_axis == axis {
                                 Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
                         }
-                        ControlTransition::AxisRelease(AxisTransition { axis, sequence_id }) => {
+                        InputReaction::AxisRelease(AxisTransition { axis, sequence_id }) => {
                             if relative_eq!(0., value) && control_axis == axis {
                                 Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
                         }
-                        ControlTransition::AxisHold(axis_hold) => {
+                        InputReaction::AxisHold(axis_hold) => {
                             Self::hold_transition_axis(axis_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
                         }
@@ -260,24 +260,23 @@ impl CharacterInputReactionsTransitionSystem {
                     let transition_sequence_id = character_input_reactions
                         .iter()
                         .filter_map(|character_control_transition| {
-                            let control_transition =
-                                character_control_transition.control_transition();
+                            let input_reaction = character_control_transition.input_reaction();
                             let control_transition_requirements =
                                 &character_control_transition.control_transition_requirements;
 
-                            match control_transition {
-                                ControlTransition::ActionHold(action_hold) => {
+                            match input_reaction {
+                                InputReaction::ActionHold(action_hold) => {
                                     Self::hold_transition_action(*action_hold, *controller_input)
                                         .map(|transition| {
                                             (transition, control_transition_requirements)
                                         })
                                 }
-                                ControlTransition::AxisHold(axis_hold) => {
+                                InputReaction::AxisHold(axis_hold) => {
                                     Self::hold_transition_axis(*axis_hold, *controller_input).map(
                                         |transition| (transition, control_transition_requirements),
                                     )
                                 }
-                                ControlTransition::Fallback(FallbackTransition { sequence_id }) => {
+                                InputReaction::Fallback(FallbackTransition { sequence_id }) => {
                                     Some((*sequence_id, control_transition_requirements))
                                 }
                                 _ => None,

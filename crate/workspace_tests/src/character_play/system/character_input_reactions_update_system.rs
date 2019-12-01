@@ -14,14 +14,14 @@ mod tests {
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ActionPress, ControlTransition, InputReactions, SequenceId},
+        loaded::{ActionPress, InputReaction, InputReactions, SequenceId},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
     use character_play::CharacterInputReactionsUpdateSystem;
 
     #[test]
-    fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
+    fn updates_input_reactions_on_sequence_begin_event() -> Result<(), Error> {
         run_test(
             // First frame in the sequence.
             FrameIndexClock::new_with_value(5, 0),
@@ -30,7 +30,7 @@ mod tests {
     }
 
     #[test]
-    fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
+    fn updates_input_reactions_on_frame_begin_event() -> Result<(), Error> {
         run_test(
             // Third frame in the sequence.
             FrameIndexClock::new_with_value(5, 2),
@@ -56,7 +56,7 @@ mod tests {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })
-            .with_assertion(|world| expect_transitions(world, transitions()))
+            .with_assertion(|world| expect_input_reactions(world, input_reactions()))
             .run_isolated()
     }
 
@@ -84,7 +84,7 @@ mod tests {
         // kcov-ignore-end
     }
 
-    fn expect_transitions(
+    fn expect_input_reactions(
         world: &mut World,
         expected_character_input_reactions: CharacterInputReactions,
     ) {
@@ -114,17 +114,17 @@ mod tests {
         // kcov-ignore-end
     }
 
-    fn transitions() -> CharacterInputReactions {
+    fn input_reactions() -> CharacterInputReactions {
         CharacterInputReactions::new(InputReactions::new(vec![
             CharacterControlTransition::new(
-                ControlTransition::ActionPress(ActionPress::new(
+                InputReaction::ActionPress(ActionPress::new(
                     ControlAction::Attack,
                     SequenceId::new(1),
                 )),
                 vec![],
             ),
             CharacterControlTransition::new(
-                ControlTransition::ActionPress(ActionPress::new(
+                InputReaction::ActionPress(ActionPress::new(
                     ControlAction::Jump,
                     SequenceId::new(7),
                 )),

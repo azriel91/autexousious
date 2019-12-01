@@ -8,8 +8,8 @@ use object_model::config::GameObjectSequence;
 use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
-        ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        FallbackTransition, InputReactions, SequenceIdMappings,
+        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+        InputReactions, SequenceIdMappings,
     },
 };
 
@@ -78,7 +78,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::ControlTransition::*;
+                    use sequence_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =
@@ -90,7 +90,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode($mode_data {
+                                InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                 }),
@@ -110,7 +110,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode($mode_data {
+                                InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                 }),
@@ -131,7 +131,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterControlTransition::new(
-                                    ControlTransition::$mode($mode_data {
+                                    InputReaction::$mode($mode_data {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
                                     }),
@@ -157,7 +157,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::ControlTransition::*;
+                    use sequence_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =
@@ -169,7 +169,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode(AxisTransition {
+                                InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                 }),
@@ -189,7 +189,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode(AxisTransition {
+                                InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                 }),
@@ -210,7 +210,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterControlTransition::new(
-                                    ControlTransition::$mode(AxisTransition {
+                                    InputReaction::$mode(AxisTransition {
                                         axis: Axis::$axis,
                                         sequence_id: *sequence_id,
                                     }),
@@ -236,7 +236,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::ControlTransition::*;
+                    use sequence_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =
@@ -248,7 +248,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode(FallbackTransition {
+                                InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                 }),
                                 vec![],
@@ -267,7 +267,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode(FallbackTransition {
+                                InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                 }),
                                 control_transition_requirements.clone(),
@@ -287,7 +287,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterControlTransition::new(
-                                    ControlTransition::$mode(FallbackTransition {
+                                    InputReaction::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
                                     }),
                                     control_transition_requirements.clone(),

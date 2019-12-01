@@ -5,13 +5,13 @@ use crate::config::{
     ControlTransitionMultiple, ControlTransitionSingle, SequenceName, SequenceNameString,
 };
 
-/// Variants of how a `ControlTransition` may be specified.
+/// Variants of how a `InputReaction` may be specified.
 ///
 /// This is primarily to make it more ergonomic for users to specify different kinds of values in
 /// configuration.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
-pub enum ControlTransition<SeqName, Req>
+pub enum InputReaction<SeqName, Req>
 where
     SeqName: SequenceName,
     Req: Default,

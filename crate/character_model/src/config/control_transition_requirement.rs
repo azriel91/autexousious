@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::ControlTransitionRequirementParams;
 
-/// Conditions for a control transition to happen.
+/// Conditions for a input reaction to happen.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum ControlTransitionRequirement {

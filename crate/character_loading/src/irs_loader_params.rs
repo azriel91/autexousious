@@ -2,7 +2,7 @@ use amethyst::assets::{AssetStorage, Loader};
 use character_model::loaded::{CharacterInputReactions, CharacterIrs};
 use derivative::Derivative;
 
-/// Resources needed to load a control transitions sequence.
+/// Resources needed to load a input reactions sequence.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct IrsLoaderParams<'s> {

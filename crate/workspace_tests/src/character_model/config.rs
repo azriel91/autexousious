@@ -11,8 +11,8 @@ mod test {
         play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
-        ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
-        SequenceEndTransition, SequenceNameString, Wait,
+        ControlTransitionMultiple, ControlTransitionSingle, InputReaction, SequenceEndTransition,
+        SequenceNameString, Wait,
     };
     use serde_yaml;
     use shape_model::Volume;
@@ -120,10 +120,10 @@ sequences:
                 ..Default::default()
             },
             CharacterInputReactions {
-                press_attack: Some(ControlTransition::SequenceNameString(
-                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
-                )),
-                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
+                press_attack: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                    CharacterSequenceName::StandAttack0,
+                ))),
+                release_attack: Some(InputReaction::Multiple(ControlTransitionMultiple::new(
                     vec![
                         ControlTransitionSingle {
                             next: SequenceNameString::Name(CharacterSequenceName::Walk),
@@ -145,7 +145,7 @@ sequences:
                         },
                     ],
                 ))),
-                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
@@ -154,9 +154,9 @@ sequences:
         )];
 
         let character_input_reactions = CharacterInputReactions {
-            press_defend: Some(ControlTransition::SequenceNameString(
-                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
-            )),
+            press_defend: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                CharacterSequenceName::StandAttack1,
+            ))),
             ..Default::default()
         };
         CharacterSequence::new(
@@ -179,16 +179,16 @@ sequences:
                 ..Default::default()
             },
             CharacterInputReactions {
-                press_attack: Some(ControlTransition::SequenceNameString(
+                press_attack: Some(InputReaction::SequenceNameString(
                     SequenceNameString::String(String::from("custom_sequence_1")),
                 )),
-                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
+                release_attack: Some(InputReaction::Multiple(ControlTransitionMultiple::new(
                     vec![ControlTransitionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
                         requirements: vec![],
                     }],
                 ))),
-                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
                     requirements: vec![],
                 })),
@@ -197,7 +197,7 @@ sequences:
         )];
 
         let character_input_reactions = CharacterInputReactions {
-            press_defend: Some(ControlTransition::SequenceNameString(
+            press_defend: Some(InputReaction::SequenceNameString(
                 SequenceNameString::String(String::from("custom_sequence_4")),
             )),
             ..Default::default()

@@ -6,9 +6,9 @@ pub use self::{
     action_release::ActionRelease,
     asset_sequence_id_mappings::AssetSequenceIdMappings,
     axis_transition::AxisTransition,
-    control_transition::ControlTransition,
     control_transition_like::ControlTransitionLike,
     fallback_transition::FallbackTransition,
+    input_reaction::InputReaction,
     input_reactions::InputReactions,
     sequence_end_transition::SequenceEndTransition,
     sequence_end_transitions::SequenceEndTransitions,
@@ -23,9 +23,9 @@ mod action_press;
 mod action_release;
 mod asset_sequence_id_mappings;
 mod axis_transition;
-mod control_transition;
 mod control_transition_like;
 mod fallback_transition;
+mod input_reaction;
 mod input_reactions;
 mod sequence_end_transition;
 mod sequence_end_transitions;

@@ -6,7 +6,7 @@ use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, Fall
 /// Sequence to transition to on control input.
 #[derive(Clone, Component, Copy, Debug, PartialEq, Eq, new)]
 #[storage(VecStorage)]
-pub enum ControlTransition {
+pub enum InputReaction {
     /// Transition to a specified sequence on control input press event.
     ActionPress(ActionPress),
     /// Transition to a specified sequence on control input enabled state.

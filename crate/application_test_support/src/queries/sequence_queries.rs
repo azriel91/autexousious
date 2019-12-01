@@ -77,7 +77,7 @@ impl SequenceQueries {
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
     /// * `sequence_id`: Sequence ID whose `CharacterIrsHandle` to retrieve.
-    /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
+    /// * `frame_index`: Frame index within the sequence whose input reactions to retrieve.
     pub fn character_input_reactions_handle(
         world: &World,
         asset_slug: &AssetSlug,

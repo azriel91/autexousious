@@ -2,7 +2,7 @@
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
-        ControlTransition, ControlTransitionSingle, SequenceEndTransition, SequenceNameString, Wait,
+        ControlTransitionSingle, InputReaction, SequenceEndTransition, SequenceNameString, Wait,
     };
     use serde_yaml;
     use sprite_model::config::SpriteRef;
@@ -45,10 +45,10 @@ frames:
                 ..Default::default()
             },
             CharacterInputReactions {
-                press_attack: Some(ControlTransition::SequenceNameString(
-                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
-                )),
-                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                press_attack: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                    CharacterSequenceName::StandAttack0,
+                ))),
+                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
@@ -56,9 +56,9 @@ frames:
             }, // kcov-ignore
         )];
         let character_input_reactions = CharacterInputReactions {
-            press_defend: Some(ControlTransition::SequenceNameString(
-                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
-            )),
+            press_defend: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                CharacterSequenceName::StandAttack1,
+            ))),
             ..Default::default()
         };
         let expected = CharacterSequence::new(

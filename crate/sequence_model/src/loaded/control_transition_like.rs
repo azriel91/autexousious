@@ -1,13 +1,13 @@
-use crate::loaded::ControlTransition;
+use crate::loaded::InputReaction;
 
-/// Marks types that has a `ControlTransition` in its composition.
+/// Marks types that has a `InputReaction` in its composition.
 pub trait ControlTransitionLike {
-    /// Returns the underlying `ControlTransition`s.
-    fn control_transition(&self) -> &ControlTransition;
+    /// Returns the underlying `InputReaction`s.
+    fn input_reaction(&self) -> &InputReaction;
 }
 
-impl ControlTransitionLike for ControlTransition {
-    fn control_transition(&self) -> &ControlTransition {
+impl ControlTransitionLike for InputReaction {
+    fn input_reaction(&self) -> &InputReaction {
         self
     }
 }

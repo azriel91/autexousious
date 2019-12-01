@@ -12,7 +12,7 @@ where
 {
     /// Sequence name to transition to.
     pub next: SequenceNameString<SeqName>,
-    /// Additional requirements for the `ControlTransition`.
+    /// Additional requirements for the `InputReaction`.
     #[serde(default)]
     pub requirements: Req,
 }
