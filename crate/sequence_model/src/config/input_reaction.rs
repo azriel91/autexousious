@@ -2,7 +2,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 use crate::config::{
-    ControlTransitionMultiple, ControlTransitionSingle, SequenceName, SequenceNameString,
+    ControlTransitionSingle, InputReactionMultiple, SequenceName, SequenceNameString,
 };
 
 /// Variants of how a `InputReaction` may be specified.
@@ -35,5 +35,5 @@ where
     ///   - { next: "sequence_name_0", extra_0: 0, extra_1: "0" }
     ///   - { next: "sequence_name_1", extra_0: 1, extra_1: "1" }
     /// ```
-    Multiple(ControlTransitionMultiple<SeqName, Req>),
+    Multiple(InputReactionMultiple<SeqName, Req>),
 }

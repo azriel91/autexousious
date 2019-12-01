@@ -11,7 +11,7 @@ mod test {
         play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
-        ControlTransitionMultiple, ControlTransitionSingle, InputReaction, SequenceEndTransition,
+        ControlTransitionSingle, InputReaction, InputReactionMultiple, SequenceEndTransition,
         SequenceNameString, Wait,
     };
     use serde_yaml;
@@ -123,28 +123,22 @@ sequences:
                 press_attack: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
                     CharacterSequenceName::StandAttack0,
                 ))),
-                release_attack: Some(InputReaction::Multiple(ControlTransitionMultiple::new(
-                    vec![
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::Walk),
-                            requirements: vec![ControlTransitionRequirement::Charge(
-                                ChargePoints::new(90),
-                            )],
-                        },
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::Run),
-                            requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
-                                50,
-                            ))],
-                        },
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::RunStop),
-                            requirements: vec![ControlTransitionRequirement::Hp(
-                                HealthPoints::new(30),
-                            )],
-                        },
-                    ],
-                ))),
+                release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
+                    ControlTransitionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::Walk),
+                        requirements: vec![ControlTransitionRequirement::Charge(
+                            ChargePoints::new(90),
+                        )],
+                    },
+                    ControlTransitionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::Run),
+                        requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
+                    },
+                    ControlTransitionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::RunStop),
+                        requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
+                    },
+                ]))),
                 hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
@@ -182,12 +176,12 @@ sequences:
                 press_attack: Some(InputReaction::SequenceNameString(
                     SequenceNameString::String(String::from("custom_sequence_1")),
                 )),
-                release_attack: Some(InputReaction::Multiple(ControlTransitionMultiple::new(
-                    vec![ControlTransitionSingle {
+                release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
+                    ControlTransitionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
                         requirements: vec![],
-                    }],
-                ))),
+                    },
+                ]))),
                 hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
                     requirements: vec![],
