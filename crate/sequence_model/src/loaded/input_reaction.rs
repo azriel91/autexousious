@@ -22,3 +22,9 @@ pub enum InputReaction {
     /// Transition to a specified fallback sequence.
     Fallback(FallbackTransition),
 }
+
+impl AsRef<InputReaction> for InputReaction {
+    fn as_ref(&self) -> &InputReaction {
+        self
+    }
+}

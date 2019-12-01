@@ -1,6 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
-use sequence_model::loaded::{ControlTransitionLike, InputReaction};
+use sequence_model::loaded::InputReaction;
 
 use crate::config::ControlTransitionRequirement;
 
@@ -14,8 +14,8 @@ pub struct CharacterControlTransition {
     pub control_transition_requirements: Vec<ControlTransitionRequirement>,
 }
 
-impl ControlTransitionLike for CharacterControlTransition {
-    fn input_reaction(&self) -> &InputReaction {
+impl AsRef<InputReaction> for CharacterControlTransition {
+    fn as_ref(&self) -> &InputReaction {
         &self.input_reaction
     }
 }

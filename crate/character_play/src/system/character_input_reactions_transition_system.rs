@@ -19,8 +19,8 @@ use game_input_model::{
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransitionLike,
-    FallbackTransition, InputReaction, SequenceId,
+    ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+    SequenceId,
 };
 
 use crate::ControlTransitionRequirementSystemData;
@@ -103,7 +103,8 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
-                    let input_reaction = *character_control_transition.input_reaction();
+                    let input_reaction =
+                        *AsRef::<InputReaction>::as_ref(character_control_transition);
                     let control_transition_requirements =
                         &character_control_transition.control_transition_requirements;
 
@@ -184,7 +185,8 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_control_transition| {
-                    let input_reaction = *character_control_transition.input_reaction();
+                    let input_reaction =
+                        *AsRef::<InputReaction>::as_ref(character_control_transition);
                     let control_transition_requirements =
                         &character_control_transition.control_transition_requirements;
 
@@ -260,7 +262,8 @@ impl CharacterInputReactionsTransitionSystem {
                     let transition_sequence_id = character_input_reactions
                         .iter()
                         .filter_map(|character_control_transition| {
-                            let input_reaction = character_control_transition.input_reaction();
+                            let input_reaction =
+                                AsRef::<InputReaction>::as_ref(character_control_transition);
                             let control_transition_requirements =
                                 &character_control_transition.control_transition_requirements;
 
