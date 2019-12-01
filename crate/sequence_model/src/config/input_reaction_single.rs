@@ -6,7 +6,7 @@ use crate::config::{SequenceName, SequenceNameString};
 /// Configuration type for transition sequence name.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields)]
-pub struct ControlTransitionSingle<SeqName, Req>
+pub struct InputReactionSingle<SeqName, Req>
 where
     SeqName: SequenceName,
 {

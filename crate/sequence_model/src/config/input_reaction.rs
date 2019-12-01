@@ -1,9 +1,7 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{
-    ControlTransitionSingle, InputReactionMultiple, SequenceName, SequenceNameString,
-};
+use crate::config::{InputReactionMultiple, InputReactionSingle, SequenceName, SequenceNameString};
 
 /// Variants of how a `InputReaction` may be specified.
 ///
@@ -27,7 +25,7 @@ where
     /// ```yaml
     /// press_attack: { next: "sequence_name", extra_0: 0, extra_1: "0" }
     /// ```
-    Single(ControlTransitionSingle<SeqName, Req>),
+    Single(InputReactionSingle<SeqName, Req>),
     /// Multiple transitions with sequence name and extra fields.
     ///
     /// ```yaml

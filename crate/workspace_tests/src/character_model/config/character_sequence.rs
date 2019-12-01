@@ -2,7 +2,7 @@
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
-        ControlTransitionSingle, InputReaction, SequenceEndTransition, SequenceNameString, Wait,
+        InputReaction, InputReactionSingle, SequenceEndTransition, SequenceNameString, Wait,
     };
     use serde_yaml;
     use sprite_model::config::SpriteRef;
@@ -48,7 +48,7 @@ frames:
                 press_attack: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
                     CharacterSequenceName::StandAttack0,
                 ))),
-                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
+                hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),

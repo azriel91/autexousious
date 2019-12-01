@@ -6,7 +6,7 @@ use character_model::{
 use game_input_model::{Axis, ControlAction};
 use object_model::config::GameObjectSequence;
 use sequence_model::{
-    config::ControlTransitionSingle,
+    config::InputReactionSingle,
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
         InputReactions, SequenceIdMappings,
@@ -97,7 +97,7 @@ impl IrsLoader {
                                 vec![],
                             ));
                         }
-                        Single(ControlTransitionSingle {
+                        Single(InputReactionSingle {
                             next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
@@ -118,7 +118,7 @@ impl IrsLoader {
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |ControlTransitionSingle {
+                            |InputReactionSingle {
                                  next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {
@@ -176,7 +176,7 @@ impl IrsLoader {
                                 vec![],
                             ));
                         }
-                        Single(ControlTransitionSingle {
+                        Single(InputReactionSingle {
                             next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
@@ -197,7 +197,7 @@ impl IrsLoader {
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |ControlTransitionSingle {
+                            |InputReactionSingle {
                                  next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {
@@ -254,7 +254,7 @@ impl IrsLoader {
                                 vec![],
                             ));
                         }
-                        Single(ControlTransitionSingle {
+                        Single(InputReactionSingle {
                             next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
@@ -274,7 +274,7 @@ impl IrsLoader {
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |ControlTransitionSingle {
+                            |InputReactionSingle {
                                  next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {

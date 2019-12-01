@@ -11,7 +11,7 @@ mod test {
         play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
-        ControlTransitionSingle, InputReaction, InputReactionMultiple, SequenceEndTransition,
+        InputReaction, InputReactionMultiple, InputReactionSingle, SequenceEndTransition,
         SequenceNameString, Wait,
     };
     use serde_yaml;
@@ -124,22 +124,22 @@ sequences:
                     CharacterSequenceName::StandAttack0,
                 ))),
                 release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
-                    ControlTransitionSingle {
+                    InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         requirements: vec![ControlTransitionRequirement::Charge(
                             ChargePoints::new(90),
                         )],
                     },
-                    ControlTransitionSingle {
+                    InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
                         requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
                     },
-                    ControlTransitionSingle {
+                    InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ]))),
-                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
+                hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
@@ -177,12 +177,12 @@ sequences:
                     SequenceNameString::String(String::from("custom_sequence_1")),
                 )),
                 release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
-                    ControlTransitionSingle {
+                    InputReactionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
                         requirements: vec![],
                     },
                 ]))),
-                hold_jump: Some(InputReaction::Single(ControlTransitionSingle {
+                hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
                     requirements: vec![],
                 })),
