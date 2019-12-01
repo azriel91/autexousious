@@ -102,11 +102,10 @@ impl CharacterInputReactionsTransitionSystem {
 
             let transition_sequence_id = character_input_reactions
                 .iter()
-                .filter_map(|character_control_transition| {
-                    let input_reaction =
-                        *AsRef::<InputReaction>::as_ref(character_control_transition);
+                .filter_map(|character_input_reaction| {
+                    let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
                     let control_transition_requirements =
-                        &character_control_transition.control_transition_requirements;
+                        &character_input_reaction.control_transition_requirements;
 
                     match input_reaction {
                         InputReaction::ActionPress(ActionPress {
@@ -184,11 +183,10 @@ impl CharacterInputReactionsTransitionSystem {
 
             let transition_sequence_id = character_input_reactions
                 .iter()
-                .filter_map(|character_control_transition| {
-                    let input_reaction =
-                        *AsRef::<InputReaction>::as_ref(character_control_transition);
+                .filter_map(|character_input_reaction| {
+                    let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
                     let control_transition_requirements =
-                        &character_control_transition.control_transition_requirements;
+                        &character_input_reaction.control_transition_requirements;
 
                     match input_reaction {
                         InputReaction::AxisPress(AxisTransition { axis, sequence_id }) => {
@@ -261,11 +259,11 @@ impl CharacterInputReactionsTransitionSystem {
 
                     let transition_sequence_id = character_input_reactions
                         .iter()
-                        .filter_map(|character_control_transition| {
+                        .filter_map(|character_input_reaction| {
                             let input_reaction =
-                                AsRef::<InputReaction>::as_ref(character_control_transition);
+                                AsRef::<InputReaction>::as_ref(character_input_reaction);
                             let control_transition_requirements =
-                                &character_control_transition.control_transition_requirements;
+                                &character_input_reaction.control_transition_requirements;
 
                             match input_reaction {
                                 InputReaction::ActionHold(action_hold) => {

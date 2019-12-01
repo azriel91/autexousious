@@ -1,7 +1,7 @@
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence, CharacterSequenceName},
-    loaded::{self, CharacterControlTransition, CharacterIrs, CharacterIrsHandle},
+    loaded::{self, CharacterInputReaction, CharacterIrs, CharacterIrsHandle},
 };
 use game_input_model::{Axis, ControlAction};
 use object_model::config::GameObjectSequence;
@@ -89,7 +89,7 @@ impl IrsLoader {
                                         sequence_name
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
@@ -109,7 +109,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
@@ -130,7 +130,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                                CharacterControlTransition::new(
+                                CharacterInputReaction::new(
                                     InputReaction::$mode($mode_data {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
@@ -168,7 +168,7 @@ impl IrsLoader {
                                         sequence_name
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
@@ -188,7 +188,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
@@ -209,7 +209,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                                CharacterControlTransition::new(
+                                CharacterInputReaction::new(
                                     InputReaction::$mode(AxisTransition {
                                         axis: Axis::$axis,
                                         sequence_id: *sequence_id,
@@ -247,7 +247,7 @@ impl IrsLoader {
                                         sequence_name
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                 }),
@@ -266,7 +266,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                            loaded_transitions.push(CharacterControlTransition::new(
+                            loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                 }),
@@ -286,7 +286,7 @@ impl IrsLoader {
                                         sequence_name_string
                                     )
                                 });
-                                CharacterControlTransition::new(
+                                CharacterInputReaction::new(
                                     InputReaction::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
                                     }),

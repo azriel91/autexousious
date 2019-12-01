@@ -9,7 +9,7 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::loaded::{
-        CharacterControlTransition, CharacterInputReactions, CharacterInputReactionsHandle,
+        CharacterInputReaction, CharacterInputReactions, CharacterInputReactionsHandle,
         CharacterIrsHandle,
     };
     use game_input_model::ControlAction;
@@ -116,14 +116,14 @@ mod tests {
 
     fn input_reactions() -> CharacterInputReactions {
         CharacterInputReactions::new(InputReactions::new(vec![
-            CharacterControlTransition::new(
+            CharacterInputReaction::new(
                 InputReaction::ActionPress(ActionPress::new(
                     ControlAction::Attack,
                     SequenceId::new(1),
                 )),
                 vec![],
             ),
-            CharacterControlTransition::new(
+            CharacterInputReaction::new(
                 InputReaction::ActionPress(ActionPress::new(
                     ControlAction::Jump,
                     SequenceId::new(7),

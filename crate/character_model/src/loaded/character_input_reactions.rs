@@ -5,9 +5,9 @@ use derive_more::From;
 use derive_new::new;
 use sequence_model::loaded::InputReactions;
 
-use crate::loaded::CharacterControlTransition;
+use crate::loaded::CharacterInputReaction;
 
 /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Asset, Clone, Debug, Derivative, Deref, DerefMut, From, PartialEq, new)]
 #[derivative(Default(bound = ""))]
-pub struct CharacterInputReactions(pub InputReactions<CharacterControlTransition>);
+pub struct CharacterInputReactions(pub InputReactions<CharacterInputReaction>);
