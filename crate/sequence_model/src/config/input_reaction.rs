@@ -14,19 +14,19 @@ where
     SeqName: SequenceName,
     Req: Default,
 {
-    /// Transition that only has a sequence name.
+    /// Input reaction that simply transitions the sequence.
     ///
     /// ```yaml
     /// press_attack: "sequence_name"
     /// ```
     SequenceNameString(SequenceNameString<SeqName>),
-    /// Transition has a sequence name and extra fields.
+    /// Input reaction that may transition the sequence and / or send events.
     ///
     /// ```yaml
     /// press_attack: { next: "sequence_name", extra_0: 0, extra_1: "0" }
     /// ```
     Single(InputReactionSingle<SeqName, Req>),
-    /// Multiple transitions with sequence name and extra fields.
+    /// List of input reactions in decreasing priority order.
     ///
     /// ```yaml
     /// press_attack:
