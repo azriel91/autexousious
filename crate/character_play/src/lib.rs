@@ -8,7 +8,7 @@ pub use crate::{
     mirrored_updater::MirroredUpdater,
     run_counter_updater::RunCounterUpdater,
     system::{CharacterInputReactionsTransitionSystem, CharacterInputReactionsUpdateSystem},
-    system_data::ControlTransitionRequirementSystemData,
+    system_data::InputReactionRequirementSystemData,
 };
 
 pub mod sequence_handler;

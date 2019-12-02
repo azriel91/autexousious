@@ -12,7 +12,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use application::IoUtils;
     use character_model::{
-        config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
+        config::{CharacterSequence, CharacterSequenceName, InputReactionRequirement},
         loaded::{
             CharacterInputReaction, CharacterInputReactions, CharacterIrs, CharacterIrsHandle,
         },
@@ -210,14 +210,14 @@ mod tests {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(5),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(1),
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::Charge(
+                input_reaction_requirements: vec![InputReactionRequirement::Charge(
                     ChargePoints::new(90),
                 )],
             },
@@ -226,27 +226,27 @@ mod tests {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(2),
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::Sp(
-                    SkillPoints::new(50),
-                )],
+                input_reaction_requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(
+                    50,
+                ))],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(3),
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::Hp(
-                    HealthPoints::new(30),
-                )],
+                input_reaction_requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(
+                    30,
+                ))],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(7),
                 }),
-                control_transition_requirements: vec![
-                    ControlTransitionRequirement::Charge(ChargePoints::new(90)),
-                    ControlTransitionRequirement::Sp(SkillPoints::new(50)),
+                input_reaction_requirements: vec![
+                    InputReactionRequirement::Charge(ChargePoints::new(90)),
+                    InputReactionRequirement::Sp(SkillPoints::new(50)),
                 ],
             },
             CharacterInputReaction {
@@ -254,55 +254,55 @@ mod tests {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
+                input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
                     InputDirection::NotSame,
                 )],
             },
@@ -317,69 +317,69 @@ mod tests {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(4),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(6),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
                 }),
-                control_transition_requirements: vec![],
+                input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
+                input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
                     InputDirection::NotSame,
                 )],
             },

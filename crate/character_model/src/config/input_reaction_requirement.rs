@@ -5,12 +5,12 @@ use game_input_model::config::{InputDirection, InputDirectionZ};
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 use serde::{Deserialize, Serialize};
 
-use crate::config::ControlTransitionRequirementParams;
+use crate::config::InputReactionRequirementParams;
 
 /// Conditions for a input reaction to happen.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
-pub enum ControlTransitionRequirement {
+pub enum InputReactionRequirement {
     /// `ChargePoints` the object must spend to transition.
     Charge(ChargePoints),
     /// `HealthPoints` the object must spend to transition.
@@ -23,27 +23,25 @@ pub enum ControlTransitionRequirement {
     InputDirZ(InputDirectionZ),
 }
 
-impl ControlTransitionRequirement {
+impl InputReactionRequirement {
     /// Returns whether this requirement is met.
     pub fn is_met(
         self,
-        ControlTransitionRequirementParams {
+        InputReactionRequirementParams {
             health_points,
             skill_points,
             charge_tracker_clock,
             charge_use_mode,
             controller_input,
             mirrored,
-        }: ControlTransitionRequirementParams,
+        }: InputReactionRequirementParams,
     ) -> bool {
         match self {
-            ControlTransitionRequirement::Hp(required) => {
+            InputReactionRequirement::Hp(required) => {
                 health_points.map(|points| points >= required)
             }
-            ControlTransitionRequirement::Sp(required) => {
-                skill_points.map(|points| points >= required)
-            }
-            ControlTransitionRequirement::Charge(required) => {
+            InputReactionRequirement::Sp(required) => skill_points.map(|points| points >= required),
+            InputReactionRequirement::Charge(required) => {
                 charge_tracker_clock.map(|charge_tracker_clock| {
                     if let Some(ChargeUseMode::NearestPartial) = charge_use_mode {
                         (*charge_tracker_clock).value > 0
@@ -52,12 +50,12 @@ impl ControlTransitionRequirement {
                     }
                 })
             }
-            ControlTransitionRequirement::InputDirX(input_direction) => {
+            InputReactionRequirement::InputDirX(input_direction) => {
                 let requirement_met =
                     Self::input_requirement_met_x(controller_input, mirrored, input_direction);
                 Some(requirement_met)
             }
-            ControlTransitionRequirement::InputDirZ(input_direction_z) => {
+            InputReactionRequirement::InputDirZ(input_direction_z) => {
                 let requirement_met =
                     Self::input_requirement_met_z(controller_input, input_direction_z);
                 Some(requirement_met)

@@ -2,7 +2,7 @@ use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 use sequence_model::loaded::InputReaction;
 
-use crate::config::ControlTransitionRequirement;
+use crate::config::InputReactionRequirement;
 
 /// Sequence to transition to on control input with requirements.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -11,7 +11,7 @@ pub struct CharacterInputReaction {
     /// Underlying `InputReaction`.
     pub input_reaction: InputReaction,
     /// Requirements for this transition to happen.
-    pub control_transition_requirements: Vec<ControlTransitionRequirement>,
+    pub input_reaction_requirements: Vec<InputReactionRequirement>,
 }
 
 impl AsRef<InputReaction> for CharacterInputReaction {

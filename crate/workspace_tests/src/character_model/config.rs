@@ -1,5 +1,5 @@
 mod character_sequence;
-mod control_transition_requirement;
+mod input_reaction_requirement;
 
 #[cfg(test)]
 mod test {
@@ -20,7 +20,7 @@ mod test {
 
     use character_model::config::{
         CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterSequence,
-        CharacterSequenceName, ControlTransitionRequirement,
+        CharacterSequenceName, InputReactionRequirement,
     };
 
     const OBJECT_YAML: &str = "\
@@ -126,17 +126,15 @@ sequences:
                 release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
-                        requirements: vec![ControlTransitionRequirement::Charge(
-                            ChargePoints::new(90),
-                        )],
+                        requirements: vec![InputReactionRequirement::Charge(ChargePoints::new(90))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
-                        requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
+                        requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(50))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
-                        requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
+                        requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {

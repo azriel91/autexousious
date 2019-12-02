@@ -2,9 +2,9 @@ use charge_model::{config::ChargeUseMode, play::ChargeTrackerClock};
 use game_input::ControllerInput;
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 
-/// Parameters to check if a `ControlTransitionRequirement` is met.
+/// Parameters to check if a `InputReactionRequirement` is met.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub struct ControlTransitionRequirementParams {
+pub struct InputReactionRequirementParams {
     /// `HealthPoints` of the entity.
     pub health_points: Option<HealthPoints>,
     /// `SkillPoints` of the entity.

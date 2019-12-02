@@ -7,10 +7,10 @@ use derivative::Derivative;
 use game_input::ControllerInput;
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 
-/// `SystemData` used to determine if a transition's requirement is met.
+/// `SystemData` used to determine if an input reaction's requirement is met.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ControlTransitionRequirementSystemData<'s> {
+pub struct InputReactionRequirementSystemData<'s> {
     /// `HealthPoints` components.
     #[derivative(Debug = "ignore")]
     pub health_pointses: ReadStorage<'s, HealthPoints>,

@@ -99,7 +99,7 @@ impl IrsLoader {
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
-                            requirements: control_transition_requirements,
+                            requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -114,13 +114,13 @@ impl IrsLoader {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                 }),
-                                control_transition_requirements.clone(),
+                                input_reaction_requirements.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
-                                 requirements: control_transition_requirements,
+                                 requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -135,7 +135,7 @@ impl IrsLoader {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
                                     }),
-                                    control_transition_requirements.clone(),
+                                    input_reaction_requirements.clone(),
                                 )
                             },
                         )),
@@ -178,7 +178,7 @@ impl IrsLoader {
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
-                            requirements: control_transition_requirements,
+                            requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -193,13 +193,13 @@ impl IrsLoader {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                 }),
-                                control_transition_requirements.clone(),
+                                input_reaction_requirements.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
-                                 requirements: control_transition_requirements,
+                                 requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -214,7 +214,7 @@ impl IrsLoader {
                                         axis: Axis::$axis,
                                         sequence_id: *sequence_id,
                                     }),
-                                    control_transition_requirements.clone(),
+                                    input_reaction_requirements.clone(),
                                 )
                             },
                         )),
@@ -256,7 +256,7 @@ impl IrsLoader {
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
-                            requirements: control_transition_requirements,
+                            requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -270,13 +270,13 @@ impl IrsLoader {
                                 InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                 }),
-                                control_transition_requirements.clone(),
+                                input_reaction_requirements.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
-                                 requirements: control_transition_requirements,
+                                 requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -290,7 +290,7 @@ impl IrsLoader {
                                     InputReaction::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
                                     }),
-                                    control_transition_requirements.clone(),
+                                    input_reaction_requirements.clone(),
                                 )
                             },
                         )),

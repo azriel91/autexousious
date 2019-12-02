@@ -6,7 +6,7 @@ use amethyst::{
 };
 use approx::{relative_eq, relative_ne};
 use character_model::{
-    config::{ControlTransitionRequirement, ControlTransitionRequirementParams},
+    config::{InputReactionRequirement, InputReactionRequirementParams},
     loaded::{CharacterInputReactions, CharacterInputReactionsHandle},
 };
 use charge_model::play::ChargeUseEvent;
@@ -23,7 +23,7 @@ use sequence_model::loaded::{
     SequenceId,
 };
 
-use crate::ControlTransitionRequirementSystemData;
+use crate::InputReactionRequirementSystemData;
 
 /// Updates `SequenceId` based on `ControlInputEvent`s and held buttons.
 #[derive(Debug, Default, NamedType, new)]
@@ -45,8 +45,8 @@ pub struct CharacterInputReactionsTransitionSystemData<'s> {
     /// `CharacterInputReactionsTransitionResources`.
     pub character_input_reactions_transition_resources:
         CharacterInputReactionsTransitionResources<'s>,
-    /// `ControlTransitionRequirementSystemData`.
-    pub control_transition_requirement_system_data: ControlTransitionRequirementSystemData<'s>,
+    /// `InputReactionRequirementSystemData`.
+    pub input_reaction_requirement_system_data: InputReactionRequirementSystemData<'s>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -83,7 +83,7 @@ impl CharacterInputReactionsTransitionSystem {
             ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterInputReactionsTransitionResources,
-        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        input_reaction_requirement_system_data: &InputReactionRequirementSystemData,
         ControlActionEventData {
             entity,
             control_action,
@@ -104,8 +104,8 @@ impl CharacterInputReactionsTransitionSystem {
                 .iter()
                 .filter_map(|character_input_reaction| {
                     let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
-                    let control_transition_requirements =
-                        &character_input_reaction.control_transition_requirements;
+                    let input_reaction_requirements =
+                        &character_input_reaction.input_reaction_requirements;
 
                     match input_reaction {
                         InputReaction::ActionPress(ActionPress {
@@ -113,7 +113,7 @@ impl CharacterInputReactionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if value && control_action == action {
-                                Some((sequence_id, control_transition_requirements))
+                                Some((sequence_id, input_reaction_requirements))
                             } else {
                                 None
                             }
@@ -123,25 +123,25 @@ impl CharacterInputReactionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if !value && control_action == action {
-                                Some((sequence_id, control_transition_requirements))
+                                Some((sequence_id, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
                         InputReaction::ActionHold(action_hold) => {
                             Self::hold_transition_action(action_hold, *controller_input)
-                                .map(|transition| (transition, control_transition_requirements))
+                                .map(|transition| (transition, input_reaction_requirements))
                         }
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, control_transition_requirements)| {
+                .filter_map(|(sequence_id, input_reaction_requirements)| {
                     Self::process_transition(
                         charge_use_ec,
-                        control_transition_requirement_system_data,
+                        input_reaction_requirement_system_data,
                         entity,
                         sequence_id,
-                        &control_transition_requirements,
+                        &input_reaction_requirements,
                     )
                 })
                 .next();
@@ -164,7 +164,7 @@ impl CharacterInputReactionsTransitionSystem {
             ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterInputReactionsTransitionResources,
-        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        input_reaction_requirement_system_data: &InputReactionRequirementSystemData,
         AxisMoveEventData {
             entity,
             axis: control_axis,
@@ -185,38 +185,38 @@ impl CharacterInputReactionsTransitionSystem {
                 .iter()
                 .filter_map(|character_input_reaction| {
                     let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
-                    let control_transition_requirements =
-                        &character_input_reaction.control_transition_requirements;
+                    let input_reaction_requirements =
+                        &character_input_reaction.input_reaction_requirements;
 
                     match input_reaction {
                         InputReaction::AxisPress(AxisTransition { axis, sequence_id }) => {
                             if relative_ne!(0., value) && control_axis == axis {
-                                Some((sequence_id, control_transition_requirements))
+                                Some((sequence_id, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
                         InputReaction::AxisRelease(AxisTransition { axis, sequence_id }) => {
                             if relative_eq!(0., value) && control_axis == axis {
-                                Some((sequence_id, control_transition_requirements))
+                                Some((sequence_id, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
                         InputReaction::AxisHold(axis_hold) => {
                             Self::hold_transition_axis(axis_hold, *controller_input)
-                                .map(|transition| (transition, control_transition_requirements))
+                                .map(|transition| (transition, input_reaction_requirements))
                         }
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, control_transition_requirements)| {
+                .filter_map(|(sequence_id, input_reaction_requirements)| {
                     Self::process_transition(
                         charge_use_ec,
-                        control_transition_requirement_system_data,
+                        input_reaction_requirement_system_data,
                         entity,
                         sequence_id,
-                        &control_transition_requirements,
+                        &input_reaction_requirements,
                     )
                 })
                 .next();
@@ -242,7 +242,7 @@ impl CharacterInputReactionsTransitionSystem {
             ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterInputReactionsTransitionResources,
-        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        input_reaction_requirement_system_data: &InputReactionRequirementSystemData,
     ) {
         (
             entities,
@@ -262,34 +262,31 @@ impl CharacterInputReactionsTransitionSystem {
                         .filter_map(|character_input_reaction| {
                             let input_reaction =
                                 AsRef::<InputReaction>::as_ref(character_input_reaction);
-                            let control_transition_requirements =
-                                &character_input_reaction.control_transition_requirements;
+                            let input_reaction_requirements =
+                                &character_input_reaction.input_reaction_requirements;
 
                             match input_reaction {
                                 InputReaction::ActionHold(action_hold) => {
                                     Self::hold_transition_action(*action_hold, *controller_input)
-                                        .map(|transition| {
-                                            (transition, control_transition_requirements)
-                                        })
+                                        .map(|transition| (transition, input_reaction_requirements))
                                 }
                                 InputReaction::AxisHold(axis_hold) => {
-                                    Self::hold_transition_axis(*axis_hold, *controller_input).map(
-                                        |transition| (transition, control_transition_requirements),
-                                    )
+                                    Self::hold_transition_axis(*axis_hold, *controller_input)
+                                        .map(|transition| (transition, input_reaction_requirements))
                                 }
                                 InputReaction::Fallback(FallbackTransition { sequence_id }) => {
-                                    Some((*sequence_id, control_transition_requirements))
+                                    Some((*sequence_id, input_reaction_requirements))
                                 }
                                 _ => None,
                             }
                         })
-                        .filter_map(|(sequence_id, control_transition_requirements)| {
+                        .filter_map(|(sequence_id, input_reaction_requirements)| {
                             Self::process_transition(
                                 charge_use_ec,
-                                control_transition_requirement_system_data,
+                                input_reaction_requirement_system_data,
                                 entity,
                                 sequence_id,
-                                &control_transition_requirements,
+                                &input_reaction_requirements,
                             )
                         })
                         .next();
@@ -378,21 +375,21 @@ impl CharacterInputReactionsTransitionSystem {
 
     fn process_transition(
         charge_use_ec: &mut EventChannel<ChargeUseEvent>,
-        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        input_reaction_requirement_system_data: &InputReactionRequirementSystemData,
         entity: Entity,
         sequence_id: SequenceId,
-        control_transition_requirements: &[ControlTransitionRequirement],
+        input_reaction_requirements: &[InputReactionRequirement],
     ) -> Option<SequenceId> {
         if Self::transition_requirements_met(
-            control_transition_requirement_system_data,
-            &control_transition_requirements,
+            input_reaction_requirement_system_data,
+            &input_reaction_requirements,
             entity,
         ) {
-            control_transition_requirements
+            input_reaction_requirements
                 .iter()
-                .filter_map(|control_transition_requirement| {
-                    if let ControlTransitionRequirement::Charge(charge_points) =
-                        control_transition_requirement
+                .filter_map(|input_reaction_requirement| {
+                    if let InputReactionRequirement::Charge(charge_points) =
+                        input_reaction_requirement
                     {
                         Some(ChargeUseEvent {
                             entity,
@@ -410,15 +407,15 @@ impl CharacterInputReactionsTransitionSystem {
     }
 
     fn transition_requirements_met(
-        ControlTransitionRequirementSystemData {
+        InputReactionRequirementSystemData {
             health_pointses,
             skill_pointses,
             charge_tracker_clocks,
             charge_use_modes,
             controller_inputs,
             mirroreds,
-        }: &ControlTransitionRequirementSystemData,
-        control_transition_requirements: &[ControlTransitionRequirement],
+        }: &InputReactionRequirementSystemData,
+        input_reaction_requirements: &[InputReactionRequirement],
         entity: Entity,
     ) -> bool {
         let (
@@ -437,7 +434,7 @@ impl CharacterInputReactionsTransitionSystem {
             mirroreds.get(entity).copied(),
         );
 
-        let control_transition_requirement_params = ControlTransitionRequirementParams {
+        let input_reaction_requirement_params = InputReactionRequirementParams {
             health_points,
             skill_points,
             charge_tracker_clock,
@@ -446,10 +443,10 @@ impl CharacterInputReactionsTransitionSystem {
             mirrored,
         };
 
-        control_transition_requirements
+        input_reaction_requirements
             .iter()
-            .all(|control_transition_requirement| {
-                control_transition_requirement.is_met(control_transition_requirement_params)
+            .all(|input_reaction_requirement| {
+                input_reaction_requirement.is_met(input_reaction_requirement_params)
             })
     }
 }
@@ -462,7 +459,7 @@ impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
         CharacterInputReactionsTransitionSystemData {
             control_input_ec,
             mut character_input_reactions_transition_resources,
-            control_transition_requirement_system_data,
+            input_reaction_requirement_system_data,
         }: Self::SystemData,
     ) {
         self.processed_entities.clear();
@@ -478,7 +475,7 @@ impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
                 ControlInputEvent::ControlActionPress(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_input_reactions_transition_resources,
-                        &control_transition_requirement_system_data,
+                        &input_reaction_requirement_system_data,
                         *control_action_event_data,
                         true,
                     );
@@ -486,7 +483,7 @@ impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
                 ControlInputEvent::ControlActionRelease(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_input_reactions_transition_resources,
-                        &control_transition_requirement_system_data,
+                        &input_reaction_requirement_system_data,
                         *control_action_event_data,
                         false,
                     );
@@ -494,7 +491,7 @@ impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
                 ControlInputEvent::AxisMoved(axis_move_event_data) => {
                     self.handle_axis_event(
                         &mut character_input_reactions_transition_resources,
-                        &control_transition_requirement_system_data,
+                        &input_reaction_requirement_system_data,
                         *axis_move_event_data,
                     );
                 }
@@ -502,7 +499,7 @@ impl<'s> System<'s> for CharacterInputReactionsTransitionSystem {
 
         self.process_hold_and_fallback_transitions(
             &mut character_input_reactions_transition_resources,
-            &control_transition_requirement_system_data,
+            &input_reaction_requirement_system_data,
         );
     }
 

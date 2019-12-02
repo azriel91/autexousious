@@ -8,21 +8,19 @@ mod tests {
     use game_input_model::config::{InputDirection, InputDirectionZ};
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 
-    use character_model::config::{
-        ControlTransitionRequirement, ControlTransitionRequirementParams,
-    };
+    use character_model::config::{InputReactionRequirement, InputReactionRequirementParams};
 
     #[test]
     fn health_points_requirement_met_when_greater_equal() {
-        let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Hp(HealthPoints::new(10));
+        let params = InputReactionRequirementParams {
             health_points: Some(HealthPoints::new(10)),
             ..Default::default()
         };
 
         assert!(requirement.is_met(params));
 
-        let params = ControlTransitionRequirementParams {
+        let params = InputReactionRequirementParams {
             health_points: Some(HealthPoints::new(11)),
             ..Default::default()
         };
@@ -31,8 +29,8 @@ mod tests {
 
     #[test]
     fn health_points_requirement_not_met_when_less_than() {
-        let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Hp(HealthPoints::new(10));
+        let params = InputReactionRequirementParams {
             health_points: Some(HealthPoints::new(9)),
             ..Default::default()
         };
@@ -42,15 +40,15 @@ mod tests {
 
     #[test]
     fn skill_points_requirement_met_when_greater_equal() {
-        let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Sp(SkillPoints::new(10));
+        let params = InputReactionRequirementParams {
             skill_points: Some(SkillPoints::new(10)),
             ..Default::default()
         };
 
         assert!(requirement.is_met(params));
 
-        let params = ControlTransitionRequirementParams {
+        let params = InputReactionRequirementParams {
             skill_points: Some(SkillPoints::new(11)),
             ..Default::default()
         };
@@ -59,8 +57,8 @@ mod tests {
 
     #[test]
     fn skill_points_requirement_not_met_when_less_than() {
-        let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Sp(SkillPoints::new(10));
+        let params = InputReactionRequirementParams {
             skill_points: Some(SkillPoints::new(9)),
             ..Default::default()
         };
@@ -70,8 +68,8 @@ mod tests {
 
     #[test]
     fn charge_points_requirement_met_when_greater_equal() {
-        let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Charge(ChargePoints::new(10));
+        let params = InputReactionRequirementParams {
             charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 10)),
             charge_use_mode: Some(ChargeUseMode::NearestWhole),
             ..Default::default()
@@ -79,7 +77,7 @@ mod tests {
 
         assert!(requirement.is_met(params));
 
-        let params = ControlTransitionRequirementParams {
+        let params = InputReactionRequirementParams {
             charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 11)),
             charge_use_mode: Some(ChargeUseMode::NearestWhole),
             ..Default::default()
@@ -89,8 +87,8 @@ mod tests {
 
     #[test]
     fn charge_points_requirement_not_met_when_less_than() {
-        let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let params = ControlTransitionRequirementParams {
+        let requirement = InputReactionRequirement::Charge(ChargePoints::new(10));
+        let params = InputReactionRequirementParams {
             charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 9)),
             charge_use_mode: Some(ChargeUseMode::NearestWhole),
             ..Default::default()
@@ -103,9 +101,9 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, $mirrored:expr, true $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
+                let requirement = InputReactionRequirement::InputDirX(InputDirection::$variant);
 
-                let params = ControlTransitionRequirementParams {
+                let params = InputReactionRequirementParams {
                     controller_input: $controller_input,
                     mirrored: $mirrored,
                     ..Default::default()
@@ -118,9 +116,9 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, $mirrored:expr, false $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
+                let requirement = InputReactionRequirement::InputDirX(InputDirection::$variant);
 
-                let params = ControlTransitionRequirementParams {
+                let params = InputReactionRequirementParams {
                     controller_input: $controller_input,
                     mirrored: $mirrored,
                     ..Default::default()
@@ -529,10 +527,9 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, true $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement =
-                    ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
+                let requirement = InputReactionRequirement::InputDirZ(InputDirectionZ::$variant);
 
-                let params = ControlTransitionRequirementParams {
+                let params = InputReactionRequirementParams {
                     controller_input: $controller_input,
                     ..Default::default()
                 };
@@ -544,10 +541,9 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, false $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement =
-                    ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
+                let requirement = InputReactionRequirement::InputDirZ(InputDirectionZ::$variant);
 
-                let params = ControlTransitionRequirementParams {
+                let params = InputReactionRequirementParams {
                     controller_input: $controller_input,
                     ..Default::default()
                 };
