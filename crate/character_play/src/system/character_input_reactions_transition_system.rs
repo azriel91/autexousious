@@ -16,12 +16,12 @@ use game_input::ControllerInput;
 use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
+use input_reaction_model::loaded::{
+    ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+};
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use sequence_model::loaded::{
-    ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-    SequenceId,
-};
+use sequence_model::loaded::SequenceId;
 
 use crate::InputReactionRequirementSystemData;
 

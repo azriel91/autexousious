@@ -1,8 +1,9 @@
 use derivative::Derivative;
 use derive_new::new;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{InputReaction, SequenceName};
+use crate::config::InputReaction;
 
 /// Sequence to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]

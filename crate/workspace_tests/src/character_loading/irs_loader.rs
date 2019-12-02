@@ -19,15 +19,16 @@ mod tests {
     };
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
+    use input_reaction_model::loaded::{
+        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+        InputReactions,
+    };
     use object_model::play::{HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::{
         config::SequenceNameString,
-        loaded::{
-            ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition,
-            InputReaction, InputReactions, SequenceId, SequenceIdMappings,
-        },
+        loaded::{SequenceId, SequenceIdMappings},
     };
 
     use character_loading::{

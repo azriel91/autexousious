@@ -6,14 +6,12 @@ mod test {
     use charge_model::config::ChargePoints;
     use collision_model::config::Body;
     use indexmap::IndexMap;
+    use input_reaction_model::config::{InputReaction, InputReactionMultiple, InputReactionSingle};
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
     };
-    use sequence_model::config::{
-        InputReaction, InputReactionMultiple, InputReactionSingle, SequenceEndTransition,
-        SequenceNameString, Wait,
-    };
+    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;

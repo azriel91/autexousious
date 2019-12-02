@@ -4,14 +4,15 @@ use character_model::{
     loaded::{self, CharacterInputReaction, CharacterIrs, CharacterIrsHandle},
 };
 use game_input_model::{Axis, ControlAction};
-use object_model::config::GameObjectSequence;
-use sequence_model::{
+use input_reaction_model::{
     config::InputReactionSingle,
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-        InputReactions, SequenceIdMappings,
+        InputReactions,
     },
 };
+use object_model::config::GameObjectSequence;
+use sequence_model::loaded::SequenceIdMappings;
 
 use crate::IrsLoaderParams;
 
@@ -78,7 +79,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::InputReaction::*;
+                    use input_reaction_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =
@@ -157,7 +158,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::InputReaction::*;
+                    use input_reaction_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =
@@ -236,7 +237,7 @@ impl IrsLoader {
                         })
                 });
                 if let Some(config_control_transition) = &mode_action {
-                    use sequence_model::config::InputReaction::*;
+                    use input_reaction_model::config::InputReaction::*;
                     match config_control_transition {
                         SequenceNameString(sequence_name) => {
                             let sequence_id =

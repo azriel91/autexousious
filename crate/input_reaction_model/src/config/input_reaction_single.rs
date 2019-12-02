@@ -1,7 +1,6 @@
 use derive_new::new;
+use sequence_model::config::{SequenceName, SequenceNameString};
 use serde::{Deserialize, Serialize};
-
-use crate::config::{SequenceName, SequenceNameString};
 
 /// Configuration type for transition sequence name.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]

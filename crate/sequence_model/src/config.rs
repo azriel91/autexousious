@@ -4,10 +4,6 @@ pub use sequence_model_core::config::SequenceName;
 
 pub use self::{
     frame::Frame,
-    input_reaction::InputReaction,
-    input_reaction_multiple::InputReactionMultiple,
-    input_reaction_single::InputReactionSingle,
-    input_reactions::InputReactions,
     sequence::Sequence,
     sequence_end_transition::SequenceEndTransition,
     sequence_name_string::SequenceNameString,
@@ -16,10 +12,6 @@ pub use self::{
 };
 
 mod frame;
-mod input_reaction;
-mod input_reaction_multiple;
-mod input_reaction_single;
-mod input_reactions;
 mod sequence;
 mod sequence_end_transition;
 mod sequence_name_string;

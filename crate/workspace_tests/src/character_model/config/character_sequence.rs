@@ -1,9 +1,8 @@
 #[cfg(test)]
 mod tests {
+    use input_reaction_model::config::{InputReaction, InputReactionSingle};
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{
-        InputReaction, InputReactionSingle, SequenceEndTransition, SequenceNameString, Wait,
-    };
+    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use sprite_model::config::SpriteRef;
 

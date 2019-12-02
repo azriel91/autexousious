@@ -1,6 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
-use sequence_model::loaded::InputReaction;
+use input_reaction_model::loaded::InputReaction;
 
 use crate::config::InputReactionRequirement;
 

@@ -1,7 +1,8 @@
 use derive_new::new;
+use sequence_model::config::{SequenceName, SequenceNameString};
 use serde::{Deserialize, Serialize};
 
-use crate::config::{InputReactionMultiple, InputReactionSingle, SequenceName, SequenceNameString};
+use crate::config::{InputReactionMultiple, InputReactionSingle};
 
 /// Variants of how a `InputReaction` may be specified.
 ///

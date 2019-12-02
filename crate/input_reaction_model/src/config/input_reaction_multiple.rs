@@ -1,8 +1,9 @@
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{InputReactionSingle, SequenceName};
+use crate::config::InputReactionSingle;
 
 /// Configuration type for transition sequence name.
 #[derive(Clone, Debug, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new)]

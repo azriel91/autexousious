@@ -13,8 +13,9 @@ mod tests {
         CharacterIrsHandle,
     };
     use game_input_model::ControlAction;
+    use input_reaction_model::loaded::{ActionPress, InputReaction, InputReactions};
     use sequence_model::{
-        loaded::{ActionPress, InputReaction, InputReactions, SequenceId},
+        loaded::SequenceId,
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 

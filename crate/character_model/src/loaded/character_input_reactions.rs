@@ -3,7 +3,7 @@ use derivative::Derivative;
 use derive_deref::{Deref, DerefMut};
 use derive_more::From;
 use derive_new::new;
-use sequence_model::loaded::InputReactions;
+use input_reaction_model::loaded::InputReactions;
 
 use crate::loaded::CharacterInputReaction;
 

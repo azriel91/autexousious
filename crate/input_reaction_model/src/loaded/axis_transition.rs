@@ -1,13 +1,12 @@
 use derive_new::new;
-use game_input_model::ControlAction;
+use game_input_model::Axis;
+use sequence_model::loaded::SequenceId;
 
-use crate::loaded::SequenceId;
-
-/// Transition to a specified sequence on control input press event.
+/// Transition to a specified fallback sequence.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, new)]
-pub struct ActionPress {
+pub struct AxisTransition {
     /// Control button that this transition applies to.
-    pub action: ControlAction,
+    pub axis: Axis,
     /// ID of the sequence to switch to.
     pub sequence_id: SequenceId,
 }

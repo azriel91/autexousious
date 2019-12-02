@@ -1,4 +1,4 @@
-use sequence_model::config::InputReactions;
+use input_reaction_model::config::InputReactions;
 
 use crate::config::{CharacterSequenceName, InputReactionRequirement};
 
