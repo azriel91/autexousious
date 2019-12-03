@@ -2,12 +2,12 @@ use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
 use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
-use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+use character_selection_model::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelectionEventArgs,
+};
 use game_input_model::ControllerId;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
-
-use crate::CharacterSelectionEventArgs;
 
 /// Magic string to indicate `random` selection.
 const RANDOM_SELECTION: &str = "random";

@@ -12,6 +12,8 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
+structopt = "0.3.3"
+structopt-derive = "0.3.3"
 
 [features]
 nightly = ["amethyst/nightly"]

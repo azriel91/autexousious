@@ -1,9 +1,7 @@
 use amethyst::Error;
-use game_play_model::GamePlayEvent;
+use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use stdio_spi::StdinMapper;
 use typename_derive::TypeName;
-
-use crate::GamePlayEventArgs;
 
 /// Builds a `GamePlayEvent` from stdin tokens.
 #[derive(Debug, TypeName)]

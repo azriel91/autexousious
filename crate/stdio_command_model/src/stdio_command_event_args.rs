@@ -1,4 +1,4 @@
-use stdio_command_model::StdioCommandEvent;
+use crate::StdioCommandEvent;
 
 /// Parameters to the mapper.
 ///

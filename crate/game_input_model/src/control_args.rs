@@ -1,6 +1,7 @@
-use game_input_model::{Axis, ControlAction};
 use structopt_derive::StructOpt;
 use strum_macros::EnumString;
+
+use crate::{Axis, ControlAction};
 
 /// Parameters for control input.
 #[derive(Clone, Copy, Debug, EnumString, PartialEq, StructOpt)]

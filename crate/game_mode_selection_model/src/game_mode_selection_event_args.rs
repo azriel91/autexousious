@@ -1,5 +1,6 @@
-use game_mode_selection_model::GameModeIndex;
 use structopt_derive::StructOpt;
+
+use crate::GameModeIndex;
 
 /// Parameters to the mapper.
 ///

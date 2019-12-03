@@ -1,9 +1,7 @@
 use amethyst::Error;
-use stdio_command_model::StdioCommandEvent;
+use stdio_command_model::{StdioCommandEvent, StdioCommandEventArgs};
 use stdio_spi::StdinMapper;
 use typename_derive::TypeName;
-
-use crate::StdioCommandEventArgs;
 
 /// Builds a `StdioCommandEvent` from stdin tokens.
 #[derive(Debug, TypeName)]

@@ -1,7 +1,6 @@
-use game_input_model::ControllerId;
 use structopt_derive::StructOpt;
 
-use crate::ControlArgs;
+use crate::{ControlArgs, ControllerId};
 
 /// Parameters to the mapper.
 ///
