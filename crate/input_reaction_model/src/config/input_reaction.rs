@@ -8,7 +8,7 @@ use crate::config::{InputReactionMultiple, InputReactionSingle};
 ///
 /// This is primarily to make it more ergonomic for users to specify different kinds of values in
 /// configuration.
-#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
 pub enum InputReaction<SeqName, Req>
 where

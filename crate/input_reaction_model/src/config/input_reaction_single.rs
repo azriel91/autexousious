@@ -3,7 +3,7 @@ use sequence_model::config::{SequenceName, SequenceNameString};
 use serde::{Deserialize, Serialize};
 
 /// Configuration type for transition sequence name.
-#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct InputReactionSingle<SeqName, Req>
 where

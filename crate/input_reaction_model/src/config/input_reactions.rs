@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::InputReaction;
 
 /// Sequence to transition to when a `ControlAction` is pressed, held, or released.
-#[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
 #[derivative(Default)]
 #[serde(deny_unknown_fields)]
 pub struct InputReactions<SeqName, Req = ()>
