@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
 /// Parameters to the mapper.
@@ -5,7 +6,8 @@ use structopt_derive::StructOpt;
 /// # Examples
 ///
 /// * `map_selection select -s default/eruption`
-#[derive(Clone, Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub enum MapSelectionEventArgs {
     /// Return from map selection state.

@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
 use crate::GameModeIndex;
@@ -7,7 +8,8 @@ use crate::GameModeIndex;
 /// # Examples
 ///
 /// * `game_mode_selection select -s start_game`
-#[derive(Clone, Debug, PartialEq, StructOpt)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub enum GameModeSelectionEventArgs {
     /// Select event.

@@ -1,10 +1,12 @@
+use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 use strum_macros::EnumString;
 
 use crate::{Axis, ControlAction};
 
 /// Parameters for control input.
-#[derive(Clone, Copy, Debug, EnumString, PartialEq, StructOpt)]
+#[derive(Clone, Copy, Debug, Deserialize, EnumString, PartialEq, Serialize, StructOpt)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub enum ControlArgs {

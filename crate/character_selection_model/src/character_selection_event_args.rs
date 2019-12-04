@@ -1,4 +1,5 @@
 use game_input_model::ControllerId;
+use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
 /// Parameters to the mapper.
@@ -12,7 +13,8 @@ use structopt_derive::StructOpt;
 /// * `character_selection select -c 0 -s default/heat`
 /// * `character_selection deselect -c 0`
 /// * `character_selection confirm`
-#[derive(Clone, Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub enum CharacterSelectionEventArgs {
     /// Signal to return from `CharacterSelectionState`.

@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
 /// Parameters to the mapper.
@@ -10,7 +11,8 @@ use structopt_derive::StructOpt;
 /// * `game_play resume`
 /// * `game_play end`
 /// * `game_play end_stats`
-#[derive(Clone, Copy, Debug, PartialEq, StructOpt)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub enum GamePlayEventArgs {
     /// Returns to the menu.
