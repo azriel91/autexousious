@@ -4,7 +4,7 @@ use derive_new::new;
 use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition};
 
 /// Sequence to transition to on control input.
-#[derive(Clone, Component, Copy, Debug, PartialEq, new)]
+#[derive(Clone, Component, Debug, PartialEq, new)]
 #[storage(VecStorage)]
 pub enum InputReaction {
     /// Transition to a specified sequence on control input press event.

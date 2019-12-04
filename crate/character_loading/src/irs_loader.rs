@@ -94,12 +94,14 @@ impl IrsLoader {
                                 InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
+                                    events: Default::default(),
                                 }),
                                 vec![],
                             ));
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
+                            events,
                             requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
@@ -114,6 +116,7 @@ impl IrsLoader {
                                 InputReaction::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
+                                    events: events.clone(),
                                 }),
                                 input_reaction_requirements.clone(),
                             ))
@@ -121,6 +124,7 @@ impl IrsLoader {
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
+                                 events,
                                  requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
@@ -135,6 +139,7 @@ impl IrsLoader {
                                     InputReaction::$mode($mode_data {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
+                                        events: events.clone(),
                                     }),
                                     input_reaction_requirements.clone(),
                                 )
@@ -173,12 +178,14 @@ impl IrsLoader {
                                 InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
+                                    events: Default::default(),
                                 }),
                                 vec![],
                             ));
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
+                            events,
                             requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
@@ -193,6 +200,7 @@ impl IrsLoader {
                                 InputReaction::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
+                                    events: events.clone(),
                                 }),
                                 input_reaction_requirements.clone(),
                             ))
@@ -200,6 +208,7 @@ impl IrsLoader {
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
+                                 events,
                                  requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
@@ -214,6 +223,7 @@ impl IrsLoader {
                                     InputReaction::$mode(AxisTransition {
                                         axis: Axis::$axis,
                                         sequence_id: *sequence_id,
+                                        events: events.clone(),
                                     }),
                                     input_reaction_requirements.clone(),
                                 )
@@ -251,12 +261,14 @@ impl IrsLoader {
                             loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
+                                    events: Default::default(),
                                 }),
                                 vec![],
                             ));
                         }
                         Single(InputReactionSingle {
                             next: sequence_name_string,
+                            events,
                             requirements: input_reaction_requirements,
                         }) => {
                             let sequence_id =
@@ -270,6 +282,7 @@ impl IrsLoader {
                             loaded_transitions.push(CharacterInputReaction::new(
                                 InputReaction::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
+                                    events: events.clone(),
                                 }),
                                 input_reaction_requirements.clone(),
                             ))
@@ -277,6 +290,7 @@ impl IrsLoader {
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
+                                 events,
                                  requirements: input_reaction_requirements,
                              }| {
                                 let sequence_id =
@@ -290,6 +304,7 @@ impl IrsLoader {
                                 CharacterInputReaction::new(
                                     InputReaction::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
+                                        events: events.clone(),
                                     }),
                                     input_reaction_requirements.clone(),
                                 )

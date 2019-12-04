@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use input_reaction_model::config::{InputReaction, InputReactionSingle};
+    use input_reaction_model::config::{
+        InputReaction, InputReactionAppEvents, InputReactionSingle,
+    };
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
@@ -49,6 +51,7 @@ frames:
                 ))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
+                    events: InputReactionAppEvents::default(),
                     requirements: vec![],
                 })),
                 ..Default::default()

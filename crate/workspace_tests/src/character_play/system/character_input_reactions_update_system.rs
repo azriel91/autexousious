@@ -13,7 +13,10 @@ mod tests {
         CharacterIrsHandle,
     };
     use game_input_model::ControlAction;
-    use input_reaction_model::loaded::{ActionPress, InputReaction, InputReactions};
+    use input_reaction_model::{
+        config::InputReactionAppEvents,
+        loaded::{ActionPress, InputReaction, InputReactions},
+    };
     use sequence_model::{
         loaded::SequenceId,
         play::{FrameIndexClock, SequenceUpdateEvent},
@@ -118,17 +121,19 @@ mod tests {
     fn input_reactions() -> CharacterInputReactions {
         CharacterInputReactions::new(InputReactions::new(vec![
             CharacterInputReaction::new(
-                InputReaction::ActionPress(ActionPress::new(
-                    ControlAction::Attack,
-                    SequenceId::new(1),
-                )),
+                InputReaction::ActionPress(ActionPress {
+                    action: ControlAction::Attack,
+                    sequence_id: SequenceId::new(1),
+                    events: InputReactionAppEvents::default(),
+                }),
                 vec![],
             ),
             CharacterInputReaction::new(
-                InputReaction::ActionPress(ActionPress::new(
-                    ControlAction::Jump,
-                    SequenceId::new(7),
-                )),
+                InputReaction::ActionPress(ActionPress {
+                    action: ControlAction::Jump,
+                    sequence_id: SequenceId::new(7),
+                    events: InputReactionAppEvents::default(),
+                }),
                 vec![],
             ),
         ]))

@@ -19,9 +19,12 @@ mod tests {
     };
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
-    use input_reaction_model::loaded::{
-        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-        InputReactions,
+    use input_reaction_model::{
+        config::InputReactionAppEvents,
+        loaded::{
+            ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition,
+            InputReaction, InputReactions,
+        },
     };
     use object_model::play::{HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
@@ -210,6 +213,7 @@ mod tests {
                 input_reaction: InputReaction::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(5),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -217,6 +221,7 @@ mod tests {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(1),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![InputReactionRequirement::Charge(
                     ChargePoints::new(90),
@@ -226,6 +231,7 @@ mod tests {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(2),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(
                     50,
@@ -235,6 +241,7 @@ mod tests {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(3),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(
                     30,
@@ -244,6 +251,7 @@ mod tests {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(7),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![
                     InputReactionRequirement::Charge(ChargePoints::new(90)),
@@ -254,6 +262,7 @@ mod tests {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -261,6 +270,7 @@ mod tests {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -268,6 +278,7 @@ mod tests {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -275,6 +286,7 @@ mod tests {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -282,6 +294,7 @@ mod tests {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -289,6 +302,7 @@ mod tests {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -296,12 +310,14 @@ mod tests {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
                     InputDirection::NotSame,
@@ -317,6 +333,7 @@ mod tests {
                 input_reaction: InputReaction::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(4),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -324,6 +341,7 @@ mod tests {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(6),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -331,6 +349,7 @@ mod tests {
                 input_reaction: InputReaction::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -338,6 +357,7 @@ mod tests {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -345,6 +365,7 @@ mod tests {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -352,6 +373,7 @@ mod tests {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -359,6 +381,7 @@ mod tests {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -366,6 +389,7 @@ mod tests {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
@@ -373,12 +397,14 @@ mod tests {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
+                    events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
                     InputDirection::NotSame,

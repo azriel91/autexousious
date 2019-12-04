@@ -6,7 +6,9 @@ mod test {
     use charge_model::config::ChargePoints;
     use collision_model::config::Body;
     use indexmap::IndexMap;
-    use input_reaction_model::config::{InputReaction, InputReactionMultiple, InputReactionSingle};
+    use input_reaction_model::config::{
+        InputReaction, InputReactionAppEvents, InputReactionMultiple, InputReactionSingle,
+    };
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
@@ -124,19 +126,23 @@ sequences:
                 release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
+                        events: InputReactionAppEvents::default(),
                         requirements: vec![InputReactionRequirement::Charge(ChargePoints::new(90))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
+                        events: InputReactionAppEvents::default(),
                         requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(50))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
+                        events: InputReactionAppEvents::default(),
                         requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
+                    events: InputReactionAppEvents::default(),
                     requirements: vec![],
                 })),
                 ..Default::default()
@@ -175,11 +181,13 @@ sequences:
                 release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
                     InputReactionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
+                        events: InputReactionAppEvents::default(),
                         requirements: vec![],
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
+                    events: InputReactionAppEvents::default(),
                     requirements: vec![],
                 })),
                 ..Default::default()

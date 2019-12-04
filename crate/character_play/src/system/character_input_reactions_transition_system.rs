@@ -16,8 +16,11 @@ use game_input::ControllerInput;
 use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
-use input_reaction_model::loaded::{
-    ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+use input_reaction_model::{
+    config::InputReactionAppEvents,
+    loaded::{
+        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
+    },
 };
 use named_type::NamedType;
 use named_type_derive::NamedType;
@@ -103,7 +106,7 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_input_reaction| {
-                    let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
+                    let input_reaction = AsRef::<InputReaction>::as_ref(character_input_reaction);
                     let input_reaction_requirements =
                         &character_input_reaction.input_reaction_requirements;
 
@@ -111,9 +114,10 @@ impl CharacterInputReactionsTransitionSystem {
                         InputReaction::ActionPress(ActionPress {
                             action,
                             sequence_id,
+                            events,
                         }) => {
-                            if value && control_action == action {
-                                Some((sequence_id, input_reaction_requirements))
+                            if value && control_action == *action {
+                                Some((*sequence_id, events, input_reaction_requirements))
                             } else {
                                 None
                             }
@@ -121,32 +125,37 @@ impl CharacterInputReactionsTransitionSystem {
                         InputReaction::ActionRelease(ActionRelease {
                             action,
                             sequence_id,
+                            events,
                         }) => {
-                            if !value && control_action == action {
-                                Some((sequence_id, input_reaction_requirements))
+                            if !value && control_action == *action {
+                                Some((*sequence_id, events, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
                         InputReaction::ActionHold(action_hold) => {
-                            Self::hold_transition_action(action_hold, *controller_input)
-                                .map(|transition| (transition, input_reaction_requirements))
+                            Self::hold_transition_action(action_hold, *controller_input).map(
+                                |(transition, events)| {
+                                    (transition, events, input_reaction_requirements)
+                                },
+                            )
                         }
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, input_reaction_requirements)| {
+                .filter_map(|(sequence_id, events, input_reaction_requirements)| {
                     Self::process_transition(
                         charge_use_ec,
                         input_reaction_requirement_system_data,
                         entity,
                         sequence_id,
+                        events,
                         &input_reaction_requirements,
                     )
                 })
                 .next();
 
-            if let Some(transition_sequence_id) = transition_sequence_id {
+            if let Some((transition_sequence_id, _events)) = transition_sequence_id {
                 sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `SequenceId` component.");
@@ -184,44 +193,56 @@ impl CharacterInputReactionsTransitionSystem {
             let transition_sequence_id = character_input_reactions
                 .iter()
                 .filter_map(|character_input_reaction| {
-                    let input_reaction = *AsRef::<InputReaction>::as_ref(character_input_reaction);
+                    let input_reaction = AsRef::<InputReaction>::as_ref(character_input_reaction);
                     let input_reaction_requirements =
                         &character_input_reaction.input_reaction_requirements;
 
                     match input_reaction {
-                        InputReaction::AxisPress(AxisTransition { axis, sequence_id }) => {
-                            if relative_ne!(0., value) && control_axis == axis {
-                                Some((sequence_id, input_reaction_requirements))
+                        InputReaction::AxisPress(AxisTransition {
+                            axis,
+                            sequence_id,
+                            events,
+                        }) => {
+                            if relative_ne!(0., value) && control_axis == *axis {
+                                Some((*sequence_id, events, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
-                        InputReaction::AxisRelease(AxisTransition { axis, sequence_id }) => {
-                            if relative_eq!(0., value) && control_axis == axis {
-                                Some((sequence_id, input_reaction_requirements))
+                        InputReaction::AxisRelease(AxisTransition {
+                            axis,
+                            sequence_id,
+                            events,
+                        }) => {
+                            if relative_eq!(0., value) && control_axis == *axis {
+                                Some((*sequence_id, events, input_reaction_requirements))
                             } else {
                                 None
                             }
                         }
                         InputReaction::AxisHold(axis_hold) => {
-                            Self::hold_transition_axis(axis_hold, *controller_input)
-                                .map(|transition| (transition, input_reaction_requirements))
+                            Self::hold_transition_axis(axis_hold, *controller_input).map(
+                                |(transition, events)| {
+                                    (transition, events, input_reaction_requirements)
+                                },
+                            )
                         }
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, input_reaction_requirements)| {
+                .filter_map(|(sequence_id, events, input_reaction_requirements)| {
                     Self::process_transition(
                         charge_use_ec,
                         input_reaction_requirement_system_data,
                         entity,
                         sequence_id,
+                        events,
                         &input_reaction_requirements,
                     )
                 })
                 .next();
 
-            if let Some(transition_sequence_id) = transition_sequence_id {
+            if let Some((transition_sequence_id, _events)) = transition_sequence_id {
                 sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `SequenceId` component.");
@@ -267,31 +288,38 @@ impl CharacterInputReactionsTransitionSystem {
 
                             match input_reaction {
                                 InputReaction::ActionHold(action_hold) => {
-                                    Self::hold_transition_action(*action_hold, *controller_input)
-                                        .map(|transition| (transition, input_reaction_requirements))
+                                    Self::hold_transition_action(action_hold, *controller_input)
+                                        .map(|(transition, events)| {
+                                            (transition, events, input_reaction_requirements)
+                                        })
                                 }
                                 InputReaction::AxisHold(axis_hold) => {
-                                    Self::hold_transition_axis(*axis_hold, *controller_input)
-                                        .map(|transition| (transition, input_reaction_requirements))
+                                    Self::hold_transition_axis(axis_hold, *controller_input).map(
+                                        |(transition, events)| {
+                                            (transition, events, input_reaction_requirements)
+                                        },
+                                    )
                                 }
-                                InputReaction::Fallback(FallbackTransition { sequence_id }) => {
-                                    Some((*sequence_id, input_reaction_requirements))
-                                }
+                                InputReaction::Fallback(FallbackTransition {
+                                    sequence_id,
+                                    events,
+                                }) => Some((*sequence_id, events, input_reaction_requirements)),
                                 _ => None,
                             }
                         })
-                        .filter_map(|(sequence_id, input_reaction_requirements)| {
+                        .filter_map(|(sequence_id, events, input_reaction_requirements)| {
                             Self::process_transition(
                                 charge_use_ec,
                                 input_reaction_requirement_system_data,
                                 entity,
                                 sequence_id,
+                                events,
                                 &input_reaction_requirements,
                             )
                         })
                         .next();
 
-                    if let Some(transition_sequence_id) = transition_sequence_id {
+                    if let Some((transition_sequence_id, _events)) = transition_sequence_id {
                         sequence_ids
                             .insert(entity, transition_sequence_id)
                             .expect("Failed to insert `SequenceId` component.");
@@ -310,34 +338,35 @@ impl CharacterInputReactionsTransitionSystem {
         ActionHold {
             action,
             sequence_id,
-        }: ActionHold,
+            events,
+        }: &ActionHold,
         controller_input: ControllerInput,
-    ) -> Option<SequenceId> {
+    ) -> Option<(SequenceId, &InputReactionAppEvents)> {
         match action {
             ControlAction::Defend => {
                 if controller_input.defend {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
             }
             ControlAction::Jump => {
                 if controller_input.jump {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
             }
             ControlAction::Attack => {
                 if controller_input.attack {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
             }
             ControlAction::Special => {
                 if controller_input.special {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
@@ -352,20 +381,24 @@ impl CharacterInputReactionsTransitionSystem {
     /// * `axis_transition`: `Axis` and sequence ID the hold transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_axis(
-        AxisTransition { axis, sequence_id }: AxisTransition,
+        AxisTransition {
+            axis,
+            sequence_id,
+            events,
+        }: &AxisTransition,
         controller_input: ControllerInput,
-    ) -> Option<SequenceId> {
+    ) -> Option<(SequenceId, &InputReactionAppEvents)> {
         match axis {
             Axis::X => {
                 if relative_ne!(0., controller_input.x_axis_value) {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
             }
             Axis::Z => {
                 if relative_ne!(0., controller_input.z_axis_value) {
-                    Some(sequence_id)
+                    Some((*sequence_id, events))
                 } else {
                     None
                 }
@@ -373,13 +406,14 @@ impl CharacterInputReactionsTransitionSystem {
         }
     } // kcov-ignore
 
-    fn process_transition(
+    fn process_transition<'f>(
         charge_use_ec: &mut EventChannel<ChargeUseEvent>,
         input_reaction_requirement_system_data: &InputReactionRequirementSystemData,
         entity: Entity,
         sequence_id: SequenceId,
+        events: &'f InputReactionAppEvents,
         input_reaction_requirements: &[InputReactionRequirement],
-    ) -> Option<SequenceId> {
+    ) -> Option<(SequenceId, &'f InputReactionAppEvents)> {
         if Self::transition_requirements_met(
             input_reaction_requirement_system_data,
             &input_reaction_requirements,
@@ -400,7 +434,7 @@ impl CharacterInputReactionsTransitionSystem {
                     }
                 })
                 .for_each(|charge_use_event| charge_use_ec.single_write(charge_use_event));
-            Some(sequence_id)
+            Some((sequence_id, events))
         } else {
             None
         }
