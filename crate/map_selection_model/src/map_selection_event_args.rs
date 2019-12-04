@@ -5,7 +5,10 @@ use structopt_derive::StructOpt;
 ///
 /// # Examples
 ///
+/// * `map_selection return`
 /// * `map_selection select -s default/eruption`
+/// * `map_selection deselect`
+/// * `map_selection confirm`
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
