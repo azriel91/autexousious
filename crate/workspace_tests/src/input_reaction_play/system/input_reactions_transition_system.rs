@@ -488,7 +488,7 @@ mod tests {
         let test_character_sequence_path = PathBuf::from_iter(&[
             env!("CARGO_MANIFEST_DIR"),
             "src",
-            "character_play",
+            "input_reaction_play",
             "system",
             test_character_sequence_yaml,
         ]);

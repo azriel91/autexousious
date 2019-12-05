@@ -6,8 +6,10 @@ use amethyst::{
 use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::{config::CharacterIrr, loaded::CharacterIrsHandles};
-use character_play::CharacterInputReactionsUpdateSystem;
+use character_model::{
+    config::CharacterIrr,
+    loaded::{CharacterIrs, CharacterIrsHandles},
+};
 use charge_play::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
     ChargeRetentionSystem, ChargeUsageSystem,
@@ -144,12 +146,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(SpawnsSequence);
         frame_component_update_system!(TintSequence);
         frame_component_update_system!(ScaleSequence);
+        frame_component_update_system!(CharacterIrs);
 
-        builder.add(
-            CharacterInputReactionsUpdateSystem::new(),
-            &CharacterInputReactionsUpdateSystem::type_name(),
-            &[&SequenceUpdateSystem::type_name()],
-        ); // kcov-ignore
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
             &FrameFreezeClockAugmentSystem::type_name(),

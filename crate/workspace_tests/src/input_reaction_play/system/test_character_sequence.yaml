@@ -1,4 +1,4 @@
-# Used in `CharacterInputReactionsTransitionSystem` test.
+# Used in `InputReactionsTransitionSystem` test.
 input_reactions: {}
 frames:
   - input_reactions:
