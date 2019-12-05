@@ -9,7 +9,8 @@ mod tests {
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterFrame, CharacterInputReactions, CharacterSequence, CharacterSequenceName,
+        CharacterFrame, CharacterInputReactions, CharacterIrr, CharacterSequence,
+        CharacterSequenceName,
     };
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
@@ -52,7 +53,7 @@ frames:
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     events: InputReactionAppEvents::default(),
-                    requirements: vec![],
+                    requirements: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore

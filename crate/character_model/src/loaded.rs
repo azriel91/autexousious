@@ -16,5 +16,6 @@ mod asset_character_definition_handle;
 mod character_hit_transitions;
 mod character_input_reaction;
 mod character_input_reactions;
+
 mod character_irs;
 mod character_irs_handles;

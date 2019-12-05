@@ -1,6 +1,6 @@
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
-    config::{self, CharacterSequence, CharacterSequenceName},
+    config::{self, CharacterIrr, CharacterSequence, CharacterSequenceName},
     loaded::{self, CharacterInputReaction, CharacterIrs, CharacterIrsHandle},
 };
 use game_input_model::{Axis, ControlAction};
@@ -96,7 +96,7 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
                                 }),
-                                vec![],
+                                CharacterIrr::default(),
                             ));
                         }
                         Single(InputReactionSingle {
@@ -180,7 +180,7 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
                                 }),
-                                vec![],
+                                CharacterIrr::default(),
                             ));
                         }
                         Single(InputReactionSingle {
@@ -263,7 +263,7 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
                                 }),
-                                vec![],
+                                CharacterIrr::default(),
                             ));
                         }
                         Single(InputReactionSingle {

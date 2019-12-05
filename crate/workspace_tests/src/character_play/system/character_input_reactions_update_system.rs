@@ -8,9 +8,12 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::loaded::{
-        CharacterInputReaction, CharacterInputReactions, CharacterInputReactionsHandle,
-        CharacterIrsHandle,
+    use character_model::{
+        config::CharacterIrr,
+        loaded::{
+            CharacterInputReaction, CharacterInputReactions, CharacterInputReactionsHandle,
+            CharacterIrsHandle,
+        },
     };
     use game_input_model::ControlAction;
     use input_reaction_model::{
@@ -126,7 +129,7 @@ mod tests {
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
                 }),
-                vec![],
+                CharacterIrr::default(),
             ),
             CharacterInputReaction::new(
                 InputReaction::ActionPress(ActionPress {
@@ -134,7 +137,7 @@ mod tests {
                     sequence_id: SequenceId::new(7),
                     events: InputReactionAppEvents::default(),
                 }),
-                vec![],
+                CharacterIrr::default(),
             ),
         ]))
     }

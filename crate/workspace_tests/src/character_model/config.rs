@@ -19,8 +19,8 @@ mod test {
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterIrrPart,
-        CharacterSequence, CharacterSequenceName,
+        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterIrr,
+        CharacterIrrPart, CharacterSequence, CharacterSequenceName,
     };
 
     const OBJECT_YAML: &str = "\
@@ -127,23 +127,29 @@ sequences:
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![CharacterIrrPart::Charge(ChargePoints::new(90))],
+                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Charge(
+                            ChargePoints::new(90),
+                        )]),
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![CharacterIrrPart::Sp(SkillPoints::new(50))],
+                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Sp(
+                            SkillPoints::new(50),
+                        )]),
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![CharacterIrrPart::Hp(HealthPoints::new(30))],
+                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Hp(
+                            HealthPoints::new(30),
+                        )]),
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     events: InputReactionAppEvents::default(),
-                    requirements: vec![],
+                    requirements: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore
@@ -182,13 +188,13 @@ sequences:
                     InputReactionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![],
+                        requirements: CharacterIrr::default(),
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
                     events: InputReactionAppEvents::default(),
-                    requirements: vec![],
+                    requirements: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore

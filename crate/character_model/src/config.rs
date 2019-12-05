@@ -4,6 +4,7 @@ pub use self::{
     character_definition::{CharacterDefinition, CharacterDefinitionHandle},
     character_frame::CharacterFrame,
     character_input_reactions::CharacterInputReactions,
+    character_irr::CharacterIrr,
     character_irr_part::CharacterIrrPart,
     character_sequence::CharacterSequence,
     character_sequence_name::CharacterSequenceName,
@@ -14,6 +15,7 @@ pub use self::{
 mod character_definition;
 mod character_frame;
 mod character_input_reactions;
+mod character_irr;
 mod character_irr_part;
 mod character_sequence;
 mod character_sequence_name;

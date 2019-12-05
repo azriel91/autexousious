@@ -12,7 +12,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use application::IoUtils;
     use character_model::{
-        config::{CharacterIrrPart, CharacterSequence, CharacterSequenceName},
+        config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{
             CharacterInputReaction, CharacterInputReactions, CharacterIrs, CharacterIrsHandle,
         },
@@ -215,7 +215,7 @@ mod tests {
                     sequence_id: SequenceId::new(5),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
@@ -223,7 +223,9 @@ mod tests {
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![CharacterIrrPart::Charge(ChargePoints::new(90))],
+                requirement: CharacterIrr::new(vec![CharacterIrrPart::Charge(ChargePoints::new(
+                    90,
+                ))]),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
@@ -231,7 +233,7 @@ mod tests {
                     sequence_id: SequenceId::new(2),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![CharacterIrrPart::Sp(SkillPoints::new(50))],
+                requirement: CharacterIrr::new(vec![CharacterIrrPart::Sp(SkillPoints::new(50))]),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
@@ -239,7 +241,7 @@ mod tests {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![CharacterIrrPart::Hp(HealthPoints::new(30))],
+                requirement: CharacterIrr::new(vec![CharacterIrrPart::Hp(HealthPoints::new(30))]),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
@@ -247,10 +249,10 @@ mod tests {
                     sequence_id: SequenceId::new(7),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![
+                requirement: CharacterIrr::new(vec![
                     CharacterIrrPart::Charge(ChargePoints::new(90)),
                     CharacterIrrPart::Sp(SkillPoints::new(50)),
-                ],
+                ]),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
@@ -258,7 +260,7 @@ mod tests {
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
@@ -266,7 +268,7 @@ mod tests {
                     sequence_id: SequenceId::new(9),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
@@ -274,7 +276,7 @@ mod tests {
                     sequence_id: SequenceId::new(12),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
@@ -282,7 +284,7 @@ mod tests {
                     sequence_id: SequenceId::new(11),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
@@ -290,7 +292,7 @@ mod tests {
                     sequence_id: SequenceId::new(14),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
@@ -298,7 +300,7 @@ mod tests {
                     sequence_id: SequenceId::new(10),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
@@ -306,16 +308,16 @@ mod tests {
                     sequence_id: SequenceId::new(13),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![CharacterIrrPart::InputDirX(
+                requirement: CharacterIrr::new(vec![CharacterIrrPart::InputDirX(
                     InputDirection::NotSame,
-                )],
+                )]),
             },
         ]))
     }
@@ -329,7 +331,7 @@ mod tests {
                     sequence_id: SequenceId::new(4),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
@@ -337,7 +339,7 @@ mod tests {
                     sequence_id: SequenceId::new(6),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
@@ -345,7 +347,7 @@ mod tests {
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
@@ -353,7 +355,7 @@ mod tests {
                     sequence_id: SequenceId::new(9),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisPress(AxisTransition {
@@ -361,7 +363,7 @@ mod tests {
                     sequence_id: SequenceId::new(12),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
@@ -369,7 +371,7 @@ mod tests {
                     sequence_id: SequenceId::new(11),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisRelease(AxisTransition {
@@ -377,7 +379,7 @@ mod tests {
                     sequence_id: SequenceId::new(14),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
@@ -385,7 +387,7 @@ mod tests {
                     sequence_id: SequenceId::new(10),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::AxisHold(AxisTransition {
@@ -393,16 +395,16 @@ mod tests {
                     sequence_id: SequenceId::new(13),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![],
+                requirement: CharacterIrr::default(),
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![CharacterIrrPart::InputDirX(
+                requirement: CharacterIrr::new(vec![CharacterIrrPart::InputDirX(
                     InputDirection::NotSame,
-                )],
+                )]),
             },
         ]))
     }
