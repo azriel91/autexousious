@@ -73,15 +73,15 @@ impl KeyboardUiGen {
             })
             .map(|(key, mut ui_sprite_label)| {
                 // Sequence to adjust tint.
-                let sequence = sequences.get_mut(&ui_sprite_label.sequence);
+                let ui_sequence = sequences.get_mut(&ui_sprite_label.sequence);
                 let tint_index = control_button_to_player_index.get(key).copied();
                 let tint = tint_index.and_then(|tint_index| {
                     keyboard_settings.controller_tints.get(tint_index).copied()
                 });
 
-                if let (Some(sequence), Some(tint)) = (sequence, tint) {
-                    sequence.frames.iter_mut().for_each(|sprite_frame| {
-                        sprite_frame.tint = tint;
+                if let (Some(ui_sequence), Some(tint)) = (ui_sequence, tint) {
+                    ui_sequence.sequence.frames.iter_mut().for_each(|ui_frame| {
+                        ui_frame.sprite_frame.tint = tint;
                     });
                 }
                 ui_sprite_label.position += keyboard_settings.position;

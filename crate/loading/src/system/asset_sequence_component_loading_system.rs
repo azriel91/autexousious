@@ -536,16 +536,22 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(sequences.values(), asset_slug);
                     let wait_sequence_handles = wait_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let tint_sequence_handles = tint_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let scale_sequence_handles = scale_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let sprite_render_sequence_handles =
                         sprite_sheet_handles.map(|sprite_sheet_handles| {
                             sprite_render_sequence_handles_loader.items_to_datas(
                                 sequences.values(),
-                                |sequence| sequence.frames.iter(),
+                                |ui_sequence| ui_sequence.sequence.frames.iter(),
                                 sprite_sheet_handles,
                             )
                         });

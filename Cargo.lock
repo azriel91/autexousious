@@ -5510,6 +5510,7 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_selection_model 0.15.0",
+ "input_reaction_model 0.16.0",
  "sequence_model 0.15.0",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
  "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
