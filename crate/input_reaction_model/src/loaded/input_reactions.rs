@@ -10,4 +10,4 @@ use crate::loaded::InputReaction;
 #[derivative(Default(bound = ""))]
 pub struct InputReactions<IR = InputReaction>(pub Vec<IR>)
 where
-    IR: AsRef<InputReaction> + Send + Sync + 'static;
+    IR: Send + Sync + 'static;

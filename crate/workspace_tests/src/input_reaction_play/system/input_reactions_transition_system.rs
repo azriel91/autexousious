@@ -13,7 +13,7 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use character_loading::{IrsLoader, IrsLoaderParams};
     use character_model::{
-        config::{CharacterSequence, CharacterSequenceName},
+        config::{CharacterIrr, CharacterSequence, CharacterSequenceName},
         loaded::{
             CharacterInputReactions, CharacterInputReactionsHandle, CharacterIrs,
             CharacterIrsHandle,
@@ -34,7 +34,7 @@ mod tests {
         loaded::{SequenceId, SequenceIdMappings},
     };
 
-    use character_play::CharacterInputReactionsTransitionSystem;
+    use input_reaction_play::InputReactionsTransitionSystem;
 
     #[test]
     fn inserts_transition_for_action_press_event() -> Result<(), Error> {
@@ -367,7 +367,11 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(CharacterInputReactionsTransitionSystem::new(), "", &[])
+            .with_system(
+                InputReactionsTransitionSystem::<CharacterIrr>::new(),
+                "",
+                &[],
+            )
             .with_effect(register_reader)
             .with_effect(move |world| {
                 let character_irs_handle = {

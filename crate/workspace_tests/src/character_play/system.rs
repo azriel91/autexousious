@@ -1,2 +1,1 @@
-mod character_input_reactions_transition_system;
 mod character_input_reactions_update_system;

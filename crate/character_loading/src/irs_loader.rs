@@ -7,8 +7,8 @@ use game_input_model::{Axis, ControlAction};
 use input_reaction_model::{
     config::InputReactionSingle,
     loaded::{
-        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-        InputReactions,
+        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReactions,
+        ReactionEffect,
     },
 };
 use object_model::config::GameObjectSequence;
@@ -91,7 +91,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode($mode_data {
+                                ReactionEffect::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
@@ -113,7 +113,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode($mode_data {
+                                ReactionEffect::$mode($mode_data {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
@@ -136,7 +136,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterInputReaction::new(
-                                    InputReaction::$mode($mode_data {
+                                    ReactionEffect::$mode($mode_data {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
@@ -175,7 +175,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode(AxisTransition {
+                                ReactionEffect::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
@@ -197,7 +197,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode(AxisTransition {
+                                ReactionEffect::$mode(AxisTransition {
                                     axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
@@ -220,7 +220,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterInputReaction::new(
-                                    InputReaction::$mode(AxisTransition {
+                                    ReactionEffect::$mode(AxisTransition {
                                         axis: Axis::$axis,
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
@@ -259,7 +259,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode(FallbackTransition {
+                                ReactionEffect::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                     events: Default::default(),
                                 }),
@@ -280,7 +280,7 @@ impl IrsLoader {
                                     )
                                 });
                             loaded_transitions.push(CharacterInputReaction::new(
-                                InputReaction::$mode(FallbackTransition {
+                                ReactionEffect::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
@@ -302,7 +302,7 @@ impl IrsLoader {
                                     )
                                 });
                                 CharacterInputReaction::new(
-                                    InputReaction::$mode(FallbackTransition {
+                                    ReactionEffect::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),

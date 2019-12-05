@@ -18,7 +18,7 @@ mod tests {
     use game_input_model::ControlAction;
     use input_reaction_model::{
         config::InputReactionAppEvents,
-        loaded::{ActionPress, InputReaction, InputReactions},
+        loaded::{ActionPress, InputReactions, ReactionEffect},
     };
     use sequence_model::{
         loaded::SequenceId,
@@ -124,7 +124,7 @@ mod tests {
     fn input_reactions() -> CharacterInputReactions {
         InputReactions::new(vec![
             CharacterInputReaction::new(
-                InputReaction::ActionPress(ActionPress {
+                ReactionEffect::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
@@ -132,7 +132,7 @@ mod tests {
                 CharacterIrr::default(),
             ),
             CharacterInputReaction::new(
-                InputReaction::ActionPress(ActionPress {
+                ReactionEffect::ActionPress(ActionPress {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(7),
                     events: InputReactionAppEvents::default(),

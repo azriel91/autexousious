@@ -17,7 +17,7 @@ use input_reaction_model::{
     config::{InputReactionAppEvents, InputReactionRequirement},
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-        InputReactions, InputReactionsHandle,
+        InputReactions, InputReactionsHandle, ReactionEffect,
     },
 };
 use named_type::NamedType;
@@ -28,10 +28,9 @@ use sequence_model::loaded::SequenceId;
 ///
 /// # Type Parameters
 ///
-/// * `IR`: Type of the `InputReaction`.
 /// * `IRR`: `InputReactionRequirement`.
 #[derive(Debug, Default, NamedType, new)]
-pub struct InputReactionsTransitionSystem<IR = InputReaction, IRR = ()> {
+pub struct InputReactionsTransitionSystem<IRR = ()> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
@@ -39,33 +38,32 @@ pub struct InputReactionsTransitionSystem<IR = InputReaction, IRR = ()> {
     #[new(default)]
     processed_entities: BitSet,
     /// Marker.
-    marker: PhantomData<(IR, IRR)>,
+    marker: PhantomData<IRR>,
 }
 
 /// `InputReactionsTransitionSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct InputReactionsTransitionSystemData<'s, IR, IRR>
+pub struct InputReactionsTransitionSystemData<'s, IRR>
 where
-    IR: AsRef<InputReaction> + Send + Sync + 'static,
-    IRR: InputReactionRequirement<'s>,
+    IRR: InputReactionRequirement<'s> + Send + Sync + 'static,
     IRR::SystemData: Debug,
 {
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
     /// `InputReactionsTransitionResources`.
-    pub input_reactions_transition_resources: InputReactionsTransitionResources<'s, IR>,
-    /// `IRRSD`.
+    pub input_reactions_transition_resources: InputReactionsTransitionResources<'s, IRR>,
+    /// `InputReactionRequirement` system data.
     pub requirement_system_data: IRR::SystemData,
 }
 
 /// `InputReactionsTransitionResources`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct InputReactionsTransitionResources<'s, IR>
+pub struct InputReactionsTransitionResources<'s, IRR>
 where
-    IR: AsRef<InputReaction> + Send + Sync + 'static,
+    IRR: Send + Sync + 'static,
 {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
@@ -75,19 +73,18 @@ where
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
     /// `InputReactionsHandle` components.
     #[derivative(Debug = "ignore")]
-    pub input_reactions_handles: ReadStorage<'s, InputReactionsHandle<IR>>,
+    pub input_reactions_handles: ReadStorage<'s, InputReactionsHandle<InputReaction<IRR>>>,
     /// `InputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub input_reactions_assets: Read<'s, AssetStorage<InputReactions<IR>>>,
+    pub input_reactions_assets: Read<'s, AssetStorage<InputReactions<InputReaction<IRR>>>>,
     /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
-impl<'s, IR, IRR> InputReactionsTransitionSystem<IR, IRR>
+impl<'s, IRR> InputReactionsTransitionSystem<IRR>
 where
-    IR: AsRef<InputReaction> + AsRef<IRR> + Send + Sync + 'static,
-    IRR: InputReactionRequirement<'s>,
+    IRR: InputReactionRequirement<'s> + Send + Sync + 'static,
 {
     fn handle_action_event(
         &mut self,
@@ -97,7 +94,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
-        }: &mut InputReactionsTransitionResources<IR>,
+        }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         ControlActionEventData {
             entity,
@@ -117,12 +114,11 @@ where
 
             let transition_sequence_id = input_reactions
                 .iter()
-                .filter_map(|ir| {
-                    let input_reaction = AsRef::<InputReaction>::as_ref(ir);
-                    let input_reaction_requirement = AsRef::<IRR>::as_ref(ir);
+                .filter_map(|input_reaction| {
+                    let input_reaction_requirement = &input_reaction.requirement;
 
-                    match input_reaction {
-                        InputReaction::ActionPress(ActionPress {
+                    match &input_reaction.effect {
+                        ReactionEffect::ActionPress(ActionPress {
                             action,
                             sequence_id,
                             events,
@@ -133,7 +129,7 @@ where
                                 None
                             }
                         }
-                        InputReaction::ActionRelease(ActionRelease {
+                        ReactionEffect::ActionRelease(ActionRelease {
                             action,
                             sequence_id,
                             events,
@@ -144,8 +140,8 @@ where
                                 None
                             }
                         }
-                        InputReaction::ActionHold(action_hold) => {
-                            Self::hold_transition_action(action_hold, *controller_input).map(
+                        ReactionEffect::ActionHold(action_hold) => {
+                            Self::hold_transition_action(&action_hold, *controller_input).map(
                                 |(transition, events)| {
                                     (transition, events, input_reaction_requirement)
                                 },
@@ -160,7 +156,7 @@ where
                         entity,
                         sequence_id,
                         events,
-                        &input_reaction_requirement,
+                        input_reaction_requirement,
                     )
                 })
                 .next();
@@ -181,7 +177,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
-        }: &mut InputReactionsTransitionResources<IR>,
+        }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         AxisMoveEventData {
             entity,
@@ -201,12 +197,11 @@ where
 
             let transition_sequence_id = input_reactions
                 .iter()
-                .filter_map(|ir| {
-                    let input_reaction = AsRef::<InputReaction>::as_ref(ir);
-                    let input_reaction_requirement = AsRef::<IRR>::as_ref(ir);
+                .filter_map(|input_reaction| {
+                    let input_reaction_requirement = &input_reaction.requirement;
 
-                    match input_reaction {
-                        InputReaction::AxisPress(AxisTransition {
+                    match &input_reaction.effect {
+                        ReactionEffect::AxisPress(AxisTransition {
                             axis,
                             sequence_id,
                             events,
@@ -217,7 +212,7 @@ where
                                 None
                             }
                         }
-                        InputReaction::AxisRelease(AxisTransition {
+                        ReactionEffect::AxisRelease(AxisTransition {
                             axis,
                             sequence_id,
                             events,
@@ -228,7 +223,7 @@ where
                                 None
                             }
                         }
-                        InputReaction::AxisHold(axis_hold) => {
+                        ReactionEffect::AxisHold(axis_hold) => {
                             Self::hold_transition_axis(axis_hold, *controller_input).map(
                                 |(transition, events)| {
                                     (transition, events, input_reaction_requirement)
@@ -244,7 +239,7 @@ where
                         entity,
                         sequence_id,
                         events,
-                        &input_reaction_requirement,
+                        input_reaction_requirement,
                     )
                 })
                 .next();
@@ -268,7 +263,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
-        }: &mut InputReactionsTransitionResources<IR>,
+        }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
     ) {
         (
@@ -285,26 +280,25 @@ where
 
                 let transition_sequence_id = input_reactions
                     .iter()
-                    .filter_map(|ir| {
-                        let input_reaction = AsRef::<InputReaction>::as_ref(ir);
-                        let input_reaction_requirement = AsRef::<IRR>::as_ref(ir);
+                    .filter_map(|input_reaction| {
+                        let input_reaction_requirement = &input_reaction.requirement;
 
-                        match input_reaction {
-                            InputReaction::ActionHold(action_hold) => {
+                        match &input_reaction.effect {
+                            ReactionEffect::ActionHold(action_hold) => {
                                 Self::hold_transition_action(action_hold, *controller_input).map(
                                     |(transition, events)| {
                                         (transition, events, input_reaction_requirement)
                                     },
                                 )
                             }
-                            InputReaction::AxisHold(axis_hold) => {
+                            ReactionEffect::AxisHold(axis_hold) => {
                                 Self::hold_transition_axis(axis_hold, *controller_input).map(
                                     |(transition, events)| {
                                         (transition, events, input_reaction_requirement)
                                     },
                                 )
                             }
-                            InputReaction::Fallback(FallbackTransition {
+                            ReactionEffect::Fallback(FallbackTransition {
                                 sequence_id,
                                 events,
                             }) => Some((*sequence_id, events, input_reaction_requirement)),
@@ -317,7 +311,7 @@ where
                             entity,
                             sequence_id,
                             events,
-                            &input_reaction_requirement,
+                            input_reaction_requirement,
                         )
                     })
                     .next();
@@ -425,13 +419,12 @@ where
     }
 }
 
-impl<'s, IR, IRR> System<'s> for InputReactionsTransitionSystem<IR, IRR>
+impl<'s, IRR> System<'s> for InputReactionsTransitionSystem<IRR>
 where
-    IR: AsRef<InputReaction> + AsRef<IRR> + Send + Sync + 'static,
-    IRR: InputReactionRequirement<'s>,
+    IRR: InputReactionRequirement<'s> + Send + Sync + 'static,
     IRR::SystemData: Debug,
 {
-    type SystemData = InputReactionsTransitionSystemData<'s, IR, IRR>;
+    type SystemData = InputReactionsTransitionSystemData<'s, IRR>;
 
     fn run(
         &mut self,

@@ -13,9 +13,7 @@ mod tests {
     use application::IoUtils;
     use character_model::{
         config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
-        loaded::{
-            CharacterInputReaction, CharacterInputReactions, CharacterIrs, CharacterIrsHandle,
-        },
+        loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},
     };
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
@@ -23,7 +21,7 @@ mod tests {
         config::InputReactionAppEvents,
         loaded::{
             ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition,
-            InputReaction, InputReactions,
+            InputReaction, InputReactions, ReactionEffect,
         },
     };
     use object_model::play::{HealthPoints, SkillPoints};
@@ -209,16 +207,16 @@ mod tests {
     // Should overwrite and inherit sequence input reactions.
     fn expected_input_reactions_0() -> CharacterInputReactions {
         InputReactions::new(vec![
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionPress(ActionPress {
+            InputReaction {
+                effect: ReactionEffect::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(5),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionRelease(ActionRelease {
+            InputReaction {
+                effect: ReactionEffect::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
@@ -227,24 +225,24 @@ mod tests {
                     90,
                 ))]),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionRelease(ActionRelease {
+            InputReaction {
+                effect: ReactionEffect::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(2),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::new(vec![CharacterIrrPart::Sp(SkillPoints::new(50))]),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionRelease(ActionRelease {
+            InputReaction {
+                effect: ReactionEffect::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::new(vec![CharacterIrrPart::Hp(HealthPoints::new(30))]),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionHold(ActionHold {
+            InputReaction {
+                effect: ReactionEffect::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(7),
                     events: InputReactionAppEvents::default(),
@@ -254,64 +252,64 @@ mod tests {
                     CharacterIrrPart::Sp(SkillPoints::new(50)),
                 ]),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionHold(ActionHold {
+            InputReaction {
+                effect: ReactionEffect::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisPress(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisPress(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisRelease(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisRelease(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisHold(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisHold(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::Fallback(FallbackTransition {
+            InputReaction {
+                effect: ReactionEffect::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
@@ -325,80 +323,80 @@ mod tests {
     // Should inherit from sequence input reactions.
     fn expected_input_reactions_1() -> CharacterInputReactions {
         InputReactions::new(vec![
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionPress(ActionPress {
+            InputReaction {
+                effect: ReactionEffect::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(4),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionHold(ActionHold {
+            InputReaction {
+                effect: ReactionEffect::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(6),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::ActionHold(ActionHold {
+            InputReaction {
+                effect: ReactionEffect::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisPress(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisPress(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(9),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisPress(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisPress(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(12),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisRelease(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisRelease(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(11),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisRelease(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisRelease(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(14),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisHold(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisHold(AxisTransition {
                     axis: Axis::X,
                     sequence_id: SequenceId::new(10),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::AxisHold(AxisTransition {
+            InputReaction {
+                effect: ReactionEffect::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: SequenceId::new(13),
                     events: InputReactionAppEvents::default(),
                 }),
                 requirement: CharacterIrr::default(),
             },
-            CharacterInputReaction {
-                input_reaction: InputReaction::Fallback(FallbackTransition {
+            InputReaction {
+                effect: ReactionEffect::Fallback(FallbackTransition {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),

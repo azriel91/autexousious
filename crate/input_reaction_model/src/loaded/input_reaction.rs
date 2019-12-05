@@ -1,36 +1,35 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 
-use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition};
+use crate::loaded::ReactionEffect;
 
-/// Sequence to transition to on control input.
+/// Sequence to transition to on control input with requirements.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 #[storage(VecStorage)]
-pub enum InputReaction {
-    /// Transition to a specified sequence on control input press event.
-    ActionPress(ActionPress),
-    /// Transition to a specified sequence on control input enabled state.
-    ActionHold(ActionHold),
-    /// Transition to a specified sequence on control input release event.
-    ActionRelease(ActionRelease),
-    /// Transition to a specified sequence on axis input press event.
-    AxisPress(AxisTransition),
-    /// Transition to a specified sequence on axis input state.
-    AxisHold(AxisTransition),
-    /// Transition to a specified sequence on axis input press event.
-    AxisRelease(AxisTransition),
-    /// Transition to a specified fallback sequence.
-    Fallback(FallbackTransition),
+pub struct InputReaction<IRR = ()>
+where
+    IRR: Send + Sync + 'static,
+{
+    /// Effects of the reaction `ReactionEffect`.
+    pub effect: ReactionEffect,
+    /// Requirement for the input reaction to happen.
+    pub requirement: IRR,
 }
 
-impl AsRef<InputReaction> for InputReaction {
-    fn as_ref(&self) -> &InputReaction {
-        self
+impl<IRR> AsRef<InputReaction<IRR>> for InputReaction<IRR>
+where
+    IRR: Send + Sync + 'static,
+{
+    fn as_ref(&self) -> &InputReaction<IRR> {
+        &self
     }
 }
 
-impl AsRef<()> for InputReaction {
-    fn as_ref(&self) -> &() {
-        &()
+impl<IRR> AsRef<IRR> for InputReaction<IRR>
+where
+    IRR: Send + Sync + 'static,
+{
+    fn as_ref(&self) -> &IRR {
+        &self.requirement
     }
 }
