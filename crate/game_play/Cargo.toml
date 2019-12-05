@@ -32,6 +32,7 @@ game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
 game_stats_model = { path = "../game_stats_model" }
+input_reaction_play = { path = "../input_reaction_play" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }

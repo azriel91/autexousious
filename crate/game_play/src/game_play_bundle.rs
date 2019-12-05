@@ -6,10 +6,11 @@ use amethyst::{
 use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::loaded::CharacterIrsHandles;
-use character_play::{
-    CharacterInputReactionsTransitionSystem, CharacterInputReactionsUpdateSystem,
+use character_model::{
+    config::CharacterIrr,
+    loaded::{CharacterInputReaction, CharacterIrsHandles},
 };
+use character_play::CharacterInputReactionsUpdateSystem;
 use charge_play::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
     ChargeRetentionSystem, ChargeUsageSystem,
@@ -26,6 +27,7 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
+use input_reaction_play::InputReactionsTransitionSystem;
 use kinematic_model::{
     config::Position,
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
@@ -348,22 +350,34 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &CharacterSequenceUpdateSystem::type_name(),
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
+
+        // builder.add(
+        //     CharacterInputReactionsTransitionSystem::new(),
+        //     &CharacterInputReactionsTransitionSystem::type_name(),
+        //     &[&CharacterSequenceUpdateSystem::type_name()],
+        // ); // kcov-ignore
         builder.add(
-            CharacterInputReactionsTransitionSystem::new(),
-            &CharacterInputReactionsTransitionSystem::type_name(),
+            InputReactionsTransitionSystem::<CharacterInputReaction, CharacterIrr>::new(),
+            &InputReactionsTransitionSystem::<CharacterInputReaction, CharacterIrr>::type_name(),
             &[&CharacterSequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
-            &[&CharacterInputReactionsTransitionSystem::type_name()],
+            &[&InputReactionsTransitionSystem::<
+                CharacterInputReaction,
+                CharacterIrr,
+            >::type_name()],
         ); // kcov-ignore
 
         // Charging
         builder.add(
             ChargeInitializeDetectionSystem::new(),
             &ChargeInitializeDetectionSystem::type_name(),
-            &[&CharacterInputReactionsTransitionSystem::type_name()],
+            &[&InputReactionsTransitionSystem::<
+                CharacterInputReaction,
+                CharacterIrr,
+            >::type_name()],
         ); // kcov-ignore
         builder.add(
             ChargeInitializeDelaySystem::new(),

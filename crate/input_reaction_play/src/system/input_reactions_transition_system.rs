@@ -31,7 +31,7 @@ use sequence_model::loaded::SequenceId;
 /// * `IR`: Type of the `InputReaction`.
 /// * `IRR`: `InputReactionRequirement`.
 #[derive(Debug, Default, NamedType, new)]
-pub struct InputReactionsTransitionSystem<'s, IR = InputReaction, IRR = ()> {
+pub struct InputReactionsTransitionSystem<IR = InputReaction, IRR = ()> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
@@ -39,7 +39,7 @@ pub struct InputReactionsTransitionSystem<'s, IR = InputReaction, IRR = ()> {
     #[new(default)]
     processed_entities: BitSet,
     /// Marker.
-    marker: PhantomData<(IR, &'s IRR)>,
+    marker: PhantomData<(IR, IRR)>,
 }
 
 /// `InputReactionsTransitionSystemData`.
@@ -47,7 +47,7 @@ pub struct InputReactionsTransitionSystem<'s, IR = InputReaction, IRR = ()> {
 #[derivative(Debug)]
 pub struct InputReactionsTransitionSystemData<'s, IR, IRR>
 where
-    IR: AsRef<InputReaction> + AsRef<IRR> + Send + Sync + 'static,
+    IR: AsRef<InputReaction> + Send + Sync + 'static,
     IRR: InputReactionRequirement<'s>,
     IRR::SystemData: Debug,
 {
@@ -56,7 +56,7 @@ where
     pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
     /// `InputReactionsTransitionResources`.
     pub input_reactions_transition_resources: InputReactionsTransitionResources<'s, IR>,
-    /// `IRR`.
+    /// `IRRSD`.
     pub requirement_system_data: IRR::SystemData,
 }
 
@@ -84,7 +84,7 @@ where
     pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
-impl<'s, IR, IRR> InputReactionsTransitionSystem<'s, IR, IRR>
+impl<'s, IR, IRR> InputReactionsTransitionSystem<IR, IRR>
 where
     IR: AsRef<InputReaction> + AsRef<IRR> + Send + Sync + 'static,
     IRR: InputReactionRequirement<'s>,
@@ -425,7 +425,7 @@ where
     }
 }
 
-impl<'s, IR, IRR> System<'s> for InputReactionsTransitionSystem<'s, IR, IRR>
+impl<'s, IR, IRR> System<'s> for InputReactionsTransitionSystem<IR, IRR>
 where
     IR: AsRef<InputReaction> + AsRef<IRR> + Send + Sync + 'static,
     IRR: InputReactionRequirement<'s>,

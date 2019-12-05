@@ -2318,6 +2318,7 @@ dependencies = [
  "game_play_hud 0.15.0",
  "game_play_model 0.15.0",
  "game_stats_model 0.15.0",
+ "input_reaction_play 0.16.0",
  "kinematic_model 0.15.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.15.0",
