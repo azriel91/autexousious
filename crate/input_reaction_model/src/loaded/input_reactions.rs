@@ -1,3 +1,4 @@
+use asset_derive::Asset;
 use derivative::Derivative;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
@@ -5,8 +6,8 @@ use derive_new::new;
 use crate::loaded::InputReaction;
 
 /// Sequence transitions upon control input.
-#[derive(Clone, Debug, Derivative, Deref, DerefMut, PartialEq, Eq, new)]
+#[derive(Asset, Clone, Debug, Derivative, Deref, DerefMut, PartialEq, Eq, new)]
 #[derivative(Default(bound = ""))]
-pub struct InputReactions<C = InputReaction>(pub Vec<C>)
+pub struct InputReactions<IR = InputReaction>(pub Vec<IR>)
 where
-    C: AsRef<InputReaction> + Send + Sync + 'static;
+    IR: AsRef<InputReaction> + Send + Sync + 'static;

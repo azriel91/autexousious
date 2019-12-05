@@ -28,3 +28,9 @@ impl AsRef<InputReaction> for InputReaction {
         self
     }
 }
+
+impl AsRef<()> for InputReaction {
+    fn as_ref(&self) -> &() {
+        &()
+    }
+}

@@ -1,9 +1,13 @@
 //! Contains the types that represent processed configuration.
 
 pub use self::{
-    action_hold::ActionHold, action_press::ActionPress, action_release::ActionRelease,
-    axis_transition::AxisTransition, fallback_transition::FallbackTransition,
-    input_reaction::InputReaction, input_reactions::InputReactions,
+    action_hold::ActionHold,
+    action_press::ActionPress,
+    action_release::ActionRelease,
+    axis_transition::AxisTransition,
+    fallback_transition::FallbackTransition,
+    input_reaction::InputReaction,
+    input_reactions::{InputReactions, InputReactionsHandle},
 };
 
 mod action_hold;
