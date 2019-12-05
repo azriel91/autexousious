@@ -7,10 +7,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::InputReactionRequirementParams;
 
-/// Conditions for a input reaction to happen.
+/// `CharacterInputReactionRequirementPart`
+///
+/// Conditions for a character input reaction to happen.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
-pub enum InputReactionRequirement {
+pub enum CharacterIrrPart {
     /// `ChargePoints` the object must spend to transition.
     Charge(ChargePoints),
     /// `HealthPoints` the object must spend to transition.
@@ -23,7 +25,7 @@ pub enum InputReactionRequirement {
     InputDirZ(InputDirectionZ),
 }
 
-impl InputReactionRequirement {
+impl CharacterIrrPart {
     /// Returns whether this requirement is met.
     pub fn is_met(
         self,
@@ -37,25 +39,21 @@ impl InputReactionRequirement {
         }: InputReactionRequirementParams,
     ) -> bool {
         match self {
-            InputReactionRequirement::Hp(required) => {
-                health_points.map(|points| points >= required)
-            }
-            InputReactionRequirement::Sp(required) => skill_points.map(|points| points >= required),
-            InputReactionRequirement::Charge(required) => {
-                charge_tracker_clock.map(|charge_tracker_clock| {
-                    if let Some(ChargeUseMode::NearestPartial) = charge_use_mode {
-                        (*charge_tracker_clock).value > 0
-                    } else {
-                        (*charge_tracker_clock).value >= (*required) as usize
-                    }
-                })
-            }
-            InputReactionRequirement::InputDirX(input_direction) => {
+            Self::Hp(required) => health_points.map(|points| points >= required),
+            Self::Sp(required) => skill_points.map(|points| points >= required),
+            Self::Charge(required) => charge_tracker_clock.map(|charge_tracker_clock| {
+                if let Some(ChargeUseMode::NearestPartial) = charge_use_mode {
+                    (*charge_tracker_clock).value > 0
+                } else {
+                    (*charge_tracker_clock).value >= (*required) as usize
+                }
+            }),
+            Self::InputDirX(input_direction) => {
                 let requirement_met =
                     Self::input_requirement_met_x(controller_input, mirrored, input_direction);
                 Some(requirement_met)
             }
-            InputReactionRequirement::InputDirZ(input_direction_z) => {
+            Self::InputDirZ(input_direction_z) => {
                 let requirement_met =
                     Self::input_requirement_met_z(controller_input, input_direction_z);
                 Some(requirement_met)

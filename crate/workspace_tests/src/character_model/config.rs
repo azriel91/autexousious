@@ -19,8 +19,8 @@ mod test {
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterSequence,
-        CharacterSequenceName, InputReactionRequirement,
+        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterIrrPart,
+        CharacterSequence, CharacterSequenceName,
     };
 
     const OBJECT_YAML: &str = "\
@@ -127,17 +127,17 @@ sequences:
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![InputReactionRequirement::Charge(ChargePoints::new(90))],
+                        requirements: vec![CharacterIrrPart::Charge(ChargePoints::new(90))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(50))],
+                        requirements: vec![CharacterIrrPart::Sp(SkillPoints::new(50))],
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         events: InputReactionAppEvents::default(),
-                        requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(30))],
+                        requirements: vec![CharacterIrrPart::Hp(HealthPoints::new(30))],
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {

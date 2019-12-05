@@ -12,7 +12,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use application::IoUtils;
     use character_model::{
-        config::{CharacterSequence, CharacterSequenceName, InputReactionRequirement},
+        config::{CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{
             CharacterInputReaction, CharacterInputReactions, CharacterIrs, CharacterIrsHandle,
         },
@@ -223,9 +223,7 @@ mod tests {
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![InputReactionRequirement::Charge(
-                    ChargePoints::new(90),
-                )],
+                input_reaction_requirements: vec![CharacterIrrPart::Charge(ChargePoints::new(90))],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
@@ -233,9 +231,7 @@ mod tests {
                     sequence_id: SequenceId::new(2),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![InputReactionRequirement::Sp(SkillPoints::new(
-                    50,
-                ))],
+                input_reaction_requirements: vec![CharacterIrrPart::Sp(SkillPoints::new(50))],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionRelease(ActionRelease {
@@ -243,9 +239,7 @@ mod tests {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![InputReactionRequirement::Hp(HealthPoints::new(
-                    30,
-                ))],
+                input_reaction_requirements: vec![CharacterIrrPart::Hp(HealthPoints::new(30))],
             },
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionHold(ActionHold {
@@ -254,8 +248,8 @@ mod tests {
                     events: InputReactionAppEvents::default(),
                 }),
                 input_reaction_requirements: vec![
-                    InputReactionRequirement::Charge(ChargePoints::new(90)),
-                    InputReactionRequirement::Sp(SkillPoints::new(50)),
+                    CharacterIrrPart::Charge(ChargePoints::new(90)),
+                    CharacterIrrPart::Sp(SkillPoints::new(50)),
                 ],
             },
             CharacterInputReaction {
@@ -319,7 +313,7 @@ mod tests {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
+                input_reaction_requirements: vec![CharacterIrrPart::InputDirX(
                     InputDirection::NotSame,
                 )],
             },
@@ -406,7 +400,7 @@ mod tests {
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
                 }),
-                input_reaction_requirements: vec![InputReactionRequirement::InputDirX(
+                input_reaction_requirements: vec![CharacterIrrPart::InputDirX(
                     InputDirection::NotSame,
                 )],
             },

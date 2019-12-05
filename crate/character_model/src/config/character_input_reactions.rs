@@ -1,7 +1,6 @@
 use input_reaction_model::config::InputReactions;
 
-use crate::config::{CharacterSequenceName, InputReactionRequirement};
+use crate::config::{CharacterIrrPart, CharacterSequenceName};
 
 /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
-pub type CharacterInputReactions =
-    InputReactions<CharacterSequenceName, Vec<InputReactionRequirement>>;
+pub type CharacterInputReactions = InputReactions<CharacterSequenceName, Vec<CharacterIrrPart>>;

@@ -6,7 +6,7 @@ use amethyst::{
 };
 use approx::{relative_eq, relative_ne};
 use character_model::{
-    config::{InputReactionRequirement, InputReactionRequirementParams},
+    config::{CharacterIrrPart, InputReactionRequirementParams},
     loaded::{CharacterInputReactions, CharacterInputReactionsHandle},
 };
 use charge_model::play::ChargeUseEvent;
@@ -412,7 +412,7 @@ impl CharacterInputReactionsTransitionSystem {
         entity: Entity,
         sequence_id: SequenceId,
         events: &'f InputReactionAppEvents,
-        input_reaction_requirements: &[InputReactionRequirement],
+        input_reaction_requirements: &[CharacterIrrPart],
     ) -> Option<(SequenceId, &'f InputReactionAppEvents)> {
         if Self::transition_requirements_met(
             input_reaction_requirement_system_data,
@@ -422,9 +422,7 @@ impl CharacterInputReactionsTransitionSystem {
             input_reaction_requirements
                 .iter()
                 .filter_map(|input_reaction_requirement| {
-                    if let InputReactionRequirement::Charge(charge_points) =
-                        input_reaction_requirement
-                    {
+                    if let CharacterIrrPart::Charge(charge_points) = input_reaction_requirement {
                         Some(ChargeUseEvent {
                             entity,
                             charge_points: *charge_points,
@@ -449,7 +447,7 @@ impl CharacterInputReactionsTransitionSystem {
             controller_inputs,
             mirroreds,
         }: &InputReactionRequirementSystemData,
-        input_reaction_requirements: &[InputReactionRequirement],
+        input_reaction_requirements: &[CharacterIrrPart],
         entity: Entity,
     ) -> bool {
         let (
