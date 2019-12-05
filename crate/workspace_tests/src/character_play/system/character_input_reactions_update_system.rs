@@ -122,7 +122,7 @@ mod tests {
     }
 
     fn input_reactions() -> CharacterInputReactions {
-        CharacterInputReactions::new(InputReactions::new(vec![
+        InputReactions::new(vec![
             CharacterInputReaction::new(
                 InputReaction::ActionPress(ActionPress {
                     action: ControlAction::Attack,
@@ -139,7 +139,7 @@ mod tests {
                 }),
                 CharacterIrr::default(),
             ),
-        ]))
+        ])
     }
 
     fn send_events(world: &mut World, events: Vec<SequenceUpdateEvent>) {

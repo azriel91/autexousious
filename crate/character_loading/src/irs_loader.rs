@@ -341,8 +341,7 @@ impl IrsLoader {
         // Fallback transition.
         push_fallback_transition!(fallback, Fallback);
 
-        let character_input_reactions =
-            loaded::CharacterInputReactions::new(InputReactions::new(loaded_transitions));
+        let character_input_reactions = InputReactions::new(loaded_transitions);
 
         loader.load_from_data(
             character_input_reactions,

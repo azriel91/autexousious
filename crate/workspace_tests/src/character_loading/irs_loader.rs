@@ -208,7 +208,7 @@ mod tests {
 
     // Should overwrite and inherit sequence input reactions.
     fn expected_input_reactions_0() -> CharacterInputReactions {
-        CharacterInputReactions::new(InputReactions::new(vec![
+        InputReactions::new(vec![
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionPress(ActionPress {
                     action: ControlAction::Attack,
@@ -319,12 +319,12 @@ mod tests {
                     InputDirection::NotSame,
                 )]),
             },
-        ]))
+        ])
     }
 
     // Should inherit from sequence input reactions.
     fn expected_input_reactions_1() -> CharacterInputReactions {
-        CharacterInputReactions::new(InputReactions::new(vec![
+        InputReactions::new(vec![
             CharacterInputReaction {
                 input_reaction: InputReaction::ActionPress(ActionPress {
                     action: ControlAction::Attack,
@@ -406,7 +406,7 @@ mod tests {
                     InputDirection::NotSame,
                 )]),
             },
-        ]))
+        ])
     }
 
     type TestSystemData<'s> = (
