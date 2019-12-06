@@ -26,6 +26,7 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
+use input_reaction_model::loaded::{InputReactionsSequence, InputReactionsSequenceHandles};
 use input_reaction_play::InputReactionsTransitionSystem;
 use kinematic_model::{
     config::Position,
@@ -104,9 +105,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(InteractionsSequenceHandles);
         sequence_component_update_system!(SpawnsSequenceHandles);
         sequence_component_update_system!(SequenceEndTransitions);
-        sequence_component_update_system!(CharacterIrsHandles);
         sequence_component_update_system!(TintSequenceHandles);
         sequence_component_update_system!(ScaleSequenceHandles);
+        sequence_component_update_system!(CharacterIrsHandles);
+        sequence_component_update_system!(InputReactionsSequenceHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -147,6 +149,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(TintSequence);
         frame_component_update_system!(ScaleSequence);
         frame_component_update_system!(CharacterIrs);
+        frame_component_update_system!(InputReactionsSequence);
 
         builder.add(
             FrameFreezeClockAugmentSystem::new(),

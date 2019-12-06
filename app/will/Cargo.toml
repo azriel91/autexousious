@@ -35,6 +35,7 @@ game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play = { path = "../../crate/game_play" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
+input_reaction_loading = { path = "../../crate/input_reaction_loading" }
 kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"

@@ -17,6 +17,7 @@ collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
+input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }

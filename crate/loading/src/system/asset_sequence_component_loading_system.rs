@@ -670,7 +670,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                             .with(sequence_end_transitions.clone())
                                             .with(wait_sequence_handles.clone())
                                             .with(tint_sequence_handles.clone())
-                                            .with(scale_sequence_handles.clone());
+                                            .with(scale_sequence_handles.clone())
+                                            .with(input_reactions_sequence_handles.clone());
 
                                         if let Some(sprite_render_sequence_handles) =
                                             sprite_render_sequence_handles.clone()
@@ -721,7 +722,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         .with(sequence_end_transitions.clone())
                                         .with(wait_sequence_handles.clone())
                                         .with(tint_sequence_handles.clone())
-                                        .with(scale_sequence_handles.clone());
+                                        .with(scale_sequence_handles.clone())
+                                        .with(input_reactions_sequence_handles.clone());
 
                                     if let Some(sprite_render_sequence_handles) =
                                         sprite_render_sequence_handles.clone()

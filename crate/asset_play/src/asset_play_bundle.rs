@@ -9,6 +9,7 @@ use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
+use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
     config::{PositionInit, VelocityInit},
     loaded::ObjectAccelerationSequenceHandles,
@@ -53,9 +54,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<BodySequenceHandles>();
         asset_world.register::<InteractionsSequenceHandles>();
         asset_world.register::<SpawnsSequenceHandles>();
-        asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<TintSequenceHandles>();
         asset_world.register::<ScaleSequenceHandles>();
+        asset_world.register::<CharacterIrsHandles>();
+        asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenuItem<GameModeIndex>>();
 
@@ -133,11 +135,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::type_name(),
-            &[],
-        );
-        builder.add(
             ItemComponentComponentAugmentSystem::<TintSequenceHandles>::new(),
             &ItemComponentComponentAugmentSystem::<TintSequenceHandles>::type_name(),
             &[],
@@ -145,6 +142,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::new(),
             &ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::new(),
+            &ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::new(),
+            &ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::type_name(),
             &[],
         );
         builder.add(

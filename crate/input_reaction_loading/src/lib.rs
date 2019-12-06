@@ -2,7 +2,11 @@
 
 //! Processes input reaction configuration into the loaded model.
 
-pub use crate::{irs_loader::IrsLoader, irs_loader_params::IrsLoaderParams};
+pub use crate::{
+    input_reaction_loading_bundle::InputReactionLoadingBundle, irs_loader::IrsLoader,
+    irs_loader_params::IrsLoaderParams,
+};
 
+mod input_reaction_loading_bundle;
 mod irs_loader;
 mod irs_loader_params;
