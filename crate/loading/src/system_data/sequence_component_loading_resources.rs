@@ -13,6 +13,7 @@ use collision_model::{
 };
 use derivative::Derivative;
 use game_input_model::InputConfig;
+use input_reaction_model::loaded::{InputReaction, InputReactions, InputReactionsSequence};
 use kinematic_model::loaded::ObjectAccelerationSequence;
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::WaitSequence;
@@ -77,6 +78,13 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
+    /// `InputReactions` assets.
+    #[derivative(Debug = "ignore")]
+    pub input_reactions_assets: Read<'s, AssetStorage<InputReactions>>,
+    /// `InputReactionsSequence<InputReaction>` assets.
+    #[derivative(Debug = "ignore")]
+    pub input_reactions_sequence_assets:
+        Read<'s, AssetStorage<InputReactionsSequence<InputReaction>>>,
     /// `CharacterInputReactions` assets.
     #[derivative(Debug = "ignore")]
     pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,

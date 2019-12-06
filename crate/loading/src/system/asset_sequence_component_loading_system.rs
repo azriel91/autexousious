@@ -15,6 +15,9 @@ use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
+use input_reaction_model::loaded::{
+    InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
+};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::{
     config::{PositionInit, VelocityInit},
@@ -109,6 +112,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             body_sequence_assets,
             interactions_sequence_assets,
             spawns_sequence_assets,
+            input_reactions_assets,
+            input_reactions_sequence_assets,
             character_input_reactions_assets,
             character_irs_assets,
             tint_sequence_assets,
@@ -220,7 +225,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         };
 
                         let irs_loader_params = IrsLoaderParams {
-                            loader: &*loader,
+                            loader,
                             input_reactions_assets: &*character_input_reactions_assets,
                             input_reactions_sequence_assets: &*character_irs_assets,
                         };
@@ -527,6 +532,13 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         ui_type, sequences, ..
                     } = ui_definition;
 
+                    // For loading `InputReactionsSequence`s.
+                    let irs_loader_params = IrsLoaderParams {
+                        loader,
+                        input_reactions_assets,
+                        input_reactions_sequence_assets,
+                    };
+
                     let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
                     let sequence_id_mappings = &sequence_id_mappings;
                     let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
@@ -556,6 +568,21 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 sprite_sheet_handles,
                             )
                         });
+                    let input_reactions_sequence_handles = {
+                        let input_reactions_sequence_handles = ui_definition
+                            .sequences
+                            .values()
+                            .map(|sequence| {
+                                IrsLoader::load(
+                                    &irs_loader_params,
+                                    sequence_id_mappings,
+                                    None,
+                                    sequence,
+                                )
+                            })
+                            .collect::<Vec<InputReactionsSequenceHandle<InputReaction>>>();
+                        InputReactionsSequenceHandles::new(input_reactions_sequence_handles)
+                    };
 
                     // `UiButton`s
                     let mut item_ids_button = ui_definition
@@ -587,7 +614,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     .with(sequence_end_transitions.clone())
                                     .with(wait_sequence_handles.clone())
                                     .with(tint_sequence_handles.clone())
-                                    .with(scale_sequence_handles.clone());
+                                    .with(scale_sequence_handles.clone())
+                                    .with(input_reactions_sequence_handles.clone());
 
                                 if let Some(sprite_render_sequence_handles) =
                                     sprite_render_sequence_handles.clone()

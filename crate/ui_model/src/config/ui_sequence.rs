@@ -25,3 +25,9 @@ impl AsRef<Sequence<SpriteSequenceName, UiFrame>> for UiSequence {
         &self.sequence
     }
 }
+
+impl AsRef<Option<InputReactions<SpriteSequenceName>>> for UiSequence {
+    fn as_ref(&self) -> &Option<InputReactions<SpriteSequenceName>> {
+        &self.input_reactions
+    }
+}

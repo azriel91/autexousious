@@ -41,3 +41,9 @@ impl AsRef<Scale> for UiFrame {
         &self.sprite_frame.scale
     }
 }
+
+impl AsRef<InputReactions<SpriteSequenceName>> for UiFrame {
+    fn as_ref(&self) -> &InputReactions<SpriteSequenceName> {
+        &self.input_reactions
+    }
+}

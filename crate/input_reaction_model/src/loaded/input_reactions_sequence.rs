@@ -1,6 +1,6 @@
 // use sequence_model_derive::frame_component_data;
 
-use crate::loaded::InputReactionsHandle;
+use crate::loaded::{InputReaction, InputReactionsHandle};
 use sequence_model_spi::loaded::FrameComponentData;
 use typename::TypeName as TypeNameTrait;
 
@@ -15,7 +15,7 @@ use typename::TypeName as TypeNameTrait;
     Debug,
     PartialEq,
 )]
-pub struct InputReactionsSequence<IR>(FrameComponentData<InputReactionsHandle<IR>>)
+pub struct InputReactionsSequence<IR = InputReaction>(FrameComponentData<InputReactionsHandle<IR>>)
 where
     IR: Send + Sync + TypeNameTrait + 'static;
 
