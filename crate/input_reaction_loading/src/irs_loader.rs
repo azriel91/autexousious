@@ -14,6 +14,7 @@ use sequence_model::{
     config::{Sequence, SequenceName, Wait},
     loaded::SequenceIdMappings,
 };
+use typename::TypeName;
 
 use crate::IrsLoaderParams;
 
@@ -25,7 +26,7 @@ impl<Seq, SeqName, IRR, Frm> IrsLoader<Seq, SeqName, IRR, Frm>
 where
     Seq: AsRef<Sequence<SeqName, Frm>> + AsRef<Option<config::InputReactions<SeqName, IRR>>>,
     SeqName: SequenceName,
-    IRR: Clone + Default + Send + Sync + 'static,
+    IRR: Clone + Default + Send + Sync + TypeName + 'static,
     Frm: AsRef<Wait> + AsRef<config::InputReactions<SeqName, IRR>>,
 {
     /// Extracts an `InputReactionsSequence` from a `Sequence`.

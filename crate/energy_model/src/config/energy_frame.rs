@@ -1,5 +1,6 @@
 use derive_new::new;
 use object_model::config::{GameObjectFrame, ObjectFrame};
+use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 
 /// Sequence frame type for energies.
@@ -9,6 +10,12 @@ pub struct EnergyFrame {
     /// Common object behaviour specification that can change each tick.
     #[serde(flatten)]
     pub object_frame: ObjectFrame,
+}
+
+impl AsRef<Wait> for EnergyFrame {
+    fn as_ref(&self) -> &Wait {
+        &self.object_frame.wait
+    }
 }
 
 impl GameObjectFrame for EnergyFrame {

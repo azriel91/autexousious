@@ -14,6 +14,7 @@ derivative = "1.0.3"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 sequence_model = { path = "../sequence_model" }
+typename = "0.1.1"
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -4,6 +4,7 @@ use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 use input_reaction_model::config::InputReactionRequirement;
 use serde::{Deserialize, Serialize};
+use typename_derive::TypeName;
 
 use crate::{
     config::{CharacterIrrPart, InputReactionRequirementParams},
@@ -11,7 +12,9 @@ use crate::{
 };
 
 /// Character input reaction requirement.
-#[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, new)]
+#[derive(
+    Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, TypeName, new,
+)]
 pub struct CharacterIrr(pub Vec<CharacterIrrPart>);
 
 impl<'s> InputReactionRequirement<'s> for CharacterIrr {

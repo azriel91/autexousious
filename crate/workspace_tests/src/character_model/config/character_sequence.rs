@@ -4,7 +4,7 @@ mod tests {
         InputReaction, InputReactionAppEvents, InputReactionSingle,
     };
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use sprite_model::config::SpriteRef;
 
@@ -66,8 +66,10 @@ frames:
         };
         let expected = CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::None,
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::None,
+                    frames,
+                },
                 ..Default::default()
             },
             Some(character_input_reactions),

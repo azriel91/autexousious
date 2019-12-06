@@ -1,10 +1,11 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
+use typename_derive::TypeName;
 
 use crate::loaded::ReactionEffect;
 
 /// Sequence to transition to on control input with requirements.
-#[derive(Clone, Component, Debug, PartialEq, new)]
+#[derive(Clone, Component, Debug, PartialEq, TypeName, new)]
 #[storage(VecStorage)]
 pub struct InputReaction<IRR = ()>
 where

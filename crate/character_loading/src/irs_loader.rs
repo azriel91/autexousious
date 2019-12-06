@@ -34,6 +34,7 @@ impl IrsLoader {
     ) -> CharacterIrsHandle {
         let irs = sequence
             .object_sequence()
+            .sequence
             .frames
             .iter()
             .map(|frame| {

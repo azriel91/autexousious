@@ -28,6 +28,7 @@ derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }
 game_input_model = { path = "../game_input_model" }
 humantime = "1.3.0"
+input_reaction_loading = { path = "../input_reaction_loading" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }

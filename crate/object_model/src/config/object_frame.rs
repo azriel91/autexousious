@@ -35,3 +35,9 @@ pub struct ObjectFrame {
     /// Objects to spawn.
     pub spawns: Spawns,
 }
+
+impl AsRef<Wait> for ObjectFrame {
+    fn as_ref(&self) -> &Wait {
+        &self.wait
+    }
+}

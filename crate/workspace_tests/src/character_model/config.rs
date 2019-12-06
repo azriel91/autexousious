@@ -13,7 +13,7 @@ mod test {
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
     };
-    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
@@ -163,10 +163,12 @@ sequences:
         };
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
-                    CharacterSequenceName::Walk,
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                        CharacterSequenceName::Walk,
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
             Some(character_input_reactions),
@@ -208,10 +210,12 @@ sequences:
         };
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::String(
-                    String::from("custom_sequence_1"),
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::String(
+                        String::from("custom_sequence_1"),
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
             Some(character_input_reactions),
@@ -222,10 +226,12 @@ sequences:
         let frames = vec![];
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
-                    CharacterSequenceName::Stand,
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                        CharacterSequenceName::Stand,
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
             None,

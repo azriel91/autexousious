@@ -6,7 +6,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use audio_model::loaded::SourceSequenceHandles;
-use character_loading::{IrsLoader, IrsLoaderParams, CHARACTER_INPUT_REACTIONS_DEFAULT};
+use character_loading::CHARACTER_INPUT_REACTIONS_DEFAULT;
 use character_model::{
     config::{CharacterSequence, CharacterSequenceName},
     loaded::{CharacterIrsHandle, CharacterIrsHandles},
@@ -14,6 +14,7 @@ use character_model::{
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
+use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::{
     config::{PositionInit, VelocityInit},
@@ -220,8 +221,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                         let irs_loader_params = IrsLoaderParams {
                             loader: &*loader,
-                            character_input_reactions_assets: &*character_input_reactions_assets,
-                            character_irs_assets: &*character_irs_assets,
+                            input_reactions_assets: &*character_input_reactions_assets,
+                            input_reactions_sequence_assets: &*character_irs_assets,
                         };
 
                         let character_irs_handles = {

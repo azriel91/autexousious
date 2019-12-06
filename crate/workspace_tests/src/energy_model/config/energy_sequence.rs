@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::Wait;
+    use sequence_model::config::{Sequence, Wait};
     use serde_yaml;
     use sprite_model::config::SpriteRef;
 
@@ -34,7 +34,10 @@ frames:
             ..Default::default()
         })];
         let expected = EnergySequence::new(ObjectSequence {
-            frames,
+            sequence: Sequence {
+                frames,
+                ..Default::default()
+            },
             ..Default::default()
         });
 

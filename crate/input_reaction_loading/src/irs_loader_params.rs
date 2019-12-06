@@ -1,13 +1,14 @@
 use amethyst::assets::{AssetStorage, Loader};
 use derivative::Derivative;
 use input_reaction_model::loaded::{InputReaction, InputReactions, InputReactionsSequence};
+use typename::TypeName;
 
 /// Resources needed to load an `InputReactionsSequence`.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct IrsLoaderParams<'s, IRR>
 where
-    IRR: Send + Sync + 'static,
+    IRR: Send + Sync + TypeName + 'static,
 {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]

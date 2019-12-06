@@ -1,9 +1,9 @@
-use sequence_model_derive::frame_component_data;
+use input_reaction_model::loaded::{InputReactionsSequence, InputReactionsSequenceHandle};
 
-use crate::loaded::CharacterInputReactionsHandle;
+use crate::loaded::CharacterInputReaction;
 
 /// Sequence of input reactions.
-///
-/// IRS is short for `InputReactionsSequence`.
-#[frame_component_data(CharacterInputReactionsHandle)]
-pub struct CharacterIrs;
+pub type CharacterIrs = InputReactionsSequence<CharacterInputReaction>;
+
+/// Handle to a `CharacterIrs`.
+pub type CharacterIrsHandle = InputReactionsSequenceHandle<CharacterInputReaction>;
