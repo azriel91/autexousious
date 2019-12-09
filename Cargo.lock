@@ -673,6 +673,7 @@ dependencies = [
  "collision_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.15.0",
  "game_mode_selection_model 0.15.0",
  "input_reaction_model 0.16.0",
  "kinematic_model 0.15.0",
@@ -2118,6 +2119,7 @@ name = "game_input"
 version = "0.15.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.15.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.15.0",
@@ -2907,6 +2909,7 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "energy_model 0.15.0",
+ "game_input 0.15.0",
  "game_input_model 0.15.0",
  "humantime 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "input_reaction_loading 0.16.0",

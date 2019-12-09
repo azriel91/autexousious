@@ -14,6 +14,7 @@ use character_model::{
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
+use game_input::SharedInputControlled;
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -717,6 +718,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .map(|(position_init, sequence_id_init)| {
                                     let mut item_entity_builder = asset_world
                                         .create_entity()
+                                        .with(SharedInputControlled)
                                         .with(position_init)
                                         .with(sequence_id_init)
                                         .with(sequence_end_transitions.clone())

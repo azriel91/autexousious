@@ -8,6 +8,7 @@ use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
+use game_input::SharedInputControlled;
 use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
@@ -40,6 +41,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         let mut asset_world = AssetWorld::default();
+        asset_world.register::<SharedInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
         asset_world.register::<PositionZAsY>();
@@ -64,6 +66,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         world.insert(asset_world);
 
         builder.add_barrier();
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
+            &ItemComponentComponentAugmentSystem::<SharedInputControlled>::type_name(),
+            &[],
+        );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionInit>::new(),
             &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),

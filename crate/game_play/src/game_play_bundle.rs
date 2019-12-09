@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::{bundle::SystemBundle, SystemExt},
     ecs::{DispatcherBuilder, World},
@@ -336,6 +338,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        builder.add(
+            InputReactionsTransitionSystem::<()>::new(),
+            &any::type_name::<InputReactionsTransitionSystem<()>>(),
+            &[&SequenceEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
@@ -350,7 +358,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
         builder.add(
             InputReactionsTransitionSystem::<CharacterIrr>::new(),
-            &InputReactionsTransitionSystem::<CharacterIrr>::type_name(),
+            &any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>(),
             &[&CharacterSequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
