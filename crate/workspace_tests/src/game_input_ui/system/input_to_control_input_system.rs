@@ -9,7 +9,7 @@ mod test {
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI};
-    use game_input::InputControlled;
+    use game_input::{InputControlled, SharedInputControlled};
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent, ControllerConfig, InputConfig,
@@ -32,15 +32,24 @@ mod test {
     fn sends_control_input_events_for_key_presses() -> Result<(), Error> {
         run_test(
             vec![key_press(AXIS_POSITIVE), key_press(ACTION_JUMP)],
-            |entity| {
+            |input_controlled_entity, shared_input_controlled_entity| {
                 vec![
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
-                        entity,
+                        entity: input_controlled_entity,
+                        axis: Axis::X,
+                        value: 1.,
+                    }),
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        entity: shared_input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
-                        entity,
+                        entity: input_controlled_entity,
+                        control_action: ControlAction::Jump,
+                    }),
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                 ]
@@ -57,24 +66,42 @@ mod test {
                 key_press(ACTION_JUMP),
                 key_release(ACTION_JUMP),
             ],
-            |entity| {
+            |input_controlled_entity, shared_input_controlled_entity| {
                 vec![
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
-                        entity,
+                        entity: input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
-                        entity,
+                        entity: shared_input_controlled_entity,
+                        axis: Axis::X,
+                        value: 1.,
+                    }),
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        entity: input_controlled_entity,
+                        axis: Axis::X,
+                        value: 0.,
+                    }),
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        entity: shared_input_controlled_entity,
                         axis: Axis::X,
                         value: 0.,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
-                        entity,
+                        entity: input_controlled_entity,
+                        control_action: ControlAction::Jump,
+                    }),
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
-                        entity,
+                        entity: input_controlled_entity,
+                        control_action: ControlAction::Jump,
+                    }),
+                    ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                        entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                 ]
@@ -84,7 +111,7 @@ mod test {
 
     fn run_test<F>(key_events: Vec<Event>, expected_control_input_events: F) -> Result<(), Error>
     where
-        F: Send + Sync + Fn(Entity) -> Vec<ControlInputEvent> + 'static,
+        F: Send + Sync + Fn(Entity, Entity) -> Vec<ControlInputEvent> + 'static,
     {
         let input_config = input_config();
         let bindings = Bindings::<ControlBindings>::try_from(&input_config)?;
@@ -109,11 +136,13 @@ mod test {
                 world.insert(reader_id);
 
                 let controller_id = 0;
-                let entity = world
+                let input_controlled_entity = world
                     .create_entity()
                     .with(InputControlled::new(controller_id))
                     .build();
-                world.insert(entity);
+                let shared_input_controlled_entity =
+                    world.create_entity().with(SharedInputControlled).build();
+                world.insert((input_controlled_entity, shared_input_controlled_entity));
 
                 // Use the same closure so that the system does not send events before we send the
                 // key events.
@@ -132,16 +161,20 @@ mod test {
                     let mut input_events_id = world.write_resource::<ReaderId<ControlInputEvent>>();
                     input_events_ec
                         .read(&mut input_events_id)
-                        .map(|ev| *ev)
+                        .copied()
                         .collect::<Vec<ControlInputEvent>>()
                 };
-                let entity = *world.read_resource::<Entity>();
 
+                let (input_controlled_entity, shared_input_controlled_entity) =
+                    *world.read_resource::<(Entity, Entity)>();
                 assert_that!(
                     &input_events,
-                    contains(expected_control_input_events(entity))
-                        .exactly()
-                        .in_order()
+                    contains(expected_control_input_events(
+                        input_controlled_entity,
+                        shared_input_controlled_entity
+                    ))
+                    .exactly()
+                    .in_order()
                 );
             })
             .run()

@@ -6,7 +6,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
+use game_input::{InputControlled, SharedInputControlled};
 use game_input_model::{
     AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
@@ -38,6 +38,9 @@ pub struct InputToControlInputSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `SharedInputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub shared_input_controlleds: ReadStorage<'s, SharedInputControlled>,
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Write<'s, EventChannel<ControlInputEvent>>,
@@ -52,6 +55,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
             input_ec,
             entities,
             input_controlleds,
+            shared_input_controlleds,
             mut control_input_ec,
         }: Self::SystemData,
     ) {
@@ -61,58 +65,87 @@ impl<'s> System<'s> for InputToControlInputSystem {
             .expect("Expected `input_event_rid` field to be set.");
 
         input_ec.read(input_event_rid).for_each(|ev| {
-            let control_input_event = match ev {
+            match ev {
                 InputEvent::ActionPressed(PlayerActionControl { player, action }) => {
                     // Find the entity has the `player` control id in its `InputControlled`
                     // component.
 
-                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
-                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
-                    ) {
-                        Some(ControlInputEvent::ControlActionPress(
-                            ControlActionEventData {
+                    let shared_input_controlled_entities = (&entities, &shared_input_controlleds)
+                        .join()
+                        .map(|(entity, _)| entity);
+
+                    let control_input_events_iter = (&entities, &input_controlleds)
+                        .join()
+                        .filter_map(|(entity, input_controlled)| {
+                            if input_controlled.controller_id == *player {
+                                Some(entity)
+                            } else {
+                                None
+                            }
+                        })
+                        .chain(shared_input_controlled_entities)
+                        .map(|entity| {
+                            ControlInputEvent::ControlActionPress(ControlActionEventData {
                                 entity,
                                 control_action: *action,
-                            },
-                        ))
-                    } else {
-                        None
-                    }
+                            })
+                        });
+
+                    self.control_input_events.extend(control_input_events_iter);
                 }
                 InputEvent::ActionReleased(PlayerActionControl { player, action }) => {
-                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
-                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
-                    ) {
-                        Some(ControlInputEvent::ControlActionRelease(
-                            ControlActionEventData {
+                    let shared_input_controlled_entities = (&entities, &shared_input_controlleds)
+                        .join()
+                        .map(|(entity, _)| entity);
+
+                    let control_input_events_iter = (&entities, &input_controlleds)
+                        .join()
+                        .filter_map(|(entity, input_controlled)| {
+                            if input_controlled.controller_id == *player {
+                                Some(entity)
+                            } else {
+                                None
+                            }
+                        })
+                        .chain(shared_input_controlled_entities)
+                        .map(|entity| {
+                            ControlInputEvent::ControlActionRelease(ControlActionEventData {
                                 entity,
                                 control_action: *action,
-                            },
-                        ))
-                    } else {
-                        None
-                    }
+                            })
+                        });
+
+                    self.control_input_events.extend(control_input_events_iter);
                 }
                 InputEvent::AxisMoved {
                     axis: PlayerAxisControl { player, axis },
                     value,
                 } => {
-                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
-                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
-                    ) {
-                        Some(ControlInputEvent::AxisMoved(AxisMoveEventData {
-                            entity,
-                            axis: *axis,
-                            value: *value,
-                        }))
-                    } else {
-                        None
-                    }
+                    let shared_input_controlled_entities = (&entities, &shared_input_controlleds)
+                        .join()
+                        .map(|(entity, _)| entity);
+
+                    let control_input_events_iter = (&entities, &input_controlleds)
+                        .join()
+                        .filter_map(|(entity, input_controlled)| {
+                            if input_controlled.controller_id == *player {
+                                Some(entity)
+                            } else {
+                                None
+                            }
+                        })
+                        .chain(shared_input_controlled_entities)
+                        .map(|entity| {
+                            ControlInputEvent::AxisMoved(AxisMoveEventData {
+                                entity,
+                                axis: *axis,
+                                value: *value,
+                            })
+                        });
+
+                    self.control_input_events.extend(control_input_events_iter);
                 }
-                _ => None,
-            };
-            if let Some(control_input_event) = control_input_event {
-                self.control_input_events.push(control_input_event);
+                _ => {}
             }
         });
 
