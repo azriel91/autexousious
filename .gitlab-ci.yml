@@ -76,7 +76,9 @@ nightly:conformance:
     - xvfb
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-    RUSTUP_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
+    # TODO: Revert to stable when Rust 1.41 is released.
+    # `InputReactions` was implemented relying on <https://github.com/rust-lang/rust/pull/65879>
+    RUSTUP_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
     DISPLAY: ':0'
   before_script:
     - *print_tool_versions_linux
@@ -118,7 +120,9 @@ linux:release:
     - rust
     - stable
   variables:
-    RUSTUP_TOOLCHAIN: stable-x86_64-pc-windows-msvc
+    # TODO: Revert to stable when Rust 1.41 is released.
+    # `InputReactions` was implemented relying on <https://github.com/rust-lang/rust/pull/65879>
+    RUSTUP_TOOLCHAIN: nightly-x86_64-pc-windows-msvc
   before_script:
     - cargo --version -v
     - rustc --version -v
