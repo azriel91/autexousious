@@ -32,9 +32,8 @@ mod tests {
         loaded::{SequenceId, SequenceIdMappings},
     };
 
-    use character_loading::{
-        CharacterLoadingBundle, IrsLoader, IrsLoaderParams, CHARACTER_INPUT_REACTIONS_DEFAULT,
-    };
+    use character_loading::{CharacterLoadingBundle, CHARACTER_INPUT_REACTIONS_DEFAULT};
+    use input_reaction_loading::{InputReactionLoadingBundle, IrsLoader, IrsLoaderParams};
 
     #[test]
     fn loads_irses() -> Result<(), Error> {
@@ -46,12 +45,12 @@ mod tests {
         run_test(
             test_character_sequence(),
             sequence_default,
-            |character_irs, character_input_reactions_assets| {
+            |character_irs, input_reactions_assets| {
                 let expected_character_input_reactions = expected_input_reactions_0();
                 let character_input_reactions_handle = character_irs
                     .get(0)
                     .expect("Expected `CharacterInputReactionsHandle` to exist.");
-                let character_input_reactions = character_input_reactions_assets
+                let character_input_reactions = input_reactions_assets
                     .get(character_input_reactions_handle)
                     .expect("Expected `CharacterInputReactions` to be loaded.");
                 assert_eq!(
@@ -63,7 +62,7 @@ mod tests {
                 let character_input_reactions_handle = character_irs
                     .get(1)
                     .expect("Expected `CharacterInputReactionsHandle` to exist.");
-                let character_input_reactions = character_input_reactions_assets
+                let character_input_reactions = input_reactions_assets
                     .get(character_input_reactions_handle)
                     .expect("Expected `CharacterInputReactions` to be loaded.");
                 assert_eq!(
@@ -84,14 +83,15 @@ mod tests {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(InputReactionLoadingBundle::new())
             .with_effect(move |world| {
                 let character_irs_handle = {
-                    let (loader, character_input_reactions_assets, character_irs_assets) =
+                    let (loader, input_reactions_assets, input_reactions_sequence_assets) =
                         world.system_data::<TestSystemData>();
                     let character_loader_params = IrsLoaderParams {
                         loader: &loader,
-                        character_input_reactions_assets: &character_input_reactions_assets,
-                        character_irs_assets: &character_irs_assets,
+                        input_reactions_assets: &input_reactions_assets,
+                        input_reactions_sequence_assets: &input_reactions_sequence_assets,
                     };
 
                     IrsLoader::load(
@@ -106,16 +106,17 @@ mod tests {
             .with_effect(|_| {}) // Allow texture to load.
             .with_assertion(move |world| {
                 let character_irs_handle = world.read_resource::<CharacterIrsHandle>().clone();
-                let character_irs_assets = world.read_resource::<AssetStorage<CharacterIrs>>();
-                let character_irs = character_irs_assets
+                let input_reactions_sequence_assets =
+                    world.read_resource::<AssetStorage<CharacterIrs>>();
+                let character_irs = input_reactions_sequence_assets
                     .get(&character_irs_handle)
                     .expect("Expected `CharacterIrs` to be loaded.");
 
                 // Assert the values for each handle.
-                let character_input_reactions_assets =
+                let input_reactions_assets =
                     world.read_resource::<AssetStorage<CharacterInputReactions>>();
 
-                assertion_fn(character_irs, &character_input_reactions_assets);
+                assertion_fn(character_irs, &input_reactions_assets);
             })
             .run_isolated()
     }
@@ -125,7 +126,7 @@ mod tests {
         let test_character_sequence_path = PathBuf::from_iter(&[
             env!("CARGO_MANIFEST_DIR"),
             "src",
-            "character_loading",
+            "input_reaction_loading",
             test_character_sequence_yaml,
         ]);
         let contents = IoUtils::read_file(&test_character_sequence_path).unwrap_or_else(|e| {

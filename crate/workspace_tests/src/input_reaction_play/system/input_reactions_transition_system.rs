@@ -11,7 +11,6 @@ mod tests {
     };
     use application::IoUtils;
     use application_test_support::AutexousiousApplication;
-    use character_loading::{IrsLoader, IrsLoaderParams};
     use character_model::{
         config::{CharacterIrr, CharacterSequence, CharacterSequenceName},
         loaded::{
@@ -28,6 +27,7 @@ mod tests {
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
+    use input_reaction_loading::{IrsLoader, IrsLoaderParams};
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
     use sequence_model::{
         config::SequenceNameString,
@@ -375,7 +375,7 @@ mod tests {
             .with_effect(register_reader)
             .with_effect(move |world| {
                 let character_irs_handle = {
-                    let (loader, character_input_reactions_assets, character_irs_assets) = world
+                    let (loader, input_reactions_assets, input_reactions_sequence_assets) = world
                         .system_data::<(
                             ReadExpect<'_, Loader>,
                             Read<'_, AssetStorage<CharacterInputReactions>>,
@@ -384,8 +384,8 @@ mod tests {
 
                     let irs_loader_params = IrsLoaderParams {
                         loader: &loader,
-                        character_input_reactions_assets: &character_input_reactions_assets,
-                        character_irs_assets: &character_irs_assets,
+                        input_reactions_assets: &input_reactions_assets,
+                        input_reactions_sequence_assets: &input_reactions_sequence_assets,
                     };
                     let test_character_sequence = test_character_sequence();
 
@@ -402,11 +402,11 @@ mod tests {
             // Allow `AssetStorage`s to process loaded data.
             .with_effect(move |world| {
                 let character_input_reactions_handle = {
-                    let character_irs_assets =
+                    let input_reactions_sequence_assets =
                         world.system_data::<Read<'_, AssetStorage<CharacterIrs>>>();
 
                     let character_irs_handle = world.read_resource::<CharacterIrsHandle>().clone();
-                    let character_irs = character_irs_assets
+                    let character_irs = input_reactions_sequence_assets
                         .get(&character_irs_handle)
                         .expect("Expected `character_irs` to be loaded.");
                     character_irs
