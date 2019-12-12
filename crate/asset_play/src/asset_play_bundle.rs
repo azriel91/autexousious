@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World, WorldExt},
@@ -8,7 +10,7 @@ use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
-use game_input::SharedInputControlled;
+use game_input::{InputControlled, SharedInputControlled};
 use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
@@ -41,6 +43,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         let mut asset_world = AssetWorld::default();
+        asset_world.register::<InputControlled>();
         asset_world.register::<SharedInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
@@ -66,6 +69,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         world.insert(asset_world);
 
         builder.add_barrier();
+        builder.add(
+            ItemComponentComponentAugmentSystem::<InputControlled>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<InputControlled>>(),
+            &[],
+        );
         builder.add(
             ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
             &ItemComponentComponentAugmentSystem::<SharedInputControlled>::type_name(),

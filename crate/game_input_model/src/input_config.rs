@@ -32,7 +32,7 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
-                let controller_id = index as u32;
+                let controller_id = index;
                 controller_config
                     .axes
                     .iter()
@@ -66,7 +66,7 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
-                let controller_id = index as u32;
+                let controller_id = index;
                 controller_config
                     .actions
                     .iter()

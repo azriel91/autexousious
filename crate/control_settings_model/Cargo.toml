@@ -12,6 +12,8 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.3"
 derive-new = "0.5.8"
+derive_deref = "1.1.0"
+game_input_model = { path = "../game_input_model" }
 kinematic_model = { path = "../kinematic_model" }
 serde = { version = "1.0.102", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }

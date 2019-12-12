@@ -2,6 +2,9 @@
 
 //! Provides loading logic for control settings.
 
-pub use crate::keyboard_ui_gen::KeyboardUiGen;
+pub use crate::{
+    button_to_player_index_mapper::ButtonToPlayerIndexMapper, keyboard_ui_gen::KeyboardUiGen,
+};
 
+mod button_to_player_index_mapper;
 mod keyboard_ui_gen;

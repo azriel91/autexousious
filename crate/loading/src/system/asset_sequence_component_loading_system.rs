@@ -14,7 +14,8 @@ use character_model::{
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
-use game_input::SharedInputControlled;
+use game_input::InputControlled;
+use game_input_model::ControllerId;
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -435,7 +436,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
                     .cloned(); // Clone so that we don't mutate the actual read data.
 
-                let keyboard_ui_sprite_labels = if let Some(UiDefinition {
+                let control_button_labels = if let Some(UiDefinition {
                     ui_type: UiType::ControlSettings(control_settings),
                     sequences,
                     ..
@@ -696,29 +697,34 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             item_ids_all.append(&mut item_ids)
                         }
                         UiType::ControlSettings(control_settings) => {
-                            let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
+                            let control_button_labels = control_button_labels
                                 .as_ref()
-                                .expect("Expected `keyboard_ui_sprite_labels` to exist.");
-                            let position_inits = PositionInitsLoader::items_to_datas(
-                                keyboard_ui_sprite_labels.iter(),
-                            );
+                                .expect("Expected `control_button_labels` to exist.");
+                            let position_inits =
+                                PositionInitsLoader::items_to_datas(control_button_labels.iter());
+                            let input_controlleds = control_button_labels
+                                .iter()
+                                .map(AsRef::<Option<ControllerId>>::as_ref)
+                                .copied()
+                                .map(|controller_id| controller_id.map(InputControlled::new))
+                                .collect::<Vec<Option<InputControlled>>>();
                             let sequence_id_inits =
                                 SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
                                     sequence_id_mappings,
                                     asset_slug,
-                                    keyboard_ui_sprite_labels
-                                        .iter()
-                                        .map(|ui_sprite_label| &ui_sprite_label.sequence),
+                                    control_button_labels.iter().map(|control_button_label| {
+                                        &control_button_label.sprite.sequence
+                                    }),
                                 );
 
                             let mut item_ids = position_inits
                                 .0
                                 .into_iter()
+                                .zip(input_controlleds.into_iter())
                                 .zip(sequence_id_inits.into_iter())
-                                .map(|(position_init, sequence_id_init)| {
+                                .map(|((position_init, input_controlled), sequence_id_init)| {
                                     let mut item_entity_builder = asset_world
                                         .create_entity()
-                                        .with(SharedInputControlled)
                                         .with(position_init)
                                         .with(sequence_id_init)
                                         .with(sequence_end_transitions.clone())
@@ -726,6 +732,11 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         .with(tint_sequence_handles.clone())
                                         .with(scale_sequence_handles.clone())
                                         .with(input_reactions_sequence_handles.clone());
+
+                                    if let Some(input_controlled) = input_controlled {
+                                        item_entity_builder =
+                                            item_entity_builder.with(input_controlled);
+                                    }
 
                                     if let Some(sprite_render_sequence_handles) =
                                         sprite_render_sequence_handles.clone()
