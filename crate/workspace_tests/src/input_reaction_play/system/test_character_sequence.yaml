@@ -4,9 +4,9 @@ frames:
   - input_reactions:
       press_attack: "stand_attack_0"
       press_jump: "jump"
-      release_special: [{ next: "dash_back", requirements: [{ charge: 10 }] }]
-      hold_jump: { next: "dash_forward", requirements: [{ sp: 10 }] }
-      hold_defend: { next: "flinch_0", requirements: [{ input_dir_x: "same" }] }
+      release_special: [{ next: "dash_back", requirement: [{ charge: 10 }] }]
+      hold_jump: { next: "dash_forward", requirement: [{ sp: 10 }] }
+      hold_defend: { next: "flinch_0", requirement: [{ input_dir_x: "same" }] }
 
       press_x: "flinch_0"
       release_x: "dazed"
@@ -15,4 +15,4 @@ frames:
       hold_z: "fall_forward_descend"
       release_z: "lie_face_down"
 
-      fallback: { next: "run_stop", requirements: [{ input_dir_x: "not_same" }] }
+      fallback: { next: "run_stop", requirement: [{ input_dir_x: "not_same" }] }

@@ -35,9 +35,9 @@ sequences:
         input_reactions:
           press_attack: 'stand_attack_0'
           release_attack:
-            - { next: 'walk', requirements: [{ charge: 90 }] }
-            - { next: 'run', requirements: [{ sp: 50 }] }
-            - { next: 'run_stop', requirements: [{ hp: 30 }] }
+            - { next: 'walk', requirement: [{ charge: 90 }] }
+            - { next: 'run', requirement: [{ sp: 50 }] }
+            - { next: 'run_stop', requirement: [{ hp: 30 }] }
           hold_jump: { next: 'jump' }
 
   custom_sequence_0:
@@ -127,21 +127,21 @@ sequences:
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         events: InputReactionAppEvents::default(),
-                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Charge(
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Charge(
                             ChargePoints::new(90),
                         )]),
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::Run),
                         events: InputReactionAppEvents::default(),
-                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Sp(
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Sp(
                             SkillPoints::new(50),
                         )]),
                     },
                     InputReactionSingle {
                         next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         events: InputReactionAppEvents::default(),
-                        requirements: CharacterIrr::new(vec![CharacterIrrPart::Hp(
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Hp(
                             HealthPoints::new(30),
                         )]),
                     },
@@ -149,7 +149,7 @@ sequences:
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     events: InputReactionAppEvents::default(),
-                    requirements: CharacterIrr::default(),
+                    requirement: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore
@@ -190,13 +190,13 @@ sequences:
                     InputReactionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
                         events: InputReactionAppEvents::default(),
-                        requirements: CharacterIrr::default(),
+                        requirement: CharacterIrr::default(),
                     },
                 ]))),
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
                     events: InputReactionAppEvents::default(),
-                    requirements: CharacterIrr::default(),
+                    requirement: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore

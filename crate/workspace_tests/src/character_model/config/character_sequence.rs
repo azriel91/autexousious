@@ -53,7 +53,7 @@ frames:
                 hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     events: InputReactionAppEvents::default(),
-                    requirements: CharacterIrr::default(),
+                    requirement: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore

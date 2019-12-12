@@ -15,19 +15,19 @@ input_reactions:
   hold_z: "fall_forward_descend"
   release_z: "lie_face_down"
 
-  fallback: { next: "run_stop", requirements: [{ input_dir_x: "not_same" }] }
+  fallback: { next: "run_stop", requirement: [{ input_dir_x: "not_same" }] }
 
 frames:
   - input_reactions:
       # override sequence
       press_attack: "stand_attack_1"
       # override sequence
-      hold_jump: { next: "jump_off", requirements: [{ charge: 90 }, { sp: 50 }] }
+      hold_jump: { next: "jump_off", requirement: [{ charge: 90 }, { sp: 50 }] }
 
       release_attack: [
-        { next: "walk", requirements: [{ charge: 90 }] },
-        { next: "run", requirements: [{ sp: 50 }] },
-        { next: "run_stop", requirements: [{ hp: 30 }] },
+        { next: "walk", requirement: [{ charge: 90 }] },
+        { next: "run", requirement: [{ sp: 50 }] },
+        { next: "run_stop", requirement: [{ hp: 30 }] },
       ]
 
   - {} # hold_jump: "jump" # from sequence

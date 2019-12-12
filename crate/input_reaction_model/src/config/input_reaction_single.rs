@@ -7,7 +7,7 @@ use crate::config::InputReactionAppEvents;
 /// Configuration type for transition sequence name.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
-pub struct InputReactionSingle<SeqName, Req>
+pub struct InputReactionSingle<SeqName, IRR>
 where
     SeqName: SequenceName,
 {
@@ -16,7 +16,7 @@ where
     /// Events to send.
     #[serde(default)]
     pub events: InputReactionAppEvents,
-    /// Additional requirements for the `InputReaction`.
+    /// Requirement for the `InputReaction` to happen.
     #[serde(default)]
-    pub requirements: Req,
+    pub requirement: IRR,
 }

@@ -16,15 +16,15 @@ sequences:
           press_jump: jump
           hold_jump:
             next: dash_forward
-            requirements:
+            requirement:
               - sp: 10
           hold_defend:
             next: flinch_0
-            requirements:
+            requirement:
               - input_dir_x: same
           release_special:
             - next: dash_back
-              requirements:
+              requirement:
                 - charge: 10
       - wait: 1
         sprite: { sheet: 0, index: 5 }

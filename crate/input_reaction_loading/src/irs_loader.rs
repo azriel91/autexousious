@@ -115,7 +115,7 @@ where
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -131,14 +131,14 @@ where
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -154,7 +154,7 @@ where
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),
@@ -199,7 +199,7 @@ where
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -215,14 +215,14 @@ where
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -238,7 +238,7 @@ where
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),
@@ -282,7 +282,7 @@ where
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -297,14 +297,14 @@ where
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -319,7 +319,7 @@ where
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),

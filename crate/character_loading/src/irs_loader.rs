@@ -103,7 +103,7 @@ impl IrsLoader {
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements: input_reaction_requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -119,14 +119,14 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                input_reaction_requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements: input_reaction_requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -142,7 +142,7 @@ impl IrsLoader {
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    input_reaction_requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),
@@ -187,7 +187,7 @@ impl IrsLoader {
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements: input_reaction_requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -203,14 +203,14 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                input_reaction_requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements: input_reaction_requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -226,7 +226,7 @@ impl IrsLoader {
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    input_reaction_requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),
@@ -270,7 +270,7 @@ impl IrsLoader {
                         Single(InputReactionSingle {
                             next: sequence_name_string,
                             events,
-                            requirements: input_reaction_requirements,
+                            requirement,
                         }) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -285,14 +285,14 @@ impl IrsLoader {
                                     sequence_id: *sequence_id,
                                     events: events.clone(),
                                 }),
-                                input_reaction_requirements.clone(),
+                                requirement.clone(),
                             ))
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |InputReactionSingle {
                                  next: sequence_name_string,
                                  events,
-                                 requirements: input_reaction_requirements,
+                                 requirement,
                              }| {
                                 let sequence_id =
                                 sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
@@ -307,7 +307,7 @@ impl IrsLoader {
                                         sequence_id: *sequence_id,
                                         events: events.clone(),
                                     }),
-                                    input_reaction_requirements.clone(),
+                                    requirement.clone(),
                                 )
                             },
                         )),

@@ -11,7 +11,7 @@ sequences:
       press_jump: jump
       fallback:
         next: stand
-        requirements:
+        requirement:
           - input_dir_x: none
           - input_dir_z: none
   run:
@@ -20,7 +20,7 @@ sequences:
       press_defend: dodge
       fallback:
         next: run_stop
-        requirements:
+        requirement:
           - input_dir_x: not_same
   run_stop: {}
   dodge: {}
@@ -37,7 +37,7 @@ sequences:
       press_defend: dodge
       press_jump:
         - next: dash_forward
-          requirements:
+          requirement:
             - input_dir_x: same
         - next: dash_back
   dash_forward:
