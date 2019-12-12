@@ -5,7 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use typename_derive::TypeName;
 
 /// Rotates `Transform` (and hence, sprites) of `Object`s that are `Mirrored`.

@@ -13,7 +13,7 @@ use collision_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use shape_model::Volume;
 use typename_derive::TypeName;
 

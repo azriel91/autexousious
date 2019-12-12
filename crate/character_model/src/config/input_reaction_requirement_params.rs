@@ -1,6 +1,7 @@
 use charge_model::{config::ChargeUseMode, play::ChargeTrackerClock};
 use game_input::ControllerInput;
-use object_model::play::{HealthPoints, Mirrored, SkillPoints};
+use mirrored_model::play::Mirrored;
+use object_model::play::{HealthPoints, SkillPoints};
 
 /// Parameters to check if a `InputReactionRequirement` is met.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]

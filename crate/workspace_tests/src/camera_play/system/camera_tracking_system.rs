@@ -20,7 +20,7 @@ mod tests {
         loaded::{AssetMapBounds, AssetMargins, Margins},
     };
     use map_selection_model::MapSelection;
-    use object_model::play::Mirrored;
+    use mirrored_model::play::Mirrored;
     use pretty_assertions::assert_eq;
     use typename::TypeName;
 

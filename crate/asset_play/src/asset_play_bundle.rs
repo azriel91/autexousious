@@ -18,7 +18,8 @@ use kinematic_model::{
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
-use object_model::play::{Grounding, Mirrored};
+use mirrored_model::play::Mirrored;
+use object_model::play::Grounding;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{

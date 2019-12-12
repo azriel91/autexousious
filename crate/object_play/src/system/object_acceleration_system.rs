@@ -10,7 +10,7 @@ use kinematic_model::config::{
     ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
     ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Velocity,
 };
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use sequence_model::play::SequenceUpdateEvent;
 use typename_derive::TypeName;
 

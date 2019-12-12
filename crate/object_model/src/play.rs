@@ -4,12 +4,11 @@
 //! entity.
 
 pub use self::{
-    grounding::Grounding, health_points::HealthPoints, mirrored::Mirrored,
-    parent_object::ParentObject, skill_points::SkillPoints,
+    grounding::Grounding, health_points::HealthPoints, parent_object::ParentObject,
+    skill_points::SkillPoints,
 };
 
 mod grounding;
 mod health_points;
-mod mirrored;
 mod parent_object;
 mod skill_points;

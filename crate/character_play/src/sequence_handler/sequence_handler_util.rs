@@ -1,5 +1,5 @@
 use game_input::ControllerInput;
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 
 /// Utility functions for checking if game input matches the direction the character is facing.
 ///

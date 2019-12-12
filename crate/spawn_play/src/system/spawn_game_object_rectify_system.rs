@@ -6,7 +6,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use sequence_model::loaded::SequenceId;
 use spawn_model::{
     loaded::Spawn,

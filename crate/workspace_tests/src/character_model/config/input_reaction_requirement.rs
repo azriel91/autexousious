@@ -6,7 +6,8 @@ mod tests {
     };
     use game_input::ControllerInput;
     use game_input_model::config::{InputDirection, InputDirectionZ};
-    use object_model::play::{HealthPoints, Mirrored, SkillPoints};
+    use mirrored_model::play::Mirrored;
+    use object_model::play::{HealthPoints, SkillPoints};
 
     use character_model::config::{CharacterIrrPart, InputReactionRequirementParams};
 

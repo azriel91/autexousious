@@ -9,7 +9,8 @@ mod tests {
     use kinematic_model::config::Position;
     use map_model::loaded::AssetMargins;
     use map_selection_model::MapSelection;
-    use object_model::play::{Grounding, Mirrored};
+    use mirrored_model::play::Mirrored;
+    use object_model::play::Grounding;
     use sequence_model::{loaded::SequenceId, play::SequenceStatus};
     use typename::TypeName;
 

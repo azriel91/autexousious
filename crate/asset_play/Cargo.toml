@@ -20,6 +20,7 @@ game_input = { path = "../game_input" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
+mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }

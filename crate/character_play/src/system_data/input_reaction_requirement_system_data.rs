@@ -5,7 +5,8 @@ use amethyst::{
 use charge_model::{config::ChargeUseMode, play::ChargeTrackerClock};
 use derivative::Derivative;
 use game_input::ControllerInput;
-use object_model::play::{HealthPoints, Mirrored, SkillPoints};
+use mirrored_model::play::Mirrored;
+use object_model::play::{HealthPoints, SkillPoints};
 
 /// `SystemData` used to determine if an input reaction's requirement is met.
 #[derive(Derivative, SystemData)]

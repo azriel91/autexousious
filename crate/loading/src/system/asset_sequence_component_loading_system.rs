@@ -29,11 +29,9 @@ use kinematic_model::{
 use loading_model::loaded::LoadStage;
 use log::{debug, warn};
 use map_model::loaded::Margins;
+use mirrored_model::play::Mirrored;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
-use object_model::{
-    loaded::Object,
-    play::{Grounding, Mirrored},
-};
+use object_model::{loaded::Object, play::Grounding};
 use object_type::ObjectType;
 use sequence_loading::{
     SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,

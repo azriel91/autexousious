@@ -8,7 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::{config::Position, play::PositionZAsY};
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use typename_derive::TypeName;
 
 /// Updates each entity's `Transform` based on their `Position` in game.

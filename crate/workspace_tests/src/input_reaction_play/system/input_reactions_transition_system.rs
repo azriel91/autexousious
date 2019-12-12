@@ -28,7 +28,8 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use input_reaction_loading::{IrsLoader, IrsLoaderParams};
-    use object_model::play::{HealthPoints, Mirrored, SkillPoints};
+    use mirrored_model::play::Mirrored;
+    use object_model::play::{HealthPoints, SkillPoints};
     use sequence_model::{
         config::SequenceNameString,
         loaded::{SequenceId, SequenceIdMappings},
