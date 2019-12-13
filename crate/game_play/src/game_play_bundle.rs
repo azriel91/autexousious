@@ -28,7 +28,10 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
-use input_reaction_model::loaded::{InputReactionsSequence, InputReactionsSequenceHandles};
+use input_reaction_model::{
+    config::BasicIrr,
+    loaded::{InputReactionsSequence, InputReactionsSequenceHandles},
+};
 use input_reaction_play::InputReactionsTransitionSystem;
 use kinematic_model::{
     config::Position,
@@ -339,8 +342,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(
-            InputReactionsTransitionSystem::<()>::new(),
-            &any::type_name::<InputReactionsTransitionSystem<()>>(),
+            InputReactionsTransitionSystem::<BasicIrr>::new(),
+            &any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
 
@@ -364,14 +367,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
-            &[&InputReactionsTransitionSystem::<CharacterIrr>::type_name()],
+            &[&any::type_name::<
+                InputReactionsTransitionSystem<CharacterIrr>,
+            >()],
         ); // kcov-ignore
 
         // Charging
         builder.add(
             ChargeInitializeDetectionSystem::new(),
             &ChargeInitializeDetectionSystem::type_name(),
-            &[&InputReactionsTransitionSystem::<CharacterIrr>::type_name()],
+            &[&any::type_name::<
+                InputReactionsTransitionSystem<CharacterIrr>,
+            >()],
         ); // kcov-ignore
         builder.add(
             ChargeInitializeDelaySystem::new(),

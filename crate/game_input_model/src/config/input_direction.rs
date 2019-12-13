@@ -6,6 +6,10 @@ use serde::{Deserialize, Serialize};
 pub enum InputDirection {
     /// Axis input is zero.
     None,
+    /// X axis input is to the left.
+    Left,
+    /// X axis input is to the right.
+    Right,
     /// Axis input is in the same direction to the character is facing.
     Same,
     /// Axis input is opposite to the direction the character is facing.

@@ -76,6 +76,20 @@ impl CharacterIrrPart {
                     false
                 }
             }
+            InputDirection::Left => {
+                if let Some(controller_input) = controller_input {
+                    controller_input.x_axis_value < 0.
+                } else {
+                    false
+                }
+            }
+            InputDirection::Right => {
+                if let Some(controller_input) = controller_input {
+                    controller_input.x_axis_value > 0.
+                } else {
+                    false
+                }
+            }
             InputDirection::Same => {
                 if let (Some(controller_input), Some(mirrored)) = (controller_input, mirrored) {
                     InputDirection::input_matches_direction(

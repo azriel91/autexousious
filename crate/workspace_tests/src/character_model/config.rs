@@ -1,5 +1,5 @@
+mod character_irr_part;
 mod character_sequence;
-mod input_reaction_requirement;
 
 #[cfg(test)]
 mod test {

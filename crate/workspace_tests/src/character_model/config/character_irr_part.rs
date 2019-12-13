@@ -248,6 +248,84 @@ mod tests {
         false,
     );
 
+    // Left variant
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_left_and_input_positive,
+        Left,
+        Some(ControllerInput {
+            x_axis_value: 1.,
+            ..Default::default()
+        }),
+        None,
+        false,
+    );
+    input_x_test!(
+        input_x_requirement_met_when_requirement_left_and_negative,
+        Left,
+        Some(ControllerInput {
+            x_axis_value: -1.,
+            ..Default::default()
+        }),
+        None,
+        true,
+    );
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_left_and_input_zero,
+        Left,
+        Some(ControllerInput {
+            x_axis_value: 0.,
+            ..Default::default()
+        }),
+        None,
+        false,
+    );
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_left_and_no_controller_input,
+        Left,
+        None,
+        Some(Mirrored::new(true)),
+        false,
+    );
+
+    // Right variant
+    input_x_test!(
+        input_x_requirement_met_when_requirement_right_and_input_positive,
+        Right,
+        Some(ControllerInput {
+            x_axis_value: 1.,
+            ..Default::default()
+        }),
+        None,
+        true,
+    );
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_right_and_negative,
+        Right,
+        Some(ControllerInput {
+            x_axis_value: -1.,
+            ..Default::default()
+        }),
+        None,
+        false,
+    );
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_right_and_input_zero,
+        Right,
+        Some(ControllerInput {
+            x_axis_value: 0.,
+            ..Default::default()
+        }),
+        None,
+        false,
+    );
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_right_and_no_controller_input,
+        Right,
+        None,
+        Some(Mirrored::new(true)),
+        false,
+    );
+
     // Mirrored variant
     input_x_test!(
         input_x_requirement_not_met_when_requirement_mirrored_and_input_matches_direction,

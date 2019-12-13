@@ -100,6 +100,8 @@ mod game_play_stdio;
 #[cfg(test)]
 mod input_reaction_loading;
 #[cfg(test)]
+mod input_reaction_model;
+#[cfg(test)]
 mod input_reaction_play;
 #[cfg(test)]
 mod kinematic_loading;
