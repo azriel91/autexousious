@@ -5,9 +5,8 @@ use game_input_model::{Axis, ControlAction};
 use input_reaction_model::{
     config::{self, InputReactionSingle},
     loaded::{
-        self, ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition,
-        InputReaction, InputReactions, InputReactionsSequence, InputReactionsSequenceHandle,
-        ReactionEffect,
+        self, AxisTransition, FallbackTransition, InputReaction, InputReactions,
+        InputReactionsSequence, InputReactionsSequenceHandle, ReactionEffect, ReactionEffectData,
     },
 };
 use sequence_model::{
@@ -328,20 +327,20 @@ where
             };
         }
 
-        push_transitions!(press_defend, ActionPress, ActionPress, Defend);
-        push_transitions!(press_jump, ActionPress, ActionPress, Jump);
-        push_transitions!(press_attack, ActionPress, ActionPress, Attack);
-        push_transitions!(press_special, ActionPress, ActionPress, Special);
-        push_transitions!(release_defend, ActionRelease, ActionRelease, Defend);
-        push_transitions!(release_jump, ActionRelease, ActionRelease, Jump);
-        push_transitions!(release_attack, ActionRelease, ActionRelease, Attack);
-        push_transitions!(release_special, ActionRelease, ActionRelease, Special);
+        push_transitions!(press_defend, ActionPress, ReactionEffectData, Defend);
+        push_transitions!(press_jump, ActionPress, ReactionEffectData, Jump);
+        push_transitions!(press_attack, ActionPress, ReactionEffectData, Attack);
+        push_transitions!(press_special, ActionPress, ReactionEffectData, Special);
+        push_transitions!(release_defend, ActionRelease, ReactionEffectData, Defend);
+        push_transitions!(release_jump, ActionRelease, ReactionEffectData, Jump);
+        push_transitions!(release_attack, ActionRelease, ReactionEffectData, Attack);
+        push_transitions!(release_special, ActionRelease, ReactionEffectData, Special);
         // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
         // `Release` transitions get higher priority.
-        push_transitions!(hold_defend, ActionHold, ActionHold, Defend);
-        push_transitions!(hold_jump, ActionHold, ActionHold, Jump);
-        push_transitions!(hold_attack, ActionHold, ActionHold, Attack);
-        push_transitions!(hold_special, ActionHold, ActionHold, Special);
+        push_transitions!(hold_defend, ActionHold, ReactionEffectData, Defend);
+        push_transitions!(hold_jump, ActionHold, ReactionEffectData, Jump);
+        push_transitions!(hold_attack, ActionHold, ReactionEffectData, Attack);
+        push_transitions!(hold_special, ActionHold, ReactionEffectData, Special);
 
         // Axes transitions.
         push_axis_transition!(press_x, AxisPress, X);

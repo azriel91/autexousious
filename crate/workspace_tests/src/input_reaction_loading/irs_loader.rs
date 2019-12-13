@@ -20,8 +20,8 @@ mod tests {
     use input_reaction_model::{
         config::InputReactionAppEvents,
         loaded::{
-            ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition,
-            InputReaction, InputReactions, ReactionEffect,
+            AxisTransition, FallbackTransition, InputReaction, InputReactions, ReactionEffect,
+            ReactionEffectData,
         },
     };
     use object_model::play::{HealthPoints, SkillPoints};
@@ -209,7 +209,7 @@ mod tests {
     fn expected_input_reactions_0() -> CharacterInputReactions {
         InputReactions::new(vec![
             InputReaction {
-                effect: ReactionEffect::ActionPress(ActionPress {
+                effect: ReactionEffect::ActionPress(ReactionEffectData {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(5),
                     events: InputReactionAppEvents::default(),
@@ -217,7 +217,7 @@ mod tests {
                 requirement: CharacterIrr::default(),
             },
             InputReaction {
-                effect: ReactionEffect::ActionRelease(ActionRelease {
+                effect: ReactionEffect::ActionRelease(ReactionEffectData {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(1),
                     events: InputReactionAppEvents::default(),
@@ -227,7 +227,7 @@ mod tests {
                 ))]),
             },
             InputReaction {
-                effect: ReactionEffect::ActionRelease(ActionRelease {
+                effect: ReactionEffect::ActionRelease(ReactionEffectData {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(2),
                     events: InputReactionAppEvents::default(),
@@ -235,7 +235,7 @@ mod tests {
                 requirement: CharacterIrr::new(vec![CharacterIrrPart::Sp(SkillPoints::new(50))]),
             },
             InputReaction {
-                effect: ReactionEffect::ActionRelease(ActionRelease {
+                effect: ReactionEffect::ActionRelease(ReactionEffectData {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(3),
                     events: InputReactionAppEvents::default(),
@@ -243,7 +243,7 @@ mod tests {
                 requirement: CharacterIrr::new(vec![CharacterIrrPart::Hp(HealthPoints::new(30))]),
             },
             InputReaction {
-                effect: ReactionEffect::ActionHold(ActionHold {
+                effect: ReactionEffect::ActionHold(ReactionEffectData {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(7),
                     events: InputReactionAppEvents::default(),
@@ -254,7 +254,7 @@ mod tests {
                 ]),
             },
             InputReaction {
-                effect: ReactionEffect::ActionHold(ActionHold {
+                effect: ReactionEffect::ActionHold(ReactionEffectData {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),
@@ -325,7 +325,7 @@ mod tests {
     fn expected_input_reactions_1() -> CharacterInputReactions {
         InputReactions::new(vec![
             InputReaction {
-                effect: ReactionEffect::ActionPress(ActionPress {
+                effect: ReactionEffect::ActionPress(ReactionEffectData {
                     action: ControlAction::Attack,
                     sequence_id: SequenceId::new(4),
                     events: InputReactionAppEvents::default(),
@@ -333,7 +333,7 @@ mod tests {
                 requirement: CharacterIrr::default(),
             },
             InputReaction {
-                effect: ReactionEffect::ActionHold(ActionHold {
+                effect: ReactionEffect::ActionHold(ReactionEffectData {
                     action: ControlAction::Jump,
                     sequence_id: SequenceId::new(6),
                     events: InputReactionAppEvents::default(),
@@ -341,7 +341,7 @@ mod tests {
                 requirement: CharacterIrr::default(),
             },
             InputReaction {
-                effect: ReactionEffect::ActionHold(ActionHold {
+                effect: ReactionEffect::ActionHold(ReactionEffectData {
                     action: ControlAction::Special,
                     sequence_id: SequenceId::new(8),
                     events: InputReactionAppEvents::default(),

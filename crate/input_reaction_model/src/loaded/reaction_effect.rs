@@ -1,18 +1,18 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 
-use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition};
+use crate::loaded::{AxisTransition, FallbackTransition, ReactionEffectData};
 
 /// Sequence to transition to on control input.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 #[storage(VecStorage)]
 pub enum ReactionEffect {
     /// Transition to a specified sequence on control input press event.
-    ActionPress(ActionPress),
+    ActionPress(ReactionEffectData),
     /// Transition to a specified sequence on control input enabled state.
-    ActionHold(ActionHold),
+    ActionHold(ReactionEffectData),
     /// Transition to a specified sequence on control input release event.
-    ActionRelease(ActionRelease),
+    ActionRelease(ReactionEffectData),
     /// Transition to a specified sequence on axis input press event.
     AxisPress(AxisTransition),
     /// Transition to a specified sequence on axis input state.

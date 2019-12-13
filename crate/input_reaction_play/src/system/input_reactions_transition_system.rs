@@ -16,8 +16,8 @@ use game_input_model::{
 use input_reaction_model::{
     config::{InputReactionAppEvents, InputReactionRequirement},
     loaded::{
-        ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition, InputReaction,
-        InputReactions, InputReactionsHandle, ReactionEffect,
+        AxisTransition, FallbackTransition, InputReaction, InputReactions, InputReactionsHandle,
+        ReactionEffect, ReactionEffectData,
     },
 };
 use named_type::NamedType;
@@ -118,7 +118,7 @@ where
                     let input_reaction_requirement = &input_reaction.requirement;
 
                     match &input_reaction.effect {
-                        ReactionEffect::ActionPress(ActionPress {
+                        ReactionEffect::ActionPress(ReactionEffectData {
                             action,
                             sequence_id,
                             events,
@@ -129,7 +129,7 @@ where
                                 None
                             }
                         }
-                        ReactionEffect::ActionRelease(ActionRelease {
+                        ReactionEffect::ActionRelease(ReactionEffectData {
                             action,
                             sequence_id,
                             events,
@@ -140,12 +140,11 @@ where
                                 None
                             }
                         }
-                        ReactionEffect::ActionHold(action_hold) => {
-                            Self::hold_transition_action(&action_hold, *controller_input).map(
-                                |(transition, events)| {
+                        ReactionEffect::ActionHold(reaction_effect_data) => {
+                            Self::hold_transition_action(&reaction_effect_data, *controller_input)
+                                .map(|(transition, events)| {
                                     (transition, events, input_reaction_requirement)
-                                },
-                            )
+                                })
                         }
                         _ => None,
                     }
@@ -223,8 +222,8 @@ where
                                 None
                             }
                         }
-                        ReactionEffect::AxisHold(axis_hold) => {
-                            Self::hold_transition_axis(axis_hold, *controller_input).map(
+                        ReactionEffect::AxisHold(reaction_effect_data) => {
+                            Self::hold_transition_axis(reaction_effect_data, *controller_input).map(
                                 |(transition, events)| {
                                     (transition, events, input_reaction_requirement)
                                 },
@@ -284,19 +283,20 @@ where
                         let input_reaction_requirement = &input_reaction.requirement;
 
                         match &input_reaction.effect {
-                            ReactionEffect::ActionHold(action_hold) => {
-                                Self::hold_transition_action(action_hold, *controller_input).map(
-                                    |(transition, events)| {
-                                        (transition, events, input_reaction_requirement)
-                                    },
+                            ReactionEffect::ActionHold(reaction_effect_data) => {
+                                Self::hold_transition_action(
+                                    reaction_effect_data,
+                                    *controller_input,
                                 )
+                                .map(|(transition, events)| {
+                                    (transition, events, input_reaction_requirement)
+                                })
                             }
-                            ReactionEffect::AxisHold(axis_hold) => {
-                                Self::hold_transition_axis(axis_hold, *controller_input).map(
-                                    |(transition, events)| {
+                            ReactionEffect::AxisHold(reaction_effect_data) => {
+                                Self::hold_transition_axis(reaction_effect_data, *controller_input)
+                                    .map(|(transition, events)| {
                                         (transition, events, input_reaction_requirement)
-                                    },
-                                )
+                                    })
                             }
                             ReactionEffect::Fallback(FallbackTransition {
                                 sequence_id,
@@ -328,14 +328,14 @@ where
     ///
     /// # Parameters
     ///
-    /// * `action_hold`: `ControlAction` and sequence ID the hold transition applies to.
+    /// * `reaction_effect_data`: `ControlAction` and sequence ID the hold transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_action(
-        ActionHold {
+        ReactionEffectData {
             action,
             sequence_id,
             events,
-        }: &ActionHold,
+        }: &ReactionEffectData,
         controller_input: ControllerInput,
     ) -> Option<(SequenceId, &InputReactionAppEvents)> {
         match action {
