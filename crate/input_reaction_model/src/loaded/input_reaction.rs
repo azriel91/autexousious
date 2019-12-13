@@ -2,12 +2,12 @@ use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 use typename_derive::TypeName;
 
-use crate::loaded::ReactionEffect;
+use crate::{config::BasicIrr, loaded::ReactionEffect};
 
 /// Sequence to transition to on control input with requirements.
 #[derive(Clone, Component, Debug, PartialEq, TypeName, new)]
 #[storage(VecStorage)]
-pub struct InputReaction<IRR = ()>
+pub struct InputReaction<IRR = BasicIrr>
 where
     IRR: Send + Sync + 'static,
 {

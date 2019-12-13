@@ -30,7 +30,7 @@ use sequence_model::loaded::SequenceId;
 ///
 /// * `IRR`: `InputReactionRequirement`.
 #[derive(Debug, Default, NamedType, new)]
-pub struct InputReactionsTransitionSystem<IRR = ()> {
+pub struct InputReactionsTransitionSystem<IRR> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,

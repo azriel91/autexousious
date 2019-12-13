@@ -10,10 +10,10 @@ use crate::config::{InputReactionMultiple, InputReactionSingle};
 /// configuration.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
-pub enum InputReaction<SeqName, Req>
+pub enum InputReaction<SeqName, IRR>
 where
     SeqName: SequenceName,
-    Req: Default,
+    IRR: Default,
 {
     /// Input reaction that simply transitions the sequence.
     ///
@@ -26,7 +26,7 @@ where
     /// ```yaml
     /// press_attack: { next: "sequence_name", extra_0: 0, extra_1: "0" }
     /// ```
-    Single(InputReactionSingle<SeqName, Req>),
+    Single(InputReactionSingle<SeqName, IRR>),
     /// List of input reactions in decreasing priority order.
     ///
     /// ```yaml
@@ -34,5 +34,5 @@ where
     ///   - { next: "sequence_name_0", extra_0: 0, extra_1: "0" }
     ///   - { next: "sequence_name_1", extra_0: 1, extra_1: "1" }
     /// ```
-    Multiple(InputReactionMultiple<SeqName, Req>),
+    Multiple(InputReactionMultiple<SeqName, IRR>),
 }
