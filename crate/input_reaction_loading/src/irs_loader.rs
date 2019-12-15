@@ -3,15 +3,16 @@ use std::{convert::AsRef, default::Default, marker::PhantomData};
 use amethyst::assets::{AssetStorage, Loader};
 use game_input_model::{Axis, ControlAction};
 use input_reaction_model::{
-    config::{self, InputReactionSingle},
+    config::{self, InputReactionAppEvents, InputReactionSingle},
     loaded::{
         self, AxisTransition, FallbackTransition, InputReaction, InputReactions,
-        InputReactionsSequence, InputReactionsSequenceHandle, ReactionEffect, ReactionEffectData,
+        InputReactionsSequence, InputReactionsSequenceHandle, ReactionEffect, ReactionEffectButton,
+        ReactionEffectData,
     },
 };
 use sequence_model::{
-    config::{Sequence, SequenceName, Wait},
-    loaded::SequenceIdMappings,
+    config::{Sequence, SequenceName, SequenceNameString, Wait},
+    loaded::{SequenceId, SequenceIdMappings},
 };
 use typename::TypeName;
 
@@ -44,14 +45,14 @@ where
             .frames
             .iter()
             .map(|frame| {
-                let config_transitions_default = sequence_default.and_then(|sequence| {
+                let input_reactions_default = sequence_default.and_then(|sequence| {
                     AsRef::<Option<config::InputReactions<SeqName, IRR>>>::as_ref(sequence).as_ref()
                 });
-                Self::config_to_loaded_transitions_handle(
+                Self::input_reactions_loaded_handle(
                     loader,
                     input_reactions_assets,
                     sequence_id_mappings,
-                    config_transitions_default,
+                    input_reactions_default,
                     AsRef::<Option<config::InputReactions<SeqName, IRR>>>::as_ref(seq).as_ref(),
                     &AsRef::<config::InputReactions<SeqName, IRR>>::as_ref(frame),
                 )
@@ -68,293 +69,252 @@ where
     }
 
     /// Maps `config::InputReactions::<InputReaction<IRR>>` to `loaded::InputReactions::<InputReaction<IRR>>`
-    fn config_to_loaded_transitions_handle(
+    fn input_reactions_loaded_handle(
         loader: &Loader,
         input_reactions_assets: &AssetStorage<loaded::InputReactions<InputReaction<IRR>>>,
         sequence_id_mappings: &SequenceIdMappings<SeqName>,
-        config_transitions_default: Option<&config::InputReactions<SeqName, IRR>>,
-        config_transitions_sequence: Option<&config::InputReactions<SeqName, IRR>>,
-        config_transitions_frame: &config::InputReactions<SeqName, IRR>,
+        input_reactions_default: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_sequence: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_frame: &config::InputReactions<SeqName, IRR>,
     ) -> loaded::InputReactionsHandle<InputReaction<IRR>> {
-        let mut loaded_transitions = Vec::new();
+        let mut input_reactions_loaded = Vec::new();
 
-        macro_rules! push_transitions {
-            ($mode_action:ident, $mode:ident, $mode_data:ident, $action:ident) => {
-                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
-                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
+        macro_rules! push_action_reactions {
+            ($mode_action:ident, $mode:ident, $action:ident) => {
+                let mode_action = input_reactions_frame.$mode_action.as_ref().or_else(|| {
+                    // We want to make sure that, if `input_reactions_sequence.is_some()`, but
                     // the transition inside is `None`, we still fallback to `None`. This allows
                     // a sequence transition `None` value to override the default transition.
-                    config_transitions_sequence
-                        .or(config_transitions_default)
-                        .and_then(|config_transitions_fallback| {
-                            config_transitions_fallback.$mode_action.as_ref()
+                    input_reactions_sequence
+                        .or(input_reactions_default)
+                        .and_then(|input_reactions_fallback| {
+                            input_reactions_fallback.$mode_action.as_ref()
                         })
                 });
-                if let Some(config_control_transition) = &mode_action {
-                    use input_reaction_model::config::InputReaction::*;
-                    match config_control_transition {
-                        SequenceNameString(sequence_name) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode($mode_data {
-                                    action: ControlAction::$action,
-                                    sequence_id: *sequence_id,
-                                    events: Default::default(),
-                                }),
-                                IRR::default(),
-                            ));
-                        }
-                        Single(InputReactionSingle {
-                            next: sequence_name_string,
-                            events,
+                Self::load_input_reactions(
+                    sequence_id_mappings,
+                    &mut input_reactions_loaded,
+                    mode_action,
+                    |sequence_id, events, requirement| {
+                        InputReaction::<IRR>::new(
+                            ReactionEffect::$mode(ReactionEffectData {
+                                action: ControlAction::$action,
+                                sequence_id,
+                                events,
+                            }),
                             requirement,
-                        }) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode($mode_data {
-                                    action: ControlAction::$action,
-                                    sequence_id: *sequence_id,
-                                    events: events.clone(),
-                                }),
-                                requirement.clone(),
-                            ))
-                        }
-                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |InputReactionSingle {
-                                 next: sequence_name_string,
-                                 events,
-                                 requirement,
-                             }| {
-                                let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                                InputReaction::<IRR>::new(
-                                    ReactionEffect::$mode($mode_data {
-                                        action: ControlAction::$action,
-                                        sequence_id: *sequence_id,
-                                        events: events.clone(),
-                                    }),
-                                    requirement.clone(),
-                                )
-                            },
-                        )),
-                    }
-                }
+                        )
+                    },
+                );
             };
         }
 
-        macro_rules! push_axis_transition {
+        macro_rules! push_axis_reactions {
             ($mode_action:ident, $mode:ident, $axis:ident) => {
-                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
-                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
+                let mode_action = input_reactions_frame.$mode_action.as_ref().or_else(|| {
+                    // We want to make sure that, if `input_reactions_sequence.is_some()`, but
                     // the transition inside is `None`, we still fallback to `None`. This allows
                     // a sequence transition `None` value to override the default transition.
-                    config_transitions_sequence
-                        .or(config_transitions_default)
-                        .and_then(|config_transitions_fallback| {
-                            config_transitions_fallback.$mode_action.as_ref()
+                    input_reactions_sequence
+                        .or(input_reactions_default)
+                        .and_then(|input_reactions_fallback| {
+                            input_reactions_fallback.$mode_action.as_ref()
                         })
                 });
-                if let Some(config_control_transition) = &mode_action {
-                    use input_reaction_model::config::InputReaction::*;
-                    match config_control_transition {
-                        SequenceNameString(sequence_name) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode(AxisTransition {
-                                    axis: Axis::$axis,
-                                    sequence_id: *sequence_id,
-                                    events: Default::default(),
-                                }),
-                                IRR::default(),
-                            ));
-                        }
-                        Single(InputReactionSingle {
-                            next: sequence_name_string,
-                            events,
+                Self::load_input_reactions(
+                    sequence_id_mappings,
+                    &mut input_reactions_loaded,
+                    mode_action,
+                    |sequence_id, events, requirement| {
+                        InputReaction::<IRR>::new(
+                            ReactionEffect::$mode(AxisTransition {
+                                axis: Axis::$axis,
+                                sequence_id,
+                                events,
+                            }),
                             requirement,
-                        }) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode(AxisTransition {
-                                    axis: Axis::$axis,
-                                    sequence_id: *sequence_id,
-                                    events: events.clone(),
-                                }),
-                                requirement.clone(),
-                            ))
-                        }
-                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |InputReactionSingle {
-                                 next: sequence_name_string,
-                                 events,
-                                 requirement,
-                             }| {
-                                let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                                InputReaction::<IRR>::new(
-                                    ReactionEffect::$mode(AxisTransition {
-                                        axis: Axis::$axis,
-                                        sequence_id: *sequence_id,
-                                        events: events.clone(),
-                                    }),
-                                    requirement.clone(),
-                                )
-                            },
-                        )),
-                    }
-                }
+                        )
+                    },
+                );
             };
         }
 
-        macro_rules! push_fallback_transition {
-            ($mode_action:ident, $mode:ident) => {
-                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
-                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
-                    // the transition inside is `None`, we still fallback to `None`. This allows
-                    // a sequence transition `None` value to override the default transition.
-                    config_transitions_sequence
-                        .or(config_transitions_default)
-                        .and_then(|config_transitions_fallback| {
-                            config_transitions_fallback.$mode_action.as_ref()
-                        })
-                });
-                if let Some(config_control_transition) = &mode_action {
-                    use input_reaction_model::config::InputReaction::*;
-                    match config_control_transition {
-                        SequenceNameString(sequence_name) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode(FallbackTransition {
-                                    sequence_id: *sequence_id,
-                                    events: Default::default(),
-                                }),
-                                IRR::default(),
-                            ));
-                        }
-                        Single(InputReactionSingle {
-                            next: sequence_name_string,
-                            events,
-                            requirement,
-                        }) => {
-                            let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                            loaded_transitions.push(InputReaction::<IRR>::new(
-                                ReactionEffect::$mode(FallbackTransition {
-                                    sequence_id: *sequence_id,
-                                    events: events.clone(),
-                                }),
-                                requirement.clone(),
-                            ))
-                        }
-                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
-                            |InputReactionSingle {
-                                 next: sequence_name_string,
-                                 events,
-                                 requirement,
-                             }| {
-                                let sequence_id =
-                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `sequence_id_mappings` to contain mapping for \
-                                         `{}`",
-                                        sequence_name_string
-                                    )
-                                });
-                                InputReaction::<IRR>::new(
-                                    ReactionEffect::$mode(FallbackTransition {
-                                        sequence_id: *sequence_id,
-                                        events: events.clone(),
-                                    }),
-                                    requirement.clone(),
-                                )
-                            },
-                        )),
-                    }
-                }
-            };
-        }
-
-        push_transitions!(press_defend, ActionPress, ReactionEffectData, Defend);
-        push_transitions!(press_jump, ActionPress, ReactionEffectData, Jump);
-        push_transitions!(press_attack, ActionPress, ReactionEffectData, Attack);
-        push_transitions!(press_special, ActionPress, ReactionEffectData, Special);
-        push_transitions!(release_defend, ActionRelease, ReactionEffectData, Defend);
-        push_transitions!(release_jump, ActionRelease, ReactionEffectData, Jump);
-        push_transitions!(release_attack, ActionRelease, ReactionEffectData, Attack);
-        push_transitions!(release_special, ActionRelease, ReactionEffectData, Special);
+        push_action_reactions!(press_defend, ActionPress, Defend);
+        push_action_reactions!(press_jump, ActionPress, Jump);
+        push_action_reactions!(press_attack, ActionPress, Attack);
+        push_action_reactions!(press_special, ActionPress, Special);
+        push_action_reactions!(release_defend, ActionRelease, Defend);
+        push_action_reactions!(release_jump, ActionRelease, Jump);
+        push_action_reactions!(release_attack, ActionRelease, Attack);
+        push_action_reactions!(release_special, ActionRelease, Special);
         // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
         // `Release` transitions get higher priority.
-        push_transitions!(hold_defend, ActionHold, ReactionEffectData, Defend);
-        push_transitions!(hold_jump, ActionHold, ReactionEffectData, Jump);
-        push_transitions!(hold_attack, ActionHold, ReactionEffectData, Attack);
-        push_transitions!(hold_special, ActionHold, ReactionEffectData, Special);
+        push_action_reactions!(hold_defend, ActionHold, Defend);
+        push_action_reactions!(hold_jump, ActionHold, Jump);
+        push_action_reactions!(hold_attack, ActionHold, Attack);
+        push_action_reactions!(hold_special, ActionHold, Special);
 
         // Axes transitions.
-        push_axis_transition!(press_x, AxisPress, X);
-        push_axis_transition!(press_z, AxisPress, Z);
-        push_axis_transition!(release_x, AxisRelease, X);
-        push_axis_transition!(release_z, AxisRelease, Z);
-        push_axis_transition!(hold_x, AxisHold, X);
-        push_axis_transition!(hold_z, AxisHold, Z);
+        push_axis_reactions!(press_x, AxisPress, X);
+        push_axis_reactions!(press_z, AxisPress, Z);
+        push_axis_reactions!(release_x, AxisRelease, X);
+        push_axis_reactions!(release_z, AxisRelease, Z);
+        push_axis_reactions!(hold_x, AxisHold, X);
+        push_axis_reactions!(hold_z, AxisHold, Z);
 
         // Fallback transition.
-        push_fallback_transition!(fallback, Fallback);
+        Self::push_fallback_reaction(
+            input_reactions_default,
+            input_reactions_sequence,
+            input_reactions_frame,
+            sequence_id_mappings,
+            &mut input_reactions_loaded,
+        );
 
-        let character_input_reactions = InputReactions::new(loaded_transitions);
+        // Device button press.
+        Self::push_button_reaction(
+            input_reactions_default,
+            input_reactions_sequence,
+            input_reactions_frame,
+            sequence_id_mappings,
+            &mut input_reactions_loaded,
+        );
+
+        let character_input_reactions = InputReactions::new(input_reactions_loaded);
 
         loader.load_from_data(character_input_reactions, (), input_reactions_assets)
+    }
+
+    fn push_fallback_reaction(
+        input_reactions_default: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_sequence: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_frame: &config::InputReactions<SeqName, IRR>,
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
+    ) {
+        let mode_action = input_reactions_frame.fallback.as_ref().or_else(|| {
+            // We want to make sure that, if `input_reactions_sequence.is_some()`, but
+            // the transition inside is `None`, we still fallback to `None`. This allows
+            // a sequence transition `None` value to override the default transition.
+            input_reactions_sequence
+                .or(input_reactions_default)
+                .and_then(|input_reactions_fallback| input_reactions_fallback.fallback.as_ref())
+        });
+        Self::load_input_reactions(
+            sequence_id_mappings,
+            input_reactions_loaded,
+            mode_action,
+            |sequence_id, events, requirement| {
+                InputReaction::<IRR>::new(
+                    ReactionEffect::Fallback(FallbackTransition {
+                        sequence_id,
+                        events,
+                    }),
+                    requirement,
+                )
+            },
+        );
+    }
+
+    fn push_button_reaction(
+        input_reactions_default: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_sequence: Option<&config::InputReactions<SeqName, IRR>>,
+        input_reactions_frame: &config::InputReactions<SeqName, IRR>,
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
+    ) {
+        let button_input_reaction = input_reactions_frame.press_button.as_ref().or_else(|| {
+            // We want to make sure that, if `input_reactions_sequence.is_some()`, but
+            // the transition inside is `None`, we still fallback to `None`. This allows
+            // a sequence transition `None` value to override the default transition.
+            input_reactions_sequence
+                .or(input_reactions_default)
+                .and_then(|input_reactions_fallback| input_reactions_fallback.press_button.as_ref())
+        });
+        if let Some(button_input_reaction) = button_input_reaction {
+            let button = button_input_reaction.button;
+
+            Self::load_input_reactions(
+                sequence_id_mappings,
+                input_reactions_loaded,
+                Some(button_input_reaction),
+                |sequence_id, events, requirement| {
+                    InputReaction::<IRR>::new(
+                        ReactionEffect::ButtonPress(ReactionEffectButton {
+                            button,
+                            sequence_id,
+                            events,
+                        }),
+                        requirement,
+                    )
+                },
+            );
+        }
+    }
+
+    fn load_input_reactions<IR, F>(
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
+        mode_action: Option<&IR>,
+        fn_input_reaction: F,
+    ) where
+        IR: AsRef<config::InputReaction<SeqName, IRR>>,
+        F: Fn(SequenceId, InputReactionAppEvents, IRR) -> InputReaction<IRR>,
+    {
+        let mode_action = mode_action.map(AsRef::<config::InputReaction<SeqName, IRR>>::as_ref);
+        if let Some(config_input_reaction) = mode_action {
+            use input_reaction_model::config::InputReaction::*;
+            match config_input_reaction {
+                SequenceNameString(sequence_name_string) => {
+                    let sequence_id =
+                        Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                    input_reactions_loaded.push(fn_input_reaction(
+                        sequence_id,
+                        InputReactionAppEvents::default(),
+                        IRR::default(),
+                    ));
+                }
+                Single(InputReactionSingle {
+                    next: sequence_name_string,
+                    events,
+                    requirement,
+                }) => {
+                    let sequence_id =
+                        Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                    input_reactions_loaded.push(fn_input_reaction(
+                        sequence_id,
+                        events.clone(),
+                        requirement.clone(),
+                    ));
+                }
+                Multiple(multiple) => input_reactions_loaded.extend(multiple.iter().map(
+                    |InputReactionSingle {
+                         next: sequence_name_string,
+                         events,
+                         requirement,
+                     }| {
+                        let sequence_id =
+                            Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                        fn_input_reaction(sequence_id, events.clone(), requirement.clone())
+                    },
+                )),
+            }
+        }
+    }
+
+    fn sequence_id(
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        sequence_name_string: &SequenceNameString<SeqName>,
+    ) -> SequenceId {
+        sequence_id_mappings
+            .id(sequence_name_string)
+            .copied()
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `sequence_id_mappings` to contain mapping for \
+                     `{}`",
+                    sequence_name_string
+                )
+            })
     }
 }

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::{InputReactionMultiple, InputReactionSingle};
 
-/// Variants of how a `InputReaction` may be specified.
+/// Variants of how an `InputReaction` may be specified.
 ///
 /// This is primarily to make it more ergonomic for users to specify different kinds of values in
 /// configuration.
@@ -35,4 +35,14 @@ where
     ///   - { next: "sequence_name_1", extra_0: 1, extra_1: "1" }
     /// ```
     Multiple(InputReactionMultiple<SeqName, IRR>),
+}
+
+impl<SeqName, IRR> AsRef<InputReaction<SeqName, IRR>> for InputReaction<SeqName, IRR>
+where
+    SeqName: SequenceName,
+    IRR: Default,
+{
+    fn as_ref(&self) -> &InputReaction<SeqName, IRR> {
+        self
+    }
 }

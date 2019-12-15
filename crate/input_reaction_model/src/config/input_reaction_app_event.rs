@@ -13,12 +13,7 @@ use serde::{Deserialize, Serialize};
 /// * `ControlInputEvent`s are skipped as this is used to indicate events sent upon control input.
 /// * `StdioCommandEvent`s are skipped as those events are not intended to be sent through UI items.
 #[derive(Clone, Copy, Debug, Deserialize, From, PartialEq, Serialize)]
-#[serde(
-    tag = "variant",
-    content = "command",
-    deny_unknown_fields,
-    rename_all = "snake_case"
-)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum InputReactionAppEvent {
     /// `character_selection` events.
     CharacterSelection(CharacterSelectionEventVariant),

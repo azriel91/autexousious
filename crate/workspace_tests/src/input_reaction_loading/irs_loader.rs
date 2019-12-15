@@ -6,6 +6,7 @@ mod tests {
         assets::{AssetStorage, Loader},
         core::TransformBundle,
         ecs::{Read, ReadExpect, WorldExt},
+        input::Button,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
@@ -15,13 +16,14 @@ mod tests {
         config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},
     };
+    use character_selection_model::CharacterSelectionEventVariant;
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
     use input_reaction_model::{
-        config::InputReactionAppEvents,
+        config::{InputReactionAppEvent, InputReactionAppEvents},
         loaded::{
             AxisTransition, FallbackTransition, InputReaction, InputReactions, ReactionEffect,
-            ReactionEffectData,
+            ReactionEffectButton, ReactionEffectData,
         },
     };
     use object_model::play::{HealthPoints, SkillPoints};
@@ -31,6 +33,7 @@ mod tests {
         config::SequenceNameString,
         loaded::{SequenceId, SequenceIdMappings},
     };
+    use winit::VirtualKeyCode;
 
     use character_loading::{CharacterLoadingBundle, CHARACTER_INPUT_REACTIONS_DEFAULT};
     use input_reaction_loading::{InputReactionLoadingBundle, IrsLoader, IrsLoaderParams};
@@ -59,6 +62,39 @@ mod tests {
                 );
 
                 let expected_character_input_reactions = expected_input_reactions_1();
+                let character_input_reactions_handle = character_irs
+                    .get(1)
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
+                assert_eq!(
+                    &expected_character_input_reactions,
+                    character_input_reactions
+                );
+            },
+        )
+    }
+
+    #[test]
+    fn loads_press_button_irses() -> Result<(), Error> {
+        run_test(
+            sequence_with_press_button(),
+            None,
+            |character_irs, input_reactions_assets| {
+                let expected_character_input_reactions = expected_input_reactions_2();
+                let character_input_reactions_handle = character_irs
+                    .get(0)
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
+                assert_eq!(
+                    &expected_character_input_reactions,
+                    character_input_reactions
+                );
+
+                let expected_character_input_reactions = expected_input_reactions_3();
                 let character_input_reactions_handle = character_irs
                     .get(1)
                     .expect("Expected `CharacterInputReactionsHandle` to exist.");
@@ -138,6 +174,25 @@ mod tests {
 
         serde_yaml::from_slice::<CharacterSequence>(&contents)
             .expect("Failed to load `test_character_sequence.yaml`.")
+    }
+
+    fn sequence_with_press_button() -> CharacterSequence {
+        let sequence_with_press_button_yaml = "irs_loader_sequence_with_press_button.yaml";
+        let sequence_with_press_button_path = PathBuf::from_iter(&[
+            env!("CARGO_MANIFEST_DIR"),
+            "src",
+            "input_reaction_loading",
+            sequence_with_press_button_yaml,
+        ]);
+        let contents = IoUtils::read_file(&sequence_with_press_button_path).unwrap_or_else(|e| {
+            panic!(
+                "Failed to read `{}`. Error: {}",
+                sequence_with_press_button_yaml, e
+            )
+        });
+
+        serde_yaml::from_slice::<CharacterSequence>(&contents)
+            .expect("Failed to load `irs_loader_sequence_with_press_button.yaml`.")
     }
 
     fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceName> {
@@ -406,6 +461,35 @@ mod tests {
                 )]),
             },
         ])
+    }
+
+    // Should overwrite sequence input reactions.
+    fn expected_input_reactions_2() -> CharacterInputReactions {
+        let mut events = InputReactionAppEvents::default();
+        events.push(InputReactionAppEvent::CharacterSelection(
+            CharacterSelectionEventVariant::Join,
+        ));
+
+        InputReactions::new(vec![InputReaction {
+            effect: ReactionEffect::ButtonPress(ReactionEffectButton {
+                button: Button::Key(VirtualKeyCode::LAlt),
+                sequence_id: SequenceId::new(1),
+                events,
+            }),
+            requirement: CharacterIrr::default(),
+        }])
+    }
+
+    // Should inherit sequence input reactions.
+    fn expected_input_reactions_3() -> CharacterInputReactions {
+        InputReactions::new(vec![InputReaction {
+            effect: ReactionEffect::ButtonPress(ReactionEffectButton {
+                button: Button::Key(VirtualKeyCode::LControl),
+                sequence_id: SequenceId::new(4),
+                events: InputReactionAppEvents::default(),
+            }),
+            requirement: CharacterIrr::default(),
+        }])
     }
 
     type TestSystemData<'s> = (

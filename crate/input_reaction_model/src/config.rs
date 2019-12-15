@@ -2,7 +2,8 @@
 
 pub use self::{
     basic_irr::BasicIrr, basic_irr_params::BasicIrrParams, basic_irr_part::BasicIrrPart,
-    input_reaction::InputReaction, input_reaction_app_event::InputReactionAppEvent,
+    button_input_reaction::ButtonInputReaction, input_reaction::InputReaction,
+    input_reaction_app_event::InputReactionAppEvent,
     input_reaction_app_events::InputReactionAppEvents,
     input_reaction_multiple::InputReactionMultiple,
     input_reaction_requirement::InputReactionRequirement,
@@ -12,6 +13,7 @@ pub use self::{
 mod basic_irr;
 mod basic_irr_params;
 mod basic_irr_part;
+mod button_input_reaction;
 mod input_reaction;
 mod input_reaction_app_event;
 mod input_reaction_app_events;

@@ -1,7 +1,7 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 
-use crate::loaded::{AxisTransition, FallbackTransition, ReactionEffectData};
+use crate::loaded::{AxisTransition, FallbackTransition, ReactionEffectButton, ReactionEffectData};
 
 /// Sequence to transition to on control input.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -21,6 +21,8 @@ pub enum ReactionEffect {
     AxisRelease(AxisTransition),
     /// Transition to a specified fallback sequence.
     Fallback(FallbackTransition),
+    /// Transition to a specified sequence on device button press event.
+    ButtonPress(ReactionEffectButton),
 }
 
 impl AsRef<ReactionEffect> for ReactionEffect {
