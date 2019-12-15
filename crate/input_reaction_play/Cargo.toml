@@ -11,12 +11,19 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 approx = "0.3.2"
+asset_model = { path = "../asset_model" }
+character_selection_model = { path = "../character_selection_model" }
 charge_model = { path = "../charge_model" }
+control_settings_model = { path = "../control_settings_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
+game_mode_selection_model = { path = "../game_mode_selection_model" }
+game_play_model = { path = "../game_play_model" }
 input_reaction_model = { path = "../input_reaction_model" }
+log = "0.4.8"
+map_selection_model = { path = "../map_selection_model" }
 named_type = "0.2.1"
 named_type_derive = "0.2.1"
 sequence_model = { path = "../sequence_model" }

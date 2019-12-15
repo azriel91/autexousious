@@ -19,6 +19,8 @@ use input_reaction_model::{
 };
 use sequence_model::loaded::SequenceId;
 
+use crate::{IrAppEventSender, IrAppEventSenderSystemData};
+
 /// Updates `SequenceId` based on `InputEvent::ButtonPress`es.
 ///
 /// # Type Parameters
@@ -75,6 +77,9 @@ where
     /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: WriteStorage<'s, SequenceId>,
+    /// `IrAppEventSenderSystemData`.
+    #[derivative(Debug = "ignore")]
+    pub ir_app_event_sender_system_data: IrAppEventSenderSystemData<'s>,
 }
 
 impl<'s, IRR> ButtonInputReactionsTransitionSystem<IRR>
@@ -87,6 +92,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
+            ref mut ir_app_event_sender_system_data,
         }: &mut ButtonInputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         entity: Entity,
@@ -131,7 +137,11 @@ where
                 })
                 .next();
 
-            if let Some((transition_sequence_id, _events)) = transition_sequence_id {
+            if let Some((transition_sequence_id, events)) = transition_sequence_id {
+                events.iter().copied().for_each(|event| {
+                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                });
+
                 sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `SequenceId` component.");

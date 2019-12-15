@@ -24,6 +24,8 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::SequenceId;
 
+use crate::{IrAppEventSender, IrAppEventSenderSystemData};
+
 /// Updates `SequenceId` based on `ControlInputEvent`s and held buttons.
 ///
 /// # Type Parameters
@@ -80,6 +82,9 @@ where
     /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: WriteStorage<'s, SequenceId>,
+    /// `IrAppEventSenderSystemData`.
+    #[derivative(Debug = "ignore")]
+    pub ir_app_event_sender_system_data: IrAppEventSenderSystemData<'s>,
 }
 
 impl<'s, IRR> InputReactionsTransitionSystem<IRR>
@@ -94,6 +99,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
+            ref mut ir_app_event_sender_system_data,
         }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         ControlActionEventData {
@@ -160,7 +166,11 @@ where
                 })
                 .next();
 
-            if let Some((transition_sequence_id, _events)) = transition_sequence_id {
+            if let Some((transition_sequence_id, events)) = transition_sequence_id {
+                events.iter().copied().for_each(|event| {
+                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                });
+
                 sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `SequenceId` component.");
@@ -176,6 +186,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
+            ref mut ir_app_event_sender_system_data,
         }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         AxisMoveEventData {
@@ -243,7 +254,11 @@ where
                 })
                 .next();
 
-            if let Some((transition_sequence_id, _events)) = transition_sequence_id {
+            if let Some((transition_sequence_id, events)) = transition_sequence_id {
+                events.iter().copied().for_each(|event| {
+                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                });
+
                 sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `SequenceId` component.");
@@ -262,6 +277,7 @@ where
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
+            ref mut ir_app_event_sender_system_data,
         }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
     ) {
@@ -316,7 +332,11 @@ where
                     })
                     .next();
 
-                if let Some((transition_sequence_id, _events)) = transition_sequence_id {
+                if let Some((transition_sequence_id, events)) = transition_sequence_id {
+                    events.iter().copied().for_each(|event| {
+                        IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                    });
+
                     sequence_ids
                         .insert(entity, transition_sequence_id)
                         .expect("Failed to insert `SequenceId` component.");
@@ -410,8 +430,6 @@ where
         input_reaction_requirement: &IRR,
     ) -> Option<(SequenceId, &'f InputReactionAppEvents)> {
         if input_reaction_requirement.requirement_met(requirement_system_data, entity) {
-            // TODO: callback that a particular IR is used, so that events can be sent based on
-            // the input reaction requirement being met.
             Some((sequence_id, events))
         } else {
             None
