@@ -12,15 +12,18 @@ mod test {
     use typename::TypeName;
 
     use character_selection_ui::{
-        CharacterSelectionInputSystem, CharacterSelectionInputSystemData, CharacterSelectionWidget,
-        WidgetState,
+        CharacterSelectionInputSystem, CharacterSelectionInputSystemData,
+        CharacterSelectionWidgetState,
     };
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_states: vec![WidgetState::Inactive, WidgetState::Inactive],
+                character_selection_widget_states: vec![
+                    CharacterSelectionWidgetState::Inactive,
+                    CharacterSelectionWidgetState::Inactive,
+                ],
                 control_input_event_fn: None,
             },
             ExpectedParams {
@@ -34,7 +37,10 @@ mod test {
     ) -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_states: vec![WidgetState::Ready, WidgetState::Inactive],
+                character_selection_widget_states: vec![
+                    CharacterSelectionWidgetState::Ready,
+                    CharacterSelectionWidgetState::Inactive,
+                ],
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
@@ -47,7 +53,10 @@ mod test {
     fn send_return_event_when_controller_input_jump_and_all_inactive() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_states: vec![WidgetState::Inactive, WidgetState::Inactive],
+                character_selection_widget_states: vec![
+                    CharacterSelectionWidgetState::Inactive,
+                    CharacterSelectionWidgetState::Inactive,
+                ],
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
@@ -60,7 +69,10 @@ mod test {
     fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_states: vec![WidgetState::Ready, WidgetState::Ready],
+                character_selection_widget_states: vec![
+                    CharacterSelectionWidgetState::Ready,
+                    CharacterSelectionWidgetState::Ready,
+                ],
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
@@ -73,7 +85,10 @@ mod test {
     fn does_not_send_event_when_not_enough_players() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_states: vec![WidgetState::Ready, WidgetState::Inactive],
+                character_selection_widget_states: vec![
+                    CharacterSelectionWidgetState::Ready,
+                    CharacterSelectionWidgetState::Inactive,
+                ],
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
@@ -84,7 +99,7 @@ mod test {
 
     fn run_test(
         SetupParams {
-            widget_states: setup_widget_states,
+            character_selection_widget_states: setup_character_selection_widget_states,
             control_input_event_fn,
         }: SetupParams,
         ExpectedParams {
@@ -97,14 +112,19 @@ mod test {
                 CharacterSelectionInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
+            .with_setup(WorldExt::register::<CharacterSelection>)
             .with_effect(move |world| {
                 CharacterSelectionInputSystemData::setup(world);
 
-                let entities = setup_widget_states
+                let entities = setup_character_selection_widget_states
                     .iter()
-                    .map(|setup_widget_state| {
+                    .map(|setup_character_selection_widget_state| {
                         let character_selection = CharacterSelection::Random;
-                        widget_entity(world, *setup_widget_state, character_selection)
+                        widget_entity(
+                            world,
+                            character_selection,
+                            *setup_character_selection_widget_state,
+                        )
                     })
                     .collect::<Vec<Entity>>();
                 world.insert(entities);
@@ -154,15 +174,13 @@ mod test {
 
     fn widget_entity(
         world: &mut World,
-        widget_state: WidgetState,
         character_selection: CharacterSelection,
+        character_selection_widget_state: CharacterSelectionWidgetState,
     ) -> Entity {
         world
             .create_entity()
-            .with(CharacterSelectionWidget::new(
-                widget_state,
-                character_selection,
-            ))
+            .with(character_selection)
+            .with(character_selection_widget_state)
             .build()
     }
 
@@ -184,7 +202,7 @@ mod test {
     }
 
     struct SetupParams {
-        widget_states: Vec<WidgetState>,
+        character_selection_widget_states: Vec<CharacterSelectionWidgetState>,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
     }
 

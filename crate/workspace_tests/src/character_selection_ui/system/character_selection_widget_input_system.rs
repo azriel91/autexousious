@@ -18,20 +18,20 @@ mod test {
     use typename::TypeName;
 
     use character_selection_ui::{
-        CharacterSelectionWidget, CharacterSelectionWidgetInputSystem,
-        CharacterSelectionWidgetInputSystemData, WidgetState,
+        CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData,
+        CharacterSelectionWidgetState,
     };
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::Inactive,
+                character_selection_widget_state: CharacterSelectionWidgetState::Inactive,
                 character_selection_fn: char_random,
                 control_input_event_fn: None,
             },
             ExpectedParams {
-                widget_state: WidgetState::Inactive,
+                character_selection_widget_state: CharacterSelectionWidgetState::Inactive,
                 character_selection_fn: char_random,
                 character_selection_events_fn: empty_events,
             },
@@ -42,12 +42,12 @@ mod test {
     fn updates_widget_inactive_to_character_select_when_input_attack() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::Inactive,
+                character_selection_widget_state: CharacterSelectionWidgetState::Inactive,
                 character_selection_fn: char_random,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_random,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Join { controller_id: 123 }]
@@ -61,12 +61,12 @@ mod test {
     ) -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                widget_state: WidgetState::Ready,
+                character_selection_widget_state: CharacterSelectionWidgetState::Ready,
                 character_selection_fn: char_bat,
                 character_selection_events_fn: |world| {
                     let bat_asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
@@ -83,12 +83,12 @@ mod test {
     fn selects_last_character_when_input_left_and_selection_random() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_random,
                 control_input_event_fn: Some(press_left),
             },
             ExpectedParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: |world| {
                     let last_char =
                         AssetQueries::last_id(world, AssetType::Object(ObjectType::Character));
@@ -110,12 +110,12 @@ mod test {
     fn selects_first_character_when_input_right_and_selection_random() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_random,
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: |world| {
                     let first_char =
                         AssetQueries::first_id(world, AssetType::Object(ObjectType::Character));
@@ -137,12 +137,12 @@ mod test {
     fn selects_random_when_input_right_and_selection_last_character() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_random,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Switch {
@@ -159,12 +159,12 @@ mod test {
     ) -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::Ready,
+                character_selection_widget_state: CharacterSelectionWidgetState::Ready,
                 character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_bat,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Deselect { controller_id: 123 }]
@@ -177,12 +177,12 @@ mod test {
     fn updates_widget_character_select_to_inactive_when_input_jump() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::CharacterSelect,
+                character_selection_widget_state: CharacterSelectionWidgetState::CharacterSelect,
                 character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
-                widget_state: WidgetState::Inactive,
+                character_selection_widget_state: CharacterSelectionWidgetState::Inactive,
                 character_selection_fn: char_bat,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Leave { controller_id: 123 }]
@@ -193,12 +193,12 @@ mod test {
 
     fn run_test(
         SetupParams {
-            widget_state: setup_widget_state,
+            character_selection_widget_state: setup_character_selection_widget_state,
             character_selection_fn: setup_character_selection_fn,
             control_input_event_fn,
         }: SetupParams,
         ExpectedParams {
-            widget_state: expected_widget_state,
+            character_selection_widget_state: expected_character_selection_widget_state,
             character_selection_fn: expected_character_selection_fn,
             character_selection_events_fn,
         }: ExpectedParams,
@@ -213,7 +213,11 @@ mod test {
                 CharacterSelectionWidgetInputSystemData::setup(world);
 
                 let setup_character_selection = setup_character_selection_fn(world);
-                let entity = widget_entity(world, setup_widget_state, setup_character_selection);
+                let entity = widget_entity(
+                    world,
+                    setup_character_selection,
+                    setup_character_selection_widget_state,
+                );
                 world.insert(entity);
 
                 let event_channel_reader = world
@@ -234,10 +238,8 @@ mod test {
                 let expected_character_selection = expected_character_selection_fn(world);
                 assert_widget(
                     world,
-                    CharacterSelectionWidget::new(
-                        expected_widget_state,
-                        expected_character_selection,
-                    ),
+                    expected_character_selection,
+                    expected_character_selection_widget_state,
                 )
             })
             .with_assertion(move |world| {
@@ -292,28 +294,41 @@ mod test {
 
     fn widget_entity(
         world: &mut World,
-        widget_state: WidgetState,
         character_selection: CharacterSelection,
+        character_selection_widget_state: CharacterSelectionWidgetState,
     ) -> Entity {
         world
             .create_entity()
-            .with(CharacterSelectionWidget::new(
-                widget_state,
-                character_selection,
-            ))
+            .with(character_selection)
+            .with(character_selection_widget_state)
             .with(InputControlled::new(123))
             .build()
     }
 
-    fn assert_widget(world: &mut World, expected: CharacterSelectionWidget) {
+    fn assert_widget(
+        world: &mut World,
+        expected_character_selection: CharacterSelection,
+        expected_character_selection_widget_state: CharacterSelectionWidgetState,
+    ) {
         let widget_entity = world.read_resource::<Entity>();
 
-        let widgets = world.read_storage::<CharacterSelectionWidget>();
-        let widget = widgets
+        let character_selections = world.read_storage::<CharacterSelection>();
+        let character_selection = character_selections
             .get(*widget_entity)
-            .expect("Expected entity to have `CharacterSelectionWidget` component.");
+            .expect("Expected entity to have `CharacterSelection` component.");
 
-        assert_eq!(expected, *widget);
+        assert_eq!(expected_character_selection, *character_selection);
+
+        let character_selection_widget_states =
+            world.read_storage::<CharacterSelectionWidgetState>();
+        let character_selection_widget_state = character_selection_widget_states
+            .get(*widget_entity)
+            .expect("Expected entity to have `CharacterSelectionWidgetState` component.");
+
+        assert_eq!(
+            expected_character_selection_widget_state,
+            *character_selection_widget_state
+        );
     }
 
     fn assert_events(world: &mut World, events: Vec<CharacterSelectionEvent>) {
@@ -331,13 +346,13 @@ mod test {
     }
 
     struct SetupParams {
-        widget_state: WidgetState,
+        character_selection_widget_state: CharacterSelectionWidgetState,
         character_selection_fn: fn(&mut World) -> CharacterSelection,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
     }
 
     struct ExpectedParams {
-        widget_state: WidgetState,
+        character_selection_widget_state: CharacterSelectionWidgetState,
         character_selection_fn: fn(&mut World) -> CharacterSelection,
         character_selection_events_fn: fn(&mut World) -> Vec<CharacterSelectionEvent>,
     }
