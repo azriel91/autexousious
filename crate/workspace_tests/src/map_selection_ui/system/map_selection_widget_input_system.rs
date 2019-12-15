@@ -19,20 +19,19 @@ mod test {
     use typename::TypeName;
 
     use map_selection_ui::{
-        MapSelectionWidget, MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData,
-        WidgetState,
+        MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData, MapSelectionWidgetState,
     };
 
     #[test]
     fn does_not_send_event_when_no_input() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
                 control_input_event_fn: None,
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
                 map_selection_events_fn: empty_events,
             },
@@ -43,12 +42,12 @@ mod test {
     fn selects_last_map_when_input_left_and_selection_random() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
                 control_input_event_fn: Some(press_left),
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: |world| {
                     let last_map = last_map(world);
                     MapSelection::Id(last_map)
@@ -67,12 +66,12 @@ mod test {
     fn selects_first_map_when_input_right_and_selection_random() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: |world| {
                     let first_map = first_map(world);
                     MapSelection::Id(first_map)
@@ -91,7 +90,7 @@ mod test {
     fn selects_random_when_input_right_and_selection_last_map() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: |world| {
                     let last_map = last_map(world);
                     MapSelection::Id(last_map)
@@ -99,7 +98,7 @@ mod test {
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
                 map_selection_events_fn: |world| {
                     let first_map = first_map(world);
@@ -115,12 +114,12 @@ mod test {
     fn updates_widget_map_select_to_ready_and_sends_event_when_input_attack() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                widget_state: WidgetState::Ready,
+                map_selection_widget_state: MapSelectionWidgetState::Ready,
                 map_selection_fn: map_selection_fade,
                 map_selection_events_fn: |world| {
                     vec![MapSelectionEvent::Select {
@@ -135,12 +134,12 @@ mod test {
     fn updates_widget_ready_to_map_select_and_sends_event_when_input_jump() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::Ready,
+                map_selection_widget_state: MapSelectionWidgetState::Ready,
                 map_selection_fn: map_selection_fade,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
                 map_selection_events_fn: |_world| vec![MapSelectionEvent::Deselect],
             },
@@ -151,12 +150,12 @@ mod test {
     fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::Ready,
+                map_selection_widget_state: MapSelectionWidgetState::Ready,
                 map_selection_fn: map_selection_fade,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                widget_state: WidgetState::Ready,
+                map_selection_widget_state: MapSelectionWidgetState::Ready,
                 map_selection_fn: map_selection_fade,
                 map_selection_events_fn: |_world| vec![MapSelectionEvent::Confirm],
             },
@@ -167,12 +166,12 @@ mod test {
     fn send_return_event_when_controller_input_jump_and_widget_map_select() -> Result<(), Error> {
         run_test(
             SetupParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
-                widget_state: WidgetState::MapSelect,
+                map_selection_widget_state: MapSelectionWidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
                 map_selection_events_fn: |_world| vec![MapSelectionEvent::Return],
             },
@@ -181,12 +180,12 @@ mod test {
 
     fn run_test(
         SetupParams {
-            widget_state: widget_entity_state,
+            map_selection_widget_state: setup_map_selection_widget_state,
             map_selection_fn: setup_map_selection_fn,
             control_input_event_fn,
         }: SetupParams,
         ExpectedParams {
-            widget_state: expected_widget_state,
+            map_selection_widget_state: expected_widget_state,
             map_selection_fn: expected_map_selection_fn,
             map_selection_events_fn,
         }: ExpectedParams,
@@ -207,7 +206,7 @@ mod test {
                 world.insert(event_channel_reader);
 
                 let map_selection = setup_map_selection_fn(world);
-                let entity = widget_entity(world, widget_entity_state, map_selection);
+                let entity = widget_entity(world, map_selection, setup_map_selection_widget_state);
                 world.insert(entity);
             })
             .with_effect(move |world| {
@@ -220,10 +219,7 @@ mod test {
             })
             .with_assertion(move |world| {
                 let expected_map_selection = expected_map_selection_fn(world);
-                assert_widget(
-                    world,
-                    MapSelectionWidget::new(expected_widget_state, expected_map_selection),
-                )
+                assert_widget(world, expected_map_selection, expected_widget_state)
             })
             .with_assertion(move |world| {
                 let map_selection_events = map_selection_events_fn(world);
@@ -306,24 +302,41 @@ mod test {
 
     fn widget_entity(
         world: &mut World,
-        widget_state: WidgetState,
         map_selection: MapSelection,
+        map_selection_widget_state: MapSelectionWidgetState,
     ) -> Entity {
         world
             .create_entity()
-            .with(MapSelectionWidget::new(widget_state, map_selection))
+            .with(map_selection)
+            .with(map_selection_widget_state)
             .build()
     }
 
-    fn assert_widget(world: &mut World, expected: MapSelectionWidget) {
+    fn assert_widget(
+        world: &mut World,
+        expected_map_selection: MapSelection,
+        expected_map_selection_widget_state: MapSelectionWidgetState,
+    ) {
         let widget_entity = world.read_resource::<Entity>();
 
-        let widgets = world.read_storage::<MapSelectionWidget>();
-        let widget = widgets
+        let map_selections = world.read_storage::<MapSelection>();
+        let map_selection = map_selections
             .get(*widget_entity)
-            .expect("Expected entity to have `MapSelectionWidget` component.");
+            .copied()
+            .expect("Expected entity to have `MapSelection` component.");
 
-        assert_eq!(expected, *widget);
+        assert_eq!(expected_map_selection, map_selection);
+
+        let map_selection_widget_states = world.read_storage::<MapSelectionWidgetState>();
+        let map_selection_widget_state = map_selection_widget_states
+            .get(*widget_entity)
+            .copied()
+            .expect("Expected entity to have `MapSelectionWidgetState` component.");
+
+        assert_eq!(
+            expected_map_selection_widget_state,
+            map_selection_widget_state
+        );
     }
 
     fn assert_events(world: &mut World, events: Vec<MapSelectionEvent>) {
@@ -339,13 +352,13 @@ mod test {
     }
 
     struct SetupParams {
-        widget_state: WidgetState,
+        map_selection_widget_state: MapSelectionWidgetState,
         map_selection_fn: fn(&mut World) -> MapSelection,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
     }
 
     struct ExpectedParams {
-        widget_state: WidgetState,
+        map_selection_widget_state: MapSelectionWidgetState,
         map_selection_fn: fn(&mut World) -> MapSelection,
         map_selection_events_fn: fn(&mut World) -> Vec<MapSelectionEvent>,
     }

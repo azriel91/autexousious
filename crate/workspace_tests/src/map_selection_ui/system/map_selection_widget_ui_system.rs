@@ -15,7 +15,7 @@ mod test {
     use map_selection_model::MapSelection;
     use typename::TypeName;
 
-    use map_selection_ui::{MapSelectionWidget, MapSelectionWidgetUiSystem, WidgetState};
+    use map_selection_ui::{MapSelectionWidgetState, MapSelectionWidgetUiSystem};
 
     #[test]
     fn initializes_ui_when_map_selections_waiting() -> Result<(), Error> {
@@ -46,26 +46,27 @@ mod test {
             .with_assertion(|world| assert_widget_count(world, 1))
             // Select map and send event
             .with_effect(|world| {
-                world.exec(
-                    |(mut widgets, asset_type_mappings): (
-                        WriteStorage<'_, MapSelectionWidget>,
+                let (mut map_selections, mut map_selection_widget_states, asset_type_mappings) =
+                    world.system_data::<(
+                        WriteStorage<'_, MapSelection>,
+                        WriteStorage<'_, MapSelectionWidgetState>,
                         Read<'_, AssetTypeMappings>,
-                    )| {
-                        let widget = (&mut widgets)
-                            .join()
-                            .next()
-                            .expect("Expected entity with `MapSelectionWidget` component.");
+                    )>();
 
-                        let first_map = asset_type_mappings
-                            .iter_ids(&AssetType::Map)
-                            .next()
-                            .copied()
-                            .expect("Expected at least one map to be loaded.");
+                let (map_selection, map_selection_widget_state) =
+                    (&mut map_selections, &mut map_selection_widget_states)
+                        .join()
+                        .next()
+                        .expect("Expected entity to exist.");
 
-                        widget.state = WidgetState::MapSelect;
-                        widget.selection = MapSelection::Random(Some(first_map));
-                    },
-                );
+                let first_map = asset_type_mappings
+                    .iter_ids(&AssetType::Map)
+                    .next()
+                    .copied()
+                    .expect("Expected at least one map to be loaded.");
+
+                *map_selection = MapSelection::Random(Some(first_map));
+                *map_selection_widget_state = MapSelectionWidgetState::MapSelect;
             })
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
@@ -106,7 +107,7 @@ mod test {
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
-        world.exec(|widgets: ReadStorage<'_, MapSelectionWidget>| {
+        world.exec(|widgets: ReadStorage<'_, MapSelectionWidgetState>| {
             assert_eq!(count, widgets.join().count());
         });
     }
