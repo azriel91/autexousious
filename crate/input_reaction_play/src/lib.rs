@@ -2,6 +2,6 @@
 
 //! Logic for input reactions at runtime.
 
-pub use crate::system::InputReactionsTransitionSystem;
+pub use crate::system::{ButtonInputReactionsTransitionSystem, InputReactionsTransitionSystem};
 
 mod system;

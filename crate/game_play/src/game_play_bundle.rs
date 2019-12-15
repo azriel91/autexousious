@@ -32,7 +32,7 @@ use input_reaction_model::{
     config::BasicIrr,
     loaded::{InputReactionsSequence, InputReactionsSequenceHandles},
 };
-use input_reaction_play::InputReactionsTransitionSystem;
+use input_reaction_play::{ButtonInputReactionsTransitionSystem, InputReactionsTransitionSystem};
 use kinematic_model::{
     config::Position,
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
@@ -344,6 +344,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             InputReactionsTransitionSystem::<BasicIrr>::new(),
             &any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
+            &[&SequenceEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
+            &any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
 
