@@ -3,7 +3,8 @@ use character_model::{
     play::RunCounter,
 };
 use game_input::ControllerInput;
-use object_model::play::{Grounding, Mirrored};
+use mirrored_model::play::Mirrored;
+use object_model::play::Grounding;
 use sequence_model::config::SequenceNameString;
 
 use crate::sequence_handler::SequenceHandlerUtil;

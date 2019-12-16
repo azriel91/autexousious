@@ -15,7 +15,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
-object_model = { path = "../object_model" }
+mirrored_model = { path = "../mirrored_model" }
 sequence_model = { path = "../sequence_model" }
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }

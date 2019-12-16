@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World, WorldExt},
@@ -5,16 +7,19 @@ use amethyst::{
 };
 use asset_model::play::AssetWorld;
 use audio_model::loaded::SourceSequenceHandles;
-use character_model::loaded::CharacterCtsHandles;
+use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
+use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
 use game_mode_selection_model::GameModeIndex;
+use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
     config::{PositionInit, VelocityInit},
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
-use object_model::play::{Grounding, Mirrored};
+use mirrored_model::play::Mirrored;
+use object_model::play::Grounding;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
@@ -39,6 +44,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         let mut asset_world = AssetWorld::default();
+        asset_world.register::<InputControlled>();
+        asset_world.register::<SharedInputControlled>();
+        asset_world.register::<ButtonInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
         asset_world.register::<PositionZAsY>();
@@ -53,15 +61,31 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<BodySequenceHandles>();
         asset_world.register::<InteractionsSequenceHandles>();
         asset_world.register::<SpawnsSequenceHandles>();
-        asset_world.register::<CharacterCtsHandles>();
         asset_world.register::<TintSequenceHandles>();
         asset_world.register::<ScaleSequenceHandles>();
+        asset_world.register::<CharacterIrsHandles>();
+        asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenuItem<GameModeIndex>>();
 
         world.insert(asset_world);
 
         builder.add_barrier();
+        builder.add(
+            ItemComponentComponentAugmentSystem::<InputControlled>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<InputControlled>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
+            &ItemComponentComponentAugmentSystem::<SharedInputControlled>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<ButtonInputControlled>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<ButtonInputControlled>>(),
+            &[],
+        );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionInit>::new(),
             &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),
@@ -133,11 +157,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<CharacterCtsHandles>::type_name(),
-            &[],
-        );
-        builder.add(
             ItemComponentComponentAugmentSystem::<TintSequenceHandles>::new(),
             &ItemComponentComponentAugmentSystem::<TintSequenceHandles>::type_name(),
             &[],
@@ -145,6 +164,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::new(),
             &ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::new(),
+            &ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::type_name(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::new(),
+            &ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::type_name(),
             &[],
         );
         builder.add(

@@ -1,0 +1,7 @@
+# Used in `ButtonInputReactionsTransitionSystem` test.
+frames:
+  - input_reactions:
+      press_button:
+        button: { Key: A }
+        next: "one"
+        events: [{ character_selection: "join" }]

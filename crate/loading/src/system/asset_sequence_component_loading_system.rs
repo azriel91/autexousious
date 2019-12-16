@@ -6,14 +6,19 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use audio_model::loaded::SourceSequenceHandles;
-use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
+use character_loading::CHARACTER_INPUT_REACTIONS_DEFAULT;
 use character_model::{
     config::{CharacterSequence, CharacterSequenceName},
-    loaded::{CharacterCtsHandle, CharacterCtsHandles},
+    loaded::{CharacterIrsHandle, CharacterIrsHandles},
 };
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
+use game_input::{ButtonInputControlled, SharedInputControlled};
+use input_reaction_loading::{IrsLoader, IrsLoaderParams};
+use input_reaction_model::loaded::{
+    InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
+};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::{
     config::{PositionInit, VelocityInit},
@@ -23,11 +28,9 @@ use kinematic_model::{
 use loading_model::loaded::LoadStage;
 use log::{debug, warn};
 use map_model::loaded::Margins;
+use mirrored_model::play::Mirrored;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
-use object_model::{
-    loaded::Object,
-    play::{Grounding, Mirrored},
-};
+use object_model::{loaded::Object, play::Grounding};
 use object_type::ObjectType;
 use sequence_loading::{
     SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
@@ -108,8 +111,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             body_sequence_assets,
             interactions_sequence_assets,
             spawns_sequence_assets,
-            character_control_transitions_assets,
-            character_cts_assets,
+            input_reactions_assets,
+            input_reactions_sequence_assets,
+            character_input_reactions_assets,
+            character_irs_assets,
             tint_sequence_assets,
             scale_sequence_assets,
             asset_map_bounds,
@@ -218,36 +223,35 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 })
                         };
 
-                        let cts_loader_params = CtsLoaderParams {
-                            loader: &*loader,
-                            character_control_transitions_assets:
-                                &*character_control_transitions_assets,
-                            character_cts_assets: &*character_cts_assets,
+                        let irs_loader_params = IrsLoaderParams {
+                            loader,
+                            input_reactions_assets: &*character_input_reactions_assets,
+                            input_reactions_sequence_assets: &*character_irs_assets,
                         };
 
-                        let character_cts_handles = {
-                            let character_cts_handles = character_definition
+                        let character_irs_handles = {
+                            let character_irs_handles = character_definition
                                 .object_definition
                                 .sequences
                                 .iter()
                                 .map(|(sequence_id, sequence)| {
-                                    let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+                                    let sequence_default = CHARACTER_INPUT_REACTIONS_DEFAULT
                                         .object_definition
                                         .sequences
                                         .get(sequence_id);
 
-                                    CtsLoader::load(
-                                        &cts_loader_params,
+                                    IrsLoader::load(
+                                        &irs_loader_params,
                                         sequence_id_mappings,
                                         sequence_default,
                                         sequence,
                                     )
                                 })
-                                .collect::<Vec<CharacterCtsHandle>>();
-                            CharacterCtsHandles::new(character_cts_handles)
+                                .collect::<Vec<CharacterIrsHandle>>();
+                            CharacterIrsHandles::new(character_irs_handles)
                         };
 
-                        item_entity_builder = item_entity_builder.with(character_cts_handles);
+                        item_entity_builder = item_entity_builder.with(character_irs_handles);
 
                         let object = ObjectLoader::load::<CharacterSequence>(
                             object_loader_params,
@@ -429,7 +433,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
                     .cloned(); // Clone so that we don't mutate the actual read data.
 
-                let keyboard_ui_sprite_labels = if let Some(UiDefinition {
+                let keyboard_button_labels = if let Some(UiDefinition {
                     ui_type: UiType::ControlSettings(control_settings),
                     sequences,
                     ..
@@ -527,6 +531,13 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                         ui_type, sequences, ..
                     } = ui_definition;
 
+                    // For loading `InputReactionsSequence`s.
+                    let irs_loader_params = IrsLoaderParams {
+                        loader,
+                        input_reactions_assets,
+                        input_reactions_sequence_assets,
+                    };
+
                     let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
                     let sequence_id_mappings = &sequence_id_mappings;
                     let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
@@ -537,19 +548,40 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     let sequence_end_transitions = sequence_end_transitions_loader
                         .items_to_datas(sequences.values(), asset_slug);
                     let wait_sequence_handles = wait_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let tint_sequence_handles = tint_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let scale_sequence_handles = scale_sequence_handles_loader
-                        .items_to_datas(sequences.values(), |sequence| sequence.frames.iter());
+                        .items_to_datas(sequences.values(), |ui_sequence| {
+                            ui_sequence.sequence.frames.iter()
+                        });
                     let sprite_render_sequence_handles =
                         sprite_sheet_handles.map(|sprite_sheet_handles| {
                             sprite_render_sequence_handles_loader.items_to_datas(
                                 sequences.values(),
-                                |sequence| sequence.frames.iter(),
+                                |ui_sequence| ui_sequence.sequence.frames.iter(),
                                 sprite_sheet_handles,
                             )
                         });
+                    let input_reactions_sequence_handles = {
+                        let input_reactions_sequence_handles = ui_definition
+                            .sequences
+                            .values()
+                            .map(|sequence| {
+                                IrsLoader::load(
+                                    &irs_loader_params,
+                                    sequence_id_mappings,
+                                    None,
+                                    sequence,
+                                )
+                            })
+                            .collect::<Vec<InputReactionsSequenceHandle<InputReaction>>>();
+                        InputReactionsSequenceHandles::new(input_reactions_sequence_handles)
+                    };
 
                     // `UiButton`s
                     let mut item_ids_button = ui_definition
@@ -581,7 +613,9 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     .with(sequence_end_transitions.clone())
                                     .with(wait_sequence_handles.clone())
                                     .with(tint_sequence_handles.clone())
-                                    .with(scale_sequence_handles.clone());
+                                    .with(scale_sequence_handles.clone())
+                                    .with(input_reactions_sequence_handles.clone())
+                                    .with(SharedInputControlled);
 
                                 if let Some(sprite_render_sequence_handles) =
                                     sprite_render_sequence_handles.clone()
@@ -636,7 +670,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                             .with(sequence_end_transitions.clone())
                                             .with(wait_sequence_handles.clone())
                                             .with(tint_sequence_handles.clone())
-                                            .with(scale_sequence_handles.clone());
+                                            .with(scale_sequence_handles.clone())
+                                            .with(input_reactions_sequence_handles.clone());
 
                                         if let Some(sprite_render_sequence_handles) =
                                             sprite_render_sequence_handles.clone()
@@ -660,19 +695,18 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                             item_ids_all.append(&mut item_ids)
                         }
                         UiType::ControlSettings(control_settings) => {
-                            let keyboard_ui_sprite_labels = keyboard_ui_sprite_labels
+                            let keyboard_button_labels = keyboard_button_labels
                                 .as_ref()
-                                .expect("Expected `keyboard_ui_sprite_labels` to exist.");
-                            let position_inits = PositionInitsLoader::items_to_datas(
-                                keyboard_ui_sprite_labels.iter(),
-                            );
+                                .expect("Expected `keyboard_button_labels` to exist.");
+                            let position_inits =
+                                PositionInitsLoader::items_to_datas(keyboard_button_labels.iter());
                             let sequence_id_inits =
                                 SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
                                     sequence_id_mappings,
                                     asset_slug,
-                                    keyboard_ui_sprite_labels
-                                        .iter()
-                                        .map(|ui_sprite_label| &ui_sprite_label.sequence),
+                                    keyboard_button_labels.iter().map(|control_button_label| {
+                                        &control_button_label.sprite.sequence
+                                    }),
                                 );
 
                             let mut item_ids = position_inits
@@ -687,7 +721,9 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                         .with(sequence_end_transitions.clone())
                                         .with(wait_sequence_handles.clone())
                                         .with(tint_sequence_handles.clone())
-                                        .with(scale_sequence_handles.clone());
+                                        .with(scale_sequence_handles.clone())
+                                        .with(input_reactions_sequence_handles.clone())
+                                        .with(ButtonInputControlled);
 
                                     if let Some(sprite_render_sequence_handles) =
                                         sprite_render_sequence_handles.clone()
@@ -737,7 +773,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             body_sequence_assets,
             interactions_sequence_assets,
             spawns_sequence_assets,
-            character_cts_assets,
+            character_irs_assets,
             tint_sequence_assets,
             scale_sequence_assets,
             ..
@@ -792,7 +828,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
             && sequence_component_loaded!(BodySequenceHandles, body_sequence_assets)
             && sequence_component_loaded!(InteractionsSequenceHandles, interactions_sequence_assets)
             && sequence_component_loaded!(SpawnsSequenceHandles, spawns_sequence_assets)
-            && sequence_component_loaded!(CharacterCtsHandles, character_cts_assets)
+            && sequence_component_loaded!(CharacterIrsHandles, character_irs_assets)
             && sequence_component_loaded!(TintSequenceHandles, tint_sequence_assets)
             && sequence_component_loaded!(ScaleSequenceHandles, scale_sequence_assets)
     }

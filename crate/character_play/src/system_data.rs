@@ -1,3 +1,3 @@
-pub use self::control_transition_requirement_system_data::ControlTransitionRequirementSystemData;
+pub use self::input_reaction_requirement_system_data::InputReactionRequirementSystemData;
 
-mod control_transition_requirement_system_data;
+mod input_reaction_requirement_system_data;

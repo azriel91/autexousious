@@ -7,7 +7,7 @@ mod tests {
     };
     use application_test_support::AutexousiousApplication;
     use approx::assert_relative_eq;
-    use object_model::play::Mirrored;
+    use mirrored_model::play::Mirrored;
     use typename::TypeName;
 
     use object_play::ObjectMirroringSystem;

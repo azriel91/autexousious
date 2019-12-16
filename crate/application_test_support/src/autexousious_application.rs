@@ -21,6 +21,7 @@ use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
 use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
+use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
@@ -104,6 +105,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(InputReactionLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
@@ -142,6 +144,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(InputReactionLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())

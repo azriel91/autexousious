@@ -1,8 +1,9 @@
 use derive_new::new;
 use object_model::config::{GameObjectFrame, ObjectFrame};
+use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 
-use crate::config::CharacterControlTransitions;
+use crate::config::CharacterInputReactions;
 
 /// Sequence frame type for characters.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
@@ -13,7 +14,19 @@ pub struct CharacterFrame {
     pub object_frame: ObjectFrame,
     /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
     #[serde(default)]
-    pub transitions: CharacterControlTransitions,
+    pub input_reactions: CharacterInputReactions,
+}
+
+impl AsRef<Wait> for CharacterFrame {
+    fn as_ref(&self) -> &Wait {
+        &self.object_frame.wait
+    }
+}
+
+impl AsRef<CharacterInputReactions> for CharacterFrame {
+    fn as_ref(&self) -> &CharacterInputReactions {
+        &self.input_reactions
+    }
 }
 
 impl GameObjectFrame for CharacterFrame {

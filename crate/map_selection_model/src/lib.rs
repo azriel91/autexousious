@@ -3,10 +3,13 @@
 //! Types used during map selection.
 
 pub use crate::{
-    map_selection::MapSelection, map_selection_entity::MapSelectionEntity,
-    map_selection_event::MapSelectionEvent,
+    map_selection::MapSelection,
+    map_selection_entity::MapSelectionEntity,
+    map_selection_event::{MapSelectionEvent, MapSelectionEventVariant},
+    map_selection_event_args::MapSelectionEventArgs,
 };
 
 mod map_selection;
 mod map_selection_entity;
 mod map_selection_event;
+mod map_selection_event_args;

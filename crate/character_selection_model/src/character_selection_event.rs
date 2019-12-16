@@ -1,9 +1,16 @@
 use game_input_model::ControllerId;
+use serde::{Deserialize, Serialize};
+use strum_macros::EnumDiscriminants;
 
 use crate::CharacterSelection;
 
 /// Event signalling a change in character selection state.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, EnumDiscriminants, PartialEq)]
+#[strum_discriminants(
+    name(CharacterSelectionEventVariant),
+    derive(Deserialize, Serialize),
+    serde(deny_unknown_fields, rename_all = "snake_case")
+)]
 pub enum CharacterSelectionEvent {
     /// Signal to return from `CharacterSelectionState`.
     Return,

@@ -1,6 +1,6 @@
 use character_model::config::{CharacterSequenceName, CharacterSequenceNameString};
 use game_input::ControllerInput;
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use sequence_model::config::SequenceNameString;
 
 use crate::sequence_handler::SequenceHandlerUtil;

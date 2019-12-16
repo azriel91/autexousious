@@ -1,52 +1,52 @@
+mod character_irr_part;
 mod character_sequence;
-mod control_transition_requirement;
 
 #[cfg(test)]
 mod test {
     use charge_model::config::ChargePoints;
     use collision_model::config::Body;
     use indexmap::IndexMap;
+    use input_reaction_model::config::{
+        InputReaction, InputReactionAppEvents, InputReactionMultiple, InputReactionSingle,
+    };
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
     };
-    use sequence_model::config::{
-        ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
-        SequenceEndTransition, SequenceNameString, Wait,
-    };
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
 
     use character_model::config::{
-        CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
-        CharacterSequenceName, ControlTransitionRequirement,
+        CharacterDefinition, CharacterFrame, CharacterInputReactions, CharacterIrr,
+        CharacterIrrPart, CharacterSequence, CharacterSequenceName,
     };
 
     const OBJECT_YAML: &str = "\
 sequences:
   stand:
     next: 'walk'
-    transitions: { press_defend: 'stand_attack_1' }
+    input_reactions: { press_defend: 'stand_attack_1' }
     frames:
       - wait: 5
         sprite: { sheet: 1, index: 3 }
         body: [{ box: { x: 25, y: 11, w: 31, h: 68 } }]
-        transitions:
+        input_reactions:
           press_attack: 'stand_attack_0'
           release_attack:
-            - { next: 'walk', requirements: [{ charge: 90 }] }
-            - { next: 'run', requirements: [{ sp: 50 }] }
-            - { next: 'run_stop', requirements: [{ hp: 30 }] }
+            - { next: 'walk', requirement: [{ charge: 90 }] }
+            - { next: 'run', requirement: [{ sp: 50 }] }
+            - { next: 'run_stop', requirement: [{ hp: 30 }] }
           hold_jump: { next: 'jump' }
 
   custom_sequence_0:
     next: 'custom_sequence_1'
-    transitions: { press_defend: 'custom_sequence_4' }
+    input_reactions: { press_defend: 'custom_sequence_4' }
     frames:
       - wait: 5
         sprite: { sheet: 1, index: 3 }
-        transitions:
+        input_reactions:
           press_attack: 'custom_sequence_1'
           release_attack:
             - { next: 'custom_sequence_2' }
@@ -119,55 +119,59 @@ sequences:
                 }]),
                 ..Default::default()
             },
-            CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceNameString(
-                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
-                )),
-                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
-                    vec![
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::Walk),
-                            requirements: vec![ControlTransitionRequirement::Charge(
-                                ChargePoints::new(90),
-                            )],
-                        },
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::Run),
-                            requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
-                                50,
-                            ))],
-                        },
-                        ControlTransitionSingle {
-                            next: SequenceNameString::Name(CharacterSequenceName::RunStop),
-                            requirements: vec![ControlTransitionRequirement::Hp(
-                                HealthPoints::new(30),
-                            )],
-                        },
-                    ],
+            CharacterInputReactions {
+                press_attack: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                    CharacterSequenceName::StandAttack0,
                 ))),
-                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
+                    InputReactionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::Walk),
+                        events: InputReactionAppEvents::default(),
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Charge(
+                            ChargePoints::new(90),
+                        )]),
+                    },
+                    InputReactionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::Run),
+                        events: InputReactionAppEvents::default(),
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Sp(
+                            SkillPoints::new(50),
+                        )]),
+                    },
+                    InputReactionSingle {
+                        next: SequenceNameString::Name(CharacterSequenceName::RunStop),
+                        events: InputReactionAppEvents::default(),
+                        requirement: CharacterIrr::new(vec![CharacterIrrPart::Hp(
+                            HealthPoints::new(30),
+                        )]),
+                    },
+                ]))),
+                hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::Name(CharacterSequenceName::Jump),
-                    requirements: vec![],
+                    events: InputReactionAppEvents::default(),
+                    requirement: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore
         )];
 
-        let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceNameString(
-                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
-            )),
+        let character_input_reactions = CharacterInputReactions {
+            press_defend: Some(InputReaction::SequenceNameString(SequenceNameString::Name(
+                CharacterSequenceName::StandAttack1,
+            ))),
             ..Default::default()
         };
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
-                    CharacterSequenceName::Walk,
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                        CharacterSequenceName::Walk,
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
-            Some(character_control_transitions),
+            Some(character_input_reactions),
         )
     }
 
@@ -178,39 +182,43 @@ sequences:
                 sprite: SpriteRef::new(1, 3),
                 ..Default::default()
             },
-            CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceNameString(
+            CharacterInputReactions {
+                press_attack: Some(InputReaction::SequenceNameString(
                     SequenceNameString::String(String::from("custom_sequence_1")),
                 )),
-                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
-                    vec![ControlTransitionSingle {
+                release_attack: Some(InputReaction::Multiple(InputReactionMultiple::new(vec![
+                    InputReactionSingle {
                         next: SequenceNameString::String(String::from("custom_sequence_2")),
-                        requirements: vec![],
-                    }],
-                ))),
-                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                        events: InputReactionAppEvents::default(),
+                        requirement: CharacterIrr::default(),
+                    },
+                ]))),
+                hold_jump: Some(InputReaction::Single(InputReactionSingle {
                     next: SequenceNameString::String(String::from("custom_sequence_3")),
-                    requirements: vec![],
+                    events: InputReactionAppEvents::default(),
+                    requirement: CharacterIrr::default(),
                 })),
                 ..Default::default()
             }, // kcov-ignore
         )];
 
-        let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceNameString(
+        let character_input_reactions = CharacterInputReactions {
+            press_defend: Some(InputReaction::SequenceNameString(
                 SequenceNameString::String(String::from("custom_sequence_4")),
             )),
             ..Default::default()
         };
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::String(
-                    String::from("custom_sequence_1"),
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::String(
+                        String::from("custom_sequence_1"),
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
-            Some(character_control_transitions),
+            Some(character_input_reactions),
         )
     }
 
@@ -218,10 +226,12 @@ sequences:
         let frames = vec![];
         CharacterSequence::new(
             ObjectSequence {
-                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
-                    CharacterSequenceName::Stand,
-                )),
-                frames,
+                sequence: Sequence {
+                    next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                        CharacterSequenceName::Stand,
+                    )),
+                    frames,
+                },
                 ..Default::default()
             },
             None,

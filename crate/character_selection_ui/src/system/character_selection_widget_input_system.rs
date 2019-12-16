@@ -16,7 +16,7 @@ use object_type::ObjectType;
 
 use typename_derive::TypeName;
 
-use crate::{CharacterSelectionWidget, WidgetState};
+use crate::CharacterSelectionWidgetState;
 
 /// System that processes controller input and generates `CharacterSelectionEvent`s.
 ///
@@ -33,9 +33,12 @@ pub struct CharacterSelectionWidgetInputSystem {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterSelectionWidgetInputResources<'s> {
-    /// `CharacterSelectionWidget` components.
+    /// `CharacterSelection` components.
     #[derivative(Debug = "ignore")]
-    pub character_selection_widgets: WriteStorage<'s, CharacterSelectionWidget>,
+    pub character_selections: WriteStorage<'s, CharacterSelection>,
+    /// `CharacterSelectionWidgetState` components.
+    #[derivative(Debug = "ignore")]
+    pub character_selection_widget_states: WriteStorage<'s, CharacterSelectionWidgetState>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
@@ -61,7 +64,7 @@ pub struct CharacterSelectionWidgetInputSystemData<'s> {
 impl CharacterSelectionWidgetInputSystem {
     fn select_previous_character(
         asset_type_mappings: &AssetTypeMappings,
-        widget: &mut CharacterSelectionWidget,
+        character_selection: &mut CharacterSelection,
     ) -> CharacterSelection {
         let first_character_id = asset_type_mappings
             .iter_ids(&AssetType::Object(ObjectType::Character))
@@ -73,7 +76,7 @@ impl CharacterSelectionWidgetInputSystem {
             .copied()
             .next_back()
             .expect("Expected at least one character to be loaded.");
-        widget.selection = match widget.selection {
+        *character_selection = match *character_selection {
             CharacterSelection::Id(character_id) => {
                 if character_id == first_character_id {
                     CharacterSelection::Random
@@ -94,12 +97,13 @@ impl CharacterSelectionWidgetInputSystem {
             }
             CharacterSelection::Random => CharacterSelection::Id(last_character_id),
         };
-        widget.selection
+
+        *character_selection
     }
 
     fn select_next_character(
         asset_type_mappings: &AssetTypeMappings,
-        widget: &mut CharacterSelectionWidget,
+        character_selection: &mut CharacterSelection,
     ) -> CharacterSelection {
         let first_character_id = asset_type_mappings
             .iter_ids(&AssetType::Object(ObjectType::Character))
@@ -111,7 +115,7 @@ impl CharacterSelectionWidgetInputSystem {
             .copied()
             .next_back()
             .expect("Expected at least one character to be loaded.");
-        widget.selection = match widget.selection {
+        *character_selection = match *character_selection {
             CharacterSelection::Id(character_id) => {
                 if character_id == last_character_id {
                     CharacterSelection::Random
@@ -131,12 +135,14 @@ impl CharacterSelectionWidgetInputSystem {
             }
             CharacterSelection::Random => CharacterSelection::Id(first_character_id),
         };
-        widget.selection
+
+        *character_selection
     }
 
     fn handle_event(
         CharacterSelectionWidgetInputResources {
-            ref mut character_selection_widgets,
+            ref mut character_selections,
+            ref mut character_selection_widget_states,
             ref input_controlleds,
             ref asset_type_mappings,
             ref mut character_selection_ec,
@@ -145,27 +151,41 @@ impl CharacterSelectionWidgetInputSystem {
     ) {
         match event {
             ControlInputEvent::AxisMoved(axis_move_event_data) => {
-                if let (Some(character_selection_widget), Some(input_controlled)) = (
-                    character_selection_widgets.get_mut(axis_move_event_data.entity),
+                if let (
+                    Some(character_selection),
+                    Some(character_selection_widget_state),
+                    Some(input_controlled),
+                ) = (
+                    character_selections.get_mut(axis_move_event_data.entity),
+                    character_selection_widget_states.get_mut(axis_move_event_data.entity),
                     input_controlleds.get(axis_move_event_data.entity),
                 ) {
                     Self::handle_axis_event(
                         &asset_type_mappings,
                         character_selection_ec,
-                        character_selection_widget,
+                        character_selection,
+                        character_selection_widget_state,
                         *input_controlled,
                         axis_move_event_data,
                     )
                 }
             }
             ControlInputEvent::ControlActionPress(control_action_event_data) => {
-                if let (Some(character_selection_widget), Some(input_controlled)) = (
-                    character_selection_widgets.get_mut(control_action_event_data.entity),
+                if let (
+                    Some(character_selection),
+                    Some(character_selection_widget_state),
+                    Some(input_controlled),
+                ) = (
+                    character_selections
+                        .get(control_action_event_data.entity)
+                        .copied(),
+                    character_selection_widget_states.get_mut(control_action_event_data.entity),
                     input_controlleds.get(control_action_event_data.entity),
                 ) {
                     Self::handle_control_action_event(
                         character_selection_ec,
-                        character_selection_widget,
+                        character_selection,
+                        character_selection_widget_state,
                         *input_controlled,
                         control_action_event_data,
                     )
@@ -178,28 +198,35 @@ impl CharacterSelectionWidgetInputSystem {
     fn handle_axis_event(
         asset_type_mappings: &AssetTypeMappings,
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
-        character_selection_widget: &mut CharacterSelectionWidget,
+        character_selection: &mut CharacterSelection,
+        character_selection_widget_state: &mut CharacterSelectionWidgetState,
         input_controlled: InputControlled,
         axis_move_event_data: AxisMoveEventData,
     ) {
-        let character_selection =
-            match (character_selection_widget.state, axis_move_event_data.axis) {
-                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value < 0. => {
-                    Some(Self::select_previous_character(
-                        asset_type_mappings,
-                        character_selection_widget,
-                    ))
-                }
-                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value > 0. => Some(
-                    Self::select_next_character(asset_type_mappings, character_selection_widget),
-                ),
-                _ => None,
-            };
+        let new_selection = match (character_selection_widget_state, axis_move_event_data.axis) {
+            (CharacterSelectionWidgetState::CharacterSelect, Axis::X)
+                if axis_move_event_data.value < 0. =>
+            {
+                Some(Self::select_previous_character(
+                    asset_type_mappings,
+                    character_selection,
+                ))
+            }
+            (CharacterSelectionWidgetState::CharacterSelect, Axis::X)
+                if axis_move_event_data.value > 0. =>
+            {
+                Some(Self::select_next_character(
+                    asset_type_mappings,
+                    character_selection,
+                ))
+            }
+            _ => None,
+        };
 
-        if let Some(character_selection) = character_selection {
+        if let Some(new_selection) = new_selection {
             let character_selection_event = CharacterSelectionEvent::Switch {
                 controller_id: input_controlled.controller_id,
-                character_selection,
+                character_selection: new_selection,
             };
 
             debug!(
@@ -212,41 +239,42 @@ impl CharacterSelectionWidgetInputSystem {
 
     fn handle_control_action_event(
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
-        character_selection_widget: &mut CharacterSelectionWidget,
+        character_selection: CharacterSelection,
+        character_selection_widget_state: &mut CharacterSelectionWidgetState,
         input_controlled: InputControlled,
         control_action_event_data: ControlActionEventData,
     ) {
         let character_selection_event = match (
-            character_selection_widget.state,
+            *character_selection_widget_state,
             control_action_event_data.control_action,
         ) {
-            (WidgetState::Inactive, ControlAction::Attack) => {
+            (CharacterSelectionWidgetState::Inactive, ControlAction::Attack) => {
                 debug!("Controller {} active.", input_controlled.controller_id);
-                character_selection_widget.state = WidgetState::CharacterSelect;
+                *character_selection_widget_state = CharacterSelectionWidgetState::CharacterSelect;
 
                 Some(CharacterSelectionEvent::Join {
                     controller_id: input_controlled.controller_id,
                 })
             }
-            (WidgetState::CharacterSelect, ControlAction::Jump) => {
+            (CharacterSelectionWidgetState::CharacterSelect, ControlAction::Jump) => {
                 debug!("Controller {} inactive.", input_controlled.controller_id);
-                character_selection_widget.state = WidgetState::Inactive;
+                *character_selection_widget_state = CharacterSelectionWidgetState::Inactive;
 
                 Some(CharacterSelectionEvent::Leave {
                     controller_id: input_controlled.controller_id,
                 })
             }
-            (WidgetState::CharacterSelect, ControlAction::Attack) => {
+            (CharacterSelectionWidgetState::CharacterSelect, ControlAction::Attack) => {
                 debug!("Controller {} ready.", input_controlled.controller_id);
-                character_selection_widget.state = WidgetState::Ready;
+                *character_selection_widget_state = CharacterSelectionWidgetState::Ready;
 
                 Some(CharacterSelectionEvent::Select {
                     controller_id: input_controlled.controller_id,
-                    character_selection: character_selection_widget.selection,
+                    character_selection,
                 })
             }
-            (WidgetState::Ready, ControlAction::Jump) => {
-                character_selection_widget.state = WidgetState::CharacterSelect;
+            (CharacterSelectionWidgetState::Ready, ControlAction::Jump) => {
+                *character_selection_widget_state = CharacterSelectionWidgetState::CharacterSelect;
 
                 Some(CharacterSelectionEvent::Deselect {
                     controller_id: input_controlled.controller_id,

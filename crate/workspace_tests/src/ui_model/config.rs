@@ -4,13 +4,15 @@ mod test {
 
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
+    use input_reaction_model::config::{InputReaction, InputReactions};
     use kinematic_model::config::PositionInit;
-    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use sprite_model::config::{SpriteFrame, SpriteRef};
     use ui_button_model::config::{UiButton, UiButtons};
     use ui_label_model::config::{UiLabel, UiSpriteLabel};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
+    use ui_model::config::UiFrame;
 
     use ui_model::config::{UiDefinition, UiSequence, UiSequences, UiType};
 
@@ -35,23 +37,43 @@ buttons:
 sequences:
   start_game_inactive:
     next: "none"
+    input_reactions:
+      press_defend: "button_inactive"
     frames:
-      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+      - wait: 2
+        sprite: { sheet: 0, index: 0 }
+        input_reactions:
+          press_attack: "active"
 
   active:
     next: "repeat"
+    input_reactions:
+      press_defend: "button_inactive"
     frames:
-      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+      - wait: 2
+        sprite: { sheet: 0, index: 0 }
+        input_reactions:
+          press_attack: "active"
 
   exit_inactive:
     next: "none"
+    input_reactions:
+      press_defend: "button_inactive"
     frames:
-      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+      - wait: 2
+        sprite: { sheet: 0, index: 0 }
+        input_reactions:
+          press_attack: "active"
 
   button_inactive:
     next: "none"
+    input_reactions:
+      press_defend: "button_inactive"
     frames:
-      - { wait: 2, sprite: { sheet: 0, index: 0 } }
+      - wait: 2
+        sprite: { sheet: 0, index: 0 }
+        input_reactions:
+          press_attack: "active"
 "#;
 
     #[test]
@@ -90,23 +112,39 @@ sequences:
                 SequenceNameString::String(String::from("button_inactive")),
             ),
         )]);
+        let mut input_reactions = InputReactions::default();
+        input_reactions.press_defend = Some(InputReaction::SequenceNameString(
+            SequenceNameString::String(String::from("button_inactive")),
+        ));
         let sequences = {
             let mut sequences = IndexMap::new();
             sequences.insert(
                 SequenceNameString::String(String::from("start_game_inactive")),
-                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+                UiSequence::new(
+                    Sequence::new(SequenceEndTransition::None, ui_frames()),
+                    Some(input_reactions.clone()),
+                ),
             );
             sequences.insert(
                 SequenceNameString::String(String::from("active")),
-                UiSequence::new(SequenceEndTransition::Repeat, sprite_frames()),
+                UiSequence::new(
+                    Sequence::new(SequenceEndTransition::Repeat, ui_frames()),
+                    Some(input_reactions.clone()),
+                ),
             );
             sequences.insert(
                 SequenceNameString::String(String::from("exit_inactive")),
-                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+                UiSequence::new(
+                    Sequence::new(SequenceEndTransition::None, ui_frames()),
+                    Some(input_reactions.clone()),
+                ),
             );
             sequences.insert(
                 SequenceNameString::String(String::from("button_inactive")),
-                UiSequence::new(SequenceEndTransition::None, sprite_frames()),
+                UiSequence::new(
+                    Sequence::new(SequenceEndTransition::None, ui_frames()),
+                    Some(input_reactions),
+                ),
             );
             UiSequences::new(sequences)
         };
@@ -119,11 +157,19 @@ sequences:
         assert_eq!(ui_definition_expected, ui_definition);
     }
 
-    fn sprite_frames() -> Vec<SpriteFrame> {
-        vec![SpriteFrame {
-            wait: Wait::new(2),
-            sprite: SpriteRef::new(0, 0),
-            ..Default::default()
+    fn ui_frames() -> Vec<UiFrame> {
+        let mut input_reactions = InputReactions::default();
+        input_reactions.press_attack = Some(InputReaction::SequenceNameString(
+            SequenceNameString::String(String::from("active")),
+        ));
+
+        vec![UiFrame {
+            sprite_frame: SpriteFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 0),
+                ..Default::default()
+            },
+            input_reactions,
         }]
     }
 }

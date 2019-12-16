@@ -5,7 +5,8 @@ use character_model::{config::CharacterSequenceName, play::RunCounter};
 use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
-use object_model::play::{Grounding, HealthPoints, Mirrored};
+use mirrored_model::play::Mirrored;
+use object_model::play::{Grounding, HealthPoints};
 use sequence_model::play::SequenceStatus;
 
 /// Components used to compute character sequence updates.

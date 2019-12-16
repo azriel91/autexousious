@@ -1,7 +1,15 @@
-use crate::map_selection::MapSelection;
+use serde::{Deserialize, Serialize};
+use strum_macros::EnumDiscriminants;
+
+use crate::MapSelection;
 
 /// Event indicating a map selection.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, EnumDiscriminants, PartialEq)]
+#[strum_discriminants(
+    name(MapSelectionEventVariant),
+    derive(Deserialize, Serialize),
+    serde(deny_unknown_fields, rename_all = "snake_case")
+)]
 pub enum MapSelectionEvent {
     /// Signal to return from `MapSelectionState`.
     Return,

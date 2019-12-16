@@ -73,6 +73,9 @@ game_play_stdio = { path = "../game_play_stdio" }
 game_stats_model = { path = "../game_stats_model" }
 hamcrest = "0.1.5"
 indexmap = { version = "1.3.0", features = ["serde-1"] }
+input_reaction_loading = { path = "../input_reaction_loading" }
+input_reaction_model = { path = "../input_reaction_model" }
+input_reaction_play = { path = "../input_reaction_play" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
@@ -87,6 +90,7 @@ map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 map_selection_stdio = { path = "../map_selection_stdio" }
 map_selection_ui = { path = "../map_selection_ui" }
+mirrored_model = { path = "../mirrored_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }

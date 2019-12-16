@@ -2,7 +2,8 @@
 mod tests {
     use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::play::{Grounding, Mirrored};
+    use mirrored_model::play::Mirrored;
+    use object_model::play::Grounding;
     use sequence_model::config::SequenceNameString;
 
     use character_play::RunCounterUpdater;

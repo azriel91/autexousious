@@ -1,21 +1,23 @@
 //! Contains the types that represent the configuration on disk.
 
 pub use self::{
-    character_control_transitions::CharacterControlTransitions,
     character_definition::{CharacterDefinition, CharacterDefinitionHandle},
     character_frame::CharacterFrame,
+    character_input_reactions::CharacterInputReactions,
+    character_irr::CharacterIrr,
+    character_irr_part::CharacterIrrPart,
     character_sequence::CharacterSequence,
     character_sequence_name::CharacterSequenceName,
     character_sequence_name_string::CharacterSequenceNameString,
-    control_transition_requirement::ControlTransitionRequirement,
-    control_transition_requirement_params::ControlTransitionRequirementParams,
+    input_reaction_requirement_params::InputReactionRequirementParams,
 };
 
-mod character_control_transitions;
 mod character_definition;
 mod character_frame;
+mod character_input_reactions;
+mod character_irr;
+mod character_irr_part;
 mod character_sequence;
 mod character_sequence_name;
 mod character_sequence_name_string;
-mod control_transition_requirement;
-mod control_transition_requirement_params;
+mod input_reaction_requirement_params;

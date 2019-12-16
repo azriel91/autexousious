@@ -17,7 +17,7 @@ use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEntity};
 use typename_derive::TypeName;
 
-use crate::{MapSelectionWidget, WidgetState};
+use crate::MapSelectionWidgetState;
 
 const FONT_SIZE_WIDGET: f32 = 30.;
 const FONT_SIZE_HELP: f32 = 17.;
@@ -25,7 +25,7 @@ const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT: f32 = 75.;
 const LABEL_HEIGHT_HELP: f32 = 20.;
 
-/// System that creates and deletes `MapSelectionWidget` entities.
+/// System that creates and deletes `MapSelectionWidgetState` entities.
 ///
 /// This is not private because consumers may use `MapSelectionWidgetUiSystem::type_name()` to
 /// specify this as a dependency of another system.
@@ -50,9 +50,12 @@ pub struct MapSelectionWidgetUiSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
-    /// `MapSelectionWidget` components.
+    /// `MapSelection` components.
     #[derivative(Debug = "ignore")]
-    pub map_selection_widgets: WriteStorage<'s, MapSelectionWidget>,
+    pub map_selections: WriteStorage<'s, MapSelection>,
+    /// `MapSelectionWidgetState` components.
+    #[derivative(Debug = "ignore")]
+    pub map_selection_widget_states: WriteStorage<'s, MapSelectionWidgetState>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: WriteStorage<'s, ControllerInput>,
@@ -81,7 +84,8 @@ impl MapSelectionWidgetUiSystem {
             asset_type_mappings,
             input_config,
             input_controlleds,
-            map_selection_widgets,
+            map_selections,
+            map_selection_widget_states,
             controller_inputs,
             theme,
             ui_transforms,
@@ -91,7 +95,7 @@ impl MapSelectionWidgetUiSystem {
             ..
         }: &mut MapSelectionWidgetUiSystemData<'_>,
     ) {
-        if map_selection_widgets.count() == 0 {
+        if map_selection_widget_states.count() == 0 {
             debug!("Initializing Map Selection UI.");
 
             let font = theme
@@ -105,13 +109,11 @@ impl MapSelectionWidgetUiSystem {
                 .copied()
                 .expect("Expected at least one map to be loaded.");
 
-            let map_selection_widget = MapSelectionWidget::new(
-                WidgetState::default(),
-                MapSelection::Random(Some(first_map_asset_id)),
-            );
+            let map_selection = MapSelection::Random(Some(first_map_asset_id));
+            let map_selection_widget_state = MapSelectionWidgetState::default();
 
             let ui_transform = UiTransform::new(
-                "MapSelectionWidget".to_string(),
+                "MapSelectionWidgetState".to_string(),
                 Anchor::Middle,
                 Anchor::MiddleLeft,
                 -LABEL_WIDTH / 2.,
@@ -131,7 +133,8 @@ impl MapSelectionWidgetUiSystem {
             entities
                 .build_entity()
                 .with(MapSelectionEntity, map_selection_entities)
-                .with(map_selection_widget, map_selection_widgets)
+                .with(map_selection, map_selections)
+                .with(map_selection_widget_state, map_selection_widget_states)
                 .with(ui_transform, ui_transforms)
                 .with(ui_text, ui_texts)
                 .build();
@@ -209,29 +212,30 @@ impl MapSelectionWidgetUiSystem {
         &mut self,
         MapSelectionWidgetUiSystemData {
             asset_id_mappings,
-            map_selection_widgets,
+            map_selections,
+            map_selection_widget_states,
             ui_texts,
             ..
         }: &mut MapSelectionWidgetUiSystemData<'_>,
     ) {
-        (map_selection_widgets, ui_texts)
+        (map_selections, map_selection_widget_states, ui_texts)
             .join()
-            .for_each(|(widget, ui_text)| {
+            .for_each(|(map_selection, map_selection_widget_state, ui_text)| {
                 ui_text.text = {
-                    let slug_string = match widget.selection {
+                    let slug_string = match map_selection {
                         MapSelection::None => String::from("None"),
                         MapSelection::Random(..) => String::from("Random"),
                         MapSelection::Id(asset_id) => {
                             let slug = asset_id_mappings
-                                .slug(asset_id)
+                                .slug(*asset_id)
                                 .expect("Expected slug to exist for map selection.");
                             format!("{}", slug)
                         }
                     };
 
-                    match widget.state {
-                        WidgetState::MapSelect => format!("◀ {:^16} ▶", slug_string),
-                        WidgetState::Ready => format!("» {:^16} «", slug_string),
+                    match map_selection_widget_state {
+                        MapSelectionWidgetState::MapSelect => format!("◀ {:^16} ▶", slug_string),
+                        MapSelectionWidgetState::Ready => format!("» {:^16} «", slug_string),
                     }
                 }
             });

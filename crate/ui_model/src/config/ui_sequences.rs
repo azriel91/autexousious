@@ -1,7 +1,7 @@
 use sequence_model::config::Sequences;
-use sprite_model::config::{SpriteFrame, SpriteSequenceName};
+use sprite_model::config::SpriteSequenceName;
 
-use crate::config::UiSequence;
+use crate::config::{UiFrame, UiSequence};
 
-/// Sequences of `SpriteFrame`s.
-pub type UiSequences = Sequences<UiSequence, SpriteSequenceName, SpriteFrame>;
+/// Sequences of `UiFrame`s.
+pub type UiSequences = Sequences<UiSequence, SpriteSequenceName, UiFrame>;

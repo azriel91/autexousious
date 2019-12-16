@@ -3,13 +3,9 @@
 //! Processes character configuration into the loaded character model.
 
 pub use crate::{
+    character_input_reactions_default::CHARACTER_INPUT_REACTIONS_DEFAULT,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
-    character_transitions_default::CHARACTER_TRANSITIONS_DEFAULT,
-    cts_loader::CtsLoader,
-    cts_loader_params::CtsLoaderParams,
 };
 
+mod character_input_reactions_default;
 mod character_loading_bundle;
-mod character_transitions_default;
-mod cts_loader;
-mod cts_loader_params;

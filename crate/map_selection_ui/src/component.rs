@@ -1,4 +1,3 @@
-pub use self::{map_selection_widget::MapSelectionWidget, widget_state::WidgetState};
+pub use self::map_selection_widget_state::MapSelectionWidgetState;
 
-mod map_selection_widget;
-mod widget_state;
+mod map_selection_widget_state;

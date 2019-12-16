@@ -16,6 +16,7 @@ game_input = { path = "../game_input" }
 kinematic_model = { path = "../kinematic_model" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
+mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 typename = "0.1.1"

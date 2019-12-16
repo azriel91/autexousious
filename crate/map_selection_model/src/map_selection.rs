@@ -1,8 +1,9 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use asset_model::loaded::AssetId;
 use derivative::Derivative;
 
 /// Selected map ID or random for a particular controller.
-#[derive(Clone, Copy, Debug, Derivative, PartialEq)]
+#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq)]
 #[derivative(Default)]
 pub enum MapSelection {
     /// No map is currently selected.

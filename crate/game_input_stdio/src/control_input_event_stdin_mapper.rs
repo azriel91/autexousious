@@ -3,11 +3,14 @@ use amethyst::{
     Error,
 };
 use game_input::InputControlled;
-use game_input_model::{AxisMoveEventData, ControlActionEventData, ControlInputEvent};
+use game_input_model::{
+    AxisMoveEventData, ControlActionEventData, ControlArgs, ControlInputEvent,
+    ControlInputEventArgs,
+};
 use stdio_spi::{MapperSystemData, StdinMapper};
 use typename_derive::TypeName;
 
-use crate::{ControlArgs, ControlInputEventArgs, GameInputStdioError};
+use crate::GameInputStdioError;
 
 #[derive(Debug)]
 pub struct ControlInputEventStdinMapperData;

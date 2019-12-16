@@ -1,4 +1,5 @@
 use derivative::Derivative;
+use serde::{Deserialize, Serialize};
 
 /// Central list of identifiers for `State`s.
 #[derive(
@@ -9,15 +10,19 @@ use derivative::Derivative;
     Copy,
     Debug,
     Derivative,
+    Deserialize,
     PartialEq,
+    Serialize,
 )]
 #[derivative(Default)]
+#[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum StateId {
     /// No current state.
     ///
     /// Should never be used -- here to allow for `pausable` systems.
     #[derivative(Default)]
+    #[serde(skip)]
     None,
     /// `CharacterSelectionState` ID.
     CharacterSelection,

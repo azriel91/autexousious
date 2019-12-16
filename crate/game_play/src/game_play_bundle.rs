@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::{bundle::SystemBundle, SystemExt},
     ecs::{DispatcherBuilder, World},
@@ -6,9 +8,9 @@ use amethyst::{
 use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::loaded::CharacterCtsHandles;
-use character_play::{
-    CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
+use character_model::{
+    config::CharacterIrr,
+    loaded::{CharacterIrs, CharacterIrsHandles},
 };
 use charge_play::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
@@ -26,6 +28,11 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
+use input_reaction_model::{
+    config::BasicIrr,
+    loaded::{InputReactionsSequence, InputReactionsSequenceHandles},
+};
+use input_reaction_play::{ButtonInputReactionsTransitionSystem, InputReactionsTransitionSystem};
 use kinematic_model::{
     config::Position,
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
@@ -103,9 +110,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_component_update_system!(InteractionsSequenceHandles);
         sequence_component_update_system!(SpawnsSequenceHandles);
         sequence_component_update_system!(SequenceEndTransitions);
-        sequence_component_update_system!(CharacterCtsHandles);
         sequence_component_update_system!(TintSequenceHandles);
         sequence_component_update_system!(ScaleSequenceHandles);
+        sequence_component_update_system!(CharacterIrsHandles);
+        sequence_component_update_system!(InputReactionsSequenceHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -145,12 +153,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(SpawnsSequence);
         frame_component_update_system!(TintSequence);
         frame_component_update_system!(ScaleSequence);
+        frame_component_update_system!(CharacterIrs);
+        frame_component_update_system!(InputReactionsSequence);
 
-        builder.add(
-            CharacterControlTransitionsUpdateSystem::new(),
-            &CharacterControlTransitionsUpdateSystem::type_name(),
-            &[&SequenceUpdateSystem::type_name()],
-        ); // kcov-ignore
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
             &FrameFreezeClockAugmentSystem::type_name(),
@@ -336,6 +341,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        builder.add(
+            InputReactionsTransitionSystem::<BasicIrr>::new(),
+            &any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
+            &[&SequenceEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
+            &any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
+            &[&SequenceEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
@@ -349,21 +365,25 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            CharacterControlTransitionsTransitionSystem::new(),
-            &CharacterControlTransitionsTransitionSystem::type_name(),
+            InputReactionsTransitionSystem::<CharacterIrr>::new(),
+            &any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>(),
             &[&CharacterSequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
-            &[&CharacterControlTransitionsTransitionSystem::type_name()],
+            &[&any::type_name::<
+                InputReactionsTransitionSystem<CharacterIrr>,
+            >()],
         ); // kcov-ignore
 
         // Charging
         builder.add(
             ChargeInitializeDetectionSystem::new(),
             &ChargeInitializeDetectionSystem::type_name(),
-            &[&CharacterControlTransitionsTransitionSystem::type_name()],
+            &[&any::type_name::<
+                InputReactionsTransitionSystem<CharacterIrr>,
+            >()],
         ); // kcov-ignore
         builder.add(
             ChargeInitializeDelaySystem::new(),
