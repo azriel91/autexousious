@@ -13,7 +13,7 @@ use map_model::{
     loaded::{AssetMapBounds, AssetMargins, Margins},
 };
 use map_selection_model::MapSelection;
-use object_model::play::Mirrored;
+use mirrored_model::play::Mirrored;
 use typename_derive::TypeName;
 
 /// Focuses the camera at the average position of tracked entities.

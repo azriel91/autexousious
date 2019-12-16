@@ -39,6 +39,7 @@ use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
 use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
+use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
@@ -139,6 +140,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(EnergyLoadingBundle::new())?
+            .with_bundle(InputReactionLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])

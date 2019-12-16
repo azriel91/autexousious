@@ -88,7 +88,7 @@ impl ObjectLoader {
             .values()
             .map(|sequence| {
                 use sequence_model::config;
-                match &sequence.object_sequence().next {
+                match &sequence.object_sequence().sequence.next {
                     config::SequenceEndTransition::None => SequenceEndTransition::None,
                     config::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
                     config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
@@ -142,6 +142,7 @@ impl ObjectLoader {
 
                 let wait_sequence = WaitSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| frame.object_frame().wait)
@@ -149,6 +150,7 @@ impl ObjectLoader {
                 );
                 let source_sequence = SourceSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -162,6 +164,7 @@ impl ObjectLoader {
                 );
                 let object_acceleration_sequence = ObjectAccelerationSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -175,6 +178,7 @@ impl ObjectLoader {
                 );
                 let sprite_render_sequence = SpriteRenderSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -190,6 +194,7 @@ impl ObjectLoader {
                 );
                 let body_sequence = BodySequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -203,6 +208,7 @@ impl ObjectLoader {
                 );
                 let interactions_sequence = InteractionsSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -216,6 +222,7 @@ impl ObjectLoader {
                 );
                 let spawns_sequence = SpawnsSequence::new(
                     object_sequence
+                        .sequence
                         .frames
                         .iter()
                         .map(|frame| {

@@ -4,7 +4,7 @@
 
 pub use crate::{
     character_selection_ui_bundle::CharacterSelectionUiBundle,
-    component::{CharacterSelectionWidget, WidgetState},
+    component::CharacterSelectionWidgetState,
     system::{
         CharacterSelectionInputSystem, CharacterSelectionInputSystemData,
         CharacterSelectionSfxSystem, CharacterSelectionSfxSystemData,

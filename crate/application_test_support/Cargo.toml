@@ -30,6 +30,7 @@ energy_loading = { path = "../energy_loading" }
 game_input_model = { path = "../game_input_model" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
+input_reaction_loading = { path = "../input_reaction_loading" }
 kinematic_loading = { path = "../kinematic_loading" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }

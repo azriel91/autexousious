@@ -7,12 +7,12 @@ mod tests {
     use application_test_support::{AssetQueries, AutexousiousApplication};
     use asset_model::loaded::AssetIdMappings;
     use assets_test::CHAR_BAT_SLUG;
-    use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+    use character_selection_model::{
+        CharacterSelection, CharacterSelectionEvent, CharacterSelectionEventArgs,
+    };
     use stdio_spi::{StdinMapper, StdioError};
 
-    use character_selection_stdio::{
-        CharacterSelectionEventArgs, CharacterSelectionEventStdinMapper,
-    };
+    use character_selection_stdio::CharacterSelectionEventStdinMapper;
 
     macro_rules! test_map_direct {
         ($test_name:ident, $variant:ident) => {

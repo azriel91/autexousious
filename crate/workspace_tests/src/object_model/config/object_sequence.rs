@@ -12,7 +12,9 @@ mod tests {
         ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
         ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Position, Velocity,
     };
-    use sequence_model::config::{SequenceEndTransition, SequenceName, SequenceNameString, Wait};
+    use sequence_model::config::{
+        Sequence, SequenceEndTransition, SequenceName, SequenceNameString, Wait,
+    };
     use serde::{Deserialize, Serialize};
     use serde_yaml;
     use shape_model::Volume;
@@ -121,8 +123,12 @@ frames:
             },
         ];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                    TestSeqName::Boo,
+                )),
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -138,8 +144,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -171,8 +179,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -201,8 +211,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -226,8 +238,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -248,8 +262,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             ..Default::default()
         };
         assert_eq!(expected, sequence);
@@ -277,7 +293,10 @@ frames:
             ..Default::default()
         }];
         let expected = ObjectSequence {
-            next: SequenceEndTransition::None,
+            sequence: Sequence {
+                next: SequenceEndTransition::None,
+                frames,
+            },
             acceleration: Some(ObjectAcceleration {
                 kind: ObjectAccelerationKind::Continuous,
                 x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -290,7 +309,6 @@ frames:
                     value: -3.,
                 }),
             }),
-            frames,
         };
         assert_eq!(expected, sequence);
     }

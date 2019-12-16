@@ -5,7 +5,7 @@ mod test {
     use collision_model::config::Body;
     use indexmap::IndexMap;
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
-    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
+    use sequence_model::config::{Sequence, SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
@@ -41,10 +41,12 @@ sequences:
             ..Default::default()
         })];
         let sequence = EnergySequence::new(ObjectSequence {
-            next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
-                EnergySequenceName::Hover,
-            )),
-            frames,
+            sequence: Sequence {
+                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                    EnergySequenceName::Hover,
+                )),
+                frames,
+            },
             ..Default::default()
         });
         let mut sequences = IndexMap::new();

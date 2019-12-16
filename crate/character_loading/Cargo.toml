@@ -16,6 +16,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 game_input_model = { path = "../game_input_model" }
+input_reaction_model = { path = "../input_reaction_model" }
 lazy_static = "1.4.0"
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }

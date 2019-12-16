@@ -14,7 +14,7 @@ use game_input_model::{ControllerId, InputConfig};
 use log::debug;
 use typename_derive::TypeName;
 
-use crate::{CharacterSelectionWidget, WidgetState};
+use crate::CharacterSelectionWidgetState;
 
 const FONT_SIZE_WIDGET: f32 = 30.;
 const FONT_SIZE_HELP: f32 = 17.;
@@ -22,7 +22,7 @@ const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT: f32 = 75.;
 const LABEL_HEIGHT_HELP: f32 = 20.;
 
-/// System that creates and deletes `CharacterSelectionWidget` entities.
+/// System that creates and deletes `CharacterSelectionWidgetState` entities.
 ///
 /// This is not private because consumers may use `CharacterSelectionWidgetUiSystem::type_name()` to
 /// specify this as a dependency of another system.
@@ -45,9 +45,12 @@ pub struct CharacterSelectionWidgetUiSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
-    /// `CharacterSelectionWidget` components.
+    /// `CharacterSelection` components.
     #[derivative(Debug = "ignore")]
-    pub character_selection_widgets: WriteStorage<'s, CharacterSelectionWidget>,
+    pub character_selections: WriteStorage<'s, CharacterSelection>,
+    /// `CharacterSelectionWidgetState` components.
+    #[derivative(Debug = "ignore")]
+    pub character_selection_widget_states: WriteStorage<'s, CharacterSelectionWidgetState>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: WriteStorage<'s, ControllerInput>,
@@ -75,7 +78,8 @@ impl CharacterSelectionWidgetUiSystem {
             entities,
             input_config,
             input_controlleds,
-            character_selection_widgets,
+            character_selections,
+            character_selection_widget_states,
             controller_inputs,
             theme,
             ui_transforms,
@@ -85,7 +89,7 @@ impl CharacterSelectionWidgetUiSystem {
             ..
         }: &mut CharacterSelectionWidgetUiSystemData<'_>,
     ) {
-        if character_selection_widgets.count() == 0 {
+        if character_selection_widget_states.count() == 0 {
             debug!("Initializing Character Selection UI.");
 
             let controller_count = input_config.controller_configs.len();
@@ -98,10 +102,8 @@ impl CharacterSelectionWidgetUiSystem {
             (0..controller_count).for_each(|index| {
                 let controller_id = index as ControllerId;
 
-                let character_selection_widget = CharacterSelectionWidget::new(
-                    WidgetState::default(),
-                    CharacterSelection::Random,
-                );
+                let character_selection_widget_state = CharacterSelectionWidgetState::default();
+                let character_selection = CharacterSelection::Random;
 
                 let ui_transform = UiTransform::new(
                     format!("character_selection_widget#{}", controller_id),
@@ -125,7 +127,11 @@ impl CharacterSelectionWidgetUiSystem {
                 entities
                     .build_entity()
                     .with(CharacterSelectionEntity, character_selection_entities)
-                    .with(character_selection_widget, character_selection_widgets)
+                    .with(character_selection, character_selections)
+                    .with(
+                        character_selection_widget_state,
+                        character_selection_widget_states,
+                    )
                     .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
                     .with(ui_transform, ui_transforms)
@@ -197,30 +203,41 @@ impl CharacterSelectionWidgetUiSystem {
         &mut self,
         CharacterSelectionWidgetUiSystemData {
             asset_id_mappings,
-            character_selection_widgets,
+            character_selections,
+            character_selection_widget_states,
             ui_texts,
             ..
         }: &mut CharacterSelectionWidgetUiSystemData<'_>,
     ) {
-        (character_selection_widgets, ui_texts)
+        (
+            character_selections,
+            character_selection_widget_states,
+            ui_texts,
+        )
             .join()
-            .for_each(|(widget, ui_text)| {
-                let slug_string = match widget.selection {
-                    CharacterSelection::Random => String::from("Random"),
-                    CharacterSelection::Id(asset_id) => {
-                        let slug = asset_id_mappings
-                            .slug(asset_id)
-                            .expect("Expected slug to exist for character selection.");
-                        format!("{}", slug)
-                    }
-                };
+            .for_each(
+                |(character_selection, character_selection_widget_state, ui_text)| {
+                    let slug_string = match *character_selection {
+                        CharacterSelection::Random => String::from("Random"),
+                        CharacterSelection::Id(asset_id) => {
+                            let slug = asset_id_mappings
+                                .slug(asset_id)
+                                .expect("Expected slug to exist for character selection.");
+                            format!("{}", slug)
+                        }
+                    };
 
-                ui_text.text = match widget.state {
-                    WidgetState::Inactive => "Press Attack To Join".to_string(),
-                    WidgetState::CharacterSelect => format!("◀ {:^16} ▶", slug_string),
-                    WidgetState::Ready => format!("» {:^16} «", slug_string),
-                }
-            });
+                    ui_text.text = match character_selection_widget_state {
+                        CharacterSelectionWidgetState::Inactive => {
+                            "Press Attack To Join".to_string()
+                        }
+                        CharacterSelectionWidgetState::CharacterSelect => {
+                            format!("◀ {:^16} ▶", slug_string)
+                        }
+                        CharacterSelectionWidgetState::Ready => format!("» {:^16} «", slug_string),
+                    }
+                },
+            );
     }
 }
 

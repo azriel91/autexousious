@@ -1,7 +1,8 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use asset_model::loaded::AssetId;
 
 /// Selected character ID or random for a particular controller.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Component, Copy, Debug, PartialEq)]
 pub enum CharacterSelection {
     /// User has selected *Random*.
     Random,

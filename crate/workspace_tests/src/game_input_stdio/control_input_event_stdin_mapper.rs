@@ -7,13 +7,12 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use game_input::InputControlled;
     use game_input_model::{
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlArgs,
+        ControlInputEvent, ControlInputEventArgs,
     };
     use stdio_spi::StdinMapper;
 
-    use game_input_stdio::{
-        ControlArgs, ControlInputEventArgs, ControlInputEventStdinMapper, GameInputStdioError,
-    };
+    use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioError};
 
     #[test]
     fn maps_axis_input() -> Result<(), Error> {

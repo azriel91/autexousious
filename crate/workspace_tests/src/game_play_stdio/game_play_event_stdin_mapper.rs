@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use game_play_model::GamePlayEvent;
+    use game_play_model::{GamePlayEvent, GamePlayEventArgs};
     use stdio_spi::StdinMapper;
 
-    use game_play_stdio::{GamePlayEventArgs, GamePlayEventStdinMapper};
+    use game_play_stdio::GamePlayEventStdinMapper;
 
     macro_rules! test_mapping {
         ($test_name:ident, $variant:ident) => {

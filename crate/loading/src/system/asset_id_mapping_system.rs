@@ -232,7 +232,7 @@ impl AssetIdMapper {
         object_definition
             .sequences
             .values()
-            .flat_map(|game_obj_seq| game_obj_seq.object_sequence().frames.iter())
+            .flat_map(|game_obj_seq| game_obj_seq.object_sequence().sequence.frames.iter())
             .flat_map(|frame| frame.object_frame().spawns.iter())
             .try_fold((), |_, spawn| {
                 // Check if sequence ID mappings exist for `spawn.object`.

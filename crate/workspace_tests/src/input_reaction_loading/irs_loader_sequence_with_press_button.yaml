@@ -1,0 +1,15 @@
+# Used in `IrsLoader` test.
+input_reactions:
+  press_button:
+    button: { Key: "LControl" }
+    next: "stand_attack_0"
+
+frames:
+  - input_reactions:
+      # override sequence
+      press_button:
+        button: { Key: "LAlt" }
+        next: "walk"
+        events: [{ character_selection: "join" }]
+
+  - {}

@@ -7,11 +7,11 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use asset_model::config::AssetType;
     use assets_test::MAP_FADE_SLUG;
-    use map_selection_model::{MapSelection, MapSelectionEvent};
+    use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventArgs};
     use stdio_spi::{StdinMapper, StdioError};
 
     use map_selection_stdio::{
-        MapSelectionEventArgs, MapSelectionEventStdinMapper, MapSelectionEventStdinMapperSystemData,
+        MapSelectionEventStdinMapper, MapSelectionEventStdinMapperSystemData,
     };
 
     #[test]

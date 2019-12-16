@@ -6,13 +6,14 @@ use amethyst::{
 };
 use asset_model::{loaded::AssetItemIds, play::AssetWorld};
 use audio_model::loaded::SourceSequence;
-use character_model::loaded::{CharacterControlTransitions, CharacterCts};
+use character_model::loaded::{CharacterInputReactions, CharacterIrs};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
 use game_input_model::InputConfig;
+use input_reaction_model::loaded::{InputReaction, InputReactions, InputReactionsSequence};
 use kinematic_model::loaded::ObjectAccelerationSequence;
 use map_model::loaded::{AssetMapBounds, AssetMargins};
 use sequence_model::loaded::WaitSequence;
@@ -77,12 +78,19 @@ pub struct SequenceComponentLoadingResources<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
-    /// `CharacterControlTransitions` assets.
+    /// `InputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
-    /// `CharacterCts` assets.
+    pub input_reactions_assets: Read<'s, AssetStorage<InputReactions>>,
+    /// `InputReactionsSequence<InputReaction>` assets.
     #[derivative(Debug = "ignore")]
-    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
+    pub input_reactions_sequence_assets:
+        Read<'s, AssetStorage<InputReactionsSequence<InputReaction>>>,
+    /// `CharacterInputReactions` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,
+    /// `CharacterIrs` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_irs_assets: Read<'s, AssetStorage<CharacterIrs>>,
 
     /// `TintSequence` assets.
     #[derivative(Debug = "ignore")]
@@ -145,12 +153,12 @@ pub struct SequenceComponentLoadingResourcesRead<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
-    /// `CharacterControlTransitions` assets.
+    /// `CharacterInputReactions` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
-    /// `CharacterCts` assets.
+    pub character_input_reactions_assets: Read<'s, AssetStorage<CharacterInputReactions>>,
+    /// `CharacterIrs` assets.
     #[derivative(Debug = "ignore")]
-    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
+    pub character_irs_assets: Read<'s, AssetStorage<CharacterIrs>>,
 
     /// `TintSequence` assets.
     #[derivative(Debug = "ignore")]

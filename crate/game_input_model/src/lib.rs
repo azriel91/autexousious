@@ -16,7 +16,9 @@
 pub use crate::{
     axis::Axis,
     control_action::{Attack, ControlAction, Defend, Jump, Special},
+    control_args::ControlArgs,
     control_bindings::ControlBindings,
+    control_input_event_args::ControlInputEventArgs,
     controller_config::ControllerConfig,
     controller_id::ControllerId,
     event::{AxisMoveEventData, ControlActionEventData, ControlInputEvent},
@@ -29,7 +31,9 @@ pub mod config;
 
 mod axis;
 mod control_action;
+mod control_args;
 mod control_bindings;
+mod control_input_event_args;
 mod controller_config;
 mod controller_id;
 mod event;

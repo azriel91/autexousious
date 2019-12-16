@@ -3,7 +3,8 @@ mod test {
     use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
-    use object_model::play::{Grounding, HealthPoints, Mirrored};
+    use mirrored_model::play::Mirrored;
+    use object_model::play::{Grounding, HealthPoints};
     use sequence_model::play::SequenceStatus;
 
     use character_play::{

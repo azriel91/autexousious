@@ -8,7 +8,7 @@ mod tests {
     use application_test_support::{AssetQueries, AutexousiousApplication};
     use assets_test::ENERGY_SQUARE_SLUG;
     use kinematic_model::config::{Position, Velocity};
-    use object_model::play::Mirrored;
+    use mirrored_model::play::Mirrored;
     use sequence_model::loaded::SequenceId;
     use spawn_model::{
         loaded::Spawn,

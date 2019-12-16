@@ -1,12 +1,10 @@
 #[cfg(test)]
 mod tests {
     use application_menu::MenuEvent;
-    use game_mode_selection_model::GameModeIndex;
+    use game_mode_selection_model::{GameModeIndex, GameModeSelectionEventArgs};
     use stdio_spi::StdinMapper;
 
-    use game_mode_selection_stdio::{
-        GameModeSelectionEventArgs, GameModeSelectionEventStdinMapper,
-    };
+    use game_mode_selection_stdio::GameModeSelectionEventStdinMapper;
 
     #[test]
     fn maps_select_event() {

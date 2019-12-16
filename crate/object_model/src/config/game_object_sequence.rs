@@ -1,4 +1,4 @@
-use sequence_model::config::SequenceName;
+use sequence_model::config::{SequenceName, Wait};
 
 use crate::config::{GameObjectFrame, ObjectSequence};
 
@@ -7,7 +7,7 @@ pub trait GameObjectSequence {
     /// Sequence ID that this `GameObjectSequence` uses.
     type SequenceName: SequenceName;
     /// Type of the sequence frame.
-    type GameObjectFrame: GameObjectFrame;
+    type GameObjectFrame: AsRef<Wait> + Default + GameObjectFrame;
 
     /// Returns the `ObjectSequence` for this `GameObjectSequence`.
     fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame>;

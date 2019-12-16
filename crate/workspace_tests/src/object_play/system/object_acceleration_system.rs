@@ -11,7 +11,7 @@ mod tests {
         ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
         ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Velocity,
     };
-    use object_model::play::Mirrored;
+    use mirrored_model::play::Mirrored;
     use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
     use typename::TypeName;
 

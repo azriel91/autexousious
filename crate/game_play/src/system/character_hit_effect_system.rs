@@ -11,7 +11,8 @@ use collision_model::{
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Velocity;
-use object_model::play::{HealthPoints, Mirrored};
+use mirrored_model::play::Mirrored;
+use object_model::play::HealthPoints;
 use object_status_model::config::StunPoints;
 use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;

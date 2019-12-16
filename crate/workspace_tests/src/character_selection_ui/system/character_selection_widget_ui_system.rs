@@ -6,6 +6,7 @@ mod test {
         ecs::{Join, ReadStorage, World, WriteStorage},
         input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
+        Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication};
     use assets_test::CHAR_BAT_SLUG;
@@ -14,105 +15,100 @@ mod test {
     use indexmap::IndexMap;
     use typename::TypeName;
 
-    use character_selection_ui::{
-        CharacterSelectionWidget, CharacterSelectionWidgetUiSystem, WidgetState,
-    };
+    use character_selection_ui::{CharacterSelectionWidgetState, CharacterSelectionWidgetUiSystem};
 
     #[test]
-    fn initializes_ui_when_character_selections_waiting() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base()
-                .with_effect(|world| world.insert(input_config()))
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| assert_widget_count(world, 2))
-                .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
-                .run_isolated()
-                .is_ok()
-        );
+    fn initializes_ui_when_character_selections_waiting() -> Result<(), Error> {
+        AutexousiousApplication::config_base()
+            .with_effect(|world| world.insert(input_config()))
+            .with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_count(world, 2))
+            .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
+            .run_isolated()
     }
 
     #[test]
-    fn refreshes_ui_when_selections_select_random() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base()
-                // Set up UI
-                .with_resource(input_config())
-                // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
-                // complete.
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
+    fn refreshes_ui_when_selections_select_random() -> Result<(), Error> {
+        AutexousiousApplication::config_base()
+            // Set up UI
+            .with_resource(input_config())
+            // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
+            // complete.
+            .with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_count(world, 2))
+            // Select character and send event
+            .with_effect(|world| {
+                let (mut character_selections, mut character_selection_widget_states) = world
+                    .system_data::<(
+                        WriteStorage<'_, CharacterSelection>,
+                        WriteStorage<'_, CharacterSelectionWidgetState>,
+                    )>();
+                let (character_selection, character_selection_widget_state) = (
+                    &mut character_selections,
+                    &mut character_selection_widget_states,
                 )
-                .with_assertion(|world| assert_widget_count(world, 2))
-                // Select character and send event
-                .with_effect(|world| {
-                    let mut widgets =
-                        world.system_data::<WriteStorage<'_, CharacterSelectionWidget>>();
-                    let widget = (&mut widgets)
-                        .join()
-                        .next()
-                        .expect("Expected entity with `CharacterSelectionWidget` component.");
+                    .join()
+                    .next()
+                    .expect("Expected entity to exist.");
 
-                    widget.state = WidgetState::CharacterSelect;
-                    widget.selection = CharacterSelection::Random;
-                })
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-                .run_isolated()
-                .is_ok()
-        );
+                *character_selection = CharacterSelection::Random;
+                *character_selection_widget_state = CharacterSelectionWidgetState::CharacterSelect;
+            })
+            .with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
+            .run_isolated()
     }
 
     #[test]
-    fn refreshes_ui_when_selections_select_id() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base()
-                // Set up UI
-                .with_resource(input_config())
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
+    fn refreshes_ui_when_selections_select_id() -> Result<(), Error> {
+        AutexousiousApplication::config_base()
+            // Set up UI
+            .with_resource(input_config())
+            .with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_count(world, 2))
+            // Select character and send event
+            .with_effect(|world| {
+                let (mut character_selections, mut character_selection_widget_states) = world
+                    .system_data::<(
+                        WriteStorage<'_, CharacterSelection>,
+                        WriteStorage<'_, CharacterSelectionWidgetState>,
+                    )>();
+                let (character_selection, character_selection_widget_state) = (
+                    &mut character_selections,
+                    &mut character_selection_widget_states,
                 )
-                .with_assertion(|world| assert_widget_count(world, 2))
-                // Select character and send event
-                .with_effect(|world| {
-                    let mut widgets =
-                        world.system_data::<WriteStorage<'_, CharacterSelectionWidget>>();
-                    let widget = (&mut widgets)
-                        .join()
-                        .next()
-                        .expect("Expected entity with `CharacterSelectionWidget` component.");
+                    .join()
+                    .next()
+                    .expect("Expected entity to exist.");
 
-                    widget.state = WidgetState::CharacterSelect;
+                let bat_asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
+                *character_selection = CharacterSelection::Id(bat_asset_id);
 
-                    let bat_asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
-                    widget.selection = CharacterSelection::Id(bat_asset_id);
-                })
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
-                .run_isolated() // kcov-ignore
-                .is_ok()
-        );
+                *character_selection_widget_state = CharacterSelectionWidgetState::CharacterSelect;
+            })
+            .with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
+            .run_isolated() // kcov-ignore
     }
 
     fn input_config() -> InputConfig {
@@ -145,7 +141,7 @@ mod test {
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
-        world.exec(|widgets: ReadStorage<'_, CharacterSelectionWidget>| {
+        world.exec(|widgets: ReadStorage<'_, CharacterSelectionWidgetState>| {
             assert_eq!(count, widgets.join().count());
         });
     }

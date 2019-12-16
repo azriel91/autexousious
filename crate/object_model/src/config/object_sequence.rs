@@ -9,7 +9,7 @@
 
 use derive_new::new;
 use kinematic_model::config::ObjectAcceleration;
-use sequence_model::config::{SequenceEndTransition, SequenceName};
+use sequence_model::config::{Sequence, SequenceName, Wait};
 use serde::{Deserialize, Serialize};
 
 use crate::config::{GameObjectFrame, ObjectFrame};
@@ -23,15 +23,11 @@ use crate::config::{GameObjectFrame, ObjectFrame};
 pub struct ObjectSequence<SeqName, Frame = ObjectFrame>
 where
     SeqName: SequenceName,
-    Frame: GameObjectFrame,
+    Frame: AsRef<Wait> + Default + GameObjectFrame,
 {
-    /// Name of the sequence to switch to after this one has completed.
-    ///
-    /// Note: This may not be immediately after the last frame of the sequence. For example, a
-    /// character that is in mid-air should remain in the last frame until it lands on the ground.
-    pub next: SequenceEndTransition<SeqName>,
+    /// Common sequence information.
+    #[serde(flatten)]
+    pub sequence: Sequence<SeqName, Frame>,
     /// Acceleration to apply to the object on this frame.
     pub acceleration: Option<ObjectAcceleration>,
-    /// Key frames in the animation sequence.
-    pub frames: Vec<Frame>,
 }

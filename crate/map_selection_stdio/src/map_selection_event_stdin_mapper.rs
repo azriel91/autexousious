@@ -10,11 +10,9 @@ use asset_model::{
     loaded::{AssetIdMappings, AssetTypeMappings},
 };
 use derivative::Derivative;
-use map_selection_model::{MapSelection, MapSelectionEvent};
+use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventArgs};
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
-
-use crate::MapSelectionEventArgs;
 
 #[derive(Debug)]
 pub struct MapSelectionEventStdinMapperData;

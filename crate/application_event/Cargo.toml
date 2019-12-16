@@ -13,7 +13,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 character_selection_model = { path = "../character_selection_model" }
 control_settings_model = { path = "../control_settings_model" }
 derive_more = "0.15.1-pre"
-derivative = "1.0.3"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }

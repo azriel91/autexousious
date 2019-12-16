@@ -1,7 +1,6 @@
 use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
-use derivative::Derivative;
 use derive_more::From;
 use game_input_model::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
@@ -12,8 +11,7 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 use winit::Event;
 
 /// Type encompassing all state event types.
-#[derive(Clone, Derivative, Display, EnumDiscriminants, EventReader, From)]
-#[derivative(Debug, PartialEq = "feature_allow_slow_enum")]
+#[derive(Clone, Debug, Display, EnumDiscriminants, EventReader, From, PartialEq)]
 #[strum_discriminants(
     name(AppEventVariant),
     derive(Display, EnumIter, EnumString),

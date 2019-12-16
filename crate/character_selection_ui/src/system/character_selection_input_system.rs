@@ -10,7 +10,7 @@ use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent}
 use log::debug;
 use typename_derive::TypeName;
 
-use crate::{CharacterSelectionWidget, WidgetState};
+use crate::CharacterSelectionWidgetState;
 
 /// Processes controller input to decide when the character selection screen should transition.
 #[derive(Debug, Default, TypeName, new)]
@@ -27,9 +27,9 @@ pub struct CharacterSelectionInputSystemData<'s> {
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
-    /// `CharacterSelectionWidget` components.
+    /// `CharacterSelectionWidgetState` components.
     #[derivative(Debug = "ignore")]
-    pub character_selection_widgets: ReadStorage<'s, CharacterSelectionWidget>,
+    pub character_selection_widget_states: ReadStorage<'s, CharacterSelectionWidgetState>,
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
@@ -37,22 +37,21 @@ pub struct CharacterSelectionInputSystemData<'s> {
 
 impl CharacterSelectionInputSystem {
     fn handle_control_action_event(
-        character_selection_widgets: &ReadStorage<'_, CharacterSelectionWidget>,
+        character_selection_widget_states: &ReadStorage<'_, CharacterSelectionWidgetState>,
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         control_action_event_data: ControlActionEventData,
     ) {
-        if character_selection_widgets.is_empty() {
+        if character_selection_widget_states.is_empty() {
             return;
         }
         let character_selection_event = match control_action_event_data.control_action {
             ControlAction::Jump => {
                 // If all widgets are inactive, return to previous `State`.
-                let all_inactive =
-                    character_selection_widgets
-                        .join()
-                        .all(|character_selection_widget| {
-                            character_selection_widget.state == WidgetState::Inactive
-                        });
+                let all_inactive = character_selection_widget_states.join().copied().all(
+                    |character_selection_widget_state| {
+                        character_selection_widget_state == CharacterSelectionWidgetState::Inactive
+                    },
+                );
                 if all_inactive {
                     Some(CharacterSelectionEvent::Return)
                 } else {
@@ -67,26 +66,30 @@ impl CharacterSelectionInputSystem {
                 // * There are at least 2 `Ready` widgets`.
                 //
                 // Then proceed to next `State`.
-                let character_selection_widget =
-                    character_selection_widgets.get(control_action_event_data.entity);
-                if let Some(character_selection_widget) = character_selection_widget {
-                    let all_ready_or_inactive =
-                        character_selection_widgets
-                            .join()
-                            .all(|character_selection_widget| {
-                                character_selection_widget.state == WidgetState::Ready
-                                    || character_selection_widget.state == WidgetState::Inactive
-                            });
-
-                    let at_least_two_players = character_selection_widgets
+                let character_selection_widget_state = character_selection_widget_states
+                    .get(control_action_event_data.entity)
+                    .copied();
+                if let Some(character_selection_widget_state) = character_selection_widget_state {
+                    let all_ready_or_inactive = character_selection_widget_states
                         .join()
-                        .filter(|character_selection_widget| {
-                            character_selection_widget.state == WidgetState::Ready
+                        .copied()
+                        .all(|character_selection_widget_state| {
+                            character_selection_widget_state == CharacterSelectionWidgetState::Ready
+                                || character_selection_widget_state
+                                    == CharacterSelectionWidgetState::Inactive
+                        });
+
+                    let at_least_two_players = character_selection_widget_states
+                        .join()
+                        .copied()
+                        .filter(|character_selection_widget_state| {
+                            *character_selection_widget_state
+                                == CharacterSelectionWidgetState::Ready
                         })
                         .count()
                         >= 2;
 
-                    if character_selection_widget.state == WidgetState::Ready
+                    if character_selection_widget_state == CharacterSelectionWidgetState::Ready
                         && at_least_two_players
                         && all_ready_or_inactive
                     {
@@ -118,7 +121,7 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
         &mut self,
         CharacterSelectionInputSystemData {
             control_input_ec,
-            character_selection_widgets,
+            character_selection_widget_states,
             mut character_selection_ec,
         }: Self::SystemData,
     ) {
@@ -132,7 +135,7 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
             .for_each(|ev| {
                 if let ControlInputEvent::ControlActionPress(control_action_event_data) = ev {
                     Self::handle_control_action_event(
-                        &character_selection_widgets,
+                        &character_selection_widget_states,
                         &mut character_selection_ec,
                         *control_action_event_data,
                     )
