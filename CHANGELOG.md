@@ -8,6 +8,13 @@
 * UI for control settings displays input configuration buttons. ([#178])
 * Use `AssetWorld` to store item components. ([#186])
 * Multiple entities spawned per asset via `ItemId`. ([#186])
+* Support for sending events via `input_reactions`. ([#180])
+* Support for reacting to device button input in addition to control input. ([#180])
+
+### Changed
+
+* ***Breaking:*** `transitions` renamed to `input_reactions`. ([#180])
+* ***Breaking:*** `requirements` renamed to `requirement`. ([#180])
 
 ### Removed
 
@@ -18,6 +25,7 @@
 * Delete entities that are spawned out of bounds. ([#184])
 
 [#178]: https://gitlab.com/azriel91/autexousious/issues/178
+[#180]: https://gitlab.com/azriel91/autexousious/issues/180
 [#184]: https://gitlab.com/azriel91/autexousious/issues/184
 [#185]: https://gitlab.com/azriel91/autexousious/issues/185
 [#186]: https://gitlab.com/azriel91/autexousious/issues/186
