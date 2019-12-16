@@ -1126,6 +1126,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "character_selection_ui_model"
+version = "0.16.0"
+dependencies = [
+ "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kinematic_model 0.15.0",
+ "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_label_model 0.16.0",
+]
+
+[[package]]
 name = "charge_model"
 version = "0.15.0"
 dependencies = [
@@ -5564,6 +5574,7 @@ dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "asset_derive 0.15.0",
  "asset_model 0.15.0",
+ "character_selection_ui_model 0.16.0",
  "control_settings_model 0.16.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5934,6 +5945,7 @@ dependencies = [
  "character_selection_model 0.15.0",
  "character_selection_stdio 0.15.0",
  "character_selection_ui 0.15.0",
+ "character_selection_ui_model 0.16.0",
  "charge_model 0.15.0",
  "charge_play 0.15.0",
  "chase_model 0.15.0",

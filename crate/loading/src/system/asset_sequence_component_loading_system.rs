@@ -694,6 +694,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
                             item_ids_all.append(&mut item_ids)
                         }
+                        UiType::CharacterSelection(_character_selection_ui) => {}
                         UiType::ControlSettings(control_settings) => {
                             let keyboard_button_labels = keyboard_button_labels
                                 .as_ref()

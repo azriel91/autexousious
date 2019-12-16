@@ -38,6 +38,7 @@ character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
 character_selection_stdio = { path = "../character_selection_stdio" }
 character_selection_ui = { path = "../character_selection_ui" }
+character_selection_ui_model = { path = "../character_selection_ui_model" }
 charge_model = { path = "../charge_model" }
 charge_play = { path = "../charge_play" }
 chase_model = { path = "../chase_model" }
