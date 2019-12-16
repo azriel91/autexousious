@@ -14,7 +14,7 @@ use character_model::{
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
-use game_input::ButtonInputControlled;
+use game_input::{ButtonInputControlled, SharedInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -614,7 +614,8 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     .with(wait_sequence_handles.clone())
                                     .with(tint_sequence_handles.clone())
                                     .with(scale_sequence_handles.clone())
-                                    .with(input_reactions_sequence_handles.clone());
+                                    .with(input_reactions_sequence_handles.clone())
+                                    .with(SharedInputControlled);
 
                                 if let Some(sprite_render_sequence_handles) =
                                     sprite_render_sequence_handles.clone()
