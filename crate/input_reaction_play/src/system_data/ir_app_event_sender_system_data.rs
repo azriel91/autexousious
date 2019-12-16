@@ -1,9 +1,9 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, World, Write},
+    ecs::{Read, ReadStorage, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
-use asset_model::loaded::{AssetId, AssetIdMappings};
+use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
@@ -22,6 +22,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
 
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
@@ -31,7 +34,7 @@ pub struct IrAppEventSenderSystemData<'s> {
     pub input_controlleds: ReadStorage<'s, InputControlled>,
     /// `CharacterSelection` components.
     #[derivative(Debug = "ignore")]
-    pub character_selections: ReadStorage<'s, CharacterSelection>,
+    pub character_selections: WriteStorage<'s, CharacterSelection>,
 
     /// `ControlSettingsEvent` channel.
     #[derivative(Debug = "ignore")]

@@ -2721,6 +2721,7 @@ dependencies = [
  "map_selection_model 0.15.0",
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_type 0.15.0",
  "sequence_model 0.15.0",
 ]
 

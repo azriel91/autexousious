@@ -1,7 +1,11 @@
 use amethyst::ecs::{Entity, ReadStorage};
-use asset_model::loaded::{AssetId, AssetIdMappings};
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+};
 use character_selection_model::{
-    CharacterSelection, CharacterSelectionEvent, CharacterSelectionEventVariant,
+    config::{CharacterSelectionEventCommand, SwitchDirection},
+    CharacterSelection, CharacterSelectionEvent,
 };
 use control_settings_model::ControlSettingsEvent;
 use game_input::InputControlled;
@@ -11,6 +15,7 @@ use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;
 use log::error;
 use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventVariant};
+use object_type::ObjectType;
 
 use crate::IrAppEventSenderSystemData;
 
@@ -69,23 +74,27 @@ impl IrAppEventSender {
     fn handle_character_selection_event(
         ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
         entity: Entity,
-        character_selection_event_variant: CharacterSelectionEventVariant,
+        character_selection_event_variant: CharacterSelectionEventCommand,
     ) {
         let character_selection_event = match character_selection_event_variant {
-            CharacterSelectionEventVariant::Return => Some(CharacterSelectionEvent::Return),
-            CharacterSelectionEventVariant::Join => {
+            CharacterSelectionEventCommand::Return => Some(CharacterSelectionEvent::Return),
+            CharacterSelectionEventCommand::Join => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Join { controller_id })
             }
-            CharacterSelectionEventVariant::Leave => {
+            CharacterSelectionEventCommand::Leave => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Leave { controller_id })
             }
-            CharacterSelectionEventVariant::Switch => {
+            CharacterSelectionEventCommand::Switch { direction } => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .and_then(|controller_id| {
-                        Self::character_selection(ir_app_event_sender_system_data, entity)
-                            .map(|character_selection| (controller_id, character_selection))
+                        Self::character_selection(
+                            ir_app_event_sender_system_data,
+                            entity,
+                            Some(direction),
+                        )
+                        .map(|character_selection| (controller_id, character_selection))
                     })
                     .map(
                         |(controller_id, character_selection)| CharacterSelectionEvent::Switch {
@@ -94,10 +103,10 @@ impl IrAppEventSender {
                         },
                     )
             }
-            CharacterSelectionEventVariant::Select => {
+            CharacterSelectionEventCommand::Select => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .and_then(|controller_id| {
-                        Self::character_selection(ir_app_event_sender_system_data, entity)
+                        Self::character_selection(ir_app_event_sender_system_data, entity, None)
                             .map(|character_selection| (controller_id, character_selection))
                     })
                     .map(
@@ -107,11 +116,11 @@ impl IrAppEventSender {
                         },
                     )
             }
-            CharacterSelectionEventVariant::Deselect => {
+            CharacterSelectionEventCommand::Deselect => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Deselect { controller_id })
             }
-            CharacterSelectionEventVariant::Confirm => Some(CharacterSelectionEvent::Confirm),
+            CharacterSelectionEventCommand::Confirm => Some(CharacterSelectionEvent::Confirm),
         };
 
         if let Some(character_selection_event) = character_selection_event {
@@ -149,15 +158,31 @@ impl IrAppEventSender {
         IrAppEventSenderSystemData {
             asset_ids,
             asset_id_mappings,
+            asset_type_mappings,
             character_selections,
             ..
-        }: &IrAppEventSenderSystemData,
+        }: &mut IrAppEventSenderSystemData,
         entity: Entity,
+        switch_direction: Option<SwitchDirection>,
     ) -> Option<CharacterSelection> {
-        let character_selection = character_selections.get(entity).copied();
+        let character_selection = character_selections.get_mut(entity).copied();
 
-        if let Some(character_selection) = character_selection {
-            Some(character_selection)
+        if let Some(mut character_selection) = character_selection {
+            match switch_direction {
+                None => Some(character_selection),
+                Some(SwitchDirection::Previous) => {
+                    let new_selection = Self::select_previous_character(
+                        asset_type_mappings,
+                        &mut character_selection,
+                    );
+                    Some(new_selection)
+                }
+                Some(SwitchDirection::Next) => {
+                    let new_selection =
+                        Self::select_next_character(asset_type_mappings, &mut character_selection);
+                    Some(new_selection)
+                }
+            }
         } else {
             Self::log_component_missing_error(
                 asset_ids,
@@ -167,6 +192,83 @@ impl IrAppEventSender {
             );
             None
         }
+    }
+
+    fn select_previous_character(
+        asset_type_mappings: &AssetTypeMappings,
+        character_selection: &mut CharacterSelection,
+    ) -> CharacterSelection {
+        let first_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
+            .next()
+            .expect("Expected at least one character to be loaded.");
+        let last_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
+            .next_back()
+            .expect("Expected at least one character to be loaded.");
+        *character_selection = match *character_selection {
+            CharacterSelection::Id(character_id) => {
+                if character_id == first_character_id {
+                    CharacterSelection::Random
+                } else {
+                    let next_character = asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .copied()
+                        .rev()
+                        .skip_while(|id| id != &character_id)
+                        .nth(1); // skip current selection
+
+                    if let Some(next_character) = next_character {
+                        CharacterSelection::Id(next_character)
+                    } else {
+                        CharacterSelection::Random
+                    }
+                }
+            }
+            CharacterSelection::Random => CharacterSelection::Id(last_character_id),
+        };
+
+        *character_selection
+    }
+
+    fn select_next_character(
+        asset_type_mappings: &AssetTypeMappings,
+        character_selection: &mut CharacterSelection,
+    ) -> CharacterSelection {
+        let first_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
+            .next()
+            .expect("Expected at least one character to be loaded.");
+        let last_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
+            .next_back()
+            .expect("Expected at least one character to be loaded.");
+        *character_selection = match *character_selection {
+            CharacterSelection::Id(character_id) => {
+                if character_id == last_character_id {
+                    CharacterSelection::Random
+                } else {
+                    let next_character = asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .copied()
+                        .skip_while(|id| id != &character_id)
+                        .nth(1); // skip current selection
+
+                    if let Some(next_character) = next_character {
+                        CharacterSelection::Id(next_character)
+                    } else {
+                        CharacterSelection::Random
+                    }
+                }
+            }
+            CharacterSelection::Random => CharacterSelection::Id(first_character_id),
+        };
+
+        *character_selection
     }
 
     fn handle_control_settings_event(
