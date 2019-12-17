@@ -45,6 +45,7 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
+use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
@@ -188,6 +189,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
+            .with(
+                ChildEntityDeleteSystem::new(),
+                any::type_name::<ChildEntityDeleteSystem>(),
+                &[],
+            )
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
