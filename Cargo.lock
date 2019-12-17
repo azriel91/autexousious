@@ -2732,6 +2732,7 @@ dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "asset_model 0.15.0",
  "character_selection_model 0.15.0",
+ "character_selection_ui_model 0.16.0",
  "charge_model 0.15.0",
  "control_settings_model 0.16.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",

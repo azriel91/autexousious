@@ -11,7 +11,7 @@ use game_input::InputControlled;
 use log::error;
 use parent_model::play::ParentEntity;
 
-use crate::play::{CharacterSelectionParent, CswMain};
+use crate::play::{CharacterSelectionParent, CswMain, CswStatus};
 
 /// Tracks the Item IDs to be attached to entities that represent the character selection widget.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -41,6 +41,9 @@ pub struct CharacterSelectionWidgetSystemData<'s> {
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
+    /// `CswStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub csw_statuses: WriteStorage<'s, CswStatus>,
     /// `CharacterSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub character_selection_parents: WriteStorage<'s, CharacterSelectionParent>,
@@ -56,6 +59,7 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
             item_ids,
             input_controlleds,
             parent_entities,
+            csw_statuses,
             character_selection_parents,
         } = system_data;
 
@@ -73,9 +77,10 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
                 let parent_entity = ParentEntity(entity);
                 let layer_entity = entities
                     .build_entity()
-                    .with(parent_entity, parent_entities)
                     .with(item_id, item_ids)
                     .with(self.input_controlled, input_controlleds)
+                    .with(parent_entity, parent_entities)
+                    .with(CswStatus::default(), csw_statuses)
                     .build();
 
                 if csw_main_entity.is_none() {

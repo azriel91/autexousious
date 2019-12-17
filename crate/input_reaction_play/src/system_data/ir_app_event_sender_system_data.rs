@@ -5,6 +5,7 @@ use amethyst::{
 };
 use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+use character_selection_ui_model::play::CswStatus;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
 use game_input::InputControlled;
@@ -35,6 +36,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `CharacterSelection` components.
     #[derivative(Debug = "ignore")]
     pub character_selections: WriteStorage<'s, CharacterSelection>,
+    /// `CswStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub csw_statuses: ReadStorage<'s, CswStatus>,
 
     /// `ControlSettingsEvent` channel.
     #[derivative(Debug = "ignore")]

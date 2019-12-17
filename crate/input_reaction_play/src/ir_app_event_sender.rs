@@ -1,4 +1,4 @@
-use amethyst::ecs::{Entity, ReadStorage};
+use amethyst::ecs::{Entity, Join, ReadStorage};
 use asset_model::{
     config::AssetType,
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
@@ -7,13 +7,14 @@ use character_selection_model::{
     config::{CharacterSelectionEventCommand, SwitchDirection},
     CharacterSelection, CharacterSelectionEvent,
 };
+use character_selection_ui_model::play::CswStatus;
 use control_settings_model::ControlSettingsEvent;
 use game_input::InputControlled;
 use game_input_model::ControllerId;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;
-use log::error;
+use log::{debug, error};
 use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventVariant};
 use object_type::ObjectType;
 
@@ -120,7 +121,19 @@ impl IrAppEventSender {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Deselect { controller_id })
             }
-            CharacterSelectionEventCommand::Confirm => Some(CharacterSelectionEvent::Confirm),
+            CharacterSelectionEventCommand::Confirm => {
+                if Self::character_selection_confirm_preconditions_met(
+                    ir_app_event_sender_system_data,
+                    entity,
+                ) {
+                    Some(CharacterSelectionEvent::Confirm)
+                } else {
+                    debug!(
+                        "Ignoring `CharacterSelectionEvent::Confirm` event as conditions not met."
+                    );
+                    None
+                }
+            }
         };
 
         if let Some(character_selection_event) = character_selection_event {
@@ -269,6 +282,34 @@ impl IrAppEventSender {
         };
 
         *character_selection
+    }
+
+    fn character_selection_confirm_preconditions_met(
+        IrAppEventSenderSystemData { csw_statuses, .. }: &IrAppEventSenderSystemData,
+        entity: Entity,
+    ) -> bool {
+        // If:
+        //
+        // * All widgets are `Ready` or `Inactive`.
+        // * Input was from a `Ready` widget.
+        // * There are at least 2 `Ready` widgets`.
+        //
+        // Then proceed to next `State`.
+        let csw_status = csw_statuses.get(entity).copied();
+
+        let all_ready_or_inactive = csw_statuses
+            .join()
+            .copied()
+            .all(|csw_status| csw_status == CswStatus::Ready || csw_status == CswStatus::Inactive);
+
+        let at_least_two_players = csw_statuses
+            .join()
+            .copied()
+            .filter(|csw_status| *csw_status == CswStatus::Ready)
+            .count()
+            >= 2;
+
+        csw_status == Some(CswStatus::Ready) && at_least_two_players && all_ready_or_inactive
     }
 
     fn handle_control_settings_event(

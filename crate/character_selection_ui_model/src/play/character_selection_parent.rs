@@ -9,4 +9,4 @@ use derive_new::new;
 /// `CharacterSelection`.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(VecStorage)]
-pub struct CharacterSelectionParent(Entity);
+pub struct CharacterSelectionParent(pub Entity);
