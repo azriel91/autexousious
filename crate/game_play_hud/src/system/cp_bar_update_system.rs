@@ -7,7 +7,7 @@ use amethyst::{
 use charge_model::play::ChargeTrackerClock;
 use derivative::Derivative;
 use derive_new::new;
-use object_model::play::ParentObject;
+use parent_model::play::ParentObject;
 use typename_derive::TypeName;
 
 use crate::{CpBar, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};

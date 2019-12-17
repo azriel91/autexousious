@@ -6,7 +6,8 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use object_model::play::{HealthPoints, ParentObject};
+use object_model::play::HealthPoints;
+use parent_model::play::ParentObject;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};

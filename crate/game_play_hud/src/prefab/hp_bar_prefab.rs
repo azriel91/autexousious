@@ -10,7 +10,7 @@ use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
 use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
-use object_model::play::ParentObject;
+use parent_model::play::ParentObject;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
