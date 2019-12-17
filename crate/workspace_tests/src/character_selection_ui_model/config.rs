@@ -7,7 +7,7 @@ mod test {
     use ui_label_model::config::UiSpriteLabel;
 
     use character_selection_ui_model::config::{
-        CharacterSelectionUi, CswDefinition, CswPortraits, CswTemplate,
+        CharacterSelectionUi, CswDefinition, CswLayer, CswLayerName, CswPortraits, CswTemplate,
     };
 
     const CHARACTER_SELECTION_UI_YAML: &str = r#"---
@@ -23,11 +23,14 @@ widget_template:
     random: "portrait_random"
 
   layers:
-    outer_frame:
+    main:
       sequence: "widget_inactive"
       position: { x: 0, y: 0 }
     portrait:
       sequence: "portrait_press_to_join"
+      position: { x: 0, y: 0 }
+    other_layer:
+      sequence: "other"
       position: { x: 0, y: 0 }
 "#;
 
@@ -55,7 +58,7 @@ widget_template:
             join: SequenceNameString::String(String::from("portrait_press_to_join")),
             random: SequenceNameString::String(String::from("portrait_random")),
         };
-        let outer_frame_label = UiSpriteLabel {
+        let main_label = UiSpriteLabel {
             sequence: SequenceNameString::String(String::from("widget_inactive")),
             position: PositionInit::new(0, 0, 0),
         };
@@ -63,9 +66,14 @@ widget_template:
             sequence: SequenceNameString::String(String::from("portrait_press_to_join")),
             position: PositionInit::new(0, 0, 0),
         };
+        let other_label = UiSpriteLabel {
+            sequence: SequenceNameString::String(String::from("other")),
+            position: PositionInit::new(0, 0, 0),
+        };
         let mut layers = IndexMap::new();
-        layers.insert(String::from("outer_frame"), outer_frame_label);
-        layers.insert(String::from("portrait"), portrait_label);
+        layers.insert(CswLayer::Name(CswLayerName::Main), main_label);
+        layers.insert(CswLayer::Name(CswLayerName::Portrait), portrait_label);
+        layers.insert(CswLayer::String(String::from("other_layer")), other_label);
         let widget_template = CswTemplate { portraits, layers };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,

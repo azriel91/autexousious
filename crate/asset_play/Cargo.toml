@@ -13,6 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 asset_model = { path = "../asset_model" }
 audio_model = { path = "../audio_model" }
 character_model = { path = "../character_model" }
+character_selection_ui_model = { path = "../character_selection_ui_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"

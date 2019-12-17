@@ -86,7 +86,7 @@ impl IrAppEventSender {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Leave { controller_id })
             }
-            CharacterSelectionEventCommand::Switch { direction } => {
+            CharacterSelectionEventCommand::Switch(direction) => {
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .and_then(|controller_id| {
                         Self::character_selection(

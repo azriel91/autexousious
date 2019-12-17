@@ -20,6 +20,7 @@ audio_model = { path = "../audio_model" }
 background_model = { path = "../background_model" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+character_selection_ui_model = { path = "../character_selection_ui_model" }
 collision_audio_model = { path = "../collision_audio_model" }
 collision_model = { path = "../collision_model" }
 control_settings_loading = { path = "../control_settings_loading" }

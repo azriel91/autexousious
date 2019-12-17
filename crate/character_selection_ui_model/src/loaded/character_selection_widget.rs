@@ -5,6 +5,7 @@ use amethyst::{
 use asset_model::{loaded::ItemId, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
+use game_input::InputControlled;
 use log::error;
 
 use crate::play::CharacterSelectionParent;
@@ -14,6 +15,8 @@ use crate::play::CharacterSelectionParent;
 pub struct CharacterSelectionWidget {
     /// Layers of sprite labels to draw for the character selection widget.
     pub layers: Vec<ItemId>,
+    /// InputControlled to attach to each layer entity.
+    pub input_controlled: InputControlled,
 }
 
 /// `CharacterSelectionWidgetSystemData`.
@@ -26,6 +29,9 @@ pub struct CharacterSelectionWidgetSystemData<'s> {
     /// `ItemId` components.
     #[derivative(Debug = "ignore")]
     pub item_ids: WriteStorage<'s, ItemId>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: WriteStorage<'s, InputControlled>,
     /// `CharacterSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub character_selection_parents: WriteStorage<'s, CharacterSelectionParent>,
@@ -38,6 +44,7 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
         let CharacterSelectionWidgetSystemData {
             entities,
             item_ids,
+            input_controlleds,
             character_selection_parents,
         } = system_data;
 
@@ -51,6 +58,7 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
                     .build_entity()
                     // TODO: .with(parent_entity, parent_entities)
                     .with(item_id, item_ids)
+                    .with(self.input_controlled, input_controlleds)
                     .build()
             })
             .collect::<Vec<Entity>>();

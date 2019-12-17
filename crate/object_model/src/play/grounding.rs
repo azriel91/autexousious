@@ -1,7 +1,6 @@
-use amethyst::ecs::{
+use amethyst::{
+    ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
-    storage::VecStorage,
-    Component, Entity, World, WriteStorage,
 };
 use asset_model::ItemComponent;
 use derivative::Derivative;

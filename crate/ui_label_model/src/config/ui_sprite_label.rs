@@ -17,14 +17,14 @@ pub struct UiSpriteLabel {
     pub sequence: SequenceNameString<SpriteSequenceName>,
 }
 
-impl AsRef<UiSpriteLabel> for UiSpriteLabel {
-    fn as_ref(&self) -> &UiSpriteLabel {
-        self
-    }
-}
-
 impl AsRef<PositionInit> for UiSpriteLabel {
     fn as_ref(&self) -> &PositionInit {
         &self.position
+    }
+}
+
+impl AsRef<SequenceNameString<SpriteSequenceName>> for UiSpriteLabel {
+    fn as_ref(&self) -> &SequenceNameString<SpriteSequenceName> {
+        &self.sequence
     }
 }

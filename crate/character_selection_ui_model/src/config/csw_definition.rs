@@ -8,3 +8,9 @@ pub struct CswDefinition {
     /// Position of the character selection widget on screen.
     pub position: PositionInit,
 }
+
+impl AsRef<PositionInit> for CswDefinition {
+    fn as_ref(&self) -> &PositionInit {
+        &self.position
+    }
+}

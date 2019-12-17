@@ -13,10 +13,7 @@ pub enum CharacterSelectionEventCommand {
     /// Player has left / become inactive.
     Leave,
     /// Character has been switched.
-    Switch {
-        /// ID of the selected character.
-        direction: SwitchDirection,
-    },
+    Switch(SwitchDirection),
     /// Character has been selected.
     Select,
     /// Character has been deselected.
