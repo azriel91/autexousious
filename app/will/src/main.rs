@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-use std::{convert::TryFrom, process};
+use std::{any, convert::TryFrom, process};
 
 use amethyst::{
     assets::HotReloadBundle,
@@ -26,6 +26,7 @@ use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
+use character_selection_ui_play::CswPortraitUpdateSystem;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
@@ -143,6 +144,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputReactionLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with(
+                CswPortraitUpdateSystem::new(),
+                any::type_name::<CswPortraitUpdateSystem>(),
+                &[],
+            )
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
                 StateIdEventSystem::new(),
