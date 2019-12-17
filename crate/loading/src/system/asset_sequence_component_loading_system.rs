@@ -14,6 +14,7 @@ use character_model::{
 use character_selection_ui_model::{
     config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
     loaded::{CharacterSelectionWidget, CswPortraits},
+    play::CswMain,
 };
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
@@ -770,7 +771,10 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                                 .with(input_reactions_sequence_handles.clone());
 
                                             match csw_layer {
-                                                CswLayer::Name(CswLayerName::Main) => {}
+                                                CswLayer::Name(CswLayerName::Main) => {
+                                                    item_entity_builder =
+                                                        item_entity_builder.with(CswMain);
+                                                }
                                                 CswLayer::Name(CswLayerName::Portrait) => {
                                                     item_entity_builder =
                                                         item_entity_builder.with(csw_portraits);

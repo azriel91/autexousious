@@ -8,7 +8,10 @@ use amethyst::{
 use asset_model::play::AssetWorld;
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
-use character_selection_ui_model::loaded::{CharacterSelectionWidget, CswPortraits};
+use character_selection_ui_model::{
+    loaded::{CharacterSelectionWidget, CswPortraits},
+    play::CswMain,
+};
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
@@ -70,6 +73,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<UiMenuItem<GameModeIndex>>();
         asset_world.register::<CharacterSelectionWidget>();
         asset_world.register::<CswPortraits>();
+        asset_world.register::<CswMain>();
 
         world.insert(asset_world);
 
@@ -197,6 +201,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<CswPortraits>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<CswPortraits>>(),
+            &[&any::type_name::<
+                ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<CswMain>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<CswMain>>(),
             &[&any::type_name::<
                 ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
             >()],

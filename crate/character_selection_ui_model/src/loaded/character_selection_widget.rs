@@ -1,14 +1,16 @@
 use amethyst::{
-    ecs::{storage::DenseVecStorage, Component, Entities, Entity, World, WriteStorage},
+    ecs::{
+        storage::DenseVecStorage, Component, Entities, Entity, Read, World, WorldExt, WriteStorage,
+    },
     shred::{ResourceId, SystemData},
 };
-use asset_model::{loaded::ItemId, ItemComponent};
+use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use log::error;
 
-use crate::play::CharacterSelectionParent;
+use crate::play::{CharacterSelectionParent, CswMain};
 
 /// Tracks the Item IDs to be attached to entities that represent the character selection widget.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -23,6 +25,9 @@ pub struct CharacterSelectionWidget {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterSelectionWidgetSystemData<'s> {
+    /// `AssetWorld`.
+    #[derivative(Debug = "ignore")]
+    pub asset_world: Read<'s, AssetWorld>,
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
@@ -42,34 +47,50 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
 
     fn augment(&self, system_data: &mut Self::SystemData, _entity: Entity) {
         let CharacterSelectionWidgetSystemData {
+            asset_world,
             entities,
             item_ids,
             input_controlleds,
             character_selection_parents,
         } = system_data;
 
-        let layer_entities = self
-            .layers
-            .iter()
-            .copied()
-            .map(|item_id| {
+        let csw_main_item = {
+            let csw_mains = asset_world.read_storage::<CswMain>();
+            self.layers
+                .iter()
+                .find(|layer_item_id| csw_mains.get(layer_item_id.0).is_some())
+                .copied()
+        };
+
+        let (csw_main_entity, layer_entities) = self.layers.iter().copied().fold(
+            (None, Vec::with_capacity(self.layers.len())),
+            |(mut csw_main_entity, mut layer_entities), item_id| {
                 // TODO: let parent_entity = ParentEntity(self);
-                entities
+                let layer_entity = entities
                     .build_entity()
                     // TODO: .with(parent_entity, parent_entities)
                     .with(item_id, item_ids)
                     .with(self.input_controlled, input_controlleds)
-                    .build()
-            })
-            .collect::<Vec<Entity>>();
+                    .build();
 
-        let first_layer_entity = layer_entities.first().copied();
+                if csw_main_entity.is_none() {
+                    if let Some(csw_main_item) = csw_main_item {
+                        if item_id == csw_main_item {
+                            csw_main_entity = Some(layer_entity);
+                        }
+                    }
+                }
+                layer_entities.push(layer_entity);
 
-        if let Some(first_layer_entity) = first_layer_entity {
-            let character_selection_parent = CharacterSelectionParent::new(first_layer_entity);
+                (csw_main_entity, layer_entities)
+            },
+        );
+
+        if let Some(csw_main_entity) = csw_main_entity {
+            let character_selection_parent = CharacterSelectionParent::new(csw_main_entity);
             layer_entities
                 .iter()
-                .skip(1)
+                .filter(|layer_entity| **layer_entity != csw_main_entity)
                 .copied()
                 .for_each(|layer_entity| {
                     character_selection_parents
