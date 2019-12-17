@@ -63,7 +63,7 @@ impl<'s> System<'s> for CpBarUpdateSystem {
             .join()
             .filter_map(|(_, parent_entity, transform, sprite_render)| {
                 charge_tracker_clocks
-                    .get(parent_entity.entity)
+                    .get(parent_entity.0)
                     .map(|charge_tracker_clock| (transform, sprite_render, charge_tracker_clock))
             })
             .for_each(|(transform, sprite_render, charge_tracker_clock)| {

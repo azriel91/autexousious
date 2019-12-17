@@ -63,7 +63,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
             .join()
             .filter_map(|(_, parent_entity, transform, sprite_render)| {
                 health_pointses
-                    .get(parent_entity.entity)
+                    .get(parent_entity.0)
                     .map(|health_points| (transform, sprite_render, health_points))
             })
             .for_each(|(transform, sprite_render, health_points)| {
