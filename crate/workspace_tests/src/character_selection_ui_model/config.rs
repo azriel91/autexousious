@@ -19,16 +19,15 @@ widgets:
 
 widget_template:
   portraits:
-    join:
-      sequence: "portrait_press_to_join"
-      position: { x: 0, y: 0 }
-    random:
-      sequence: "portrait_random"
-      position: { x: 0, y: 0 }
+    join: "portrait_press_to_join"
+    random: "portrait_random"
 
   layers:
     outer_frame:
       sequence: "widget_inactive"
+      position: { x: 0, y: 0 }
+    portrait:
+      sequence: "portrait_press_to_join"
       position: { x: 0, y: 0 }
 "#;
 
@@ -53,21 +52,20 @@ widget_template:
             },
         ];
         let portraits = CswPortraits {
-            join: UiSpriteLabel {
-                sequence: SequenceNameString::String(String::from("portrait_press_to_join")),
-                position: PositionInit::new(0, 0, 0),
-            },
-            random: UiSpriteLabel {
-                sequence: SequenceNameString::String(String::from("portrait_random")),
-                position: PositionInit::new(0, 0, 0),
-            },
+            join: SequenceNameString::String(String::from("portrait_press_to_join")),
+            random: SequenceNameString::String(String::from("portrait_random")),
         };
         let outer_frame_label = UiSpriteLabel {
             sequence: SequenceNameString::String(String::from("widget_inactive")),
             position: PositionInit::new(0, 0, 0),
         };
+        let portrait_label = UiSpriteLabel {
+            sequence: SequenceNameString::String(String::from("portrait_press_to_join")),
+            position: PositionInit::new(0, 0, 0),
+        };
         let mut layers = IndexMap::new();
         layers.insert(String::from("outer_frame"), outer_frame_label);
+        layers.insert(String::from("portrait"), portrait_label);
         let widget_template = CswTemplate { portraits, layers };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,
