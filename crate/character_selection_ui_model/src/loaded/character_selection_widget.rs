@@ -9,6 +9,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use log::error;
+use parent_model::play::ParentEntity;
 
 use crate::play::{CharacterSelectionParent, CswMain};
 
@@ -37,6 +38,9 @@ pub struct CharacterSelectionWidgetSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
+    /// `ParentEntity` components.
+    #[derivative(Debug = "ignore")]
+    pub parent_entities: WriteStorage<'s, ParentEntity>,
     /// `CharacterSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub character_selection_parents: WriteStorage<'s, CharacterSelectionParent>,
@@ -45,12 +49,13 @@ pub struct CharacterSelectionWidgetSystemData<'s> {
 impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
     type SystemData = CharacterSelectionWidgetSystemData<'s>;
 
-    fn augment(&self, system_data: &mut Self::SystemData, _entity: Entity) {
+    fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let CharacterSelectionWidgetSystemData {
             asset_world,
             entities,
             item_ids,
             input_controlleds,
+            parent_entities,
             character_selection_parents,
         } = system_data;
 
@@ -65,10 +70,10 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
         let (csw_main_entity, layer_entities) = self.layers.iter().copied().fold(
             (None, Vec::with_capacity(self.layers.len())),
             |(mut csw_main_entity, mut layer_entities), item_id| {
-                // TODO: let parent_entity = ParentEntity(self);
+                let parent_entity = ParentEntity(entity);
                 let layer_entity = entities
                     .build_entity()
-                    // TODO: .with(parent_entity, parent_entities)
+                    .with(parent_entity, parent_entities)
                     .with(item_id, item_ids)
                     .with(self.input_controlled, input_controlleds)
                     .build();
