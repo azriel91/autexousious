@@ -98,6 +98,8 @@ object_play = { path = "../object_play" }
 object_status_model = { path = "../object_status_model" }
 object_status_play = { path = "../object_status_play" }
 object_type = { path = "../object_type" }
+parent_model = { path = "../parent_model" }
+parent_play = { path = "../parent_play" }
 pretty_assertions = "0.6.1"
 rayon = "1.2.0"
 ron = "0.5.1"

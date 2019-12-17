@@ -134,6 +134,8 @@ mod object_play;
 #[cfg(test)]
 mod object_status_play;
 #[cfg(test)]
+mod parent_play;
+#[cfg(test)]
 mod sequence_loading;
 #[cfg(test)]
 mod sequence_play;

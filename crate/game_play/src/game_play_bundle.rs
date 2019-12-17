@@ -46,6 +46,7 @@ use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
 };
 use object_status_play::StunPointsReductionSystem;
+use parent_play::ChildEntityDeleteSystem;
 use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
 use sequence_play::{
     FrameComponentUpdateSystem, SequenceComponentUpdateSystem, SequenceEndTransitionSystem,
@@ -435,6 +436,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add_barrier();
 
         // === Helper Systems === //
+
+        // Detects when the winning condition has been met.
+        builder.add(
+            ChildEntityDeleteSystem::new(),
+            &any::type_name::<ChildEntityDeleteSystem>(),
+            &[],
+        ); // kcov-ignore
 
         // Detects when the winning condition has been met.
         builder.add(

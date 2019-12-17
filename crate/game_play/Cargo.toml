@@ -47,6 +47,7 @@ object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }
 object_status_model = { path = "../object_status_model" }
 object_status_play = { path = "../object_status_play" }
+parent_play = { path = "../parent_play" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
 shape_model = { path = "../shape_model" }

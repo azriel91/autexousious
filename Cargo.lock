@@ -2362,6 +2362,7 @@ dependencies = [
  "object_play 0.15.0",
  "object_status_model 0.15.0",
  "object_status_play 0.15.0",
+ "parent_play 0.16.0",
  "sequence_model 0.15.0",
  "sequence_play 0.15.0",
  "shape_model 0.15.0",
@@ -3699,6 +3700,17 @@ version = "0.16.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "parent_play"
+version = "0.16.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "parent_model 0.16.0",
 ]
 
 [[package]]
@@ -6026,6 +6038,8 @@ dependencies = [
  "object_status_model 0.15.0",
  "object_status_play 0.15.0",
  "object_type 0.15.0",
+ "parent_model 0.16.0",
+ "parent_play 0.16.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
