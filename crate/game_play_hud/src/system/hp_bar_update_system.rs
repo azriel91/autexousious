@@ -7,7 +7,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::HealthPoints;
-use parent_model::play::ParentObject;
+use parent_model::play::ParentEntity;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
@@ -27,9 +27,9 @@ pub struct HpBarUpdateSystemData<'s> {
     /// `HpBar` components.
     #[derivative(Debug = "ignore")]
     pub hp_bars: ReadStorage<'s, HpBar>,
-    /// `ParentObject` components.
+    /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
-    pub parent_objects: ReadStorage<'s, ParentObject>,
+    pub parent_entities: ReadStorage<'s, ParentEntity>,
     /// `HealthPoints` components.
     #[derivative(Debug = "ignore")]
     pub health_pointses: ReadStorage<'s, HealthPoints>,
@@ -48,7 +48,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
         &mut self,
         HpBarUpdateSystemData {
             hp_bars,
-            parent_objects,
+            parent_entities,
             health_pointses,
             mut transforms,
             mut sprite_renders,
@@ -56,14 +56,14 @@ impl<'s> System<'s> for HpBarUpdateSystem {
     ) {
         (
             &hp_bars,
-            &parent_objects,
+            &parent_entities,
             &mut transforms,
             &mut sprite_renders,
         )
             .join()
-            .filter_map(|(_, parent_object, transform, sprite_render)| {
+            .filter_map(|(_, parent_entity, transform, sprite_render)| {
                 health_pointses
-                    .get(parent_object.entity)
+                    .get(parent_entity.entity)
                     .map(|health_points| (transform, sprite_render, health_points))
             })
             .for_each(|(transform, sprite_render, health_points)| {

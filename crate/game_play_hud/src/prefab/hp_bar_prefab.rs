@@ -10,7 +10,7 @@ use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
 use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
-use parent_model::play::ParentObject;
+use parent_model::play::ParentEntity;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
@@ -47,9 +47,9 @@ pub struct HpBarPrefabSystemData<'s> {
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
-    /// `ParentObject` components.
+    /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
-    pub parent_objects: WriteStorage<'s, ParentObject>,
+    pub parent_entities: WriteStorage<'s, ParentEntity>,
     /// `TargetObject` components.
     #[derivative(Debug = "ignore")]
     pub target_objects: WriteStorage<'s, TargetObject>,
@@ -77,7 +77,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         HpBarPrefabSystemData {
             hp_bars,
             transforms,
-            parent_objects,
+            parent_entities,
             target_objects,
             chase_mode_sticks,
             colour_sprite_sheet_gen_data,
@@ -99,7 +99,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         }
         transform.set_scale(Vector3::new(HP_BAR_LENGTH, HP_BAR_HEIGHT, 1.));
         transforms.insert(entity, transform)?;
-        parent_objects.insert(entity, ParentObject::new(self.game_object_entity))?;
+        parent_entities.insert(entity, ParentEntity::new(self.game_object_entity))?;
         target_objects.insert(entity, TargetObject::new(self.game_object_entity))?;
         chase_mode_sticks.insert(entity, Default::default())?;
 

@@ -7,7 +7,7 @@ use amethyst::{
 use charge_model::play::ChargeTrackerClock;
 use derivative::Derivative;
 use derive_new::new;
-use parent_model::play::ParentObject;
+use parent_model::play::ParentEntity;
 use typename_derive::TypeName;
 
 use crate::{CpBar, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};
@@ -27,9 +27,9 @@ pub struct CpBarUpdateSystemData<'s> {
     /// `CpBar` components.
     #[derivative(Debug = "ignore")]
     pub cp_bars: ReadStorage<'s, CpBar>,
-    /// `ParentObject` components.
+    /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
-    pub parent_objects: ReadStorage<'s, ParentObject>,
+    pub parent_entities: ReadStorage<'s, ParentEntity>,
     /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_tracker_clocks: ReadStorage<'s, ChargeTrackerClock>,
@@ -48,7 +48,7 @@ impl<'s> System<'s> for CpBarUpdateSystem {
         &mut self,
         CpBarUpdateSystemData {
             cp_bars,
-            parent_objects,
+            parent_entities,
             charge_tracker_clocks,
             mut transforms,
             mut sprite_renders,
@@ -56,14 +56,14 @@ impl<'s> System<'s> for CpBarUpdateSystem {
     ) {
         (
             &cp_bars,
-            &parent_objects,
+            &parent_entities,
             &mut transforms,
             &mut sprite_renders,
         )
             .join()
-            .filter_map(|(_, parent_object, transform, sprite_render)| {
+            .filter_map(|(_, parent_entity, transform, sprite_render)| {
                 charge_tracker_clocks
-                    .get(parent_object.entity)
+                    .get(parent_entity.entity)
                     .map(|charge_tracker_clock| (transform, sprite_render, charge_tracker_clock))
             })
             .for_each(|(transform, sprite_render, charge_tracker_clock)| {
