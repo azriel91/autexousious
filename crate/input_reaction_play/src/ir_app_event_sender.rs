@@ -178,21 +178,19 @@ impl IrAppEventSender {
         entity: Entity,
         switch_direction: Option<SwitchDirection>,
     ) -> Option<CharacterSelection> {
-        let character_selection = character_selections.get_mut(entity).copied();
+        let character_selection = character_selections.get_mut(entity);
 
-        if let Some(mut character_selection) = character_selection {
+        if let Some(character_selection) = character_selection {
             match switch_direction {
-                None => Some(character_selection),
+                None => Some(*character_selection),
                 Some(SwitchDirection::Previous) => {
-                    let new_selection = Self::select_previous_character(
-                        asset_type_mappings,
-                        &mut character_selection,
-                    );
+                    let new_selection =
+                        Self::select_previous_character(asset_type_mappings, character_selection);
                     Some(new_selection)
                 }
                 Some(SwitchDirection::Next) => {
                     let new_selection =
-                        Self::select_next_character(asset_type_mappings, &mut character_selection);
+                        Self::select_next_character(asset_type_mappings, character_selection);
                     Some(new_selection)
                 }
             }
