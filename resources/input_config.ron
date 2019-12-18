@@ -44,7 +44,7 @@ InputConfig(
         "Player Four": ControllerConfig(
             axes: {
                 X: Emulated(pos: Key(Numpad3), neg: Key(Numpad1)),
-                Z: Emulated(pos: Key(Numpad5), neg: Key(Numpad2)),
+                Z: Emulated(pos: Key(Numpad2), neg: Key(Numpad5)),
             },
             actions: {
                 Defend: Key(Numpad7),
