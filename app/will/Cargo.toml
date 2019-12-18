@@ -21,6 +21,7 @@ camera_play = { path = "../../crate/camera_play" }
 character_loading = { path = "../../crate/character_loading" }
 character_prefab = { path = "../../crate/character_prefab" }
 character_selection_stdio = { path = "../../crate/character_selection_stdio" }
+character_selection_ui_play = { path = "../../crate/character_selection_ui_play" }
 collision_audio_loading = { path = "../../crate/collision_audio_loading" }
 collision_loading = { path = "../../crate/collision_loading" }
 energy_loading = { path = "../../crate/energy_loading" }
@@ -41,6 +42,7 @@ loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
+parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }
 spawn_loading = { path = "../../crate/spawn_loading" }
 sprite_loading = { path = "../../crate/sprite_loading" }

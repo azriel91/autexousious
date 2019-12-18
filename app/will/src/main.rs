@@ -1,6 +1,6 @@
 #![windows_subsystem = "windows"]
 
-use std::{convert::TryFrom, process};
+use std::{any, convert::TryFrom, process};
 
 use amethyst::{
     assets::HotReloadBundle,
@@ -26,6 +26,7 @@ use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
+use character_selection_ui_play::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
@@ -44,6 +45,7 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
+use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
@@ -143,6 +145,16 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputReactionLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with(
+                CswPortraitUpdateSystem::new(),
+                any::type_name::<CswPortraitUpdateSystem>(),
+                &[],
+            )
+            .with(
+                CswPreviewSpawnSystem::new(),
+                any::type_name::<CswPreviewSpawnSystem>(),
+                &[],
+            )
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
                 StateIdEventSystem::new(),
@@ -182,6 +194,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
+            .with(
+                ChildEntityDeleteSystem::new(),
+                any::type_name::<ChildEntityDeleteSystem>(),
+                &[],
+            )
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
