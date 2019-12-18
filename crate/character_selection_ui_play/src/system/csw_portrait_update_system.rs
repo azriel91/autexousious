@@ -49,7 +49,7 @@ impl CswPortraitUpdateSystem {
     /// Finds the portrait `Entity` with the given controller ID.
     ///
     /// Returns the entity and its `CharacterSelectionParent` if found.
-    fn find_csw_entities(
+    fn find_csw_portrait(
         (entities, input_controlleds, csw_portraitses, character_selection_parents): (
             &Entities<'_>,
             &ReadStorage<'_, InputControlled>,
@@ -109,7 +109,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                 CharacterSelectionEvent::Return => {}
                 CharacterSelectionEvent::Join { controller_id } => {
                     if let Some((entity_portrait, csw_portraits, character_selection)) =
-                        Self::find_csw_entities(find_csw_data, *controller_id).and_then(
+                        Self::find_csw_portrait(find_csw_data, *controller_id).and_then(
                             |(entity_portrait, csw_portraits, character_selection_parent)| {
                                 character_selections.get(character_selection_parent.0).map(
                                     |character_selection| {
@@ -131,7 +131,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                 }
                 CharacterSelectionEvent::Leave { controller_id } => {
                     if let Some((entity_portrait, csw_portraits, _)) =
-                        Self::find_csw_entities(find_csw_data, *controller_id)
+                        Self::find_csw_portrait(find_csw_data, *controller_id)
                     {
                         let sequence_id = csw_portraits.join;
                         sequence_ids
@@ -144,7 +144,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                     character_selection,
                 } => {
                     if let Some((entity_portrait, csw_portraits, _)) =
-                        Self::find_csw_entities(find_csw_data, *controller_id)
+                        Self::find_csw_portrait(find_csw_data, *controller_id)
                     {
                         let sequence_id = match character_selection {
                             CharacterSelection::Random => csw_portraits.random,
