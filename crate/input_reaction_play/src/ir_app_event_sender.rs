@@ -78,7 +78,15 @@ impl IrAppEventSender {
         character_selection_event_variant: CharacterSelectionEventCommand,
     ) {
         let character_selection_event = match character_selection_event_variant {
-            CharacterSelectionEventCommand::Return => Some(CharacterSelectionEvent::Return),
+            CharacterSelectionEventCommand::Return => {
+                if Self::character_selection_return_preconditions_met(
+                    ir_app_event_sender_system_data,
+                ) {
+                    Some(CharacterSelectionEvent::Return)
+                } else {
+                    None
+                }
+            }
             CharacterSelectionEventCommand::Join => {
                 ir_app_event_sender_system_data
                     .csw_statuses
@@ -161,6 +169,16 @@ impl IrAppEventSender {
                 .character_selection_ec
                 .single_write(character_selection_event);
         }
+    }
+
+    fn character_selection_return_preconditions_met(
+        IrAppEventSenderSystemData { csw_statuses, .. }: &IrAppEventSenderSystemData,
+    ) -> bool {
+        // If all widgets are inactive, return to previous `State`.
+        csw_statuses
+            .join()
+            .copied()
+            .all(|csw_status| csw_status == CswStatus::Inactive)
     }
 
     fn controller_id(
