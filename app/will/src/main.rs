@@ -26,7 +26,7 @@ use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
-use character_selection_ui_play::CswPortraitUpdateSystem;
+use character_selection_ui_play::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
@@ -148,6 +148,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(
                 CswPortraitUpdateSystem::new(),
                 any::type_name::<CswPortraitUpdateSystem>(),
+                &[],
+            )
+            .with(
+                CswPreviewSpawnSystem::new(),
+                any::type_name::<CswPreviewSpawnSystem>(),
                 &[],
             )
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])

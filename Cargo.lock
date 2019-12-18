@@ -1158,7 +1158,13 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.15.0",
  "game_input_model 0.15.0",
+ "kinematic_model 0.15.0",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.15.0",
+ "parent_model 0.16.0",
  "sequence_model 0.15.0",
+ "spawn_model 0.15.0",
+ "spawn_play 0.15.0",
 ]
 
 [[package]]

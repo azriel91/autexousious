@@ -2,6 +2,6 @@
 
 //! Provides logic for character selection UI used at runtime.
 
-pub use crate::system::CswPortraitUpdateSystem;
+pub use crate::system::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
 
 mod system;

@@ -16,7 +16,13 @@ character_selection_model = { path = "../character_selection_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
+kinematic_model = { path = "../kinematic_model" }
+log = "0.4.8"
+object_model = { path = "../object_model" }
+parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
+spawn_model = { path = "../spawn_model" }
+spawn_play = { path = "../spawn_play" }
 
 [features]
 nightly = ["amethyst/nightly"]

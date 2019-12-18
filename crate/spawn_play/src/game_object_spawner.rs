@@ -2,7 +2,7 @@ use amethyst::ecs::Entity;
 use asset_model::config::AssetType;
 use character_prefab::CharacterEntityAugmenter;
 use energy_prefab::EnergyEntityAugmenter;
-use log::error;
+use log::{debug, error};
 use object_type::ObjectType;
 use spawn_model::{loaded::Spawn, play::SpawnEvent};
 
@@ -40,6 +40,9 @@ impl GameObjectSpawner {
                 asset_id
             )
         });
+
+        debug!("Spawning entity for asset: `{}`.", asset_slug);
+
         let item_ids_character = asset_item_ids.get(asset_id).unwrap_or_else(|| {
             panic!("Expected `ItemIds` to exist for asset: `{}`", asset_slug);
         });
