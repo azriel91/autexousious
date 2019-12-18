@@ -114,8 +114,8 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                     {
                         let sequence_id = match character_selection {
                             CharacterSelection::Random => csw_portraits.random,
-                            // TODO: empty portrait background
-                            CharacterSelection::Id(_asset_id) => csw_portraits.random,
+                            // TODO: Spawn character.
+                            CharacterSelection::Id(_asset_id) => csw_portraits.select,
                         };
                         sequence_ids
                             .insert(entity_portrait, sequence_id)
@@ -141,12 +141,30 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                 CharacterSelectionEvent::Switch {
                     controller_id,
                     character_selection,
-                } => {}
-                CharacterSelectionEvent::Select {
-                    controller_id,
-                    character_selection,
-                } => {}
-                CharacterSelectionEvent::Deselect { controller_id } => {}
+                } => {
+                    if let Some((entity_portrait, csw_portraits)) =
+                        Self::find_csw_entities(find_csw_data, *controller_id).and_then(
+                            |(entity_portrait, _character_selection_parent)| {
+                                csw_portraitses
+                                    .get(entity_portrait)
+                                    .map(|csw_portraits| (entity_portrait, csw_portraits))
+                            },
+                        )
+                    {
+                        let sequence_id = match character_selection {
+                            CharacterSelection::Random => csw_portraits.random,
+                            // TODO: Spawn character.
+                            CharacterSelection::Id(_asset_id) => csw_portraits.select,
+                        };
+                        sequence_ids
+                            .insert(entity_portrait, sequence_id)
+                            .expect("Failed to insert `SequenceId` component.");
+                    }
+                }
+                // Don't need to update sequence for select / deselect, as they should be on the
+                // correct portrait background already.
+                CharacterSelectionEvent::Select { .. }
+                | CharacterSelectionEvent::Deselect { .. } => {}
                 CharacterSelectionEvent::Confirm => {}
             });
     }
