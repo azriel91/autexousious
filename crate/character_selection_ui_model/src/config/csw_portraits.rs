@@ -10,4 +10,6 @@ pub struct CswPortraits {
     pub join: SequenceNameString<SpriteSequenceName>,
     /// Used when character selection is "Random".
     pub random: SequenceNameString<SpriteSequenceName>,
+    /// Used when character selection is a character.
+    pub select: SequenceNameString<SpriteSequenceName>,
 }

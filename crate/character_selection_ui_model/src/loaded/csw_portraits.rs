@@ -14,6 +14,8 @@ pub struct CswPortraits {
     pub join: SequenceId,
     /// Used when character selection is "Random".
     pub random: SequenceId,
+    /// Used when character selection is a character.
+    pub select: SequenceId,
 }
 
 /// `CswPortraitsSystemData`.

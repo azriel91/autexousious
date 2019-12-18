@@ -708,6 +708,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                             character_selection_ui_model::config::CswPortraits {
                                                 join,
                                                 random,
+                                                select,
                                             },
                                         layers, // IndexMap<String, UiSpriteLabel>
                                     },
@@ -732,9 +733,16 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                     asset_slug,
                                     random,
                                 );
+                            let sequence_id_select =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    select,
+                                );
                             let csw_portraits = CswPortraits {
                                 join: sequence_id_join,
                                 random: sequence_id_random,
+                                select: sequence_id_select,
                             };
                             let item_ids_layers = position_inits_widgets
                                 .0

@@ -21,6 +21,7 @@ widget_template:
   portraits:
     join: "portrait_press_to_join"
     random: "portrait_random"
+    select: "portrait_select"
 
   layers:
     main:
@@ -57,6 +58,7 @@ widget_template:
         let portraits = CswPortraits {
             join: SequenceNameString::String(String::from("portrait_press_to_join")),
             random: SequenceNameString::String(String::from("portrait_random")),
+            select: SequenceNameString::String(String::from("portrait_select")),
         };
         let main_label = UiSpriteLabel {
             sequence: SequenceNameString::String(String::from("widget_inactive")),
