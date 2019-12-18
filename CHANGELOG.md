@@ -10,6 +10,8 @@
 * Multiple entities spawned per asset via `ItemId`. ([#186])
 * Support for sending events via `input_reactions`. ([#180])
 * Support for reacting to device button input in addition to control input. ([#180])
+* Character selection UI defined through configuration. ([#177])
+* Character selection UI displays highlighted character. ([#177])
 
 ### Changed
 
@@ -24,6 +26,7 @@
 
 * Delete entities that are spawned out of bounds. ([#184])
 
+[#177]: https://gitlab.com/azriel91/autexousious/issues/177
 [#178]: https://gitlab.com/azriel91/autexousious/issues/178
 [#180]: https://gitlab.com/azriel91/autexousious/issues/180
 [#184]: https://gitlab.com/azriel91/autexousious/issues/184
