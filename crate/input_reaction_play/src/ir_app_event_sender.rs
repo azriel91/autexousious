@@ -80,10 +80,20 @@ impl IrAppEventSender {
         let character_selection_event = match character_selection_event_variant {
             CharacterSelectionEventCommand::Return => Some(CharacterSelectionEvent::Return),
             CharacterSelectionEventCommand::Join => {
+                ir_app_event_sender_system_data
+                    .csw_statuses
+                    .insert(entity, CswStatus::CharacterSelect)
+                    .expect("Failed to insert `CswStatus` component.");
+
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Join { controller_id })
             }
             CharacterSelectionEventCommand::Leave => {
+                ir_app_event_sender_system_data
+                    .csw_statuses
+                    .insert(entity, CswStatus::Inactive)
+                    .expect("Failed to insert `CswStatus` component.");
+
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Leave { controller_id })
             }
@@ -105,6 +115,11 @@ impl IrAppEventSender {
                     )
             }
             CharacterSelectionEventCommand::Select => {
+                ir_app_event_sender_system_data
+                    .csw_statuses
+                    .insert(entity, CswStatus::Ready)
+                    .expect("Failed to insert `CswStatus` component.");
+
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .and_then(|controller_id| {
                         Self::character_selection(ir_app_event_sender_system_data, entity, None)
@@ -118,6 +133,11 @@ impl IrAppEventSender {
                     )
             }
             CharacterSelectionEventCommand::Deselect => {
+                ir_app_event_sender_system_data
+                    .csw_statuses
+                    .insert(entity, CswStatus::CharacterSelect)
+                    .expect("Failed to insert `CswStatus` component.");
+
                 Self::controller_id(ir_app_event_sender_system_data, entity)
                     .map(|controller_id| CharacterSelectionEvent::Deselect { controller_id })
             }

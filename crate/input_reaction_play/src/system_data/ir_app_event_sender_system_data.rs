@@ -38,7 +38,7 @@ pub struct IrAppEventSenderSystemData<'s> {
     pub character_selections: WriteStorage<'s, CharacterSelection>,
     /// `CswStatus` components.
     #[derivative(Debug = "ignore")]
-    pub csw_statuses: ReadStorage<'s, CswStatus>,
+    pub csw_statuses: WriteStorage<'s, CswStatus>,
 
     /// `ControlSettingsEvent` channel.
     #[derivative(Debug = "ignore")]
