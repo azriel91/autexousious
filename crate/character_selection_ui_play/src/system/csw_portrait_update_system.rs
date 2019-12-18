@@ -50,19 +50,25 @@ impl CswPortraitUpdateSystem {
     ///
     /// Returns the entity and its `CharacterSelectionParent` if found.
     fn find_csw_entities(
-        (entities, input_controlleds, character_selection_parents): (
+        (entities, input_controlleds, csw_portraitses, character_selection_parents): (
             &Entities<'_>,
             &ReadStorage<'_, InputControlled>,
+            &ReadStorage<'_, CswPortraits>,
             &ReadStorage<'_, CharacterSelectionParent>,
         ),
         controller_id: ControllerId,
-    ) -> Option<(Entity, CharacterSelectionParent)> {
-        (entities, input_controlleds, character_selection_parents)
+    ) -> Option<(Entity, CswPortraits, CharacterSelectionParent)> {
+        (
+            entities,
+            input_controlleds,
+            csw_portraitses,
+            character_selection_parents,
+        )
             .join()
             .find_map(
-                |(entity_portrait, input_controlled, character_selection_parent)| {
+                |(entity_portrait, input_controlled, csw_portraits, character_selection_parent)| {
                     if input_controlled.controller_id == controller_id {
-                        Some((entity_portrait, *character_selection_parent))
+                        Some((entity_portrait, *csw_portraits, *character_selection_parent))
                     } else {
                         None
                     }
@@ -85,7 +91,12 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
             ref mut sequence_ids,
         } = csw_portrait_update_system_data;
 
-        let find_csw_data = (entities, input_controlleds, character_selection_parents);
+        let find_csw_data = (
+            entities,
+            input_controlleds,
+            csw_portraitses,
+            character_selection_parents,
+        );
 
         let character_selection_event_rid = self
             .character_selection_event_rid
@@ -99,16 +110,12 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                 CharacterSelectionEvent::Join { controller_id } => {
                     if let Some((entity_portrait, csw_portraits, character_selection)) =
                         Self::find_csw_entities(find_csw_data, *controller_id).and_then(
-                            |(entity_portrait, character_selection_parent)| {
-                                let csw_portraits = csw_portraitses.get(entity_portrait);
-                                let character_selection =
-                                    character_selections.get(character_selection_parent.0);
-
-                                csw_portraits.and_then(|csw_portraits| {
-                                    character_selection.map(|character_selection| {
+                            |(entity_portrait, csw_portraits, character_selection_parent)| {
+                                character_selections.get(character_selection_parent.0).map(
+                                    |character_selection| {
                                         (entity_portrait, csw_portraits, character_selection)
-                                    })
-                                })
+                                    },
+                                )
                             },
                         )
                     {
@@ -123,14 +130,8 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                     }
                 }
                 CharacterSelectionEvent::Leave { controller_id } => {
-                    if let Some((entity_portrait, csw_portraits)) =
-                        Self::find_csw_entities(find_csw_data, *controller_id).and_then(
-                            |(entity_portrait, _character_selection_parent)| {
-                                csw_portraitses
-                                    .get(entity_portrait)
-                                    .map(|csw_portraits| (entity_portrait, csw_portraits))
-                            },
-                        )
+                    if let Some((entity_portrait, csw_portraits, _)) =
+                        Self::find_csw_entities(find_csw_data, *controller_id)
                     {
                         let sequence_id = csw_portraits.join;
                         sequence_ids
@@ -142,14 +143,8 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                     controller_id,
                     character_selection,
                 } => {
-                    if let Some((entity_portrait, csw_portraits)) =
-                        Self::find_csw_entities(find_csw_data, *controller_id).and_then(
-                            |(entity_portrait, _character_selection_parent)| {
-                                csw_portraitses
-                                    .get(entity_portrait)
-                                    .map(|csw_portraits| (entity_portrait, csw_portraits))
-                            },
-                        )
+                    if let Some((entity_portrait, csw_portraits, _)) =
+                        Self::find_csw_entities(find_csw_data, *controller_id)
                     {
                         let sequence_id = match character_selection {
                             CharacterSelection::Random => csw_portraits.random,
