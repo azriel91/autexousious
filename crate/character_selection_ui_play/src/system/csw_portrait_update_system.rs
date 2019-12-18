@@ -11,7 +11,7 @@ use game_input::InputControlled;
 use game_input_model::ControllerId;
 use sequence_model::loaded::SequenceId;
 
-/// Deletes entities whose `CharacterSelectionParent` is dead.
+/// Switches `CharacterSelectionWidget` portrait entity when receving a `CharacterSelectionEvent`.
 #[derive(Debug, Default, new)]
 pub struct CswPortraitUpdateSystem {
     /// Reader ID for the `CharacterSelectionEvent` channel.
