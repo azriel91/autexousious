@@ -1,9 +1,11 @@
+use std::any;
+
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
 use character_selection::{
     CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
 };
-use character_selection_ui::CharacterSelectionUiBundle;
+use character_selection_ui::CharacterSelectionSfxSystem;
 use control_settings::ControlSettingsState;
 use game_loading::GameLoadingState;
 use game_mode_selection_model::GameModeIndex;
@@ -45,11 +47,14 @@ impl GameModeSelectionTrans {
                     let state = CharacterSelectionStateBuilder::new(
                         CharacterSelectionStateDelegate::new(map_selection_fn),
                     )
-                    .with_bundle(CharacterSelectionUiBundle::new())
-                    .with_bundle(
-                        CharacterSelectionBundle::new()
-                            .with_system_dependencies(&CharacterSelectionUiBundle::system_names()),
+                    .with_system(
+                        CharacterSelectionSfxSystem::new(),
+                        any::type_name::<CharacterSelectionSfxSystem>(),
+                        &[],
                     )
+                    .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(&[
+                        String::from(any::type_name::<CharacterSelectionSfxSystem>()),
+                    ]))
                     .build();
 
                     Box::new(state)

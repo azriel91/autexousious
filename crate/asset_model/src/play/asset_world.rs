@@ -4,7 +4,7 @@ use derive_deref::{Deref, DerefMut};
 
 /// `World` for assets.
 ///
-/// Type alias simply makes it clearer that we should use a separate `World` instance.
+/// Strong type makes it clearer that this is a separate `World` instance.
 #[derive(Derivative, Deref, DerefMut)]
 #[derivative(Debug)]
 pub struct AssetWorld(#[derivative(Debug = "ignore")] pub World);

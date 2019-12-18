@@ -38,6 +38,7 @@ character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
 character_selection_stdio = { path = "../character_selection_stdio" }
 character_selection_ui = { path = "../character_selection_ui" }
+character_selection_ui_model = { path = "../character_selection_ui_model" }
 charge_model = { path = "../charge_model" }
 charge_play = { path = "../charge_play" }
 chase_model = { path = "../chase_model" }
@@ -97,6 +98,8 @@ object_play = { path = "../object_play" }
 object_status_model = { path = "../object_status_model" }
 object_status_play = { path = "../object_status_play" }
 object_type = { path = "../object_type" }
+parent_model = { path = "../parent_model" }
+parent_play = { path = "../parent_play" }
 pretty_assertions = "0.6.1"
 rayon = "1.2.0"
 ron = "0.5.1"

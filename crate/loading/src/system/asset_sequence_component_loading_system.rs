@@ -11,10 +11,15 @@ use character_model::{
     config::{CharacterSequence, CharacterSequenceName},
     loaded::{CharacterIrsHandle, CharacterIrsHandles},
 };
+use character_selection_ui_model::{
+    config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
+    loaded::{CharacterSelectionWidget, CswPortraits},
+    play::CswMain,
+};
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use control_settings_loading::KeyboardUiGen;
 use energy_model::config::{EnergySequence, EnergySequenceName};
-use game_input::{ButtonInputControlled, SharedInputControlled};
+use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -693,6 +698,139 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                 .collect::<Vec<ItemId>>();
 
                             item_ids_all.append(&mut item_ids)
+                        }
+                        UiType::CharacterSelection(character_selection_ui) => {
+                            let CharacterSelectionUi {
+                                widgets, // Vec<CswDefinition>
+                                widget_template:
+                                    CswTemplate {
+                                        portraits:
+                                            character_selection_ui_model::config::CswPortraits {
+                                                join,
+                                                random,
+                                                select,
+                                            },
+                                        layers, // IndexMap<String, UiSpriteLabel>
+                                    },
+                            } = character_selection_ui;
+
+                            // Store widget item IDs in `item_ids_all` to be spawned during state ID
+                            // updates, but don't store item IDs for widget template layers as those
+                            // are instantiated when each widget item ID is attached to an entity.
+
+                            // Layer item IDs
+                            let position_inits_widgets =
+                                PositionInitsLoader::items_to_datas(widgets.iter());
+                            let sequence_id_join =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    join,
+                                );
+                            let sequence_id_random =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    random,
+                                );
+                            let sequence_id_select =
+                                SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                                    sequence_id_mappings,
+                                    asset_slug,
+                                    select,
+                                );
+                            let csw_portraits = CswPortraits {
+                                join: sequence_id_join,
+                                random: sequence_id_random,
+                                select: sequence_id_select,
+                            };
+                            let item_ids_layers = position_inits_widgets
+                                .0
+                                .into_iter()
+                                .map(|position_init_widget| {
+                                    let mut position_inits =
+                                        PositionInitsLoader::items_to_datas(layers.values());
+                                    position_inits.iter_mut().for_each(|position_init| {
+                                        *position_init += position_init_widget
+                                    });
+                                    let sequence_id_inits =
+                                        SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                                            sequence_id_mappings,
+                                            asset_slug,
+                                            layers
+                                                .values()
+                                                .map(AsRef::<SequenceNameString<_>>::as_ref),
+                                        );
+
+                                    position_inits
+                                        .0
+                                        .into_iter()
+                                        .zip(sequence_id_inits.into_iter())
+                                        .zip(layers.keys())
+                                        .map(|((position_init, sequence_id_init), csw_layer)| {
+                                            let mut item_entity_builder = asset_world
+                                                .create_entity()
+                                                .with(position_init)
+                                                .with(sequence_id_init)
+                                                .with(sequence_end_transitions.clone())
+                                                .with(wait_sequence_handles.clone())
+                                                .with(tint_sequence_handles.clone())
+                                                .with(scale_sequence_handles.clone())
+                                                .with(input_reactions_sequence_handles.clone());
+
+                                            match csw_layer {
+                                                CswLayer::Name(CswLayerName::Main) => {
+                                                    item_entity_builder =
+                                                        item_entity_builder.with(CswMain);
+                                                }
+                                                CswLayer::Name(CswLayerName::Portrait) => {
+                                                    item_entity_builder =
+                                                        item_entity_builder.with(csw_portraits);
+                                                }
+                                                _ => {}
+                                            }
+
+                                            if let Some(sprite_render_sequence_handles) =
+                                                sprite_render_sequence_handles.clone()
+                                            {
+                                                item_entity_builder = item_entity_builder
+                                                    .with(sprite_render_sequence_handles);
+                                            }
+
+                                            item_entity_builder.build()
+                                        })
+                                        .map(ItemId::new)
+                                        .collect::<Vec<ItemId>>()
+                                })
+                                .collect::<Vec<Vec<ItemId>>>();
+
+                            // Widget item IDs
+                            let input_controlleds = {
+                                let controller_count = input_config.controller_configs.len();
+                                (0..controller_count)
+                                    .into_iter()
+                                    .map(InputControlled::new)
+                                    .collect::<Vec<InputControlled>>()
+                            };
+                            let mut item_ids_widgets = item_ids_layers
+                                .into_iter()
+                                .zip(input_controlleds.into_iter())
+                                .map(|(layer_item_ids, input_controlled)| {
+                                    CharacterSelectionWidget {
+                                        layers: layer_item_ids,
+                                        input_controlled,
+                                    }
+                                })
+                                .map(|character_selection_widget| {
+                                    asset_world
+                                        .create_entity()
+                                        .with(character_selection_widget)
+                                        .build()
+                                })
+                                .map(ItemId::new)
+                                .collect::<Vec<ItemId>>();
+
+                            item_ids_all.append(&mut item_ids_widgets)
                         }
                         UiType::ControlSettings(control_settings) => {
                             let keyboard_button_labels = keyboard_button_labels

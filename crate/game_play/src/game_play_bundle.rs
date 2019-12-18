@@ -360,7 +360,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
         // update.
         builder.add(
-            CharacterSequenceUpdateSystem::new().pausable(StateId::GamePlay),
+            CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
             &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore

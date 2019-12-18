@@ -8,14 +8,13 @@ use amethyst::{
 use character_selection_model::CharacterSelectionEvent;
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
 
 /// Default volume to play sounds at.
 const VOLUME: f32 = 1.0;
 
 /// Plays sounds for the character selection UI.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterSelectionSfxSystem {
     /// Reader ID for the `CharacterSelectionEvent` event channel.
     #[new(default)]

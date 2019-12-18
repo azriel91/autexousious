@@ -1,3 +1,4 @@
+use character_selection_ui_model::config::CharacterSelectionUi;
 use control_settings_model::config::ControlSettings;
 use game_mode_selection_model::GameModeIndex;
 use serde::{Deserialize, Serialize};
@@ -9,6 +10,8 @@ use ui_menu_item_model::config::UiMenuItems;
 pub enum UiType {
     /// Generic menu UI.
     Menu(UiMenuItems<GameModeIndex>),
+    /// Character selection UI.
+    CharacterSelection(CharacterSelectionUi),
     /// Control Settings UI.
     ControlSettings(ControlSettings),
 }

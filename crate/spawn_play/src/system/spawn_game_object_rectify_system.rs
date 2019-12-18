@@ -31,7 +31,7 @@ pub struct SpawnGameObjectRectifySystemData<'s> {
     pub spawn_ec: Read<'s, EventChannel<SpawnEvent>>,
     /// `SpawnParent` components.
     #[derivative(Debug = "ignore")]
-    pub parent_objects: WriteStorage<'s, SpawnParent>,
+    pub spawn_parents: WriteStorage<'s, SpawnParent>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
@@ -56,7 +56,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
         &mut self,
         SpawnGameObjectRectifySystemData {
             spawn_ec,
-            mut parent_objects,
+            mut spawn_parents,
             mut positions,
             mut velocities,
             mut mirroreds,
@@ -83,7 +83,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             let mirrored = Self::mirrored_rectify(mirrored_parent);
             let sequence_id = spawn.sequence_id;
 
-            parent_objects
+            spawn_parents
                 .insert(entity_spawned, SpawnParent::new(ev.entity_parent))
                 .expect("Failed to insert `SpawnParent` component.");
             positions

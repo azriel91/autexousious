@@ -54,6 +54,8 @@ mod character_selection_stdio;
 #[cfg(test)]
 mod character_selection_ui;
 #[cfg(test)]
+mod character_selection_ui_model;
+#[cfg(test)]
 mod charge_play;
 #[cfg(test)]
 mod chase_play;
@@ -131,6 +133,8 @@ mod object_model;
 mod object_play;
 #[cfg(test)]
 mod object_status_play;
+#[cfg(test)]
+mod parent_play;
 #[cfg(test)]
 mod sequence_loading;
 #[cfg(test)]

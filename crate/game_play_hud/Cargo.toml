@@ -16,6 +16,7 @@ chase_model = { path = "../chase_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 object_model = { path = "../object_model" }
+parent_model = { path = "../parent_model"}
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

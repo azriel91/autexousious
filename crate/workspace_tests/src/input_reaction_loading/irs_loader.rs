@@ -16,7 +16,7 @@ mod tests {
         config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},
     };
-    use character_selection_model::CharacterSelectionEventVariant;
+    use character_selection_model::config::CharacterSelectionEventCommand;
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
     use input_reaction_model::{
@@ -467,7 +467,7 @@ mod tests {
     fn expected_input_reactions_2() -> CharacterInputReactions {
         let mut events = InputReactionAppEvents::default();
         events.push(InputReactionAppEvent::CharacterSelection(
-            CharacterSelectionEventVariant::Join,
+            CharacterSelectionEventCommand::Join,
         ));
 
         InputReactions::new(vec![InputReaction {

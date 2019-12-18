@@ -1,11 +1,10 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derivative::Derivative;
-use strum_macros::Display;
 
-/// Character selection state of the `CharacterSelectionWidget`.
-#[derive(Clone, Component, Copy, Debug, Derivative, Display, PartialEq, Eq)]
+/// Character selection status of the `CharacterSelectionWidget`.
+#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
-pub enum CharacterSelectionWidgetState {
+pub enum CswStatus {
     /// Player has not joined.
     #[derivative(Default)]
     Inactive,
