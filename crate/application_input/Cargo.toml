@@ -1,6 +1,6 @@
 [package]
 name = "application_input"
-version = "0.15.0"
+version = "0.16.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
