@@ -14,9 +14,9 @@ asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
 sequence_loading_spi = { path = "../sequence_loading_spi" }
-serde = { version = "1.0.102", features = ["derive"] }
-typename = "0.1.1"
-typename_derive = "0.1.3"
+serde = { version = "1.0.104", features = ["derive"] }
+typename = "0.1.2"
+typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

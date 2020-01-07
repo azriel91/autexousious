@@ -12,9 +12,9 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 derive-new = "0.5.8"
-serde = { version = "1.0.102", features = ["derive"] }
-strum = "0.16.0"
-strum_macros = "0.16.0"
+serde = { version = "1.0.104", features = ["derive"] }
+strum = "0.17.1"
+strum_macros = "0.17.1"
 
 [features]
 nightly = ["amethyst/nightly"]

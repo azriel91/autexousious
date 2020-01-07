@@ -58,8 +58,8 @@ state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }
 team_model = { path = "../team_model" }
 tracker = { path = "../tracker" }
-typename = "0.1.1"
-typename_derive = "0.1.3"
+typename = "0.1.2"
+typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

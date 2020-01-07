@@ -10,6 +10,6 @@ doctest = false
 test = false
 
 [dependencies]
-proc-macro2 = "1.0.6"
+proc-macro2 = "1.0.7"
 quote = "1.0.2"
-syn = { version = "1.0.7", features = ["extra-traits", "visit"] }
+syn = { version = "1.0.13", features = ["extra-traits", "visit"] }

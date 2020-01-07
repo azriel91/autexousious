@@ -9,8 +9,8 @@ doctest = false
 test = false
 
 [dependencies]
-strum = "0.16.0"
-strum_macros = "0.16.0"
+strum = "0.17.1"
+strum_macros = "0.17.1"
 
 [features]
 default = []

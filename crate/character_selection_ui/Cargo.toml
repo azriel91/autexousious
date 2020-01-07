@@ -19,8 +19,8 @@ game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
 object_type = { path = "../object_type" }
-strum = "0.16.0"
-strum_macros = "0.16.0"
+strum = "0.17.1"
+strum_macros = "0.17.1"
 ui_audio_model = { path = "../ui_audio_model" }
 
 [features]
