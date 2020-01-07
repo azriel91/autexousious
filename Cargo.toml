@@ -10,9 +10,6 @@ codegen-units = 1
 # https://github.com/trimental/andrew/pull/2
 andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance/update-dependencies" }
 
-# Waiting for release > 0.9.1
-alga = { git = "https://github.com/rustsim/alga.git", branch = "dev" }
-
 # https://github.com/sgrif/derive_deref/pull/6
 derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
 

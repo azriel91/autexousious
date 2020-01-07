@@ -140,7 +140,6 @@ ui_label_model = { path = "../ui_label_model" }
 ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
-winit = "0.20.0"
 
 [features]
 nightly = ["amethyst/nightly"]

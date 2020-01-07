@@ -6,6 +6,10 @@ mod test {
         ecs::{Builder, Entity, WorldExt},
         input::{Axis as InputAxis, Bindings, Button, InputEvent, InputHandler},
         shrev::{EventChannel, ReaderId},
+        winit::{
+            DeviceId, ElementState, Event, KeyboardInput, ModifiersState, VirtualKeyCode,
+            WindowEvent, WindowId,
+        },
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI};
@@ -17,10 +21,6 @@ mod test {
     use hamcrest::prelude::*;
     use indexmap::IndexMap;
     use typename::TypeName;
-    use winit::{
-        DeviceId, ElementState, Event, KeyboardInput, ModifiersState, VirtualKeyCode, WindowEvent,
-        WindowId,
-    };
 
     use game_input_ui::InputToControlInputSystem;
 

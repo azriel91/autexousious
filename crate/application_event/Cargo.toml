@@ -20,7 +20,6 @@ map_selection_model = { path = "../map_selection_model" }
 stdio_command_model = { path = "../stdio_command_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-winit = "0.20.0"
 
 [features]
 nightly = ["amethyst/nightly"]
