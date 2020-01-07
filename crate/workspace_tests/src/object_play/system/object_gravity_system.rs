@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, WorldExt},
         Error,
@@ -7,7 +9,6 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use kinematic_model::config::Velocity;
     use object_model::{config::Mass, play::Grounding};
-    use typename::TypeName;
 
     use object_play::ObjectGravitySystem;
 
@@ -52,7 +53,7 @@ mod tests {
         AmethystApplication::blank()
             .with_system(
                 ObjectGravitySystem::new(),
-                ObjectGravitySystem::type_name(),
+                any::type_name::<ObjectGravitySystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

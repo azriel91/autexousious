@@ -131,8 +131,6 @@ tempfile = "3.1.0"
 test_object_model = { path = "../test_object_model" }
 test_support = { path = "../test_support" }
 tracker = { path = "../tracker" }
-typename = "0.1.2"
-typename_derive = "0.1.4"
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_audio_model = { path = "../ui_audio_model" }
 ui_button_model = { path = "../ui_button_model" }

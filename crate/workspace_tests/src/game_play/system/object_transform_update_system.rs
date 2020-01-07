@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test {
+mod tests {
     use amethyst::{
         core::{math::Vector3, transform::Transform},
         ecs::{Builder, Entity, WorldExt},
@@ -8,7 +8,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use kinematic_model::{config::Position, play::PositionZAsY};
-    use typename::TypeName;
+    use std::any;
 
     use game_play::ObjectTransformUpdateSystem;
 
@@ -50,7 +50,7 @@ mod test {
         AmethystApplication::ui_base::<StringBindings>()
             .with_system(
                 ObjectTransformUpdateSystem::new(),
-                ObjectTransformUpdateSystem::type_name(),
+                any::type_name::<ObjectTransformUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

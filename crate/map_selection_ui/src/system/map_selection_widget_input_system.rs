@@ -11,15 +11,14 @@ use game_input_model::{
 };
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use typename_derive::TypeName;
 
 use crate::MapSelectionWidgetState;
 
 /// System that processes controller input and generates `MapSelectionEvent`s.
 ///
-/// This is not private because consumers may use `MapSelectionWidgetInputSystem::type_name()` to
+/// This is not private because consumers may use `any::type_name::<MapSelectionWidgetInputSystem>()` to
 /// specify this as a dependency of another system.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapSelectionWidgetInputSystem {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]

@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -6,7 +8,6 @@ use amethyst::{
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
-use typename::TypeName;
 
 use crate::GameModeSelectionEventStdinMapper;
 
@@ -24,7 +25,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionStdioBundle {
             MapperSystem::<GameModeSelectionEventStdinMapper>::new(
                 AppEventVariant::GameModeSelection,
             ),
-            &MapperSystem::<GameModeSelectionEventStdinMapper>::type_name(),
+            any::type_name::<MapperSystem<GameModeSelectionEventStdinMapper>>(),
             &[],
         ); // kcov-ignore
         Ok(())

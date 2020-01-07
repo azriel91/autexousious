@@ -9,14 +9,11 @@ use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use typename_derive::TypeName;
 
 use crate::config::Position;
 
 /// Position initializer for an entity.
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Component, PartialEq, Eq, Serialize, TypeName, new,
-)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Component, PartialEq, Eq, Serialize, new)]
 #[serde(default)]
 #[storage(DenseVecStorage)]
 pub struct PositionInit {

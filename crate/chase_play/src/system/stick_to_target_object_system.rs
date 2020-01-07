@@ -7,13 +7,12 @@ use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
-use typename_derive::TypeName;
 
 /// Updates a `ChaseModeStick` entity's `Position` and `Translation` to match its `TargetObject`.
 ///
 /// If we use the `Parent` component, the child object will inherit all transformations, whereas
 /// this will only copy over the **XYZ** coordinates.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StickToTargetObjectSystem;
 
 #[derive(Derivative, SystemData)]

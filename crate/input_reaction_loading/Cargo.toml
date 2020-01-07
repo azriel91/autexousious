@@ -15,7 +15,6 @@ derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 sequence_model = { path = "../sequence_model" }
-typename = "0.1.2"
 
 [features]
 nightly = ["amethyst/nightly"]

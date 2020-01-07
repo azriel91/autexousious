@@ -54,7 +54,6 @@ use sprite_model::{
     config::SpriteSequenceName,
     loaded::{ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles},
 };
-use typename_derive::TypeName;
 use ui_menu_item_model::loaded::UiMenuItem;
 use ui_model::config::{UiDefinition, UiType};
 
@@ -67,7 +66,7 @@ use crate::{
 pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSequenceComponentLoader>;
 
 /// `AssetSequenceComponentLoader`.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct AssetSequenceComponentLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {

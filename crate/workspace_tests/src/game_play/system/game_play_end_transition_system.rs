@@ -1,5 +1,7 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, SystemData, World, WorldExt},
         input::{InputBundle, StringBindings},
@@ -11,7 +13,6 @@ mod test {
     use game_input::ControllerInput;
     use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
     use tracker::Last;
-    use typename::TypeName;
 
     use game_play::{GamePlayEndTransitionSystem, GamePlayEndTransitionSystemData};
 
@@ -127,7 +128,7 @@ mod test {
             })
             .with_system_single(
                 GamePlayEndTransitionSystem::new(),
-                GamePlayEndTransitionSystem::type_name(),
+                any::type_name::<GamePlayEndTransitionSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

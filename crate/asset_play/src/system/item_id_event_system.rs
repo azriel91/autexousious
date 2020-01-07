@@ -9,10 +9,9 @@ use amethyst::{
 use asset_model::{loaded::ItemId, play::ItemIdEvent};
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Sends `ItemIdEvent`s when `ItemId` changes.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ItemIdEventSystem {
     /// Reader ID for item ID changes.
     #[new(default)]

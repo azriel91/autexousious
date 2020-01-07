@@ -7,10 +7,8 @@ use derive_new::new;
 use kinematic_model::config::Velocity;
 use object_model::play::Grounding;
 
-use typename_derive::TypeName;
-
 /// Updates `Velocity<f32>` based on grounding.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GroundingFrictionSystem;
 
 /// `GroundingFrictionSystemData`.

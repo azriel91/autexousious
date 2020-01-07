@@ -12,8 +12,6 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 object_status_model = { path = "../object_status_model" }
 derive-new = "0.5.8"
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

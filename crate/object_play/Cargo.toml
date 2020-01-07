@@ -19,8 +19,6 @@ map_selection_model = { path = "../map_selection_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

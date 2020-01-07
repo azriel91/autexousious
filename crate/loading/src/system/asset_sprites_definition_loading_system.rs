@@ -3,7 +3,6 @@ use asset_loading::YamlFormat;
 use asset_model::{config::AssetType, loaded::AssetId};
 use loading_model::loaded::LoadStage;
 use log::debug;
-use typename_derive::TypeName;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
@@ -14,7 +13,7 @@ use crate::{
 pub type AssetSpritesDefinitionLoadingSystem = AssetPartLoadingSystem<AssetSpritesDefinitionLoader>;
 
 /// `AssetSpritesDefinitionLoader`.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct AssetSpritesDefinitionLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {

@@ -24,8 +24,6 @@ spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

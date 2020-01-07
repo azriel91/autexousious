@@ -18,10 +18,9 @@ use sequence_model::{
     loaded::{AssetSequenceIdMappings, SequenceId},
     play::SequenceStatus,
 };
-use typename_derive::TypeName;
 
 /// Updates character sequence name based on input (or lack of).
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterSequenceUpdateSystem;
 
 /// `CharacterSequenceUpdateSystemData`.

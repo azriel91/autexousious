@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod test {
-    use std::{collections::HashMap, convert::TryFrom};
+mod tests {
+    use std::{any, collections::HashMap, convert::TryFrom};
 
     use amethyst::{
         ecs::{Builder, Entity, WorldExt},
@@ -20,7 +20,6 @@ mod test {
     };
     use hamcrest::prelude::*;
     use indexmap::IndexMap;
-    use typename::TypeName;
 
     use game_input_ui::InputToControlInputSystem;
 
@@ -119,7 +118,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 InputToControlInputSystem::new(input_config),
-                InputToControlInputSystem::type_name(),
+                any::type_name::<InputToControlInputSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

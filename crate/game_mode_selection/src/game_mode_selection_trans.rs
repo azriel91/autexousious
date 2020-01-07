@@ -36,7 +36,7 @@ impl GameModeSelectionTrans {
                     .with_bundle(MapSelectionUiBundle::new())
                     .with_bundle(
                         MapSelectionBundle::new()
-                            .with_system_dependencies(&MapSelectionUiBundle::system_names()),
+                            .with_system_dependencies(MapSelectionUiBundle::system_names()),
                     )
                     .build();
 
@@ -44,18 +44,19 @@ impl GameModeSelectionTrans {
                 };
                 // kcov-ignore-end
                 let character_selection_state = {
-                    let state = CharacterSelectionStateBuilder::new(
-                        CharacterSelectionStateDelegate::new(map_selection_fn),
-                    )
-                    .with_system(
-                        CharacterSelectionSfxSystem::new(),
-                        any::type_name::<CharacterSelectionSfxSystem>(),
-                        &[],
-                    )
-                    .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(&[
-                        String::from(any::type_name::<CharacterSelectionSfxSystem>()),
-                    ]))
-                    .build();
+                    let state =
+                        CharacterSelectionStateBuilder::new(CharacterSelectionStateDelegate::new(
+                            map_selection_fn,
+                        ))
+                        .with_system(
+                            CharacterSelectionSfxSystem::new(),
+                            any::type_name::<CharacterSelectionSfxSystem>(),
+                            &[],
+                        )
+                        .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(
+                            vec![any::type_name::<CharacterSelectionSfxSystem>()],
+                        ))
+                        .build();
 
                     Box::new(state)
                 };

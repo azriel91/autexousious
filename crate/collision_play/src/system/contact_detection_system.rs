@@ -8,13 +8,12 @@ use derivative::Derivative;
 use derive_new::new;
 use spawn_model::play::SpawnParent;
 use team_model::play::Team;
-use typename_derive::TypeName;
 
 /// Detects whether a `ContactEvent` occurs when a `CollisionEvent` happens.
 ///
 /// This system determines if contact happens or not -- e.g. objects on the same team may or may not
 /// contact each other depending on the type of `Interaction`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ContactDetectionSystem {
     /// Reader ID for the `CollisionEvent` event channel.
     #[new(default)]

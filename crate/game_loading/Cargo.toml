@@ -37,8 +37,6 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 team_model = { path = "../team_model" }
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

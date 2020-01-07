@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use game_model::play::GameEntities;
-    use std::collections::HashMap;
+    use std::{any, collections::HashMap};
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WorldExt},
@@ -16,13 +15,13 @@ mod tests {
     };
     use assets_test::MAP_FADE_SLUG;
     use character_selection_model::CharacterSelections;
+    use game_model::play::GameEntities;
     use game_play_hud::{CpBar, HpBar};
     use kinematic_model::config::Position;
     use loading_model::loaded::{AssetLoadStage, LoadStage};
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_type::ObjectType;
-    use typename::TypeName;
 
     use game_loading::{
         CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData, CharacterAugmentStatus,
@@ -146,7 +145,7 @@ mod tests {
             .with_effect(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,
-                CharacterAugmentRectifySystem::type_name(),
+                any::type_name::<CharacterAugmentRectifySystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(fn_assert)

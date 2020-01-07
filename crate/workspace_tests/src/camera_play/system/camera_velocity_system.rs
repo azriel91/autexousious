@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Entity, WorldExt, WriteStorage},
         window::ScreenDimensions,
@@ -9,7 +11,6 @@ mod tests {
     use camera_model::play::CameraTargetCoordinates;
     use kinematic_model::config::{Position, Velocity};
     use pretty_assertions::assert_eq;
-    use typename::TypeName;
 
     use camera_play::{CameraCreator, CameraVelocitySystem};
 
@@ -59,7 +60,7 @@ mod tests {
                 CameraVelocitySystem {
                     smoothing_factor: 2.,
                 },
-                CameraVelocitySystem::type_name(),
+                any::type_name::<CameraVelocitySystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

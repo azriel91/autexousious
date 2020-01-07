@@ -6,7 +6,6 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent};
-use typename_derive::TypeName;
 
 /// Number of ticks to wait before accepting input to transition past game play end.
 pub const GAME_PLAY_END_TRANSITION_DELAY_DEFAULT: usize = 60;
@@ -15,7 +14,7 @@ pub const GAME_PLAY_END_TRANSITION_DELAY_DEFAULT: usize = 60;
 ///
 /// This is an ergonomics improvement to prevent accidental transition, e.g. when a game is won via
 /// a rapidfire attack.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GamePlayEndTransitionDelaySystem {
     /// Reader ID for the `GamePlayEvent` event channel.
     #[new(default)]

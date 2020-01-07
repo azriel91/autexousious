@@ -11,16 +11,14 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
-use typename::TypeName as TypeNameTrait;
-use typename_derive::TypeName;
 
 use crate::{MenuEvent, MenuItem, MenuItemWidgetState, Siblings};
 
 /// System that processes controller input and generates `MenuEvent<I>`s.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MenuItemWidgetInputSystem<I>
 where
-    I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+    I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
@@ -34,7 +32,7 @@ where
 #[derivative(Debug)]
 pub struct MenuItemWidgetInputResources<'s, I>
 where
-    I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+    I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
@@ -58,7 +56,7 @@ where
 #[derivative(Debug)]
 pub struct MenuItemWidgetInputSystemData<'s, I>
 where
-    I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+    I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
@@ -69,7 +67,7 @@ where
 
 impl<I> MenuItemWidgetInputSystem<I>
 where
-    I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+    I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn select_previous_menu_item(
         menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
@@ -211,7 +209,7 @@ where
 
 impl<'s, I> System<'s> for MenuItemWidgetInputSystem<I>
 where
-    I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+    I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     type SystemData = MenuItemWidgetInputSystemData<'s, I>;
 

@@ -8,12 +8,11 @@ use derivative::Derivative;
 use derive_new::new;
 use sequence_model::play::SequenceUpdateEvent;
 use spawn_model::loaded::{Spawns, SpawnsHandle};
-use typename_derive::TypeName;
 
 use crate::{GameObjectSpawner, SpawnGameObjectResources};
 
 /// Spawns `GameObject`s. Currently only supports `Energy` objects.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SpawnGameObjectSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]

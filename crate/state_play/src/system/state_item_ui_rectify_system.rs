@@ -10,7 +10,6 @@ use derivative::Derivative;
 use derive_new::new;
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
-use typename_derive::TypeName;
 
 const FONT_COLOUR_ACTIVE: [f32; 4] = [0.9, 0.9, 1., 1.];
 
@@ -18,7 +17,7 @@ const FONT_COLOUR_ACTIVE: [f32; 4] = [0.9, 0.9, 1., 1.];
 ///
 /// `UiMenuItem` state item entities need to be spawned before the `Siblings` components can be
 /// instantiated to point to the correct sibling entities.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StateItemUiRectifySystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]

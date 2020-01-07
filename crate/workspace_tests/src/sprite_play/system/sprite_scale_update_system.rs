@@ -1,5 +1,7 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{
         core::{
             math::Vector3,
@@ -10,7 +12,6 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use sprite_model::config::Scale;
-    use typename::TypeName;
 
     use sprite_play::SpriteScaleUpdateSystem;
 
@@ -46,7 +47,7 @@ mod test {
             .with_bundle(TransformBundle::new())
             .with_system(
                 SpriteScaleUpdateSystem::new(),
-                SpriteScaleUpdateSystem::type_name(),
+                any::type_name::<SpriteScaleUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

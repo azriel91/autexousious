@@ -7,12 +7,11 @@ use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use derivative::Derivative;
 use derive_new::new;
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use typename_derive::TypeName;
 
 use crate::MapSelectionStatus;
 
 /// Updates the `MapSelection` resource based on user selection.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapSelectionSystem {
     /// ID for reading map selection events.
     #[new(default)]

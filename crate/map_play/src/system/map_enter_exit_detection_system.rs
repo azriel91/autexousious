@@ -13,12 +13,11 @@ use map_model::{
 };
 use map_selection_model::MapSelection;
 use tracker::Last;
-use typename_derive::TypeName;
 
 use crate::{Comparative, MapBoundsChecks};
 
 /// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited map bounds.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapEnterExitDetectionSystem;
 
 #[derive(Derivative, SystemData)]

@@ -5,10 +5,9 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use map_model::play::OutOfBoundsDeleteClock;
-use typename_derive::TypeName;
 
 /// Ticks each `HitRepeatTracker`'s clock.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapOutOfBoundsDeletionSystem;
 
 #[derive(Derivative, SystemData)]

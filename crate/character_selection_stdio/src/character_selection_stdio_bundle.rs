@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -6,7 +8,6 @@ use amethyst::{
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
-use typename::TypeName;
 
 use crate::CharacterSelectionEventStdinMapper;
 
@@ -24,7 +25,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
             MapperSystem::<CharacterSelectionEventStdinMapper>::new(
                 AppEventVariant::CharacterSelection,
             ),
-            &MapperSystem::<CharacterSelectionEventStdinMapper>::type_name(),
+            any::type_name::<MapperSystem<CharacterSelectionEventStdinMapper>>(),
             &[],
         ); // kcov-ignore
         Ok(())

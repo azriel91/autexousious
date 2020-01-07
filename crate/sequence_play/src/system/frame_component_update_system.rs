@@ -11,10 +11,9 @@ use derive_new::new;
 use log::error;
 use sequence_model::play::SequenceUpdateEvent;
 use sequence_model_spi::loaded::{ComponentDataExt, FrameComponentData};
-use typename_derive::TypeName;
 
 /// Updates the frame component value based on the current frame component data handle.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset

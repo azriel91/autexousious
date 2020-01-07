@@ -7,14 +7,13 @@ use amethyst::{
 use application_menu::MenuEvent;
 use derive_new::new;
 use game_mode_selection_model::GameModeSelectionEvent;
-use typename_derive::TypeName;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
 
 /// Default volume to play sounds at.
 const VOLUME: f32 = 1.0;
 
 /// Plays sounds for the game mode selection UI.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GameModeSelectionSfxSystem {
     /// Reader ID for the `GameModeSelectionEvent` event channel.
     #[new(default)]

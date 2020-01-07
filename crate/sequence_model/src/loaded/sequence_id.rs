@@ -10,13 +10,12 @@ use derivative::Derivative;
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use numeric_newtype_derive::numeric_newtype;
 use serde::{Deserialize, Serialize};
-use typename_derive::TypeName;
 
 use crate::play::SequenceStatus;
 
 /// Sequence ID of an object.
 #[numeric_newtype]
-#[derive(Debug, Default, Deserialize, Hash, Serialize, TypeName)]
+#[derive(Debug, Default, Deserialize, Hash, Serialize)]
 pub struct SequenceId(pub usize);
 
 /// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection

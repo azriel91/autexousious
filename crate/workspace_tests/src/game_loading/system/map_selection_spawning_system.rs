@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Read, SystemData, World, WorldExt},
         Error, State, StateData, Trans,
@@ -12,7 +14,6 @@ mod tests {
     use loading_model::loaded::{AssetLoadStage, LoadStage};
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use typename::TypeName;
 
     use game_loading::{
         GameLoadingStatus, MapSelectionSpawningSystem, MapSelectionSpawningSystemData,
@@ -82,7 +83,7 @@ mod tests {
             })
             .with_system_single(
                 MapSelectionSpawningSystem,
-                MapSelectionSpawningSystem::type_name(),
+                any::type_name::<MapSelectionSpawningSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

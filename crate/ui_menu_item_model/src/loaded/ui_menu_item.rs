@@ -8,10 +8,9 @@ use application_menu::{MenuItem, MenuItemWidgetState};
 use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Defines a UI menu item.
-#[derive(Clone, Debug, Component, PartialEq, TypeName, new)]
+#[derive(Clone, Debug, Component, PartialEq, new)]
 pub struct UiMenuItem<I>
 where
     I: Copy + Debug + PartialEq + Send + Sync + 'static,

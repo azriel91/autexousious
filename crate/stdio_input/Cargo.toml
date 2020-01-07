@@ -24,8 +24,6 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.3.7"
 strum = "0.17.1"
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }

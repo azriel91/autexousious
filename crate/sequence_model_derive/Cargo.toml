@@ -25,5 +25,3 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-typename = "0.1.2"
-typename_derive = "0.1.4"

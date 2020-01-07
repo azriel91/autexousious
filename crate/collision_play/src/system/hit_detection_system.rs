@@ -7,10 +7,9 @@ use collision_model::{
     play::{ContactEvent, HitEvent, HitObjectCount, HitRepeatTrackers},
 };
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Detects whether a `HitEvent` occurs there is contact between an `Interaction` and a `Volume`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HitDetectionSystem {
     /// Reader ID for the `ContactEvent` event channel.
     #[new(default)]

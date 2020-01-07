@@ -8,12 +8,11 @@ use derive_new::new;
 use game_model::play::GameEntities;
 use log::error;
 use map_selection_model::MapSelection;
-use typename_derive::TypeName;
 
 use crate::GameLoadingStatus;
 
 /// Spawns map entities based on the map selection.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapSelectionSpawningSystem;
 
 /// `MapSelectionSpawningSystemData`.

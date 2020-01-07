@@ -24,8 +24,6 @@ slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-typename = "0.1.2"
-typename_derive = "0.1.4"
 ui_button_model = { path = "../ui_button_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 

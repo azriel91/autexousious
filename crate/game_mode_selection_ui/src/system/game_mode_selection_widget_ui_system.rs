@@ -14,7 +14,6 @@ use game_mode_selection_model::GameModeSelectionEntity;
 use log::debug;
 use shrev_support::EventChannelExt;
 use state_registry::{StateId, StateIdUpdateEvent};
-use typename_derive::TypeName;
 
 /// Visible for testing.
 pub const FONT_COLOUR_IDLE: [f32; 4] = [0.65, 0.65, 0.65, 1.];
@@ -26,7 +25,7 @@ const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT_HELP: f32 = 20.;
 
 /// System to manage the `GameModeSelection` UI widgets.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GameModeSelectionWidgetUiSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]

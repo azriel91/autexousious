@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
@@ -21,7 +21,6 @@ mod tests {
     use map_selection_model::MapSelection;
     use sequence_model::loaded::SequenceId;
     use spawn_model::{loaded::Spawn, play::SpawnEvent};
-    use typename::TypeName;
 
     use map_play::MapSpawnOutOfBoundsDetectionSystem;
 
@@ -68,7 +67,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_system(
                 MapSpawnOutOfBoundsDetectionSystem::new(),
-                MapSpawnOutOfBoundsDetectionSystem::type_name(),
+                any::type_name::<MapSpawnOutOfBoundsDetectionSystem>(),
                 &[],
             )
             .with_effect(move |world| {

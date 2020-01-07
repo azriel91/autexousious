@@ -13,8 +13,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-named_type = "0.2.1"
-named_type_derive = "0.2.1"
 
 [features]
 nightly = ["amethyst/nightly"]

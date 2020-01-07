@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         core::TransformBundle,
@@ -21,7 +21,6 @@ mod tests {
     };
     use game_input_model::ControlBindings;
     use object_type::ObjectType;
-    use typename::TypeName;
 
     use character_selection::CharacterSelectionSystem;
 
@@ -88,7 +87,7 @@ mod tests {
             .with_ui_bundles::<ControlBindings>()
             .with_system(
                 CharacterSelectionSystem::new(),
-                CharacterSelectionSystem::type_name(),
+                any::type_name::<CharacterSelectionSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

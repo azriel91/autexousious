@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod test {
-    use std::collections::HashMap;
+mod tests {
+    use std::{any, collections::HashMap};
 
     use amethyst::{
         ecs::{Join, ReadStorage, World, WriteStorage},
@@ -16,7 +16,6 @@ mod test {
     use indexmap::IndexMap;
     use state_registry::StateId;
     use strum::IntoEnumIterator;
-    use typename::TypeName;
 
     use game_mode_selection_ui::{
         GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE,
@@ -31,7 +30,7 @@ mod test {
             .with_resource(input_config())
             .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
-                GameModeSelectionWidgetUiSystem::type_name(),
+                any::type_name::<GameModeSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_effect(|world| world.insert(StateId::GameModeSelection))
@@ -46,7 +45,7 @@ mod test {
             // Set up UI
             .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
-                GameModeSelectionWidgetUiSystem::type_name(),
+                any::type_name::<GameModeSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_effect(|world| world.insert(StateId::GameModeSelection))
@@ -73,7 +72,7 @@ mod test {
             // Set up UI
             .with_system(
                 GameModeSelectionWidgetUiSystem::new(),
-                GameModeSelectionWidgetUiSystem::type_name(),
+                any::type_name::<GameModeSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_effect(|world| world.insert(StateId::GameModeSelection))

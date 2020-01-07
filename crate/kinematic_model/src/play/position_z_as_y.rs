@@ -4,10 +4,9 @@ use amethyst::{
 };
 use asset_model::ItemComponent;
 use derivative::Derivative;
-use typename_derive::TypeName;
 
 /// Indicates the Z position should be rendered as part of the Y transform.
-#[derive(Component, Debug, Default, TypeName)]
+#[derive(Component, Debug, Default)]
 #[storage(NullStorage)]
 pub struct PositionZAsY;
 

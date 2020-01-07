@@ -11,10 +11,9 @@ use map_model::{
     play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded},
 };
 use map_selection_model::MapSelection;
-use typename_derive::TypeName;
 
 /// Keeps entities within map bounds.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct KeepWithinMapBoundsSystem {
     /// Reader ID for the `MapBoundaryEvent` channel.
     #[new(default)]

@@ -13,8 +13,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 spawn_model = { path = "../spawn_model" }
 derive-new = "0.5.8"
 serde = { version = "1.0.104", features = ["derive"] }
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -7,10 +7,9 @@ use collision_model::{loaded::HittingTransition, play::HitEvent};
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::loaded::SequenceId;
-use typename_derive::TypeName;
 
 /// Determines the next sequence for entities when they hit another object.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HittingEffectSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]

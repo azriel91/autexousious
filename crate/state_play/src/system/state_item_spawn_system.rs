@@ -10,10 +10,9 @@ use log::error;
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use state_support::StateAssetUtils;
-use typename_derive::TypeName;
 
 /// Spawns entities for each `ItemId` for the state `AssetId` when the `StateId` changes.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StateItemSpawnSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]

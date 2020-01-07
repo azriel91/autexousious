@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, WorldExt},
         shrev::EventChannel,
@@ -13,7 +15,6 @@ mod tests {
     };
     use mirrored_model::play::Mirrored;
     use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
-    use typename::TypeName;
 
     use object_play::ObjectAccelerationSystem;
 
@@ -451,7 +452,7 @@ mod tests {
         AmethystApplication::blank()
             .with_system(
                 ObjectAccelerationSystem::new(),
-                ObjectAccelerationSystem::type_name(),
+                any::type_name::<ObjectAccelerationSystem>(),
                 &[],
             )
             .with_effect(move |world| {

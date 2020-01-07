@@ -24,7 +24,5 @@ game_play_model = { path = "../game_play_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 log = "0.4.8"
 map_selection_model = { path = "../map_selection_model" }
-named_type = "0.2.1"
-named_type_derive = "0.2.1"
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }

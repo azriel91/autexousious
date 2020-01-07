@@ -48,7 +48,6 @@ sprite_model = { path = "../sprite_model" }
 state_play = { path = "../state_play" }
 state_registry = { path = "../state_registry" }
 tracker = { path = "../tracker" }
-typename = "0.1.2"
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_loading = { path = "../ui_loading" }
 

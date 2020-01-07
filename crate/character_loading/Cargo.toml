@@ -21,8 +21,6 @@ lazy_static = "1.4.0"
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 serde_yaml = "0.8.11"
-typename = "0.1.2"
-typename_derive = "0.1.4"
 
 [features]
 nightly = ["amethyst/nightly"]
