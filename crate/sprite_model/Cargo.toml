@@ -15,7 +15,7 @@ asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-derive_more = "0.15.1-pre"
+derive_more = "0.99.2"
 kinematic_model = { path = "../kinematic_model" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model = { path = "../sequence_model" }
