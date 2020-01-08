@@ -1,11 +1,10 @@
 use amethyst::ecs::prelude::*;
 use derive_new::new;
-use typename_derive::TypeName;
 
 use crate::{ControllerInput, InputControlled, SharedInputControlled};
 
 /// Updates the `ControllerInput` component based on input from the sharing controllers.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SharedControllerInputUpdateSystem;
 
 type SharedControllerInputUpdateSystemData<'s> = (

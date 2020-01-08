@@ -2,10 +2,12 @@
 mod tests {
     use std::{collections::HashMap, convert::TryFrom};
 
-    use amethyst::input::{Axis as InputAxis, BindingError, Bindings, Button};
+    use amethyst::{
+        input::{Axis as InputAxis, BindingError, Bindings, Button},
+        winit::VirtualKeyCode,
+    };
     use hamcrest::prelude::*;
     use indexmap::IndexMap;
-    use winit::VirtualKeyCode;
 
     use game_input_model::{
         Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig, PlayerActionControl,

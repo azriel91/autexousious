@@ -11,7 +11,7 @@ mod tests {
         BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapUnboundedDelete,
         OutOfBoundsDeleteClock,
     };
-    use typename::TypeName;
+    use std::any;
 
     use map_play::{MapOutOfBoundsClockAugmentSystem, OUT_OF_BOUNDS_DELETE_DELAY};
 
@@ -82,7 +82,7 @@ mod tests {
         AmethystApplication::blank()
             .with_system(
                 MapOutOfBoundsClockAugmentSystem::new(),
-                MapOutOfBoundsClockAugmentSystem::type_name(),
+                any::type_name::<MapOutOfBoundsClockAugmentSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

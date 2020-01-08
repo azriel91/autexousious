@@ -72,7 +72,6 @@ fn derive_append(ast: &mut DeriveInput) {
     let derives = parse_quote!(
         derive_deref::Deref,
         derive_deref::DerefMut,
-        typename_derive::TypeName,
         Clone,
         Debug,
         PartialEq

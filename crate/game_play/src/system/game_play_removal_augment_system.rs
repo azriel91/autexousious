@@ -8,10 +8,9 @@ use derive_new::new;
 use game_play_model::GamePlayEntity;
 use spawn_model::play::SpawnEvent;
 use state_registry::StateId;
-use typename_derive::TypeName;
 
 /// Augments spawned entities with the `GamePlayEntity` removal component during `GamePlay`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GamePlayRemovalAugmentSystem {
     /// Reader ID for the `SpawnEvent` channel.
     #[new(default)]

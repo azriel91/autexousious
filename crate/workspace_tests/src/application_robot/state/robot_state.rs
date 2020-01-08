@@ -10,7 +10,7 @@ mod test {
         ecs::{World, WorldExt},
         State, StateData, Trans,
     };
-    use debug_util_amethyst::{assert_eq_trans, display_trans};
+    use debug_util_amethyst::assert_eq_trans;
 
     use application_robot::{Intercept, RobotState};
 
@@ -808,10 +808,8 @@ mod test {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
             write!(
                 f,
-                "MockIntercept {{ invocations: {:?}, trans_begin: {}, trans_end: {} }}",
-                self.invocations,
-                format_trans(&self.trans_begin),
-                format_trans(&self.trans_end),
+                "MockIntercept {{ invocations: {:?}, trans_begin: {:?}, trans_end: {:?} }}",
+                self.invocations, &self.trans_begin, &self.trans_end,
             )
         }
     }
@@ -847,9 +845,8 @@ mod test {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
             write!(
                 f,
-                "MockState {{ invocations: {:?}, trans: {} }}",
-                self.invocations,
-                format_trans(&self.trans),
+                "MockState {{ invocations: {:?}, trans: {:?} }}",
+                self.invocations, &self.trans,
             )
         }
     }
@@ -871,14 +868,4 @@ mod test {
         fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<'_, T>]);
         fn_trans!(update, Invocation::Update; [StateData<'_, T>]);
     }
-
-    // kcov-ignore-start
-    fn format_trans<T, E>(trans: &Option<Trans<T, E>>) -> String {
-        if trans.is_some() {
-            format!("Some({})", display_trans(trans.as_ref().unwrap()))
-        } else {
-            "None".to_string()
-        }
-    }
-    // kcov-ignore-end
 }

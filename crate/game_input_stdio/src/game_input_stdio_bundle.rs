@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -6,7 +8,6 @@ use amethyst::{
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
-use typename::TypeName;
 
 use crate::ControlInputEventStdinMapper;
 
@@ -15,7 +16,7 @@ use crate::ControlInputEventStdinMapper;
 pub struct GameInputStdioBundle {
     /// System names that the `MapperSystem::<ControlInputEventStdinMapper>` should wait on.
     #[new(default)]
-    system_dependencies: Option<Vec<String>>,
+    system_dependencies: Option<Vec<&'static str>>,
 }
 
 impl GameInputStdioBundle {
@@ -24,8 +25,8 @@ impl GameInputStdioBundle {
     /// # Parameters
     ///
     /// * `dependencies`: Names of the systems to depend on.
-    pub fn with_system_dependencies(mut self, dependencies: &[String]) -> Self {
-        self.system_dependencies = Some(Vec::from(dependencies));
+    pub fn with_system_dependencies(mut self, dependencies: Vec<&'static str>) -> Self {
+        self.system_dependencies = Some(dependencies);
         self
     }
 }
@@ -36,17 +37,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
         _world: &mut World,
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
-        let deps = self
-            .system_dependencies
-            .as_ref()
-            // kcov-ignore-start
-            .map_or_else(Vec::new, |deps| {
-                deps.iter().map(AsRef::as_ref).collect::<Vec<&str>>()
-            });
-        // kcov-ignore-end
+        let deps = self.system_dependencies.unwrap_or_else(Vec::new);
         builder.add(
             MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
-            &MapperSystem::<ControlInputEventStdinMapper>::type_name(),
+            any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
             &deps,
         ); // kcov-ignore
         Ok(())

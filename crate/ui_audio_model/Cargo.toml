@@ -14,9 +14,9 @@ asset_derive = { path = "../asset_derive" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-serde = { version = "1.0.102", features = ["derive"] }
-strum = "0.16.0"
-strum_macros = "0.16.0"
+serde = { version = "1.0.104", features = ["derive"] }
+strum = "0.17.1"
+strum_macros = "0.17.1"
 
 [features]
 nightly = ["amethyst/nightly"]

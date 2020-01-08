@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -6,7 +8,6 @@ use amethyst::{
 use application_menu::MenuItemWidgetInputSystem;
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
-use typename::TypeName;
 
 use crate::{GameModeSelectionSfxSystem, GameModeSelectionWidgetUiSystem};
 
@@ -20,11 +21,11 @@ impl GameModeSelectionUiBundle {
     /// Returns the system names added by this bundle.
     ///
     /// This allows consumers to specify the systems as dependencies.
-    pub fn system_names() -> Vec<String> {
+    pub fn system_names() -> Vec<&'static str> {
         vec![
-            MenuItemWidgetInputSystem::<GameModeIndex>::type_name(),
-            GameModeSelectionWidgetUiSystem::type_name(),
-            GameModeSelectionSfxSystem::type_name(),
+            any::type_name::<MenuItemWidgetInputSystem<GameModeIndex>>(),
+            any::type_name::<GameModeSelectionWidgetUiSystem>(),
+            any::type_name::<GameModeSelectionSfxSystem>(),
         ]
     }
 }
@@ -37,20 +38,20 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
     ) -> Result<(), Error> {
         builder.add(
             MenuItemWidgetInputSystem::<GameModeIndex>::new(),
-            &MenuItemWidgetInputSystem::<GameModeIndex>::type_name(),
+            any::type_name::<MenuItemWidgetInputSystem<GameModeIndex>>(),
             &[],
         ); // kcov-ignore
 
         builder.add(
             GameModeSelectionWidgetUiSystem::new(),
-            &GameModeSelectionWidgetUiSystem::type_name(),
-            &[&MenuItemWidgetInputSystem::<GameModeIndex>::type_name()],
+            any::type_name::<GameModeSelectionWidgetUiSystem>(),
+            &[any::type_name::<MenuItemWidgetInputSystem<GameModeIndex>>()],
         ); // kcov-ignore
 
         builder.add(
             GameModeSelectionSfxSystem::new(),
-            &GameModeSelectionSfxSystem::type_name(),
-            &[&MenuItemWidgetInputSystem::<GameModeIndex>::type_name()],
+            any::type_name::<GameModeSelectionSfxSystem>(),
+            &[any::type_name::<MenuItemWidgetInputSystem<GameModeIndex>>()],
         ); // kcov-ignore
 
         Ok(())

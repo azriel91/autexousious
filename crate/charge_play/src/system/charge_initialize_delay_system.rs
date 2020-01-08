@@ -8,13 +8,12 @@ use charge_model::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Ticks `ChargeBeginDelayClock` while `Attack` is held.
 ///
 /// Adds `ChargeTrackerClock` on charge begin if none exists and `ChargeBeginDelayClock`
 /// `is_complete()`
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ChargeInitializeDelaySystem;
 
 #[derive(Derivative, SystemData)]

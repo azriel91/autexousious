@@ -11,9 +11,9 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.3"
-derive_more = "0.15.1-pre"
+derive_more = "0.99.2"
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
-serde = { version = "1.0.102", features = ["derive"] }
+serde = { version = "1.0.104", features = ["derive"] }
 
 [features]
 nightly = ["amethyst/nightly"]

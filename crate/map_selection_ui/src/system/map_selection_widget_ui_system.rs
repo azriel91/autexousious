@@ -15,7 +15,6 @@ use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEntity};
-use typename_derive::TypeName;
 
 use crate::MapSelectionWidgetState;
 
@@ -27,9 +26,9 @@ const LABEL_HEIGHT_HELP: f32 = 20.;
 
 /// System that creates and deletes `MapSelectionWidgetState` entities.
 ///
-/// This is not private because consumers may use `MapSelectionWidgetUiSystem::type_name()` to
+/// This is not private because consumers may use `any::type_name::<MapSelectionWidgetUiSystem>()` to
 /// specify this as a dependency of another system.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapSelectionWidgetUiSystem;
 
 #[derive(Derivative, SystemData)]

@@ -29,7 +29,6 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
-use typename::TypeName;
 use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::UiMenuItem;
 
@@ -85,7 +84,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
-            &ItemComponentComponentAugmentSystem::<SharedInputControlled>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SharedInputControlled>>(),
             &[],
         );
         builder.add(
@@ -95,102 +94,102 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionInit>::new(),
-            &ItemComponentComponentAugmentSystem::<PositionInit>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<PositionInit>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<VelocityInit>::new(),
-            &ItemComponentComponentAugmentSystem::<VelocityInit>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<VelocityInit>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionZAsY>::new(),
-            &ItemComponentComponentAugmentSystem::<PositionZAsY>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<PositionZAsY>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<Mirrored>::new(),
-            &ItemComponentComponentAugmentSystem::<Mirrored>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<Mirrored>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<Grounding>::new(),
-            &ItemComponentComponentAugmentSystem::<Grounding>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<Grounding>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SequenceId>::new(),
-            &ItemComponentComponentAugmentSystem::<SequenceId>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SequenceId>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::new(),
-            &ItemComponentComponentAugmentSystem::<SequenceEndTransitions>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SequenceEndTransitions>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<WaitSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<WaitSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<WaitSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SourceSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<SourceSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SourceSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ObjectAccelerationSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<ObjectAccelerationSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem::<ObjectAccelerationSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SpriteRenderSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<SpriteRenderSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SpriteRenderSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<BodySequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<BodySequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<BodySequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<InteractionsSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<InteractionsSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<InteractionsSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SpawnsSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<SpawnsSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SpawnsSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<TintSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<TintSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<TintSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<ScaleSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ScaleSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<CharacterIrsHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<CharacterIrsHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::new(),
-            &ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<InputReactionsSequenceHandles>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiLabel>::new(),
-            &ItemComponentComponentAugmentSystem::<UiLabel>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiMenuItem<GameModeIndex>>::new(),
-            &ItemComponentComponentAugmentSystem::<UiMenuItem<GameModeIndex>>::type_name(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiMenuItem<GameModeIndex>>>(),
             &[],
         );
         builder.add(

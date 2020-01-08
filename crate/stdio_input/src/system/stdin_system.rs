@@ -15,7 +15,6 @@ use log::{debug, error, info, trace, warn};
 use state_registry::StateId;
 use stdio_command_model::StdinCommandBarrier;
 use stdio_spi::VariantAndTokens;
-use typename_derive::TypeName;
 
 use crate::{
     reader::{self, StdinReader},
@@ -41,7 +40,7 @@ pub struct StdinSystemData<'s> {
 }
 
 /// Rendering system.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct StdinSystem {
     /// Channel receiver for output/input messages for this system.
     rx: Receiver<String>,

@@ -11,12 +11,11 @@ use game_play_model::{GamePlayEvent, GamePlayStatus};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use object_model::play::HealthPoints;
 use team_model::play::Team;
-use typename_derive::TypeName;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
 ///
 /// In the future this will be type parameterized to specify the detection function.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GamePlayEndDetectionSystem {
     /// Pre-allocated `HashMap` to track number of alive players.
     #[new(default)]

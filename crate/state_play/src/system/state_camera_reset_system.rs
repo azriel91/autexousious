@@ -7,10 +7,9 @@ use camera_play::{CameraCreator, CameraCreatorResources};
 use derivative::Derivative;
 use derive_new::new;
 use state_registry::StateIdUpdateEvent;
-use typename_derive::TypeName;
 
 /// Resets `Camera` transforms when `StateId` changes.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StateCameraResetSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]

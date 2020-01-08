@@ -4,7 +4,6 @@ use asset_model::{config::AssetType, loaded::AssetId};
 use loading_model::loaded::LoadStage;
 use log::debug;
 use object_type::ObjectType;
-use typename_derive::TypeName;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResources,
@@ -14,7 +13,7 @@ use crate::{
 pub type AssetDefinitionLoadingSystem = AssetPartLoadingSystem<AssetDefinitionLoader>;
 
 /// `AssetDefinitionLoader`.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct AssetDefinitionLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {

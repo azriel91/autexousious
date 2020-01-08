@@ -6,10 +6,9 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Velocity;
 use object_model::{config::Mass, play::Grounding};
-use typename_derive::TypeName;
 
 /// Increases velocity of `Object`s that have `Mass` and are `Airborne`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ObjectGravitySystem;
 
 #[derive(Derivative, SystemData)]

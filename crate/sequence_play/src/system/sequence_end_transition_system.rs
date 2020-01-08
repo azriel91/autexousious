@@ -9,10 +9,9 @@ use sequence_model::{
     loaded::{SequenceEndTransition, SequenceId},
     play::SequenceUpdateEvent,
 };
-use typename_derive::TypeName;
 
 /// Transitions an object when their `SequenceUpdateEvent::SequenceEnd`
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SequenceEndTransitionSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]

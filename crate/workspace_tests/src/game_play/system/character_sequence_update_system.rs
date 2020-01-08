@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Join, Read, ReadStorage, WriteStorage},
         Error,
@@ -12,7 +14,6 @@ mod tests {
     use mirrored_model::play::Mirrored;
     use object_model::play::Grounding;
     use sequence_model::{loaded::SequenceId, play::SequenceStatus};
-    use typename::TypeName;
 
     use game_play::CharacterSequenceUpdateSystem;
 
@@ -116,7 +117,7 @@ mod tests {
             })
             .with_system_single(
                 CharacterSequenceUpdateSystem::new(),
-                CharacterSequenceUpdateSystem::type_name(),
+                any::type_name::<CharacterSequenceUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

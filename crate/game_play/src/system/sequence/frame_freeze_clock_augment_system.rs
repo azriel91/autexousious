@@ -11,12 +11,10 @@ use derivative::Derivative;
 use derive_new::new;
 use sequence_model::play::FrameFreezeClock;
 
-use typename_derive::TypeName;
-
 /// Creates `FrameFreezeClock`s for new `Hit` collisions.
 ///
 /// This attaches `FrameFreezeClock` to the entity with the `Interaction`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct FrameFreezeClockAugmentSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]

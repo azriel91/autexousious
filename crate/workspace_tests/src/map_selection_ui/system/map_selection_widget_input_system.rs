@@ -1,5 +1,7 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, World, WorldExt},
         shred::SystemData,
@@ -16,7 +18,6 @@ mod test {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use map_selection_model::{MapSelection, MapSelectionEvent};
-    use typename::TypeName;
 
     use map_selection_ui::{
         MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData, MapSelectionWidgetState,
@@ -193,7 +194,7 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
+                any::type_name::<MapSelectionWidgetInputSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {

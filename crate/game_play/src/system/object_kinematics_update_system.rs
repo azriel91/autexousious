@@ -6,12 +6,11 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use sequence_model::play::FrameFreezeClock;
-use typename_derive::TypeName;
 
 /// Updates each entity's `Position` based on their `Velocity` in game.
 ///
 /// This system should be run after all other systems that affect kinematics have run.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ObjectKinematicsUpdateSystem;
 
 /// `ObjectKinematicsUpdateSystemData`.

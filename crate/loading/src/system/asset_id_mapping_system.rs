@@ -9,7 +9,6 @@ use object_type::ObjectType;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteSequenceName;
-use typename_derive::TypeName;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
@@ -20,7 +19,7 @@ use crate::{
 pub type AssetIdMappingSystem = AssetPartLoadingSystem<AssetIdMapper>;
 
 /// `AssetIdMapper`.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct AssetIdMapper;
 
 impl<'s> AssetPartLoader<'s> for AssetIdMapper {

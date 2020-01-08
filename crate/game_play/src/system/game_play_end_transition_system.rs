@@ -8,12 +8,11 @@ use derive_new::new;
 use game_input::ControllerInput;
 use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
 use tracker::Last;
-use typename_derive::TypeName;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
 ///
 /// In the future this will be type parameterized to specify the detection function.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GamePlayEndTransitionSystem;
 
 /// `GamePlayEndTransitionSystemData`.

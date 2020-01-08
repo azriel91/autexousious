@@ -15,9 +15,7 @@ clap = "2.33.0"
 derive-new = "0.5.8"
 err-derive = "0.2.1"
 log = "0.4.8"
-structopt = "0.3.3"
-typename = "0.1.1"
-typename_derive = "0.1.3"
+structopt = "0.3.7"
 
 [features]
 nightly = ["amethyst/nightly"]

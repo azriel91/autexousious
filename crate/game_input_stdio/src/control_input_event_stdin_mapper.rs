@@ -8,7 +8,6 @@ use game_input_model::{
     ControlInputEventArgs,
 };
 use stdio_spi::{MapperSystemData, StdinMapper};
-use typename_derive::TypeName;
 
 use crate::GameInputStdioError;
 
@@ -20,7 +19,7 @@ impl<'s> MapperSystemData<'s> for ControlInputEventStdinMapperData {
 }
 
 /// Builds a `ControlInputEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct ControlInputEventStdinMapper;
 
 impl StdinMapper for ControlInputEventStdinMapper {

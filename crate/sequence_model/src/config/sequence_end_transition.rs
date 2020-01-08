@@ -7,12 +7,11 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
 };
 use strum_macros::{Display, EnumString, IntoStaticStr};
-use typename_derive::TypeName;
 
 use crate::config::{SequenceName, SequenceNameString};
 
 /// Specifies the behaviour to transition when the sequence ends.
-#[derive(Clone, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq, TypeName)]
+#[derive(Clone, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq)]
 #[derivative(Default)]
 #[strum(serialize_all = "snake_case")]
 pub enum SequenceEndTransition<SeqName>

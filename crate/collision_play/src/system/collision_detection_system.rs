@@ -15,10 +15,9 @@ use derive_new::new;
 use log::debug;
 use mirrored_model::play::Mirrored;
 use shape_model::Volume;
-use typename_derive::TypeName;
 
 /// Detects collisions for all objects.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CollisionDetectionSystem;
 
 #[derive(Derivative, SystemData)]

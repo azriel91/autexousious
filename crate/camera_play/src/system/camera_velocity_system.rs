@@ -7,13 +7,12 @@ use camera_model::play::CameraTargetCoordinates;
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
-use typename_derive::TypeName;
 
 /// How much to divide the target velocity by, to smoothen the acceleration.
 const SMOOTHING_FACTOR_DEFAULT: f32 = 3.;
 
 /// Updates camera velocity to smoothen camera movement between its current and target position.
-#[derive(Debug, Derivative, TypeName, new)]
+#[derive(Debug, Derivative, new)]
 #[derivative(Default)]
 pub struct CameraVelocitySystem {
     /// How much to divide the target velocity by, to smoothen the acceleration.

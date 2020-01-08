@@ -2,10 +2,8 @@ use amethyst::ecs::{Join, System, WriteStorage};
 use derive_new::new;
 use object_status_model::config::StunPoints;
 
-use typename_derive::TypeName;
-
 /// Decrements `StunPoints`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StunPointsReductionSystem;
 
 type StunPointsReductionSystemData<'s> = WriteStorage<'s, StunPoints>;

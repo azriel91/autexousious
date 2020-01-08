@@ -5,10 +5,9 @@ use amethyst::{
 use derive_new::new;
 use log::warn;
 use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};
-use typename_derive::TypeName;
 
 /// Updates how `stdin_input` operates based on stdio command events.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StdioCommandProcessingSystem {
     /// Reader ID for the `StdioCommandEvent` event channel.
     #[new(default)]

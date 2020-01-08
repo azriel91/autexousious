@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
@@ -19,7 +19,6 @@ mod tests {
     };
     use map_selection_model::MapSelection;
     use tracker::Last;
-    use typename::TypeName;
 
     use map_play::MapEnterExitDetectionSystem;
 
@@ -494,7 +493,7 @@ mod tests {
             })
             .with_system_single(
                 MapEnterExitDetectionSystem::new(),
-                MapEnterExitDetectionSystem::type_name(),
+                any::type_name::<MapEnterExitDetectionSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

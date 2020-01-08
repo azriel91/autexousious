@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{any, marker::PhantomData};
 
 use amethyst::{
     ecs::{LazyUpdate, Read, ReadExpect, System, World, WriteExpect},
@@ -6,8 +6,6 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 
 use crate::Prev;
 
@@ -24,10 +22,7 @@ use crate::Prev;
 ///
 /// This should be used conservatively if the tracked type is `Clone` and not `Copy`, as the memory
 /// allocations can be a performance hit.
-///
-/// Implementation note: This uses the `named_type` crate instead of `typename` because we cannot
-/// derive `TypeName` unless we add a `T: TypeName` bound.
-#[derive(Clone, Debug, Default, NamedType, new)]
+#[derive(Clone, Debug, Default, new)]
 pub struct PrevTrackerSystem<T>
 where
     T: Clone + Send + Sync + 'static,
@@ -62,7 +57,7 @@ where
 {
     /// Returns a String representing this system's name.
     pub fn system_name(&self) -> String {
-        format!("{}<{}>", Self::type_name(), self.resource_name)
+        format!("{}<{}>", any::type_name::<Self>(), self.resource_name)
     }
 }
 

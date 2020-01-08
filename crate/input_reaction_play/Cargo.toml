@@ -14,7 +14,6 @@ approx = "0.3.2"
 asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
-charge_model = { path = "../charge_model" }
 control_settings_model = { path = "../control_settings_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
@@ -25,7 +24,5 @@ game_play_model = { path = "../game_play_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 log = "0.4.8"
 map_selection_model = { path = "../map_selection_model" }
-named_type = "0.2.1"
-named_type_derive = "0.2.1"
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }

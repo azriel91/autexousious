@@ -11,14 +11,13 @@ use asset_model::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Augments an entity with components based on the `ItemId` attached to it.
 ///
 /// # Type Parameters
 ///
 /// * `IC`: Type of item component data, e.g. `WaitSequenceHandles`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ItemComponentComponentAugmentSystem<IC> {
     /// Reader ID for the `ItemIdEvent` event channel.
     #[new(default)]

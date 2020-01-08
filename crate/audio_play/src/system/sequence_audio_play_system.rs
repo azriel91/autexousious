@@ -9,13 +9,12 @@ use audio_model::loaded::SourceHandleOpt;
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::play::SequenceUpdateEvent;
-use typename_derive::TypeName;
 
 /// Default volume to play sounds at.
 const VOLUME: f32 = 1.0;
 
 /// Plays a sound at the beginning of a frame.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SequenceAudioPlaySystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]

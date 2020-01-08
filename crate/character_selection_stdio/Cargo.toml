@@ -16,8 +16,6 @@ character_selection_model = { path = "../character_selection_model" }
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 stdio_spi = { path = "../stdio_spi" }
-typename = "0.1.1"
-typename_derive = "0.1.3"
 
 [features]
 nightly = ["amethyst/nightly"]

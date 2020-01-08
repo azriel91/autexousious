@@ -1,10 +1,11 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
     use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};
-    use typename::TypeName;
 
     use stdio_command_stdio::StdioCommandProcessingSystem;
 
@@ -13,7 +14,7 @@ mod test {
         AmethystApplication::blank()
             .with_system(
                 StdioCommandProcessingSystem::new(),
-                StdioCommandProcessingSystem::type_name(),
+                any::type_name::<StdioCommandProcessingSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(|world| {

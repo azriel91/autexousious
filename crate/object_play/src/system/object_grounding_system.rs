@@ -8,10 +8,9 @@ use kinematic_model::config::Position;
 use map_model::loaded::AssetMargins;
 use map_selection_model::MapSelection;
 use object_model::play::Grounding;
-use typename_derive::TypeName;
 
 /// Updates `Grounding` to `Airborne` for objects above the map bottom boundary.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ObjectGroundingSystem;
 
 #[derive(Derivative, SystemData)]

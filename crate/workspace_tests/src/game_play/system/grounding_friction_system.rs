@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, WorldExt},
         Error,
@@ -7,7 +9,6 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use kinematic_model::config::Velocity;
     use object_model::play::Grounding;
-    use typename::TypeName;
 
     use game_play::GroundingFrictionSystem;
 
@@ -78,7 +79,7 @@ mod tests {
             // kcov-ignore-start
             .with_system(
                 GroundingFrictionSystem::new(),
-                GroundingFrictionSystem::type_name(),
+                any::type_name::<GroundingFrictionSystem>(),
                 &[],
             )
             // kcov-ignore-end

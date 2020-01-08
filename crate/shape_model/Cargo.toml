@@ -9,5 +9,5 @@ doctest = false
 test = false
 
 [dependencies]
-serde = { version = "1.0.102", features = ["derive"] }
-strum_macros = "0.16.0"
+serde = { version = "1.0.104", features = ["derive"] }
+strum_macros = "0.17.1"

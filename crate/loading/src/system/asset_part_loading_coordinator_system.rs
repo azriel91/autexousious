@@ -5,10 +5,9 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStatus};
-use typename_derive::TypeName;
 
 /// Progresses a collective asset through load stages as each one is complete.
-#[derive(Derivative, TypeName, new)]
+#[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct AssetPartLoadingCoordinatorSystem;
 

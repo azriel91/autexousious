@@ -12,8 +12,8 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derive-new = "0.5.8"
 logic_clock_derive = { path = "../logic_clock_derive" }
-serde = { version = "1.0.102", features = ["derive"] }
+serde = { version = "1.0.104", features = ["derive"] }
 
 [dev-dependencies]
 derive_deref = "1.1.0"
-derive_more = "0.15.1-pre"
+derive_more = "0.99.2"

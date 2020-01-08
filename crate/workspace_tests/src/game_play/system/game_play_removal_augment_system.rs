@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, SystemData, World, WorldExt},
@@ -14,7 +14,6 @@ mod tests {
     use sequence_model::loaded::SequenceId;
     use spawn_model::{loaded::Spawn, play::SpawnEvent};
     use state_registry::StateId;
-    use typename::TypeName;
 
     use game_play::GamePlayRemovalAugmentSystem;
 
@@ -33,7 +32,7 @@ mod tests {
             .with_setup(setup_system_data)
             .with_system(
                 GamePlayRemovalAugmentSystem::new(),
-                GamePlayRemovalAugmentSystem::type_name(),
+                any::type_name::<GamePlayRemovalAugmentSystem>(),
                 &[],
             )
             .with_resource(state_id)

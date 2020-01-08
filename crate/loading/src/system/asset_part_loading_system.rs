@@ -7,17 +7,15 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStatus};
-use typename::TypeName as TypeNameTrait;
-use typename_derive::TypeName;
 
 use crate::{AssetLoadingResources, AssetPartLoader};
 
 /// Loads part of a collective asset.
-#[derive(Derivative, TypeName, new)]
+#[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct AssetPartLoadingSystem<R>
 where
-    R: for<'s> AssetPartLoader<'s> + TypeNameTrait,
+    R: for<'s> AssetPartLoader<'s>,
 {
     /// Marker.
     marker: PhantomData<R>,
@@ -28,7 +26,7 @@ where
 #[derivative(Debug)]
 pub struct AssetPartLoaderSystemData<'s, R>
 where
-    R: for<'sd> AssetPartLoader<'sd> + TypeNameTrait,
+    R: for<'sd> AssetPartLoader<'sd>,
 {
     /// `AssetLoadStage` resource.
     #[derivative(Debug = "ignore")]
@@ -45,7 +43,7 @@ where
 
 impl<R> AssetPartLoadingSystem<R>
 where
-    R: for<'s> AssetPartLoader<'s> + TypeNameTrait,
+    R: for<'s> AssetPartLoader<'s>,
 {
     fn process_assets_queued(
         &self,
@@ -103,7 +101,7 @@ where
 
 impl<'s, R> System<'s> for AssetPartLoadingSystem<R>
 where
-    R: for<'sd> AssetPartLoader<'sd> + TypeNameTrait,
+    R: for<'sd> AssetPartLoader<'sd>,
 {
     type SystemData = AssetPartLoaderSystemData<'s, R>;
 

@@ -10,10 +10,9 @@ use charge_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::warn;
-use typename_derive::TypeName;
 
 /// Subtracts `ChargeTrackerClock` when used.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ChargeUsageSystem {
     /// Reader ID for the `ChargeUseEvent` channel.
     #[new(default)]

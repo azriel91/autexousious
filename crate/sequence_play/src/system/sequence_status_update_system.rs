@@ -12,13 +12,12 @@ use sequence_model::{
     loaded::SequenceId,
     play::{SequenceStatus, SequenceUpdateEvent},
 };
-use typename_derive::TypeName;
 
 /// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends `SequenceBegin` events.
 ///
 /// This **must** run before `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to
 /// determine if a `SequenceBegin` event should be sent.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SequenceStatusUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]

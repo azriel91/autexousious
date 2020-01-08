@@ -4,10 +4,9 @@ use amethyst::{
 };
 use asset_model::ItemComponent;
 use derivative::Derivative;
-use typename_derive::TypeName;
 
 /// State that tracks an object's attachment to the surrounding environment.
-#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq, TypeName)]
+#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
 #[storage(VecStorage)]
 pub enum Grounding {

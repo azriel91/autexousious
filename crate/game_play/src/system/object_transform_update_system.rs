@@ -9,12 +9,11 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::{config::Position, play::PositionZAsY};
 use mirrored_model::play::Mirrored;
-use typename_derive::TypeName;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
 ///
 /// This system should be run after all other systems that affect kinematics have run.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ObjectTransformUpdateSystem;
 
 /// `ObjectTransformUpdateSystemData`.

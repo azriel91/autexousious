@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
@@ -22,7 +22,6 @@ mod tests {
     use map_selection_model::MapSelection;
     use mirrored_model::play::Mirrored;
     use pretty_assertions::assert_eq;
-    use typename::TypeName;
 
     use camera_play::{CameraCreator, CameraTrackingSystem};
 
@@ -289,7 +288,7 @@ mod tests {
             })
             .with_system_single(
                 CameraTrackingSystem::new(),
-                CameraTrackingSystem::type_name(),
+                any::type_name::<CameraTrackingSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

@@ -8,8 +8,6 @@ use amethyst::{
 use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
 
@@ -18,7 +16,7 @@ use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
 /// # Type Parameters
 ///
 /// * `ICSCD`: Item component which is also sequence component data, e.g. `SequenceEndTransitions`.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, new)]
 pub struct SequenceComponentUpdateSystem<ICSCD> {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]

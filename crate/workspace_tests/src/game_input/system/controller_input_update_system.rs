@@ -1,5 +1,7 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, WorldExt},
         shrev::EventChannel,
@@ -10,7 +12,6 @@ mod test {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent,
     };
-    use typename::TypeName;
 
     use game_input::{ControllerInput, ControllerInputUpdateSystem};
 
@@ -19,7 +20,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
-                ControllerInputUpdateSystem::type_name(),
+                any::type_name::<ControllerInputUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(|world| {
@@ -70,7 +71,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
-                ControllerInputUpdateSystem::type_name(),
+                any::type_name::<ControllerInputUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(|world| {

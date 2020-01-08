@@ -5,10 +5,9 @@ use amethyst::{
 use charge_model::play::{ChargeRetention, ChargeStatus, ChargeTrackerClock};
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Reduces charge when not charging.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ChargeRetentionSystem;
 
 #[derive(Derivative, SystemData)]

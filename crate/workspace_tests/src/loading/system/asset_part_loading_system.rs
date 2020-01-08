@@ -10,7 +10,6 @@ mod tests {
     use loading::{AssetLoadingResources, AssetPartLoader};
     use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStage, LoadStatus};
     use slotmap::SecondaryMap;
-    use typename_derive::TypeName;
 
     use loading::AssetPartLoadingSystem;
 
@@ -166,7 +165,6 @@ mod tests {
             .run()
     }
 
-    #[derive(TypeName)]
     struct TestAssetPartLoader;
 
     impl<'s> AssetPartLoader<'s> for TestAssetPartLoader {

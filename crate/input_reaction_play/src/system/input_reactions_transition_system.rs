@@ -20,8 +20,6 @@ use input_reaction_model::{
         ReactionEffect, ReactionEffectData,
     },
 };
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use sequence_model::loaded::SequenceId;
 
 use crate::{IrAppEventSender, IrAppEventSenderSystemData};
@@ -31,7 +29,7 @@ use crate::{IrAppEventSender, IrAppEventSenderSystemData};
 /// # Type Parameters
 ///
 /// * `IRR`: `InputReactionRequirement`.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, new)]
 pub struct InputReactionsTransitionSystem<IRR> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]

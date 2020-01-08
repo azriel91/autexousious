@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{any, path::PathBuf};
 
 use amethyst::{
     assets::Processor,
@@ -8,7 +8,6 @@ use amethyst::{
 };
 use collision_audio_model::config::CollisionSfxPaths;
 use derive_new::new;
-use typename::TypeName;
 
 use crate::CollisionAudioLoadingSystem;
 
@@ -35,7 +34,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionAudioLoadingBundle {
         ); // kcov-ignore
         builder.add(
             CollisionAudioLoadingSystem::new(self.assets_dir),
-            &CollisionAudioLoadingSystem::type_name(),
+            any::type_name::<CollisionAudioLoadingSystem>(),
             &["collision_sfx_paths_processor"],
         ); // kcov-ignore
         Ok(())

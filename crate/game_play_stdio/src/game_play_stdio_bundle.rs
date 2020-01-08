@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -6,7 +8,6 @@ use amethyst::{
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
-use typename::TypeName;
 
 use crate::GamePlayEventStdinMapper;
 
@@ -22,7 +23,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayStdioBundle {
     ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<GamePlayEventStdinMapper>::new(AppEventVariant::GamePlay),
-            &MapperSystem::<GamePlayEventStdinMapper>::type_name(),
+            any::type_name::<MapperSystem<GamePlayEventStdinMapper>>(),
             &[],
         ); // kcov-ignore
         Ok(())

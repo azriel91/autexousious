@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test {
+mod tests {
     use amethyst::{
         ecs::{Builder, World, WorldExt},
         shred::SystemData,
@@ -10,8 +10,8 @@ mod test {
     use game_play_model::{GamePlayEvent, GamePlayStatus};
     use game_stats_model::play::{WinOutcome, WinStatus};
     use object_model::play::HealthPoints;
+    use std::any;
     use team_model::play::{IndependentCounter, Team, TeamCounter};
-    use typename::TypeName;
 
     use game_play::{GamePlayEndDetectionSystem, GamePlayEndDetectionSystemData};
 
@@ -172,7 +172,7 @@ mod test {
             })
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
-                GamePlayEndDetectionSystem::type_name(),
+                any::type_name::<GamePlayEndDetectionSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

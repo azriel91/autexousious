@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{any, path::PathBuf};
 
 use amethyst::{
     core::bundle::SystemBundle,
@@ -6,7 +6,6 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use typename::TypeName;
 
 use crate::{
     AssetDefinitionLoadingSystem, AssetDiscoverySystem, AssetIdMappingSystem,
@@ -29,38 +28,38 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
     ) -> Result<(), Error> {
         builder.add(
             AssetDiscoverySystem::new(self.assets_dir),
-            &AssetDiscoverySystem::type_name(),
+            any::type_name::<AssetDiscoverySystem>(),
             &[],
         ); // kcov-ignore
         builder.add(
             AssetPartLoadingCoordinatorSystem::new(),
-            &AssetPartLoadingCoordinatorSystem::type_name(),
-            &[&AssetDiscoverySystem::type_name()],
+            any::type_name::<AssetPartLoadingCoordinatorSystem>(),
+            &[any::type_name::<AssetDiscoverySystem>()],
         ); // kcov-ignore
         builder.add(
             AssetDefinitionLoadingSystem::new(),
-            &AssetDefinitionLoadingSystem::type_name(),
-            &[&AssetPartLoadingCoordinatorSystem::type_name()],
+            any::type_name::<AssetDefinitionLoadingSystem>(),
+            &[any::type_name::<AssetPartLoadingCoordinatorSystem>()],
         ); // kcov-ignore
         builder.add(
             AssetIdMappingSystem::new(),
-            &AssetIdMappingSystem::type_name(),
-            &[&AssetDefinitionLoadingSystem::type_name()],
+            any::type_name::<AssetIdMappingSystem>(),
+            &[any::type_name::<AssetDefinitionLoadingSystem>()],
         ); // kcov-ignore
         builder.add(
             AssetSpritesDefinitionLoadingSystem::new(),
-            &AssetSpritesDefinitionLoadingSystem::type_name(),
-            &[&AssetIdMappingSystem::type_name()],
+            any::type_name::<AssetSpritesDefinitionLoadingSystem>(),
+            &[any::type_name::<AssetIdMappingSystem>()],
         ); // kcov-ignore
         builder.add(
             AssetTextureLoadingSystem::new(),
-            &AssetTextureLoadingSystem::type_name(),
-            &[&AssetSpritesDefinitionLoadingSystem::type_name()],
+            any::type_name::<AssetTextureLoadingSystem>(),
+            &[any::type_name::<AssetSpritesDefinitionLoadingSystem>()],
         ); // kcov-ignore
         builder.add(
             AssetSequenceComponentLoadingSystem::new(),
-            &AssetSequenceComponentLoadingSystem::type_name(),
-            &[&AssetTextureLoadingSystem::type_name()],
+            any::type_name::<AssetSequenceComponentLoadingSystem>(),
+            &[any::type_name::<AssetTextureLoadingSystem>()],
         ); // kcov-ignore
         Ok(())
     }

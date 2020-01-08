@@ -19,13 +19,11 @@ derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.102", features = ["derive"] }
+serde = { version = "1.0.104", features = ["derive"] }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
-strum = "0.16.0"
-strum_macros = "0.16.0"
-typename = "0.1.1"
-typename_derive = "0.1.3"
+strum = "0.17.1"
+strum_macros = "0.17.1"
 ui_button_model = { path = "../ui_button_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 

@@ -14,7 +14,6 @@ use game_input_model::InputConfig;
 use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use team_model::play::Team;
-use typename_derive::TypeName;
 
 const FONT_COLOUR_NEUTRAL: [f32; 4] = [0.8, 0.9, 1., 1.];
 const FONT_SIZE_WIDGET: f32 = 50.;
@@ -24,7 +23,7 @@ const LABEL_HEIGHT: f32 = 100.;
 /// Displays the status of game play.
 ///
 /// Intended for displaying when the game is paused, or when the game ends (winning team).
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct GamePlayStatusDisplaySystem {
     /// Reader ID for the `GamePlayEvent` event channel.
     #[new(default)]

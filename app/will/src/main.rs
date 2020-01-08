@@ -59,7 +59,6 @@ use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
-use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
 
@@ -123,11 +122,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 GameInputStdioBundle::new()
                     // Note: Depend on the input handler updated system, so that stdin input takes
                     // priority
-                    .with_system_dependencies(&[InputToControlInputSystem::type_name()]),
+                    .with_system_dependencies(vec![any::type_name::<InputToControlInputSystem>()]),
             )?
-            .with_bundle(GameInputBundle::new().with_system_dependencies(&[
-                MapperSystem::<ControlInputEventStdinMapper>::type_name(),
-                InputToControlInputSystem::type_name(),
+            .with_bundle(GameInputBundle::new().with_system_dependencies(vec![
+                any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
+                any::type_name::<InputToControlInputSystem>(),
             ]))?
             .with_bundle(StdioInputBundle::new())?
             .with_bundle(StdioCommandStdioBundle::new())?
@@ -158,33 +157,33 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
                 StateIdEventSystem::new(),
-                &StateIdEventSystem::type_name(),
+                any::type_name::<StateIdEventSystem>(),
                 &[],
             )
             .with(
                 StateCameraResetSystem::new(),
-                &StateCameraResetSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
+                any::type_name::<StateCameraResetSystem>(),
+                &[any::type_name::<StateIdEventSystem>()],
             )
             .with(
                 StateItemSpawnSystem::new(),
-                &StateItemSpawnSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
+                any::type_name::<StateItemSpawnSystem>(),
+                &[any::type_name::<StateIdEventSystem>()],
             )
             .with(
                 ItemIdEventSystem::new(),
-                &ItemIdEventSystem::type_name(),
-                &[&StateItemSpawnSystem::type_name()],
+                any::type_name::<ItemIdEventSystem>(),
+                &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())?
             .with(
                 StateItemUiRectifySystem::new(),
-                &StateItemUiRectifySystem::type_name(),
+                any::type_name::<StateItemUiRectifySystem>(),
                 &[],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),
-                &StateItemUiInputAugmentSystem::type_name(),
+                any::type_name::<StateItemUiInputAugmentSystem>(),
                 &[],
             )
             .with(

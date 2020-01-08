@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
@@ -18,7 +18,6 @@ mod tests {
         play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded},
     };
     use map_selection_model::MapSelection;
-    use typename::TypeName;
 
     use map_play::KeepWithinMapBoundsSystem;
 
@@ -259,7 +258,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_system(
                 KeepWithinMapBoundsSystem::new(),
-                KeepWithinMapBoundsSystem::type_name(),
+                any::type_name::<KeepWithinMapBoundsSystem>(),
                 &[],
             ) // kcov-ignore
             .with_setup(setup_system_data)

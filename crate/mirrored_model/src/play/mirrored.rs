@@ -10,7 +10,6 @@ use derive_more::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Display, From, Not,
 };
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Whether the object is mirrored.
 #[derive(
@@ -32,7 +31,6 @@ use typename_derive::TypeName;
     PartialEq,
     Eq,
     Not,
-    TypeName,
     new,
 )]
 #[storage(VecStorage)]

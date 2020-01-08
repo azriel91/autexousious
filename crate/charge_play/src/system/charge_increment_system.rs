@@ -5,10 +5,9 @@ use amethyst::{
 use charge_model::play::{ChargeDelayClock, ChargeStatus, ChargeTrackerClock};
 use derivative::Derivative;
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Ticks `ChargeTrackerClock` while `Charging`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ChargeIncrementSystem;
 
 #[derive(Derivative, SystemData)]
