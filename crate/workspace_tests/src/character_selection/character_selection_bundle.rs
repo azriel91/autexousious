@@ -10,8 +10,7 @@ mod test {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(
-                CharacterSelectionBundle::new()
-                    .with_system_dependencies(&["transform_system".to_string()]),
+                CharacterSelectionBundle::new().with_system_dependencies(vec!["transform_system"]),
             )
             .run()
     }

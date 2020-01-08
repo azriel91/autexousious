@@ -8,10 +8,9 @@ use character_selection_model::{CharacterSelection, CharacterSelectionEvent, Cha
 use derivative::Derivative;
 use derive_new::new;
 use object_type::ObjectType;
-use typename_derive::TypeName;
 
 /// Populates the `CharacterSelections` based on user input.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterSelectionSystem {
     /// Reader ID for the `CharacterSelectionEvent` event channel.
     #[new(default)]

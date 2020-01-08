@@ -2,13 +2,13 @@
 mod test {
     use amethyst::{
         ecs::{World, WorldExt},
+        winit::{
+            DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode,
+            WindowEvent, WindowId,
+        },
         StateData, StateEvent, Trans,
     };
     use debug_util_amethyst::assert_eq_opt_trans;
-    use winit::{
-        DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode,
-        WindowEvent, WindowId,
-    };
 
     use application_robot::{Intercept, KeyboardEscapeIntercept};
 

@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -7,7 +9,6 @@ use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_input::StdinSystem;
 use stdio_spi::MapperSystem;
-use typename::TypeName;
 
 use crate::{StdioCommandEventStdinMapper, StdioCommandProcessingSystem};
 
@@ -23,13 +24,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioCommandStdioBundle {
     ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<StdioCommandEventStdinMapper>::new(AppEventVariant::StdioCommand),
-            &MapperSystem::<StdioCommandEventStdinMapper>::type_name(),
-            &[&StdinSystem::type_name()],
+            any::type_name::<MapperSystem<StdioCommandEventStdinMapper>>(),
+            &[any::type_name::<StdinSystem>()],
         ); // kcov-ignore
         builder.add(
             StdioCommandProcessingSystem::new(),
-            &StdioCommandProcessingSystem::type_name(),
-            &[&MapperSystem::<StdioCommandEventStdinMapper>::type_name()],
+            any::type_name::<StdioCommandProcessingSystem>(),
+            &[any::type_name::<MapperSystem<StdioCommandEventStdinMapper>>()],
         ); // kcov-ignore
         Ok(())
     }

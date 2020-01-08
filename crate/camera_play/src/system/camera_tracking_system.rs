@@ -14,10 +14,9 @@ use map_model::{
 };
 use map_selection_model::MapSelection;
 use mirrored_model::play::Mirrored;
-use typename_derive::TypeName;
 
 /// Focuses the camera at the average position of tracked entities.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CameraTrackingSystem;
 
 #[derive(Derivative, SystemData)]

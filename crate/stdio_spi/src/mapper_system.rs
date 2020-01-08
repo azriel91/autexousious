@@ -9,16 +9,14 @@ use application_event::AppEventVariant;
 use derive_new::new;
 use log::error;
 use structopt::StructOpt;
-use typename::TypeName as TypeNameTrait;
-use typename_derive::TypeName;
 
 use crate::{MapperSystemData, StdinMapper, VariantAndTokens};
 
 /// Rendering system.
-#[derive(Debug, TypeName, new)]
+#[derive(Debug, new)]
 pub struct MapperSystem<M>
 where
-    M: StdinMapper + TypeNameTrait,
+    M: StdinMapper,
 {
     /// The `AppEventVariant` that this system should handle.
     variant: AppEventVariant,
@@ -37,7 +35,7 @@ type MapperSystemSystemData<'s, E, SD> = (
 
 impl<'s, M> System<'s> for MapperSystem<M>
 where
-    M: StdinMapper + TypeNameTrait,
+    M: StdinMapper,
 {
     type SystemData = MapperSystemSystemData<'s, M::Event, M::SystemData>;
 

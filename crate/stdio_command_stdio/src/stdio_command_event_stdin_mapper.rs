@@ -1,10 +1,9 @@
 use amethyst::Error;
 use stdio_command_model::{StdioCommandEvent, StdioCommandEventArgs};
 use stdio_spi::StdinMapper;
-use typename_derive::TypeName;
 
 /// Builds a `StdioCommandEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct StdioCommandEventStdinMapper;
 
 impl StdinMapper for StdioCommandEventStdinMapper {

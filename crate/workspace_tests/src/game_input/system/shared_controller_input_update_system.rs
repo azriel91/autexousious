@@ -1,12 +1,13 @@
 #[cfg(test)]
-mod test {
+mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, Join, ReadStorage, WorldExt, WriteStorage},
         Error,
     };
     use amethyst_test::{AmethystApplication, EffectReturn};
     use game_input_model::{ControlBindings, ControllerId};
-    use typename::TypeName;
 
     use game_input::{
         ControllerInput, InputControlled, SharedControllerInputUpdateSystem, SharedInputControlled,
@@ -18,7 +19,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                SharedControllerInputUpdateSystem::type_name(),
+                any::type_name::<SharedControllerInputUpdateSystem>(),
                 &[],
             )
             .with_effect(move |world| {
@@ -119,7 +120,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                SharedControllerInputUpdateSystem::type_name(),
+                any::type_name::<SharedControllerInputUpdateSystem>(),
                 &[],
             )
             .with_effect(|world| {

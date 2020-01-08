@@ -13,10 +13,9 @@ use spawn_model::{
     play::{SpawnEvent, SpawnParent},
 };
 use team_model::play::Team;
-use typename_derive::TypeName;
 
 /// Spawns `GameObject`s.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SpawnGameObjectRectifySystem {
     /// Reader ID for the `SpawnEvent` channel.
     #[new(default)]

@@ -8,6 +8,7 @@ mod tests {
         ecs::{Read, ReadExpect, WorldExt},
         input::Button,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        winit::VirtualKeyCode,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -33,7 +34,6 @@ mod tests {
         config::SequenceNameString,
         loaded::{SequenceId, SequenceIdMappings},
     };
-    use winit::VirtualKeyCode;
 
     use character_loading::{CharacterLoadingBundle, CHARACTER_INPUT_REACTIONS_DEFAULT};
     use input_reaction_loading::{InputReactionLoadingBundle, IrsLoader, IrsLoaderParams};

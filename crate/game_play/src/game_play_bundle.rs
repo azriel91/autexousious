@@ -41,7 +41,6 @@ use map_play::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
     MapOutOfBoundsDeletionSystem, MapSpawnOutOfBoundsDetectionSystem,
 };
-use named_type::NamedType;
 use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
 };
@@ -60,7 +59,6 @@ use sprite_model::loaded::{
 use sprite_play::SpriteScaleUpdateSystem;
 use state_registry::StateId;
 use tracker::LastTrackerSystem;
-use typename::TypeName;
 
 use crate::{
     CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
@@ -83,7 +81,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         builder.add(
             SequenceStatusUpdateSystem::new(),
-            &SequenceStatusUpdateSystem::type_name(),
+            any::type_name::<SequenceStatusUpdateSystem>(),
             &[],
         ); // kcov-ignore
 
@@ -91,13 +89,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ($component_data_type:path) => {
                 let system_name = format!(
                     "{}{}",
-                    SequenceComponentUpdateSystem::<$component_data_type>::type_name(),
+                    any::type_name::<SequenceComponentUpdateSystem::<$component_data_type>>(),
                     concat!("<", stringify!($component_data_type), ">")
                 );
                 builder.add(
                     SequenceComponentUpdateSystem::<$component_data_type>::new(),
                     &system_name,
-                    &[&SequenceStatusUpdateSystem::type_name()],
+                    &[any::type_name::<SequenceStatusUpdateSystem>()],
                 ); // kcov-ignore
             };
         }
@@ -129,9 +127,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // Updates frame limit and ticks the sequence logic clocks.
         builder.add(
             SequenceUpdateSystem::new(),
-            &SequenceUpdateSystem::type_name(),
+            any::type_name::<SequenceUpdateSystem>(),
             &[
-                // &SequenceComponentUpdateSystem::<_, _>::type_name(),
+                // any::type_name::<SequenceComponentUpdateSystem::<_, _>>(),
             ],
         ); // kcov-ignore
 
@@ -139,8 +137,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ($frame_component_data:ident) => {
                 builder.add(
                     FrameComponentUpdateSystem::<$frame_component_data>::new(),
-                    &FrameComponentUpdateSystem::<$frame_component_data>::type_name(),
-                    &[&SequenceUpdateSystem::type_name()],
+                    any::type_name::<FrameComponentUpdateSystem<$frame_component_data>>(),
+                    &[any::type_name::<SequenceUpdateSystem>()],
                 ); // kcov-ignore
             };
         }
@@ -158,44 +156,44 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
-            &FrameFreezeClockAugmentSystem::type_name(),
-            &[&SequenceUpdateSystem::type_name()],
+            any::type_name::<FrameFreezeClockAugmentSystem>(),
+            &[any::type_name::<SequenceUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             HitRepeatTrackersAugmentSystem::new(),
-            &HitRepeatTrackersAugmentSystem::type_name(),
+            any::type_name::<HitRepeatTrackersAugmentSystem>(),
             &[],
         ); // kcov-ignore
 
-        builder.add(HitSfxSystem::new(), &HitSfxSystem::type_name(), &[]);
+        builder.add(HitSfxSystem::new(), any::type_name::<HitSfxSystem>(), &[]);
 
         // Play sounds from sequence updates.
         builder.add(
             SequenceAudioPlaySystem::new(),
-            &SequenceAudioPlaySystem::type_name(),
-            &[&FrameComponentUpdateSystem::<SourceSequence>::type_name()],
+            any::type_name::<SequenceAudioPlaySystem>(),
+            &[any::type_name::<FrameComponentUpdateSystem<SourceSequence>>()],
         ); // kcov-ignore
 
         // Spawn objects
         builder.add(
             SpawnGameObjectSystem::new(),
-            &SpawnGameObjectSystem::type_name(),
-            &[&FrameComponentUpdateSystem::<SpawnsSequence>::type_name()],
+            any::type_name::<SpawnGameObjectSystem>(),
+            &[any::type_name::<FrameComponentUpdateSystem<SpawnsSequence>>()],
         ); // kcov-ignore
         builder.add(
             SpawnGameObjectRectifySystem::new(),
-            &SpawnGameObjectRectifySystem::type_name(),
-            &[&SpawnGameObjectSystem::type_name()],
+            any::type_name::<SpawnGameObjectRectifySystem>(),
+            &[any::type_name::<SpawnGameObjectSystem>()],
         ); // kcov-ignore
         builder.add(
             MapSpawnOutOfBoundsDetectionSystem::new().pausable(StateId::GamePlay),
-            &MapSpawnOutOfBoundsDetectionSystem::type_name(),
-            &[&SpawnGameObjectRectifySystem::type_name()],
+            any::type_name::<MapSpawnOutOfBoundsDetectionSystem>(),
+            &[any::type_name::<SpawnGameObjectRectifySystem>()],
         ); // kcov-ignore
         builder.add(
             GamePlayRemovalAugmentSystem::new(),
-            &GamePlayRemovalAugmentSystem::type_name(),
-            &[&SpawnGameObjectSystem::type_name()],
+            any::type_name::<GamePlayRemovalAugmentSystem>(),
+            &[any::type_name::<SpawnGameObjectSystem>()],
         ); // kcov-ignore
 
         builder.add_barrier();
@@ -205,14 +203,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // transform.scale_mut().{x/y/z} = `Scale`
         builder.add(
             SpriteScaleUpdateSystem::new(),
-            &SpriteScaleUpdateSystem::type_name(),
+            any::type_name::<SpriteScaleUpdateSystem>(),
             &[],
         ); // kcov-ignore
 
         // vel += `ObjectAcceleration` (from frame config).
         builder.add(
             ObjectAccelerationSystem::new(),
-            &ObjectAccelerationSystem::type_name(),
+            any::type_name::<ObjectAccelerationSystem>(),
             &[],
         ); // kcov-ignore
 
@@ -221,91 +219,91 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // since it needs to wait for the `FrameFreezeClock` to tick.
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
-            &ObjectKinematicsUpdateSystem::type_name(),
-            &[&ObjectAccelerationSystem::type_name()],
+            any::type_name::<ObjectKinematicsUpdateSystem>(),
+            &[any::type_name::<ObjectAccelerationSystem>()],
         ); // kcov-ignore
 
         // `Position` correction based on margins.
         // vel += mass
         builder.add(
             ObjectGravitySystem::new(),
-            &ObjectGravitySystem::type_name(),
-            &[&ObjectKinematicsUpdateSystem::type_name()],
+            any::type_name::<ObjectGravitySystem>(),
+            &[any::type_name::<ObjectKinematicsUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             MapEnterExitDetectionSystem::new().pausable(StateId::GamePlay),
-            &MapEnterExitDetectionSystem::type_name(),
-            &[&ObjectGravitySystem::type_name()],
+            any::type_name::<MapEnterExitDetectionSystem>(),
+            &[any::type_name::<ObjectGravitySystem>()],
         ); // kcov-ignore
         builder.add(
             KeepWithinMapBoundsSystem::new().pausable(StateId::GamePlay),
-            &KeepWithinMapBoundsSystem::type_name(),
-            &[&MapEnterExitDetectionSystem::type_name()],
+            any::type_name::<KeepWithinMapBoundsSystem>(),
+            &[any::type_name::<MapEnterExitDetectionSystem>()],
         ); // kcov-ignore
         builder.add(
             ObjectGroundingSystem::new().pausable(StateId::GamePlay),
-            &ObjectGroundingSystem::type_name(),
-            &[&MapEnterExitDetectionSystem::type_name()],
+            any::type_name::<ObjectGroundingSystem>(),
+            &[any::type_name::<MapEnterExitDetectionSystem>()],
         ); // kcov-ignore
 
         // Updates `Velocity<f32>` based on grounding.
         builder.add(
             GroundingFrictionSystem::new(),
-            &GroundingFrictionSystem::type_name(),
-            &[&ObjectGroundingSystem::type_name()],
+            any::type_name::<GroundingFrictionSystem>(),
+            &[any::type_name::<ObjectGroundingSystem>()],
         ); // kcov-ignore
 
         builder.add(
             MapOutOfBoundsDeletionSystem::new(),
-            &MapOutOfBoundsDeletionSystem::type_name(),
+            any::type_name::<MapOutOfBoundsDeletionSystem>(),
             &[
-                &MapEnterExitDetectionSystem::type_name(),
-                &MapSpawnOutOfBoundsDetectionSystem::type_name(),
+                any::type_name::<MapEnterExitDetectionSystem>(),
+                any::type_name::<MapSpawnOutOfBoundsDetectionSystem>(),
             ],
         ); // kcov-ignore
         builder.add(
             MapOutOfBoundsClockAugmentSystem::new(),
-            &MapOutOfBoundsClockAugmentSystem::type_name(),
-            &[&MapOutOfBoundsDeletionSystem::type_name()],
+            any::type_name::<MapOutOfBoundsClockAugmentSystem>(),
+            &[any::type_name::<MapOutOfBoundsDeletionSystem>()],
         ); // kcov-ignore
 
         builder.add(
             ObjectTransformUpdateSystem::new(),
-            &ObjectTransformUpdateSystem::type_name(),
+            any::type_name::<ObjectTransformUpdateSystem>(),
             &[
-                &ObjectKinematicsUpdateSystem::type_name(),
-                &KeepWithinMapBoundsSystem::type_name(),
+                any::type_name::<ObjectKinematicsUpdateSystem>(),
+                any::type_name::<KeepWithinMapBoundsSystem>(),
             ],
         ); // kcov-ignore
         builder.add(
             ObjectMirroringSystem::new(),
-            &ObjectMirroringSystem::type_name(),
-            &[&ObjectTransformUpdateSystem::type_name()],
+            any::type_name::<ObjectMirroringSystem>(),
+            &[any::type_name::<ObjectTransformUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             StickToTargetObjectSystem::new(),
-            &StickToTargetObjectSystem::type_name(),
-            &[&ObjectTransformUpdateSystem::type_name()],
+            any::type_name::<StickToTargetObjectSystem>(),
+            &[any::type_name::<ObjectTransformUpdateSystem>()],
         ); // kcov-ignore
 
         // Reduces charge when not charging.
         builder.add(
             ChargeRetentionSystem::new(),
-            &ChargeRetentionSystem::type_name(),
+            any::type_name::<ChargeRetentionSystem>(),
             &[],
         ); // kcov-ignore
 
         // Reduces `StunPoints` each tick.
         builder.add(
             StunPointsReductionSystem::new(),
-            &StunPointsReductionSystem::type_name(),
+            any::type_name::<StunPointsReductionSystem>(),
             &[],
         ); // kcov-ignore
 
         builder.add(
             HitRepeatTrackersTickerSystem::new(),
-            &HitRepeatTrackersTickerSystem::type_name(),
-            &[&HitRepeatTrackersAugmentSystem::type_name()],
+            any::type_name::<HitRepeatTrackersTickerSystem>(),
+            &[any::type_name::<HitRepeatTrackersAugmentSystem>()],
         ); // kcov-ignore
 
         builder.add_barrier();
@@ -314,21 +312,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         builder.add(
             CollisionDetectionSystem::new(),
-            &CollisionDetectionSystem::type_name(),
+            any::type_name::<CollisionDetectionSystem>(),
             &[
-                &StunPointsReductionSystem::type_name(),
-                &HitRepeatTrackersTickerSystem::type_name(),
+                any::type_name::<StunPointsReductionSystem>(),
+                any::type_name::<HitRepeatTrackersTickerSystem>(),
             ],
         ); // kcov-ignore
         builder.add(
             ContactDetectionSystem::new(),
-            &ContactDetectionSystem::type_name(),
-            &[&CollisionDetectionSystem::type_name()],
+            any::type_name::<ContactDetectionSystem>(),
+            &[any::type_name::<CollisionDetectionSystem>()],
         ); // kcov-ignore
         builder.add(
             HitDetectionSystem::new(),
-            &HitDetectionSystem::type_name(),
-            &[&ContactDetectionSystem::type_name()],
+            any::type_name::<HitDetectionSystem>(),
+            &[any::type_name::<ContactDetectionSystem>()],
         ); // kcov-ignore
 
         builder.add_barrier();
@@ -337,19 +335,19 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         builder.add(
             SequenceEndTransitionSystem::new(),
-            &SequenceEndTransitionSystem::type_name(),
+            any::type_name::<SequenceEndTransitionSystem>(),
             &[],
         ); // kcov-ignore
 
         builder.add(
             InputReactionsTransitionSystem::<BasicIrr>::new(),
             &any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
-            &[&SequenceEndTransitionSystem::type_name()],
+            &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
         builder.add(
             ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
             &any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
-            &[&SequenceEndTransitionSystem::type_name()],
+            &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
 
         // Note: The `CharacterSequenceUpdateSystem` depends on
@@ -361,17 +359,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // update.
         builder.add(
             CharacterSequenceUpdateSystem::new(),
-            &CharacterSequenceUpdateSystem::type_name(),
-            &[&SequenceEndTransitionSystem::type_name()],
+            any::type_name::<CharacterSequenceUpdateSystem>(),
+            &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
         builder.add(
             InputReactionsTransitionSystem::<CharacterIrr>::new(),
             &any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>(),
-            &[&CharacterSequenceUpdateSystem::type_name()],
+            &[any::type_name::<CharacterSequenceUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             CharacterHitEffectSystem::new(),
-            &CharacterHitEffectSystem::type_name(),
+            any::type_name::<CharacterHitEffectSystem>(),
             &[&any::type_name::<
                 InputReactionsTransitionSystem<CharacterIrr>,
             >()],
@@ -380,25 +378,25 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // Charging
         builder.add(
             ChargeInitializeDetectionSystem::new(),
-            &ChargeInitializeDetectionSystem::type_name(),
+            any::type_name::<ChargeInitializeDetectionSystem>(),
             &[&any::type_name::<
                 InputReactionsTransitionSystem<CharacterIrr>,
             >()],
         ); // kcov-ignore
         builder.add(
             ChargeInitializeDelaySystem::new(),
-            &ChargeInitializeDelaySystem::type_name(),
-            &[&ChargeInitializeDetectionSystem::type_name()],
+            any::type_name::<ChargeInitializeDelaySystem>(),
+            &[any::type_name::<ChargeInitializeDetectionSystem>()],
         ); // kcov-ignore
         builder.add(
             ChargeIncrementSystem::new(),
-            &ChargeIncrementSystem::type_name(),
-            &[&ChargeInitializeDelaySystem::type_name()],
+            any::type_name::<ChargeIncrementSystem>(),
+            &[any::type_name::<ChargeInitializeDelaySystem>()],
         ); // kcov-ignore
         builder.add(
             ChargeUsageSystem::new(),
-            &ChargeUsageSystem::type_name(),
-            &[&ChargeIncrementSystem::type_name()],
+            any::type_name::<ChargeUsageSystem>(),
+            &[any::type_name::<ChargeIncrementSystem>()],
         ); // kcov-ignore
 
         // Hit / Hitting effects.
@@ -409,13 +407,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
         builder.add(
             HittingEffectSystem::new(),
-            &HittingEffectSystem::type_name(),
+            any::type_name::<HittingEffectSystem>(),
             &[],
         ); // kcov-ignore
         builder.add(
             HitEffectSystem::new(),
-            &HitEffectSystem::type_name(),
-            &[&HittingEffectSystem::type_name()],
+            any::type_name::<HitEffectSystem>(),
+            &[any::type_name::<HittingEffectSystem>()],
         ); // kcov-ignore
 
         // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here
@@ -423,13 +421,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // one frame later.
         builder.add(
             HpBarUpdateSystem::new(),
-            &HpBarUpdateSystem::type_name(),
-            &[&CharacterHitEffectSystem::type_name()],
+            any::type_name::<HpBarUpdateSystem>(),
+            &[any::type_name::<CharacterHitEffectSystem>()],
         ); // kcov-ignore
         builder.add(
             CpBarUpdateSystem::new(),
-            &CpBarUpdateSystem::type_name(),
-            &[&CharacterHitEffectSystem::type_name()],
+            any::type_name::<CpBarUpdateSystem>(),
+            &[any::type_name::<CharacterHitEffectSystem>()],
         ); // kcov-ignore
 
         builder.add_barrier();
@@ -439,39 +437,39 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // Detects when the winning condition has been met.
         builder.add(
             GamePlayEndDetectionSystem::new(),
-            &GamePlayEndDetectionSystem::type_name(),
+            any::type_name::<GamePlayEndDetectionSystem>(),
             &[],
         ); // kcov-ignore
 
         builder.add(
             GamePlayStatusDisplaySystem::new(),
-            &GamePlayStatusDisplaySystem::type_name(),
-            &[&GamePlayEndDetectionSystem::type_name()],
+            any::type_name::<GamePlayStatusDisplaySystem>(),
+            &[any::type_name::<GamePlayEndDetectionSystem>()],
         ); // kcov-ignore
 
         // Delay before game play end transition is accepted.
         builder.add(
             GamePlayEndTransitionDelaySystem::new(),
-            &GamePlayEndTransitionDelaySystem::type_name(),
-            &[&GamePlayEndDetectionSystem::type_name()],
+            any::type_name::<GamePlayEndTransitionDelaySystem>(),
+            &[any::type_name::<GamePlayEndDetectionSystem>()],
         ); // kcov-ignore
 
         // Sends a state transition when game play ends, and `Attack` is pressed.
         builder.add(
             GamePlayEndTransitionSystem::new(),
-            &GamePlayEndTransitionSystem::type_name(),
-            &[&GamePlayEndTransitionDelaySystem::type_name()],
+            any::type_name::<GamePlayEndTransitionSystem>(),
+            &[any::type_name::<GamePlayEndTransitionDelaySystem>()],
         ); // kcov-ignore
 
         builder.add(
             CameraTrackingSystem::default().pausable(StateId::GamePlay),
-            &CameraTrackingSystem::type_name(),
+            any::type_name::<CameraTrackingSystem>(),
             &[],
         ); // kcov-ignore
         builder.add(
             CameraVelocitySystem::default(),
-            &CameraVelocitySystem::type_name(),
-            &[&CameraTrackingSystem::type_name()],
+            any::type_name::<CameraVelocitySystem>(),
+            &[any::type_name::<CameraTrackingSystem>()],
         ); // kcov-ignore
 
         let position_tracker_system =
@@ -485,7 +483,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
-            &[&GamePlayEndTransitionSystem::type_name()],
+            &[any::type_name::<GamePlayEndTransitionSystem>()],
         ); // kcov-ignore
 
         Ok(())

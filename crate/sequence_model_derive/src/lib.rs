@@ -26,9 +26,8 @@
 //! use asset_derive::Asset;
 //! use derive_deref::{Deref, DerefMut};
 //! use sequence_model_spi::loaded::{FrameComponentData, ComponentDataExt};
-//! use typename_derive::TypeName;
-//!
-//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
+//! //!
+//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq)]
 //! pub struct WaitSequence(pub FrameComponentData<Wait>);
 //!
 //! impl WaitSequence {
@@ -63,7 +62,6 @@
 //! # use sequence_model_core::config::SequenceName;
 //! # use serde::{Deserialize, Serialize};
 //! # use strum_macros::{Display, EnumString, IntoStaticStr};
-//! # use typename_derive::TypeName;
 //! #
 //! # #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
 //! # #[storage(VecStorage)]
@@ -82,7 +80,6 @@
 //! #     Eq,
 //! #     Hash,
 //! #     Serialize,
-//! #     TypeName,
 //! # )]
 //! # #[derivative(Default)]
 //! # #[serde(rename_all = "snake_case")]
@@ -108,9 +105,8 @@
 //! use asset_derive::Asset;
 //! use derive_deref::{Deref, DerefMut};
 //! use sequence_model_spi::loaded::{SequenceComponentData, ComponentDataExt};
-//! use typename_derive::TypeName;
-//!
-//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
+//! //!
+//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq)]
 //! pub struct SequenceEndTransitions(
 //!     pub SequenceComponentData<SequenceEndTransition>
 //! );

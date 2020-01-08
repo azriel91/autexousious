@@ -1,10 +1,9 @@
 use amethyst::Error;
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use stdio_spi::StdinMapper;
-use typename_derive::TypeName;
 
 /// Builds a `GamePlayEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct GamePlayEventStdinMapper;
 
 impl StdinMapper for GamePlayEventStdinMapper {

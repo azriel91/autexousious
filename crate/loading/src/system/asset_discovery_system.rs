@@ -14,10 +14,9 @@ use derive_new::new;
 use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::debug;
 use slotmap::SecondaryMap;
-use typename_derive::TypeName;
 
 /// Discovers assets and writes to `Option<AssetIndex>`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct AssetDiscoverySystem {
     /// Path to the assets directory.
     assets_dir: PathBuf,

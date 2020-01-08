@@ -21,7 +21,7 @@ kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.102", features = ["derive"] }
+serde = { version = "1.0.104", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
 

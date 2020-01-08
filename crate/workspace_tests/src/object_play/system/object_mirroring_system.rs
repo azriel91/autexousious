@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         core::{math::RealField, transform::Transform},
         ecs::{Join, ReadStorage, WriteStorage},
@@ -8,7 +10,6 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use approx::assert_relative_eq;
     use mirrored_model::play::Mirrored;
-    use typename::TypeName;
 
     use object_play::ObjectMirroringSystem;
 
@@ -43,7 +44,7 @@ mod tests {
             })
             .with_system_single(
                 ObjectMirroringSystem::new(),
-                ObjectMirroringSystem::type_name(),
+                any::type_name::<ObjectMirroringSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

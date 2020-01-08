@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
@@ -15,7 +17,6 @@ mod tests {
         loaded::{Spawn, Spawns},
         play::SpawnEvent,
     };
-    use typename::TypeName;
 
     use spawn_play::SpawnGameObjectSystem;
 
@@ -64,7 +65,7 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectSystem::new(),
-                SpawnGameObjectSystem::type_name(),
+                any::type_name::<SpawnGameObjectSystem>(),
                 &[],
             )
             .with_effect(setup_spawn_ec_reader)

@@ -7,7 +7,6 @@ use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-use typename_derive::TypeName;
 
 /// Default number of ticks to wait before beginning to charge.
 pub const CHARGE_DELAY_DEFAULT: usize = 10;
@@ -15,7 +14,7 @@ pub const CHARGE_DELAY_DEFAULT: usize = 10;
 /// Detects the begin / cancellation of the initialization phase of charging.
 ///
 /// Resets `ChargeBeginDelayClock` upon charge start / stop (currently control input event release).
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ChargeInitializeDetectionSystem {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]

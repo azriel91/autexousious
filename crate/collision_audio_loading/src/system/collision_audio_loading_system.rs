@@ -15,13 +15,12 @@ use collision_audio_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use typename_derive::TypeName;
 
 /// File name of the collision audio configuration.
 const COLLISION_AUDIO_YAML: &str = "collision_audio.yaml";
 
 /// Loads sound effect (SFX) assets.
-#[derive(Default, Derivative, TypeName, new)]
+#[derive(Default, Derivative, new)]
 #[derivative(Debug)]
 pub struct CollisionAudioLoadingSystem {
     /// Path to the assets directory.

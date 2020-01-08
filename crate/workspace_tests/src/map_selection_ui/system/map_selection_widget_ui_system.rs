@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod test {
-    use std::collections::HashMap;
+mod tests {
+    use std::{any, collections::HashMap};
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WriteStorage},
@@ -13,7 +13,6 @@ mod test {
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use indexmap::IndexMap;
     use map_selection_model::MapSelection;
-    use typename::TypeName;
 
     use map_selection_ui::{MapSelectionWidgetState, MapSelectionWidgetUiSystem};
 
@@ -23,7 +22,7 @@ mod test {
             .with_resource(input_config())
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
-                MapSelectionWidgetUiSystem::type_name(),
+                any::type_name::<MapSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_assertion(|world| assert_widget_count(world, 1))
@@ -40,7 +39,7 @@ mod test {
             // complete.
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
-                MapSelectionWidgetUiSystem::type_name(),
+                any::type_name::<MapSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_assertion(|world| assert_widget_count(world, 1))
@@ -70,7 +69,7 @@ mod test {
             })
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
-                MapSelectionWidgetUiSystem::type_name(),
+                any::type_name::<MapSelectionWidgetUiSystem>(),
                 &[],
             )
             .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))

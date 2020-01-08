@@ -8,13 +8,12 @@ use derive_new::new;
 use map_model::play::{
     MapBoundaryEvent, MapBoundaryEventData, MapUnboundedDelete, OutOfBoundsDeleteClock,
 };
-use typename_derive::TypeName;
 
 /// Number of ticks an entity has to remain out of bounds before it is deleted.
 pub const OUT_OF_BOUNDS_DELETE_DELAY: usize = 180;
 
 /// Adds/removes `OutOfBoundsDeleteClock`s to `MapUnboundedDelete` entities.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapOutOfBoundsClockAugmentSystem {
     /// Reader ID for the `MapBoundaryEvent` channel.
     #[new(default)]

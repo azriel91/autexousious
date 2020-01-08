@@ -12,7 +12,6 @@ use sequence_model::{
         FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
     },
 };
-use typename_derive::TypeName;
 
 /// Ticks the logic clocks for sequences, and sends `SequenceUpdateEvent`s.
 ///
@@ -25,7 +24,7 @@ use typename_derive::TypeName;
 /// This system **must** be run before all systems that update the frame components that are
 /// attached to entities, as the `SequenceUpdateEvent`s include the new frame index, which is only
 /// guaranteed to be valid for the current dispatcher run.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SequenceUpdateSystem;
 
 /// `SequenceUpdateSystemData`.

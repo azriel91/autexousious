@@ -8,7 +8,6 @@ use charge_model::play::ChargeTrackerClock;
 use derivative::Derivative;
 use derive_new::new;
 use parent_model::play::ParentEntity;
-use typename_derive::TypeName;
 
 use crate::{CpBar, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};
 
@@ -18,7 +17,7 @@ const Y_OFFSET: f32 = -14.;
 const Z_OFFSET: f32 = 1.;
 
 /// Updates `CpBar` length based on its parent entity's `ChargeTrackerClock`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CpBarUpdateSystem;
 
 #[derive(Derivative, SystemData)]

@@ -14,7 +14,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
 ron = "0.5.1"
-serde = { version = "1.0.102", features = ["derive"] }
+serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
 
 [dev-dependencies]

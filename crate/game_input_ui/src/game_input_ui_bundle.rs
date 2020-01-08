@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
@@ -5,7 +7,6 @@ use amethyst::{
 };
 use derive_new::new;
 use game_input_model::InputConfig;
-use typename::TypeName;
 
 use crate::InputToControlInputSystem;
 
@@ -26,7 +27,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputUiBundle {
     ) -> Result<(), Error> {
         builder.add(
             InputToControlInputSystem::new(self.input_config),
-            &InputToControlInputSystem::type_name(),
+            any::type_name::<InputToControlInputSystem>(),
             &["input_system"],
         ); // kcov-ignore
         Ok(())

@@ -8,10 +8,9 @@ use derive_new::new;
 use log::debug;
 use state_registry::{StateId, StateIdUpdateEvent};
 use tracker::Prev;
-use typename_derive::TypeName;
 
 /// Emits `StateIdUpdateEvent`s when the `StateId` changes.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StateIdEventSystem;
 
 /// `StateIdEventSystemData`.

@@ -12,7 +12,6 @@ use asset_model::{
 use derivative::Derivative;
 use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventArgs};
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
-use typename_derive::TypeName;
 
 #[derive(Debug)]
 pub struct MapSelectionEventStdinMapperData;
@@ -34,7 +33,7 @@ impl<'s> MapperSystemData<'s> for MapSelectionEventStdinMapperData {
 }
 
 /// Builds a `MapSelectionEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct MapSelectionEventStdinMapper;
 
 impl MapSelectionEventStdinMapper {

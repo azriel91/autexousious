@@ -3,7 +3,6 @@ use asset_model::loaded::AssetId;
 use loading_model::loaded::LoadStage;
 use log::debug;
 use sprite_loading::SpriteLoader;
-use typename_derive::TypeName;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
@@ -14,7 +13,7 @@ use crate::{
 pub type AssetTextureLoadingSystem = AssetPartLoadingSystem<AssetTextureLoader>;
 
 /// `AssetTextureLoader`.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct AssetTextureLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetTextureLoader {

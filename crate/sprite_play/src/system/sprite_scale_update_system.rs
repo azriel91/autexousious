@@ -6,10 +6,9 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use sprite_model::config::Scale;
-use typename_derive::TypeName;
 
 /// Updates the `Transform`'s scaling of entities that have a `Scale` component.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct SpriteScaleUpdateSystem;
 
 #[derive(Derivative, SystemData)]

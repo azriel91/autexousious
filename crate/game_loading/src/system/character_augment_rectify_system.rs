@@ -14,12 +14,11 @@ use game_play_model::GamePlayEntity;
 use kinematic_model::config::Position;
 use map_model::loaded::AssetMapBounds;
 use map_selection_model::MapSelection;
-use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
 
 /// Spawns character entities based on the character selection.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterAugmentRectifySystem;
 
 /// `CharacterAugmentRectifySystemData`.

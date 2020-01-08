@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
@@ -15,7 +17,6 @@ mod tests {
         play::{SpawnEvent, SpawnParent},
     };
     use team_model::play::{IndependentCounter, Team};
-    use typename::TypeName;
 
     use spawn_play::SpawnGameObjectRectifySystem;
 
@@ -98,7 +99,7 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectRectifySystem::new(),
-                SpawnGameObjectRectifySystem::type_name(),
+                any::type_name::<SpawnGameObjectRectifySystem>(),
                 &[],
             )
             .with_effect(setup_fn)

@@ -12,15 +12,14 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 character_selection_model = { path = "../character_selection_model" }
 control_settings_model = { path = "../control_settings_model" }
-derive_more = "0.15.1-pre"
+derive_more = "0.99.2"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
 map_selection_model = { path = "../map_selection_model" }
 stdio_command_model = { path = "../stdio_command_model" }
-strum = "0.16.0"
-strum_macros = "0.16.0"
-winit = "0.19.5"
+strum = "0.17.1"
+strum_macros = "0.17.1"
 
 [features]
 nightly = ["amethyst/nightly"]

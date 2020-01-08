@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test {
+mod tests {
     use amethyst::{
         ecs::{Builder, Entity, SystemData, WorldExt},
         input::StringBindings,
@@ -8,7 +8,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use kinematic_model::config::{Position, Velocity};
     use sequence_model::play::FrameFreezeClock;
-    use typename::TypeName;
+    use std::any;
 
     use game_play::{ObjectKinematicsUpdateSystem, ObjectKinematicsUpdateSystemData};
 
@@ -76,7 +76,7 @@ mod test {
             })
             .with_system_single(
                 ObjectKinematicsUpdateSystem::new(),
-                ObjectKinematicsUpdateSystem::type_name(),
+                any::type_name::<ObjectKinematicsUpdateSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

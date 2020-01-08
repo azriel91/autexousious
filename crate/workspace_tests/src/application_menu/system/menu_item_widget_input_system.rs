@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod test {
-    use std::fmt::Debug;
+mod tests {
+    use std::{any, fmt::Debug};
 
     use amethyst::{
         ecs::{Builder, Entity, World, WorldExt},
@@ -15,8 +15,6 @@ mod test {
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};
-    use typename::TypeName as TypeNameTrait;
-    use typename_derive::TypeName;
 
     use application_menu::{
         MenuEvent, MenuItem, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
@@ -198,7 +196,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),
-                &MenuItemWidgetInputSystem::<TestIndex>::type_name(),
+                any::type_name::<MenuItemWidgetInputSystem<TestIndex>>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {
@@ -315,7 +313,7 @@ mod test {
 
     fn assert_events<I>(world: &mut World, events: Vec<MenuEvent<I>>)
     where
-        I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+        I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
     {
         let mut event_channel_reader = &mut world.write_resource::<ReaderId<MenuEvent<I>>>();
 
@@ -336,13 +334,13 @@ mod test {
 
     struct ExpectedParams<I>
     where
-        I: Clone + Copy + Debug + PartialEq + Send + Sync + TypeNameTrait + 'static,
+        I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
     {
         widget_states: Vec<MenuItemWidgetState>,
         menu_events: Vec<MenuEvent<I>>,
     }
 
-    #[derive(Clone, Copy, Debug, Display, EnumIter, EnumString, PartialEq, Eq, TypeName)]
+    #[derive(Clone, Copy, Debug, Display, EnumIter, EnumString, PartialEq, Eq)]
     #[strum(serialize_all = "snake_case")]
     enum TestIndex {
         First,

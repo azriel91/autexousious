@@ -7,7 +7,6 @@ use character_selection_model::{
 };
 use game_input_model::ControllerId;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
-use typename_derive::TypeName;
 
 /// Magic string to indicate `random` selection.
 const RANDOM_SELECTION: &str = "random";
@@ -20,7 +19,7 @@ impl<'s> MapperSystemData<'s> for CharacterSelectionEventStdinMapperData {
 }
 
 /// Builds a `CharacterSelectionEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct CharacterSelectionEventStdinMapper;
 
 impl CharacterSelectionEventStdinMapper {

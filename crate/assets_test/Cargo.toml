@@ -13,4 +13,4 @@ test = false
 asset_model = { path = "../asset_model" }
 lazy_static = "1.4.0"
 object_type = { path = "../object_type" }
-strum = "0.16.0"
+strum = "0.17.1"

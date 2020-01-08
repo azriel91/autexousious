@@ -8,12 +8,11 @@ use collision_model::{
 };
 use derive_new::new;
 use slotmap::SlotMap;
-use typename_derive::TypeName;
 
 /// Creates `HitRepeatTrackers`s for new `Hit` collisions.
 ///
 /// This attaches `HitRepeatTrackers` to the entity with the `Interaction`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HitRepeatTrackersAugmentSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]

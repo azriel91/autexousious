@@ -6,12 +6,11 @@ use derive_new::new;
 use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
-use typename_derive::TypeName;
 
 use crate::ControllerInput;
 
 /// Updates `ControllerInput` based on input events.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ControllerInputUpdateSystem {
     /// Reader ID for the `ControlInputEvent` event channel.
     #[new(default)]

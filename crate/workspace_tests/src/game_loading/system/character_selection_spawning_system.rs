@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::any;
+
     use amethyst::{
         ecs::{Join, ReadStorage, System, World, WorldExt},
         shred::SystemData,
@@ -15,7 +17,6 @@ mod tests {
     use game_model::play::GameEntities;
     use object_type::ObjectType;
     use team_model::play::{IndependentCounter, Team};
-    use typename::TypeName;
 
     use game_loading::{
         CharacterAugmentStatus, CharacterSelectionSpawningSystem, GameLoadingStatus,
@@ -134,7 +135,7 @@ mod tests {
             .with_effect(setup_fn)
             .with_system_single(
                 CharacterSelectionSpawningSystem,
-                CharacterSelectionSpawningSystem::type_name(),
+                any::type_name::<CharacterSelectionSpawningSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(assertion_fn)

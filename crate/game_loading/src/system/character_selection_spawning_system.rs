@@ -13,12 +13,11 @@ use game_input::InputControlled;
 use game_model::play::GameEntities;
 use object_type::ObjectType;
 use team_model::play::{IndependentCounter, Team};
-use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
 
 /// Spawns character entities based on the character selection.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterSelectionSpawningSystem;
 
 /// `CharacterSelectionSpawningSystemData`.

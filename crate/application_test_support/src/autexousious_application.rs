@@ -1,3 +1,5 @@
+use std::any;
+
 use amethyst::{
     assets::Processor,
     audio::Source,
@@ -35,7 +37,6 @@ use state_play::{
 };
 use state_registry::StateId;
 use tracker::PrevTrackerSystem;
-use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
 
@@ -150,33 +151,33 @@ impl AutexousiousApplication {
             .with_bundle(CharacterSelectionBundle::new())
             .with_system(
                 StateIdEventSystem::new(),
-                &StateIdEventSystem::type_name(),
+                any::type_name::<StateIdEventSystem>(),
                 &[],
             )
             .with_system(
                 StateCameraResetSystem::new(),
-                &StateCameraResetSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
+                any::type_name::<StateCameraResetSystem>(),
+                &[any::type_name::<StateIdEventSystem>()],
             )
             .with_system(
                 StateItemSpawnSystem::new(),
-                &StateItemSpawnSystem::type_name(),
-                &[&StateIdEventSystem::type_name()],
+                any::type_name::<StateItemSpawnSystem>(),
+                &[any::type_name::<StateIdEventSystem>()],
             )
             .with_system(
                 ItemIdEventSystem::new(),
-                &ItemIdEventSystem::type_name(),
-                &[&StateItemSpawnSystem::type_name()],
+                any::type_name::<ItemIdEventSystem>(),
+                &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())
             .with_system(
                 StateItemUiRectifySystem::new(),
-                &StateItemUiRectifySystem::type_name(),
+                any::type_name::<StateItemUiRectifySystem>(),
                 &[],
             )
             .with_system(
                 StateItemUiInputAugmentSystem::new(),
-                &StateItemUiInputAugmentSystem::type_name(),
+                any::type_name::<StateItemUiInputAugmentSystem>(),
                 &[],
             )
             .with_system(

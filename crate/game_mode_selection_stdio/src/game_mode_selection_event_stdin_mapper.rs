@@ -2,10 +2,9 @@ use amethyst::Error;
 use application_menu::MenuEvent;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
 use stdio_spi::StdinMapper;
-use typename_derive::TypeName;
 
 /// Builds a `GameModeSelectionEvent` from stdin tokens.
-#[derive(Debug, TypeName)]
+#[derive(Debug)]
 pub struct GameModeSelectionEventStdinMapper;
 
 impl StdinMapper for GameModeSelectionEventStdinMapper {

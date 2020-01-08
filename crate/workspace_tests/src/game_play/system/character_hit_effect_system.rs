@@ -15,14 +15,13 @@ use mirrored_model::play::Mirrored;
 use object_model::play::HealthPoints;
 use object_status_model::config::StunPoints;
 use sequence_model::loaded::SequenceId;
-use typename_derive::TypeName;
 
 const STUN_THRESHOLD_LOW: StunPoints = StunPoints(40);
 const STUN_THRESHOLD_MID: StunPoints = StunPoints(80);
 const STUN_THRESHOLD_HIGH: StunPoints = StunPoints(120);
 
 /// Determines collision effects for characters.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct CharacterHitEffectSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]

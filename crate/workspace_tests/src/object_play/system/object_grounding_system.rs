@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
@@ -16,7 +16,6 @@ mod tests {
     };
     use map_selection_model::MapSelection;
     use object_model::play::Grounding;
-    use typename::TypeName;
 
     use object_play::ObjectGroundingSystem;
 
@@ -79,7 +78,7 @@ mod tests {
             })
             .with_system_single(
                 ObjectGroundingSystem::new(),
-                ObjectGroundingSystem::type_name(),
+                any::type_name::<ObjectGroundingSystem>(),
                 &[],
             ) // kcov-ignore
             .with_assertion(move |world| {

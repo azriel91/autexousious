@@ -12,10 +12,9 @@ use kinematic_model::config::{
 };
 use mirrored_model::play::Mirrored;
 use sequence_model::play::SequenceUpdateEvent;
-use typename_derive::TypeName;
 
 /// Increases velocity of `Object`s based on their `ObjectAcceleration`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct ObjectAccelerationSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]

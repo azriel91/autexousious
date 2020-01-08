@@ -2,7 +2,6 @@ use amethyst::ecs::Entity;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use typename_derive::TypeName;
 
 use crate::{
     config::{BasicIrrParams, BasicIrrPart, InputReactionRequirement},
@@ -10,9 +9,7 @@ use crate::{
 };
 
 /// Character input reaction requirement.
-#[derive(
-    Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, TypeName, new,
-)]
+#[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, new)]
 pub struct BasicIrr(pub Vec<BasicIrrPart>);
 
 impl<'s> InputReactionRequirement<'s> for BasicIrr {

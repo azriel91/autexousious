@@ -6,14 +6,13 @@ use amethyst::{
 };
 use derive_new::new;
 use map_selection_model::MapSelectionEvent;
-use typename_derive::TypeName;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
 
 /// Default volume to play sounds at.
 const VOLUME: f32 = 1.0;
 
 /// Plays sounds for the map selection UI.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct MapSelectionSfxSystem {
     /// Reader ID for the `MapSelectionEvent` event channel.
     #[new(default)]

@@ -11,10 +11,9 @@ use game_input_model::{
     AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
-use typename_derive::TypeName;
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct InputToControlInputSystem {
     /// All controller input configuration.
     input_config: InputConfig,

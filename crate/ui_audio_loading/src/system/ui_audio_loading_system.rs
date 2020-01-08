@@ -10,7 +10,6 @@ use asset_loading::YamlFormat;
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use typename_derive::TypeName;
 use ui_audio_model::{
     config::{UiSfxId, UiSfxPaths},
     loaded::UiSfxMap,
@@ -21,7 +20,7 @@ use ui_audio_model::{
 const UI_AUDIO_YAML: &str = "ui_audio.yaml";
 
 /// Loads sound effect (SFX) assets.
-#[derive(Default, Derivative, TypeName, new)]
+#[derive(Default, Derivative, new)]
 #[derivative(Debug)]
 pub struct UiAudioLoadingSystem {
     /// Path to the assets directory.

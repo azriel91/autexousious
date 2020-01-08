@@ -1,6 +1,6 @@
 #[cfg(test)]
-mod test {
-    use std::str::FromStr;
+mod tests {
+    use std::{any, str::FromStr};
 
     use amethyst::{
         ecs::{Read, SystemData, World, WorldExt},
@@ -13,7 +13,6 @@ mod test {
         loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     };
     use map_selection_model::{MapSelection, MapSelectionEvent};
-    use typename::TypeName;
 
     use map_selection::{MapSelectionStatus, MapSelectionSystem, MapSelectionSystemData};
 
@@ -107,7 +106,7 @@ mod test {
             .with_resource(map_selection_status_setup)
             .with_system(
                 MapSelectionSystem::new(),
-                MapSelectionSystem::type_name(),
+                any::type_name::<MapSelectionSystem>(),
                 &[],
             )
             .with_setup(setup_maps)

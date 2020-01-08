@@ -2,10 +2,8 @@ use amethyst::ecs::{Join, System, WriteStorage};
 use collision_model::play::HitRepeatTrackers;
 use derive_new::new;
 
-use typename_derive::TypeName;
-
 /// Ticks each `HitRepeatTracker`'s clock.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HitRepeatTrackersTickerSystem;
 
 type HitRepeatTrackersTickerSystemData<'s> = WriteStorage<'s, HitRepeatTrackers>;

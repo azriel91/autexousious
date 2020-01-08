@@ -8,7 +8,6 @@ use derivative::Derivative;
 use derive_new::new;
 use object_model::play::HealthPoints;
 use parent_model::play::ParentEntity;
-use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
@@ -18,7 +17,7 @@ const Y_OFFSET: f32 = -10.;
 const Z_OFFSET: f32 = 1.;
 
 /// Updates `HpBar` length based on its parent entity's `HealthPoints`.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HpBarUpdateSystem;
 
 #[derive(Derivative, SystemData)]

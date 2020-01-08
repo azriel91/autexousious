@@ -10,13 +10,12 @@ use collision_model::{
     play::HitEvent,
 };
 use derive_new::new;
-use typename_derive::TypeName;
 
 /// Default volume to play sounds at.
 const VOLUME: f32 = 1.0;
 
 /// Plays a sound for `Hit` collisions.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct HitSfxSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]

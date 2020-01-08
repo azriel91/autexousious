@@ -10,10 +10,9 @@ use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
-use typename_derive::TypeName;
 
 /// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem` item entities.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Default, new)]
 pub struct StateItemUiInputAugmentSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
     #[new(default)]

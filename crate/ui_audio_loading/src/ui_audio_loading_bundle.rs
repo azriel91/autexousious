@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{any, path::PathBuf};
 
 use amethyst::{
     assets::Processor,
@@ -7,7 +7,6 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use typename::TypeName;
 use ui_audio_model::config::UiSfxPaths;
 
 use crate::UiAudioLoadingSystem;
@@ -35,7 +34,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for UiAudioLoadingBundle {
         ); // kcov-ignore
         builder.add(
             UiAudioLoadingSystem::new(self.assets_dir),
-            &UiAudioLoadingSystem::type_name(),
+            any::type_name::<UiAudioLoadingSystem>(),
             &["ui_sfx_paths_processor"],
         ); // kcov-ignore
         Ok(())
