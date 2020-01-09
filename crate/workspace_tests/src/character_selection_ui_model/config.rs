@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod test {
+    use asset_ui_model::config::{AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, Dimensions};
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
     use sequence_model::config::SequenceNameString;
@@ -33,6 +34,13 @@ widget_template:
     other_layer:
       sequence: "other"
       position: { x: 0, y: 0 }
+
+characters_available_display:
+  position: { x: 100, y: 100, z: 12 }
+  layout:
+    grid:
+      column_count: 7
+      cell_size: { w: 120, h: 120 }
 "#;
 
     #[test]
@@ -77,9 +85,18 @@ widget_template:
         layers.insert(CswLayer::Name(CswLayerName::Portrait), portrait_label);
         layers.insert(CswLayer::String(String::from("other_layer")), other_label);
         let widget_template = CswTemplate { portraits, layers };
+        let position = PositionInit::new(100, 100, 12);
+        let cell_size = Dimensions { w: 120, h: 120 };
+        let asset_display_grid = AssetDisplayGrid {
+            column_count: 7,
+            cell_size,
+        };
+        let layout = AssetDisplayLayout::Grid(asset_display_grid);
+        let characters_available_display = AssetDisplay { position, layout };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,
             widget_template,
+            characters_available_display,
         };
         assert_eq!(character_selection_ui_expected, character_selection_ui);
     }

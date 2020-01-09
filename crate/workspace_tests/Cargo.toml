@@ -22,6 +22,7 @@ asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 asset_play = { path = "../asset_play" }
+asset_ui_model = { path = "../asset_ui_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }

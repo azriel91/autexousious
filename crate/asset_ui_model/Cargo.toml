@@ -1,0 +1,13 @@
+[package]
+name = "asset_ui_model"
+version = "0.17.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+kinematic_model = { path = "../kinematic_model" }
+serde = { version = "1.0.104", features = ["derive"] }

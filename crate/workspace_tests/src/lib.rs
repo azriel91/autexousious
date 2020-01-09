@@ -30,6 +30,8 @@ mod asset_model;
 #[cfg(test)]
 mod asset_play;
 #[cfg(test)]
+mod asset_ui_model;
+#[cfg(test)]
 mod audio_loading;
 #[cfg(test)]
 mod audio_play;
