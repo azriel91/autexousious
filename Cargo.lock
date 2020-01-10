@@ -2154,7 +2154,6 @@ dependencies = [
  "structopt-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "variant_struct 0.16.0",
 ]
 
 [[package]]
@@ -5590,23 +5589,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "utf8-ranges"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "variant_struct"
-version = "0.16.0"
-dependencies = [
- "variant_struct_derive 0.16.0",
-]
-
-[[package]]
-name = "variant_struct_derive"
-version = "0.16.0"
-dependencies = [
- "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "vec_map"
