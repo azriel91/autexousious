@@ -17,7 +17,8 @@
 //!     Tuple(u32, u64),
 //!     /// Struct variant.
 //!     Struct {
-//!         field: u32,
+//!         field_0: u32,
+//!         field_1: u64,
 //!     },
 //! }
 //! ```
@@ -25,6 +26,8 @@
 //! Generates:
 //!
 //! ```rust,edition2018
+//! use std::convert::TryFrom;
+//!
 //! use variant_struct::VariantStruct;
 //!
 //! # pub enum MyEnum {
@@ -34,75 +37,78 @@
 //! #     Tuple(u32, u64),
 //! #     /// Struct variant.
 //! #     Struct {
-//! #         field: u32,
+//! #         field_0: u32,
+//! #         field_1: u64,
 //! #     },
 //! # }
 //! #
 //! /// Unit variant.
 //! #[derive(Debug)]
 //! pub struct Unit;
+//!
 //! /// Tuple variant.
 //! #[derive(Debug)]
 //! pub struct Tuple(pub u32, pub u64);
+//!
 //! /// Struct variant.
 //! #[derive(Debug)]
 //! pub struct Struct {
-//!     pub field: u32,
+//!     pub field_0: u32,
+//!     pub field_1: u64,
 //! }
 //!
-//! impl variant_struct::OfVariant for Unit {
-//!     type Enum = MyEnum;
+//! impl From<Unit> for MyEnum {
+//!     fn from(variant_struct: Unit) -> Self {
+//!         MyEnum::Unit
+//!     }
+//! }
 //!
-//!     fn is_for(value: &MyEnum) -> bool {
-//!         if let MyEnum::Unit = value {
-//!             true
+//! impl From<Tuple> for MyEnum {
+//!     fn from(variant_struct: Tuple) -> Self {
+//!         let Tuple(_0, _1) = variant_struct;
+//!         MyEnum::Tuple(_0, _1)
+//!     }
+//! }
+//!
+//! impl From<Struct> for MyEnum {
+//!     fn from(variant_struct: Struct) -> Self {
+//!         let Struct { field_0, field_1 } = variant_struct;
+//!         MyEnum::Struct { field_0, field_1 }
+//!     }
+//! }
+//!
+//! impl TryFrom<MyEnum> for Unit {
+//!     type Error = MyEnum;
+//!     fn try_from(enum_variant: MyEnum) -> Result<Self, Self::Error> {
+//!         if let MyEnum::Unit = enum_variant {
+//!             Ok(Unit)
 //!         } else {
-//!             false
+//!             Err(enum_variant)
 //!         }
 //!     }
 //! }
 //!
-//! impl variant_struct::OfVariant for Tuple {
-//!     type Enum = MyEnum;
-//!
-//!     fn is_for(value: &MyEnum) -> bool {
-//!         if let MyEnum::Tuple(..) = value {
-//!             true
+//! impl TryFrom<MyEnum> for Tuple {
+//!     type Error = MyEnum;
+//!     fn try_from(enum_variant: MyEnum) -> Result<Self, Self::Error> {
+//!         if let MyEnum::Tuple(_0, _1) = enum_variant {
+//!             Ok(Tuple(_0, _1))
 //!         } else {
-//!             false
+//!             Err(enum_variant)
 //!         }
 //!     }
 //! }
 //!
-//! impl variant_struct::OfVariant for Struct {
-//!     type Enum = MyEnum;
-//!
-//!     fn is_for(value: &MyEnum) -> bool {
-//!         if let MyEnum::Struct { .. } = value {
-//!             true
+//! impl TryFrom<MyEnum> for Struct {
+//!     type Error = MyEnum;
+//!     fn try_from(enum_variant: MyEnum) -> Result<Self, Self::Error> {
+//!         if let MyEnum::Struct { field_0, field_1 } = enum_variant {
+//!             Ok(Struct { field_0, field_1 })
 //!         } else {
-//!             false
+//!             Err(enum_variant)
 //!         }
 //!     }
 //! }
 //! ```
 
 pub use variant_struct_derive::VariantStruct;
-
-/// Indicates the struct corresponding to an enum variant.
-///
-/// This trait is not actually useful for anything right now.
-pub trait VariantStruct {
-    /// The struct corresponding to this variant.
-    type Struct;
-}
-
-/// Indicates the struct corresponding to an enum variant.
-///
-/// This is a placeholder while <https://github.com/rust-lang/rfcs/pull/2593>
-pub trait OfVariant {
-    /// The enum type this struct belongs to.
-    type Enum;
-    /// Returns whether this `struct` is for
-    fn is_for(value: &Self::Enum) -> bool;
-}
