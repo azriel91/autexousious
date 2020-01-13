@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod test {
     use asset_ui_model::config::{
-        AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+        AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelectionHighlight, AssetSelector,
+        Dimensions,
     };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
@@ -43,6 +44,12 @@ characters_available_selector:
     grid:
       column_count: 7
       cell_size: { w: 120, h: 120 }
+
+  selection_highlights:
+    - position: { x: 0, y: -15, z: 0 }
+      sequence: "p0_highlight"
+    - position: { x: 20, y: -15, z: 0 }
+      sequence: "p1_highlight"
 "#;
 
     #[test]
@@ -95,7 +102,19 @@ characters_available_selector:
         };
         let layout = AssetDisplayLayout::Grid(asset_display_grid);
         let asset_display = AssetDisplay::new(position, layout);
-        let characters_available_selector = AssetSelector { asset_display };
+        let selection_0 = AssetSelectionHighlight::new(UiSpriteLabel {
+            position: PositionInit::new(0, -15, 0),
+            sequence: SequenceNameString::String(String::from("p0_highlight")),
+        });
+        let selection_1 = AssetSelectionHighlight::new(UiSpriteLabel {
+            position: PositionInit::new(20, -15, 0),
+            sequence: SequenceNameString::String(String::from("p1_highlight")),
+        });
+        let selection_highlights = vec![selection_0, selection_1];
+        let characters_available_selector = AssetSelector {
+            asset_display,
+            selection_highlights,
+        };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,
             widget_template,
