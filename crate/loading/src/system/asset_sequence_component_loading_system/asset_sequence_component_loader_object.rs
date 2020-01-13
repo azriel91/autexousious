@@ -78,10 +78,6 @@ impl AssetSequenceComponentLoaderObject {
             ..
         } = asset_loading_resources;
 
-        let _asset_type = asset_type_mappings
-            .get(asset_id)
-            .expect("Expected `AssetType` mapping to exist.");
-
         let asset_slug = asset_id_mappings
             .slug(asset_id)
             .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");

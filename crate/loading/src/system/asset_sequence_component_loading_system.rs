@@ -1,6 +1,10 @@
 mod asset_sequence_component_loader_map;
 mod asset_sequence_component_loader_object;
 mod asset_sequence_component_loader_ui;
+mod asset_sequence_component_loader_ui_character_selection;
+mod asset_sequence_component_loader_ui_components;
+mod asset_sequence_component_loader_ui_control_settings;
+mod asset_sequence_component_loader_ui_menu;
 
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -21,10 +25,14 @@ use crate::{
     SequenceComponentLoadingResources,
 };
 
-use self::{
+pub use self::{
     asset_sequence_component_loader_map::AssetSequenceComponentLoaderMap,
     asset_sequence_component_loader_object::AssetSequenceComponentLoaderObject,
     asset_sequence_component_loader_ui::AssetSequenceComponentLoaderUi,
+    asset_sequence_component_loader_ui_character_selection::AssetSequenceComponentLoaderUiCharacterSelection,
+    asset_sequence_component_loader_ui_components::AssetSequenceComponentLoaderUiComponents,
+    asset_sequence_component_loader_ui_control_settings::AssetSequenceComponentLoaderUiControlSettings,
+    asset_sequence_component_loader_ui_menu::AssetSequenceComponentLoaderUiMenu,
 };
 
 /// Loads asset sequence components.
