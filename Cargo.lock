@@ -689,6 +689,7 @@ dependencies = [
 name = "asset_ui_model"
 version = "0.17.0"
 dependencies = [
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1122,6 +1123,7 @@ dependencies = [
  "indexmap 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.16.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_type 0.16.0",
  "parent_model 0.16.0",
  "sequence_model 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1891,6 +1893,17 @@ dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.16.0",
  "sequence_model 0.16.0",
+]
+
+[[package]]
+name = "enum_variant_type"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3572,6 +3585,8 @@ dependencies = [
 name = "object_type"
 version = "0.16.0"
 dependencies = [
+ "enum_variant_type 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3872,6 +3887,16 @@ dependencies = [
 [[package]]
 name = "proc_macro_roids"
 version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "proc_macro_roids"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -6116,6 +6141,7 @@ dependencies = [
 "checksum edit-distance 2.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "bbbaaaf38131deb9ca518a274a45bfdb8771f139517b073b16c2d3d32ae5037b"
 "checksum either 1.5.3 (registry+https://github.com/rust-lang/crates.io-index)" = "bb1f6b1ce1c140482ea30ddd3335fc0024ac7ee112895426e0a629a6c20adfe3"
 "checksum encode_unicode 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
+"checksum enum_variant_type 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d1bd85a79872123319ccaa668d1d46912d61053e1a6deb7c2c1e392e034f5824"
 "checksum enumflags2 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "33121c8782ba948ba332dab29311b026a8716dc65a1599e5b88f392d38496af8"
 "checksum enumflags2_derive 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "ecf634c5213044b8d54a46dd282cf5dd1f86bb5cb53e92c409cb4680a7fb9894"
 "checksum env_logger 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "aafcde04e90a5226a6443b7aabdb016ba2f8307c847d524724bd9b346dd1a2d3"
@@ -6256,6 +6282,7 @@ dependencies = [
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
 "checksum proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)" = "0319972dcae462681daf4da1adeeaa066e3ebd29c69be96c6abb1259d2ee2bcc"
 "checksum proc_macro_roids 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d8024b1cbfbb39df5aee6c2d55252d7c943af7c06002a37ec5d2c74daf97335f"
+"checksum proc_macro_roids 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "06675fa2c577f52bcf77fbb511123927547d154faa08097cc012c66ec3c9611a"
 "checksum quick-error 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
 "checksum quickcheck 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)" = "9c35d9c36a562f37eca96e79f66d5fd56eefbc22560dacc4a864cabd2d277456"
 "checksum quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)" = "6ce23b6b870e8f94f81fb0a363d65d86675884b34a09043c81e5562f11c1f8e1"

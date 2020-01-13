@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod test {
-    use asset_ui_model::config::{AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, Dimensions};
+    use asset_ui_model::config::{
+        AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+    };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
     use sequence_model::config::SequenceNameString;
@@ -35,7 +37,7 @@ widget_template:
       sequence: "other"
       position: { x: 0, y: 0 }
 
-characters_available_display:
+characters_available_selector:
   position: { x: 100, y: 100, z: 12 }
   layout:
     grid:
@@ -92,11 +94,12 @@ characters_available_display:
             cell_size,
         };
         let layout = AssetDisplayLayout::Grid(asset_display_grid);
-        let characters_available_display = AssetDisplay { position, layout };
+        let asset_display = AssetDisplay::new(position, layout);
+        let characters_available_selector = AssetSelector { asset_display };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,
             widget_template,
-            characters_available_display,
+            characters_available_selector,
         };
         assert_eq!(character_selection_ui_expected, character_selection_ui);
     }

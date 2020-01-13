@@ -38,7 +38,7 @@ map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 object_model = { path = "../object_model" }
-object_type = { path = "../object_type", features = ["test-support"] }
+object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 spawn_loading = { path = "../spawn_loading" }

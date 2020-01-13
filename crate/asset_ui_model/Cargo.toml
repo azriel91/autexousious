@@ -9,5 +9,6 @@ doctest = false
 test = false
 
 [dependencies]
+derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
 serde = { version = "1.0.104", features = ["derive"] }

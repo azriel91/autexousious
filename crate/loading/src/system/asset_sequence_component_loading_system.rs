@@ -711,7 +711,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                                             },
                                         layers, // IndexMap<String, UiSpriteLabel>
                                     },
-                                characters_available_display: _,
+                                characters_available_selector: _,
                             } = character_selection_ui;
 
                             // Store widget item IDs in `item_ids_all` to be spawned during state ID
