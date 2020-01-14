@@ -19,7 +19,7 @@ mod velocity_init;
 
 use std::{
     fmt::Debug,
-    ops::{Deref, DerefMut},
+    ops::{Add, AddAssign, Deref, DerefMut, Sub, SubAssign},
 };
 
 use amethyst::{
@@ -184,6 +184,46 @@ macro_rules! kinematic_type {
         {
             fn deref_mut(&mut self) -> &mut math::Vector3<S> {
                 &mut self.0
+            }
+        }
+
+        impl<S> Add for $name<S>
+        where
+            S: Add<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            type Output = Self;
+
+            fn add(self, other: Self) -> Self {
+                Self::new(self.x + other.x, self.y + other.y, self.z + other.z)
+            }
+        }
+
+        impl<S> AddAssign for $name<S>
+        where
+            S: Add<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            fn add_assign(&mut self, other: Self) {
+                *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+            }
+        }
+
+        impl<S> Sub for $name<S>
+        where
+            S: Sub<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            type Output = Self;
+
+            fn sub(self, other: Self) -> Self {
+                Self::new(self.x - other.x, self.y - other.y, self.z - other.z)
+            }
+        }
+
+        impl<S> SubAssign for $name<S>
+        where
+            S: Sub<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            fn sub_assign(&mut self, other: Self) {
+                *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
             }
         }
     };
