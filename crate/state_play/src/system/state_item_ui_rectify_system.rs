@@ -4,12 +4,13 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
     ui::UiText,
 };
-use application_menu::{MenuItemWidgetState, Siblings};
+use application_menu::Siblings;
 use asset_model::loaded::ItemId;
 use derivative::Derivative;
 use derive_new::new;
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
+use ui_model_spi::play::WidgetStatus;
 
 const FONT_COLOUR_ACTIVE: [f32; 4] = [0.9, 0.9, 1., 1.];
 
@@ -37,9 +38,9 @@ pub struct StateItemUiRectifySystemData<'s> {
     /// `ItemId` components.
     #[derivative(Debug = "ignore")]
     pub item_ids: ReadStorage<'s, ItemId>,
-    /// `MenuItemWidgetState` components.
+    /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
-    pub menu_item_widget_states: WriteStorage<'s, MenuItemWidgetState>,
+    pub widget_statuses: WriteStorage<'s, WidgetStatus>,
     /// `UiText` components.
     #[derivative(Debug = "ignore")]
     pub ui_texts: WriteStorage<'s, UiText>,
@@ -57,7 +58,7 @@ impl<'s> System<'s> for StateItemUiRectifySystem {
             state_id_update_ec,
             state_item_entities,
             item_ids,
-            mut menu_item_widget_states,
+            mut widget_statuses,
             mut ui_texts,
             mut siblingses,
         }: Self::SystemData,
@@ -71,7 +72,7 @@ impl<'s> System<'s> for StateItemUiRectifySystem {
             let mut menu_item_entities = state_item_entities
                 .entities
                 .iter()
-                .filter(|entity| menu_item_widget_states.get(**entity).is_some())
+                .filter(|entity| widget_statuses.get(**entity).is_some())
                 .copied()
                 .map(|entity| {
                     let item_id = item_ids
@@ -91,9 +92,9 @@ impl<'s> System<'s> for StateItemUiRectifySystem {
 
             // Set first menu item to be active.
             if let Some(entity) = menu_item_entities.first().copied() {
-                menu_item_widget_states
-                    .insert(entity, MenuItemWidgetState::Active)
-                    .expect("Failed to insert `MenuItemWidgetState` component.");
+                widget_statuses
+                    .insert(entity, WidgetStatus::Active)
+                    .expect("Failed to insert `WidgetStatus` component.");
                 if let Some(ui_text) = ui_texts.get_mut(entity) {
                     ui_text.color = FONT_COLOUR_ACTIVE;
                 }

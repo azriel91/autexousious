@@ -138,7 +138,8 @@ ui_button_model = { path = "../ui_button_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
-ui_model = { path = "../ui_model" }
+ui_model= { path = "../ui_model" }
+ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -11,8 +11,9 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
+use ui_model_spi::play::WidgetStatus;
 
-use crate::{MenuEvent, MenuItem, MenuItemWidgetState, Siblings};
+use crate::{MenuEvent, MenuItem, Siblings};
 
 /// System that processes controller input and generates `MenuEvent<I>`s.
 #[derive(Debug, Default, new)]
@@ -40,9 +41,9 @@ where
     /// `MenuItem` components.
     #[derivative(Debug = "ignore")]
     pub menu_items: ReadStorage<'s, MenuItem<I>>,
-    /// `MenuItemWidgetState` components.
+    /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
-    pub menu_item_widget_states: WriteStorage<'s, MenuItemWidgetState>,
+    pub widget_statuses: WriteStorage<'s, WidgetStatus>,
     /// `Siblings` components.
     #[derivative(Debug = "ignore")]
     pub siblingses: ReadStorage<'s, Siblings>,
@@ -70,43 +71,43 @@ where
     I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn select_previous_menu_item(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
     ) {
         if let Some(previous_menu_item) = siblings.previous.as_ref() {
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(menu_item_entity)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Idle;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Idle;
             }
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(*previous_menu_item)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Active;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Active;
             }
         }
     }
 
     fn select_next_menu_item(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
     ) {
         if let Some(next_menu_item) = siblings.next.as_ref() {
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(menu_item_entity)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Idle;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Idle;
             }
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(*next_menu_item)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Active;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Active;
             }
         }
     }
@@ -115,19 +116,19 @@ where
         MenuItemWidgetInputResources {
             ref entities,
             ref menu_items,
-            ref mut menu_item_widget_states,
+            ref mut widget_statuses,
             ref siblingses,
             ref mut menu_ec,
         }: &mut MenuItemWidgetInputResources<I>,
         event: ControlInputEvent,
     ) {
-        // Need to get from `menu_item_widget_states` separately, so that we do not hold an
+        // Need to get from `widget_statuses` separately, so that we do not hold an
         // immutable reference. This will then allow us to pass it to lower level functions.
         if let Some((menu_item_entity, siblings)) = (entities, siblingses)
             .join()
             .filter_map(|(entity, siblings)| {
-                if let Some(menu_item_widget_state) = menu_item_widget_states.get(entity) {
-                    if *menu_item_widget_state == MenuItemWidgetState::Active {
+                if let Some(widget_status) = widget_statuses.get(entity) {
+                    if *widget_status == WidgetStatus::Active {
                         return Some((entity, siblings));
                     }
                 }
@@ -137,7 +138,7 @@ where
         {
             match event {
                 ControlInputEvent::AxisMoved(axis_move_event_data) => Self::handle_axis_event(
-                    menu_item_widget_states,
+                    widget_statuses,
                     menu_item_entity,
                     siblings,
                     axis_move_event_data,
@@ -156,24 +157,20 @@ where
     }
 
     fn handle_axis_event(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
         axis_move_event_data: AxisMoveEventData,
     ) {
-        let menu_item_widget_state = *menu_item_widget_states
+        let widget_status = *widget_statuses
             .get(menu_item_entity)
-            .expect("Expected `MenuItemWidgetState` component to exist.");
-        match (menu_item_widget_state, axis_move_event_data.axis) {
-            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value < 0. => {
-                Self::select_previous_menu_item(
-                    menu_item_widget_states,
-                    menu_item_entity,
-                    siblings,
-                );
+            .expect("Expected `WidgetStatus` component to exist.");
+        match (widget_status, axis_move_event_data.axis) {
+            (WidgetStatus::Active, Axis::Z) if axis_move_event_data.value < 0. => {
+                Self::select_previous_menu_item(widget_statuses, menu_item_entity, siblings);
             }
-            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value > 0. => {
-                Self::select_next_menu_item(menu_item_widget_states, menu_item_entity, siblings);
+            (WidgetStatus::Active, Axis::Z) if axis_move_event_data.value > 0. => {
+                Self::select_next_menu_item(widget_statuses, menu_item_entity, siblings);
             }
             _ => {}
         }

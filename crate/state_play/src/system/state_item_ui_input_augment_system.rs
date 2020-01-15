@@ -3,13 +3,13 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use application_menu::MenuItemWidgetState;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
+use ui_model_spi::play::WidgetStatus;
 
 /// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem` item entities.
 #[derive(Debug, Default, new)]
@@ -32,9 +32,9 @@ pub struct StateItemUiInputAugmentSystemData<'s> {
     /// `StateItemEntities` resource.
     #[derivative(Debug = "ignore")]
     pub state_item_entities: Write<'s, StateItemEntities>,
-    /// `MenuItemWidgetState` components.
+    /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
-    pub menu_item_widget_states: ReadStorage<'s, MenuItemWidgetState>,
+    pub widget_statuses: ReadStorage<'s, WidgetStatus>,
     /// `InputConfig` resource.
     #[derivative(Debug = "ignore")]
     pub input_config: ReadExpect<'s, InputConfig>,
@@ -55,7 +55,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             entities,
             state_id_update_ec,
             mut state_item_entities,
-            menu_item_widget_states,
+            widget_statuses,
             input_config,
             mut input_controlleds,
             mut controller_inputs,
@@ -70,7 +70,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             let menu_items_exist = state_item_entities
                 .entities
                 .iter()
-                .find(|entity| menu_item_widget_states.get(**entity).is_some())
+                .find(|entity| widget_statuses.get(**entity).is_some())
                 .is_some();
 
             // This creates another entity for each controller, which is an odd implementation.

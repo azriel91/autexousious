@@ -21,6 +21,7 @@ serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
 ui_label_model = { path = "../ui_label_model" }
+ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]

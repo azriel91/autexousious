@@ -472,6 +472,7 @@ dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]
@@ -2305,6 +2306,7 @@ dependencies = [
  "shrev_support 0.16.0",
  "state_registry 0.16.0",
  "ui_audio_model 0.16.0",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]
@@ -5075,6 +5077,7 @@ dependencies = [
  "state_registry 0.16.0",
  "state_support 0.16.0",
  "tracker 0.16.0",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]
@@ -5534,6 +5537,7 @@ dependencies = [
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_label_model 0.16.0",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]
@@ -5557,6 +5561,14 @@ dependencies = [
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_button_model 0.16.0",
  "ui_menu_item_model 0.16.0",
+]
+
+[[package]]
+name = "ui_model_spi"
+version = "0.1.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5982,6 +5994,7 @@ dependencies = [
  "ui_loading 0.16.0",
  "ui_menu_item_model 0.16.0",
  "ui_model 0.16.0",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]
