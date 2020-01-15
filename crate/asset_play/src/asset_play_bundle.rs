@@ -6,7 +6,7 @@ use amethyst::{
     Error,
 };
 use asset_model::play::AssetWorld;
-use asset_ui_model::loaded::{AssetDisplayCell, AssetSelectionHighlight};
+use asset_ui_model::loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector};
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use character_selection_ui_model::{
@@ -26,6 +26,7 @@ use kinematic_model::{
 };
 use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
+use object_type::Character;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
@@ -75,6 +76,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterSelectionWidget>();
         asset_world.register::<CswPortraits>();
         asset_world.register::<CswMain>();
+        asset_world.register::<AssetSelector<Character>>();
         asset_world.register::<AssetDisplayCell>();
         asset_world.register::<AssetSelectionHighlight>();
         asset_world.register::<ChaseModeStick>();
@@ -217,14 +219,23 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             >()],
         );
         builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelector<Character>>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
+            &[],
+        );
+        builder.add(
             ItemComponentComponentAugmentSystem::<AssetDisplayCell>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCell>>(),
-            &[],
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlight>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
-            &[],
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ChaseModeStick>::new(),

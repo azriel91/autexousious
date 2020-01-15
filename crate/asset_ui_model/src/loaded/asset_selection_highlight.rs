@@ -3,7 +3,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use asset_model::{loaded::ItemId, ItemComponent};
-use chase_model::play::TargetObject;
+use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
@@ -14,8 +14,8 @@ use crate::play::{AssetSelectionHighlightMain, AssetSelectionParent, AssetSelect
 /// Highlights an asset selection.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub struct AssetSelectionHighlight {
-    /// Layers of sprite labels to draw for the character selection widget.
-    pub ash_template_item_id: ItemId,
+    /// `ItemId` of sprite to draw for the character selection widget.
+    pub ash_sprite_item_id: ItemId,
     /// InputControlled to attach to each `AssetSelectionHighlight` sub entity.
     pub input_controlled: InputControlled,
     /// The `AssetSelectionStatus` to begin with.
@@ -41,6 +41,9 @@ pub struct AssetSelectionHighlightSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
+    /// `ChaseModeStick` components.
+    #[derivative(Debug = "ignore")]
+    pub chase_mode_sticks: WriteStorage<'s, ChaseModeStick>,
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
@@ -64,6 +67,7 @@ impl<'s> ItemComponent<'s> for AssetSelectionHighlight {
             asset_selection_highlight_mains,
             item_ids,
             input_controlleds,
+            chase_mode_sticks,
             parent_entities,
             asset_selection_statuses,
             asset_selection_parents,
@@ -80,13 +84,19 @@ impl<'s> ItemComponent<'s> for AssetSelectionHighlight {
                 .insert(entity, self.input_controlled)
                 .expect("Failed to insert `InputControlled` component.");
         }
+        if !chase_mode_sticks.contains(entity) {
+            chase_mode_sticks
+                .insert(entity, ChaseModeStick::default())
+                .expect("Failed to insert `ChaseModeStick` component.");
+        }
 
         let asset_selection_parent = AssetSelectionParent::new(entity);
         let parent_entity = ParentEntity::new(entity);
         let target_object = TargetObject::new(entity);
+        // `ChaseModeStick` should be inserted by the `AssetSelectionHighlight` sprite `ItemId`.
         entities
             .build_entity()
-            .with(self.ash_template_item_id, item_ids)
+            .with(self.ash_sprite_item_id, item_ids)
             .with(self.input_controlled, input_controlleds)
             .with(parent_entity, parent_entities)
             .with(self.asset_selection_status, asset_selection_statuses)

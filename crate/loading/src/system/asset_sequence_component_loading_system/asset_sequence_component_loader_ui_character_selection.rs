@@ -7,8 +7,8 @@ use asset_model::{
     play::AssetWorld,
 };
 use asset_ui_model::{
-    config::{AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector},
-    loaded::{AssetDisplayCell, AssetSelectionHighlight},
+    config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
+    loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector},
     play::AssetSelectionStatus,
 };
 use character_selection_ui_model::{
@@ -175,28 +175,30 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .collect::<Vec<ItemId>>();
 
         item_ids_all.append(&mut item_ids_widgets);
-        item_ids_all.extend(Self::asset_selector_items(
+        item_ids_all.push(Self::asset_selector_item(
             asset_type_mappings,
             asset_world,
             asset_slug,
             sequence_id_mappings,
+            asset_sequence_component_loader_ui_components,
             &input_controlleds,
             characters_available_selector,
         ));
     }
 
-    fn asset_selector_items<T>(
+    fn asset_selector_item<T>(
         asset_type_mappings: &AssetTypeMappings,
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
+        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         input_controlleds: &[InputControlled],
-        characters_available_selector: &AssetSelector<T>,
-    ) -> Vec<ItemId>
+        characters_available_selector: &config::AssetSelector<T>,
+    ) -> ItemId
     where
-        T: Default + Into<ObjectType>,
+        T: Default + Into<ObjectType> + Send + Sync + 'static,
     {
-        let AssetSelector {
+        let config::AssetSelector {
             asset_display:
                 AssetDisplay {
                     position,
@@ -214,7 +216,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         // `AssetId`s for the asset type to display.
         //
         // We want to create an item for each of these in the correct place in the grid.
-        let mut asset_selector_items = asset_type_mappings
+        let asset_display_cell_item_ids = asset_type_mappings
             .iter_ids(&AssetType::Object(T::default().into()))
             .copied()
             .enumerate()
@@ -255,7 +257,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .collect::<Vec<ItemId>>();
 
         // Create item for each `AssetSelectionHighlight`.
-        let selection_highlight_items = selection_highlights
+        let asset_selection_highlight_item_ids = selection_highlights
             .iter()
             .map(|ash_template| {
                 let ui_sprite_label = &ash_template.sprite;
@@ -268,35 +270,71 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     &ui_sprite_label.sequence,
                 );
 
+                let AssetSequenceComponentLoaderUiComponents {
+                    sequence_end_transitions,
+                    wait_sequence_handles,
+                    tint_sequence_handles,
+                    scale_sequence_handles,
+                    input_reactions_sequence_handles,
+                    sprite_render_sequence_handles,
+                } = asset_sequence_component_loader_ui_components.clone();
+
                 let chase_mode_stick = ChaseModeStick::new(Some(offset));
-                let item_entity = asset_world
+                let mut item_entity_builder = asset_world
                     .create_entity()
                     .with(position_init)
                     .with(sequence_id_init)
                     .with(chase_mode_stick)
-                    .build();
+                    .with(sequence_end_transitions)
+                    .with(wait_sequence_handles)
+                    .with(tint_sequence_handles)
+                    .with(scale_sequence_handles)
+                    .with(input_reactions_sequence_handles);
+
+                if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {
+                    item_entity_builder = item_entity_builder.with(sprite_render_sequence_handles);
+                }
+
+                let item_entity = item_entity_builder.build();
 
                 ItemId::new(item_entity)
             })
             .collect::<Vec<ItemId>>() // Collect to reclaim `asset_world` for next closure.
             .into_iter()
             .zip(input_controlleds.iter().copied())
-            .map(|(ash_template_item_id, input_controlled)| {
+            .map(|(ash_sprite_item_id, input_controlled)| {
                 let asset_selection_highlight = AssetSelectionHighlight {
-                    ash_template_item_id,
+                    ash_sprite_item_id,
                     input_controlled,
                     asset_selection_status: AssetSelectionStatus::Inactive,
                 };
                 let item_entity = asset_world
                     .create_entity()
+                    // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
+                    // isn't already there.
+                    .with(PositionInit::default())
                     .with(asset_selection_highlight)
                     .build();
 
                 ItemId::new(item_entity)
-            });
+            })
+            .collect::<Vec<ItemId>>();
 
-        asset_selector_items.extend(selection_highlight_items);
+        let asset_selector_item = {
+            let asset_selector = AssetSelector::<T>::new(
+                asset_display_cell_item_ids,
+                asset_selection_highlight_item_ids,
+                *layout,
+            );
+            let item_entity = asset_world
+                .create_entity()
+                .with(*position)
+                .with(asset_selector)
+                .build();
 
-        asset_selector_items
+            ItemId::new(item_entity)
+        };
+
+        asset_selector_item
     }
 }

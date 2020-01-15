@@ -25,6 +25,7 @@ input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
+object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
