@@ -13,6 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
+kinematic_model = { path = "../kinematic_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 
 [features]

@@ -1,17 +1,17 @@
 use amethyst::{
-    core::math::Vector3,
     ecs::{storage::DenseVecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
+use kinematic_model::config::Position;
 
 /// Component indicating the chaser should stick to the target object.
 #[derive(Clone, Component, Copy, Debug, Default, PartialEq, new)]
 pub struct ChaseModeStick {
     /// Fixed offset from the target object.
-    pub offset: Option<Vector3<f32>>,
+    pub offset: Option<Position<f32>>,
 }
 
 /// `ChaseModeStickSystemData`.

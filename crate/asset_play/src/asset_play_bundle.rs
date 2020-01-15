@@ -6,6 +6,7 @@ use amethyst::{
     Error,
 };
 use asset_model::play::AssetWorld;
+use asset_ui_model::loaded::AssetSelectionHighlight;
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use character_selection_ui_model::{
@@ -74,6 +75,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterSelectionWidget>();
         asset_world.register::<CswPortraits>();
         asset_world.register::<CswMain>();
+        asset_world.register::<AssetSelectionHighlight>();
         asset_world.register::<ChaseModeStick>();
 
         world.insert(asset_world);
@@ -214,9 +216,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             >()],
         );
         builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionHighlight>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
+            &[],
+        );
+        builder.add(
             ItemComponentComponentAugmentSystem::<ChaseModeStick>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<ChaseModeStick>>(),
-            &[],
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelectionHighlight>,
+            >()],
         );
         builder.add_barrier();
         Ok(())

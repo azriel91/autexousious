@@ -16,11 +16,13 @@ application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 background_model = { path = "../background_model" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
+chase_model = { path = "../chase_model" }
 collision_audio_model = { path = "../collision_audio_model" }
 collision_model = { path = "../collision_model" }
 control_settings_loading = { path = "../control_settings_loading" }

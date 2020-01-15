@@ -1,8 +1,7 @@
 #[cfg(test)]
 mod test {
     use asset_ui_model::config::{
-        AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelectionHighlight, AssetSelector,
-        Dimensions,
+        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
     };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
@@ -102,11 +101,11 @@ characters_available_selector:
         };
         let layout = AssetDisplayLayout::Grid(asset_display_grid);
         let asset_display = AssetDisplay::new(position, layout);
-        let selection_0 = AssetSelectionHighlight::new(UiSpriteLabel {
+        let selection_0 = AshTemplate::new(UiSpriteLabel {
             position: PositionInit::new(0, -15, 0),
             sequence: SequenceNameString::String(String::from("p0_highlight")),
         });
-        let selection_1 = AssetSelectionHighlight::new(UiSpriteLabel {
+        let selection_1 = AshTemplate::new(UiSpriteLabel {
             position: PositionInit::new(20, -15, 0),
             sequence: SequenceNameString::String(String::from("p1_highlight")),
         });

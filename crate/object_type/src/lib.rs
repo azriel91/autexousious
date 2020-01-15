@@ -13,7 +13,7 @@ use strum_macros::{Display, EnumIter};
 #[strum(serialize_all = "snake_case")]
 pub enum ObjectType {
     /// Player or AI controllable objects.
-    #[evt(derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize))]
+    #[evt(derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize))]
     Character,
     /// Energy / aura / spark effects.
     #[evt(skip)]

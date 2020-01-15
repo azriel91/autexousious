@@ -65,6 +65,7 @@ impl AssetSequenceComponentLoaderUi {
     ) {
         let AssetLoadingResources {
             asset_id_mappings,
+            asset_type_mappings,
             loader,
             ..
         } = asset_loading_resources;
@@ -334,6 +335,7 @@ impl AssetSequenceComponentLoaderUi {
                 }
                 UiType::CharacterSelection(character_selection_ui) => {
                     AssetSequenceComponentLoaderUiCharacterSelection::load(
+                        asset_type_mappings,
                         asset_world,
                         asset_slug,
                         sequence_id_mappings,

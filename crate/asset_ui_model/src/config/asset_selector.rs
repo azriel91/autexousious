@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::config::{AssetDisplay, AssetSelectionHighlight};
+use crate::config::{AshTemplate, AssetDisplay};
 
 /// Displays available assets and highlights selected asset.
 ///
@@ -14,5 +14,5 @@ pub struct AssetSelector<T> {
     #[serde(flatten)]
     pub asset_display: AssetDisplay<T>,
     /// Highlights the selected asset.
-    pub selection_highlights: Vec<AssetSelectionHighlight<T>>,
+    pub selection_highlights: Vec<AshTemplate>,
 }
