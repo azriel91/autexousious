@@ -702,6 +702,7 @@ dependencies = [
  "parent_model 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_label_model 0.16.0",
+ "ui_model_spi 0.1.0",
 ]
 
 [[package]]

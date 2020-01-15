@@ -124,12 +124,12 @@ where
     ) {
         // Need to get from `widget_statuses` separately, so that we do not hold an
         // immutable reference. This will then allow us to pass it to lower level functions.
-        if let Some((menu_item_entity, siblings)) = (entities, siblingses)
+        if let Some((menu_item_entity, siblings, menu_item)) = (entities, siblingses, menu_items)
             .join()
-            .filter_map(|(entity, siblings)| {
+            .filter_map(|(entity, siblings, menu_item)| {
                 if let Some(widget_status) = widget_statuses.get(entity) {
                     if *widget_status == WidgetStatus::Active {
-                        return Some((entity, siblings));
+                        return Some((entity, siblings, menu_item));
                     }
                 }
                 None
@@ -144,12 +144,7 @@ where
                     axis_move_event_data,
                 ),
                 ControlInputEvent::ControlActionPress(control_action_event_data) => {
-                    Self::handle_control_action_event(
-                        menu_items,
-                        menu_ec,
-                        menu_item_entity,
-                        control_action_event_data,
-                    )
+                    Self::handle_control_action_event(menu_ec, menu_item, control_action_event_data)
                 }
                 ControlInputEvent::ControlActionRelease(..) => {}
             }
@@ -177,20 +172,13 @@ where
     }
 
     fn handle_control_action_event(
-        menu_items: &ReadStorage<'_, MenuItem<I>>,
         menu_ec: &mut EventChannel<MenuEvent<I>>,
-        menu_item_entity: Entity,
+        menu_item: &MenuItem<I>,
         control_action_event_data: ControlActionEventData,
     ) {
         let game_mode_selection_event = match control_action_event_data.control_action {
             ControlAction::Jump => Some(MenuEvent::Close),
-            ControlAction::Attack => {
-                let menu_item = menu_items
-                    .get(menu_item_entity)
-                    .expect("Expected `MenuItem` component to exist.");
-
-                Some(MenuEvent::Select(menu_item.index))
-            }
+            ControlAction::Attack => Some(MenuEvent::Select(menu_item.index)),
             _ => None,
         };
 

@@ -19,6 +19,7 @@ kinematic_model = { path = "../kinematic_model" }
 parent_model = { path = "../parent_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 ui_label_model = { path = "../ui_label_model" }
+ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]
