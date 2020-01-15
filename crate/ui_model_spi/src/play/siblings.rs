@@ -2,7 +2,7 @@ use amethyst::ecs::{storage::VecStorage, Component, Entity};
 use derivative::Derivative;
 use derive_new::new;
 
-/// Siblings of a menu item.
+/// Siblings of a UI widget.
 #[derive(Clone, Copy, Component, Debug, Derivative, PartialEq, Eq, new)]
 #[derivative(Default)]
 #[storage(VecStorage)]

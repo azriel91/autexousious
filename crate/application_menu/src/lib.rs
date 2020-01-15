@@ -3,7 +3,7 @@
 //! Provides types to support building an application menu.
 
 pub use self::{
-    component::{MenuItem, Siblings},
+    component::MenuItem,
     event::MenuEvent,
     system::{
         MenuItemWidgetInputResources, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,

@@ -15,10 +15,10 @@ mod tests {
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};
-    use ui_model_spi::play::WidgetStatus;
+    use ui_model_spi::play::{Siblings, WidgetStatus};
 
     use application_menu::{
-        MenuEvent, MenuItem, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData, Siblings,
+        MenuEvent, MenuItem, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
     };
 
     #[test]

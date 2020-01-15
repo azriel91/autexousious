@@ -9,14 +9,14 @@ mod tests {
         winit::VirtualKeyCode,
         Error,
     };
-    use application_menu::{MenuItem, Siblings};
+    use application_menu::MenuItem;
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
     use state_registry::StateId;
     use strum::IntoEnumIterator;
-    use ui_model_spi::play::WidgetStatus;
+    use ui_model_spi::play::{Siblings, WidgetStatus};
 
     use game_mode_selection_ui::{
         GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE,

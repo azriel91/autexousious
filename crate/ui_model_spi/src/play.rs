@@ -1,5 +1,6 @@
 //! Contains data types used at runtime.
 
-pub use self::widget_status::WidgetStatus;
+pub use self::{siblings::Siblings, widget_status::WidgetStatus};
 
+mod siblings;
 mod widget_status;

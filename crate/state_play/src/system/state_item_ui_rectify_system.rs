@@ -4,13 +4,12 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
     ui::UiText,
 };
-use application_menu::Siblings;
 use asset_model::loaded::ItemId;
 use derivative::Derivative;
 use derive_new::new;
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
-use ui_model_spi::play::WidgetStatus;
+use ui_model_spi::play::{Siblings, WidgetStatus};
 
 const FONT_COLOUR_ACTIVE: [f32; 4] = [0.9, 0.9, 1., 1.];
 

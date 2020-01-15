@@ -11,9 +11,9 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
-use ui_model_spi::play::WidgetStatus;
+use ui_model_spi::play::{Siblings, WidgetStatus};
 
-use crate::{MenuEvent, MenuItem, Siblings};
+use crate::{MenuEvent, MenuItem};
 
 /// System that processes controller input and generates `MenuEvent<I>`s.
 #[derive(Debug, Default, new)]
