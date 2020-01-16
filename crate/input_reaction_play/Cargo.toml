@@ -12,6 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 approx = "0.3.2"
 asset_model = { path = "../asset_model" }
+asset_ui_model = { path = "../asset_ui_model" }
 character_selection_model = { path = "../character_selection_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 control_settings_model = { path = "../control_settings_model" }

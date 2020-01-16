@@ -35,9 +35,14 @@ impl AssetTypeMappings {
         self.asset_id_to_type.capacity()
     }
 
-    /// Returns a reference to the value corresponding to the key.
+    /// Returns the `AssetType` recorded for the given `AssetId` (if any).
     pub fn get(&self, asset_id: AssetId) -> Option<&AssetType> {
         self.asset_id_to_type.get(&asset_id)
+    }
+
+    /// Returns the list of `AssetId`s for the given asset type.
+    pub fn get_ids(&self, asset_type: AssetType) -> Option<&Vec<AssetId>> {
+        self.asset_type_to_ids.get(&asset_type)
     }
 
     /// Returns `true` if there are no mappings.

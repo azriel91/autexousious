@@ -3,7 +3,11 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
-use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
+use asset_model::{
+    loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+    play::{AssetSelection, AssetSelectionEvent},
+};
+use asset_ui_model::play::AshStatus;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use character_selection_ui_model::play::CswStatus;
 use control_settings_model::ControlSettingsEvent;
@@ -27,12 +31,23 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
 
-    /// `CharacterSelectionEvent` channel.
-    #[derivative(Debug = "ignore")]
-    pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+
+    /// `AssetSelectionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_ec: Write<'s, EventChannel<AssetSelectionEvent>>,
+    /// `AssetSelection` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selections: WriteStorage<'s, AssetSelection>,
+    /// `AshStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub ash_statuses: WriteStorage<'s, AshStatus>,
+
+    /// `CharacterSelectionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
     /// `CharacterSelection` components.
     #[derivative(Debug = "ignore")]
     pub character_selections: WriteStorage<'s, CharacterSelection>,

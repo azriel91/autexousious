@@ -5,7 +5,7 @@ use crate::play::AssetSelection;
 /// Event signalling a change in asset selection.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum AssetSelectionEvent {
-    /// Signal to return from `AssetSelectionState`.
+    /// Signal to return from the `State`.
     Return,
     /// Player has joined / become active.
     Join {
