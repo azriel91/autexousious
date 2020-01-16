@@ -2739,6 +2739,7 @@ dependencies = [
  "asset_ui_model 0.17.0",
  "character_selection_model 0.16.0",
  "character_selection_ui_model 0.16.0",
+ "chase_model 0.16.0",
  "control_settings_model 0.16.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -10,6 +10,7 @@ use asset_model::{
 use asset_ui_model::play::AshStatus;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use character_selection_ui_model::play::CswStatus;
+use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
 use game_input::InputControlled;
@@ -38,12 +39,15 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Write<'s, EventChannel<AssetSelectionEvent>>,
-    /// `AssetSelection` components.
-    #[derivative(Debug = "ignore")]
-    pub asset_selections: WriteStorage<'s, AssetSelection>,
     /// `AshStatus` components.
     #[derivative(Debug = "ignore")]
     pub ash_statuses: WriteStorage<'s, AshStatus>,
+    /// `TargetObject` components.
+    #[derivative(Debug = "ignore")]
+    pub target_objects: ReadStorage<'s, TargetObject>,
+    /// `AssetSelection` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selections: ReadStorage<'s, AssetSelection>,
 
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]

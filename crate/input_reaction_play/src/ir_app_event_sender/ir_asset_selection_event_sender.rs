@@ -127,17 +127,27 @@ impl IrAssetSelectionEventSender {
             asset_ids,
             asset_id_mappings,
             asset_type_mappings,
+            target_objects,
             asset_selections,
             ..
         }: &mut IrAppEventSenderSystemData,
         entity: Entity,
         switch_direction: Option<AssetSwitch>,
     ) -> Option<AssetSelection> {
-        let asset_selection = asset_selections.get_mut(entity);
+        // Look up the `TargetObject` whose entity is the `AssetSelectionCell`
+        // Then lookup the `AssetSelection` for that entity.
+        let asset_selection = target_objects
+            .get(entity)
+            // Entity that sends the event is not the `AssetSelectionHighlightMain` entity, but its
+            // `TargetObject` is.
+            // Then the `TargetObject` of the `AssetSelectionHighlightMain` entity is the
+            // `AssetSelectionCell`.
+            .and_then(|target_object| target_objects.get(target_object.entity).copied())
+            .and_then(|target_object| asset_selections.get(target_object.entity).copied());
 
         if let Some(asset_selection) = asset_selection {
             match switch_direction {
-                None => Some(*asset_selection),
+                None => Some(asset_selection),
                 Some(AssetSwitch::Previous) => {
                     let new_selection =
                         Self::switch_asset(asset_type_mappings, asset_selection, -1);
@@ -166,38 +176,38 @@ impl IrAssetSelectionEventSender {
 
     fn switch_asset(
         asset_type_mappings: &AssetTypeMappings,
-        asset_selection: &mut AssetSelection,
+        asset_selection: AssetSelection,
         n: isize,
     ) -> AssetSelection {
         let reverse = n < 0;
         let n = usize::try_from(n.wrapping_abs()).expect("Failed to convert `n` into `usize`.");
         let n = n + 1; // skip current selection
 
-        let new_selection = {
+        {
             let placeholder = Vec::new();
             let asset_ids = asset_type_mappings
                 .get_ids(AssetType::Object(ObjectType::Character)) // TODO: Generic
                 .unwrap_or(&placeholder);
             let mut asset_selections = Vec::with_capacity(asset_ids.len() + 1);
+            asset_selections.push(AssetSelection::Random);
             asset_selections.extend(asset_ids.into_iter().copied().map(AssetSelection::Id));
 
             if reverse {
                 asset_selections
                     .into_iter()
                     .rev()
-                    .skip_while(|selection| selection != asset_selection)
+                    .cycle()
+                    .skip_while(|selection| *selection != asset_selection)
                     .nth(n)
             } else {
                 asset_selections
                     .into_iter()
-                    .skip_while(|selection| selection != asset_selection)
+                    .cycle()
+                    .skip_while(|selection| *selection != asset_selection)
                     .nth(n)
             }
         }
-        .expect("Expected at least one asset to be loaded.");
-
-        *asset_selection = new_selection;
-        new_selection
+        .expect("Expected at least one asset to be loaded.")
     }
 
     fn asset_selection_confirm_preconditions_met(
