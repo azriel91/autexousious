@@ -28,6 +28,7 @@ pub use crate::{
 };
 
 pub mod config;
+pub mod play;
 
 mod axis;
 mod control_action;

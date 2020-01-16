@@ -9,7 +9,7 @@ use asset_model::{
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector},
-    play::AssetSelectionStatus,
+    play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use character_selection_ui_model::{
     config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
@@ -259,7 +259,8 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         // Create item for each `AssetSelectionHighlight`.
         let asset_selection_highlight_item_ids = selection_highlights
             .iter()
-            .map(|ash_template| {
+            .zip(input_controlleds.iter().copied())
+            .map(|(ash_template, input_controlled)| {
                 let ui_sprite_label = &ash_template.sprite;
                 let position_init = ui_sprite_label.position;
                 let offset = Position::<f32>::from(position_init);
@@ -285,6 +286,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     .with(position_init)
                     .with(sequence_id_init)
                     .with(chase_mode_stick)
+                    .with(input_controlled)
                     .with(sequence_end_transitions)
                     .with(wait_sequence_handles)
                     .with(tint_sequence_handles)
@@ -305,7 +307,6 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .map(|(ash_sprite_item_id, input_controlled)| {
                 let asset_selection_highlight = AssetSelectionHighlight {
                     ash_sprite_item_id,
-                    input_controlled,
                     asset_selection_status: AssetSelectionStatus::Inactive,
                 };
                 let item_entity = asset_world
@@ -313,7 +314,10 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
                     // isn't already there.
                     .with(PositionInit::default())
+                    .with(input_controlled)
+                    .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
+                    .with(AssetSelectionHighlightMain)
                     .build();
 
                 ItemId::new(item_entity)

@@ -21,6 +21,7 @@ use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
+use asset_ui_play::AssetSelectionHighlightUpdateSystem;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
@@ -144,6 +145,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputReactionLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with(
+                AssetSelectionHighlightUpdateSystem::new(),
+                any::type_name::<AssetSelectionHighlightUpdateSystem>(),
+                &[],
+            )
             .with(
                 CswPortraitUpdateSystem::new(),
                 any::type_name::<CswPortraitUpdateSystem>(),

@@ -6,7 +6,10 @@ use amethyst::{
     Error,
 };
 use asset_model::play::AssetWorld;
-use asset_ui_model::loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector};
+use asset_ui_model::{
+    loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector},
+    play::AssetSelectionHighlightMain,
+};
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use character_selection_ui_model::{
@@ -79,6 +82,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<AssetSelector<Character>>();
         asset_world.register::<AssetDisplayCell>();
         asset_world.register::<AssetSelectionHighlight>();
+        asset_world.register::<AssetSelectionHighlightMain>();
         asset_world.register::<ChaseModeStick>();
 
         world.insert(asset_world);
@@ -236,6 +240,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionHighlightMain>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
+            &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ChaseModeStick>::new(),
