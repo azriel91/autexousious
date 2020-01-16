@@ -7,7 +7,7 @@ use amethyst::{
 };
 use asset_model::play::AssetWorld;
 use asset_ui_model::{
-    loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
     play::AssetSelectionHighlightMain,
 };
 use audio_model::loaded::SourceSequenceHandles;
@@ -81,6 +81,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CswMain>();
         asset_world.register::<AssetSelector<Character>>();
         asset_world.register::<AssetDisplayCell>();
+        asset_world.register::<AssetSelectionCell>();
         asset_world.register::<AssetSelectionHighlight>();
         asset_world.register::<AssetSelectionHighlightMain>();
         asset_world.register::<ChaseModeStick>();
@@ -230,6 +231,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetDisplayCell>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCell>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionCell>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],

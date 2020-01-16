@@ -8,10 +8,6 @@ use derive_new::new;
 use ui_model_spi::play::WidgetStatus;
 
 /// Display cell for a particular asset.
-///
-/// # Type Parameters
-///
-/// * `T`: Type to indicate the assets to display.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(VecStorage)]
 pub struct AssetDisplayCell {

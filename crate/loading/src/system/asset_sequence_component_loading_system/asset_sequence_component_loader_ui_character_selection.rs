@@ -8,7 +8,7 @@ use asset_model::{
 };
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
-    loaded::{AssetDisplayCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use character_selection_ui_model::{
@@ -250,7 +250,9 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                 let item_entity = asset_world
                     .create_entity()
                     .with(position_asset_cell)
-                    .with(AssetDisplayCell { asset_id })
+                    .with(AssetSelectionCell {
+                        display_cell: AssetDisplayCell { asset_id },
+                    })
                     .build();
                 ItemId::new(item_entity)
             })
