@@ -10,7 +10,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::warn;
 use parent_model::play::ParentEntity;
-use ui_model_spi::play::SiblingsVertical;
+use ui_model_spi::play::{SiblingsBoundaryAction, SiblingsVertical};
 use ui_model_spi_play::{UiRectifySystemData, UiWidgetRectifier};
 
 use crate::config::{AssetDisplayGrid, AssetDisplayLayout};
@@ -76,7 +76,11 @@ where
         match self.layout {
             AssetDisplayLayout::Grid(AssetDisplayGrid {
                 column_count: _, ..
-            }) => UiWidgetRectifier::rectify(ui_rectify_system_data, asset_display_cell_entities),
+            }) => UiWidgetRectifier::rectify(
+                ui_rectify_system_data,
+                SiblingsBoundaryAction::CycleNext,
+                asset_display_cell_entities,
+            ),
         }
     }
 }

@@ -1,5 +1,5 @@
 use amethyst::ecs::Entity;
-use ui_model_spi::play::{Siblings, WidgetStatus};
+use ui_model_spi::play::{Siblings, SiblingsBoundaryAction, WidgetStatus};
 
 use crate::UiRectifySystemData;
 
@@ -17,6 +17,7 @@ impl UiWidgetRectifier {
             siblingses,
             ui_texts,
         }: &mut UiRectifySystemData,
+        siblings_boundary_action: SiblingsBoundaryAction,
         widget_entities: &[Entity],
     ) {
         // Set first widget to be active.
@@ -31,12 +32,25 @@ impl UiWidgetRectifier {
 
         // Set previous and next siblings
         if widget_entities.len() >= 2 {
-            if let Some(first_item) = widget_entities.first().copied() {
-                let second = widget_entities.get(1).copied();
-                siblingses
-                    .insert(first_item, Siblings::new(None, second))
-                    .expect("Failed to insert `Siblings` component.");
-            }
+            let first_item = widget_entities
+                .first()
+                .copied()
+                .expect("Expected first widget `Entity` to exist.");
+            let last_item = widget_entities
+                .last()
+                .copied()
+                .expect("Expected last widget `Entity` to exist.");
+
+            let wrap_sibling = if siblings_boundary_action == SiblingsBoundaryAction::CycleNext {
+                Some(last_item)
+            } else {
+                None
+            };
+
+            let second = widget_entities.get(1).copied();
+            siblingses
+                .insert(first_item, Siblings::new(wrap_sibling, second))
+                .expect("Failed to insert `Siblings` component.");
             // Skip first menu item.
             //
             // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the
@@ -47,7 +61,14 @@ impl UiWidgetRectifier {
                 .skip(1)
                 .for_each(|(index, menu_item)| {
                     let prev_item = widget_entities.get(index - 1).copied();
-                    let next_item = widget_entities.get(index + 1).copied();
+                    let mut next_item = widget_entities.get(index + 1).copied();
+
+                    if next_item.is_none()
+                        && siblings_boundary_action == SiblingsBoundaryAction::CycleNext
+                    {
+                        next_item = Some(first_item);
+                    }
+
                     siblingses
                         .insert(*menu_item, Siblings::new(prev_item, next_item))
                         .expect("Failed to insert `Siblings` component.");
