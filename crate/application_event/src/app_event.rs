@@ -1,4 +1,5 @@
 use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel, winit::Event};
+use asset_model::play::AssetSelectionEvent;
 use character_selection_model::CharacterSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
@@ -18,6 +19,8 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 )]
 #[reader(AppEventReader)]
 pub enum AppEvent {
+    /// `asset_selection` events.
+    AssetSelection(AssetSelectionEvent),
     /// `character_selection` events.
     CharacterSelection(CharacterSelectionEvent),
     /// `control_input` events.
