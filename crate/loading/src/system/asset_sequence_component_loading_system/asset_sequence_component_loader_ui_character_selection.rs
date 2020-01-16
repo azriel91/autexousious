@@ -9,7 +9,7 @@ use asset_model::{
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
-    play::{AssetSelectionHighlightMain, AssetSelectionStatus},
+    play::{AshStatus, AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use character_selection_ui_model::{
     config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
@@ -320,6 +320,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)
+                    .with(AshStatus::default())
                     .build();
 
                 ItemId::new(item_entity)
