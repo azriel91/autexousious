@@ -211,7 +211,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         let AssetDisplayLayout::Grid(AssetDisplayGrid {
             column_count,
             cell_size,
-        }) = layout;
+        }) = *layout;
 
         // `AssetId`s for the asset type to display.
         //
@@ -222,7 +222,10 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     .iter_ids(&AssetType::Object(T::default().into()))
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
-                        display_cell: AssetDisplayCell { asset_id },
+                        display_cell: AssetDisplayCell {
+                            asset_id,
+                            cell_size,
+                        },
                     }),
             )
             .enumerate()

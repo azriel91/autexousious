@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use amethyst::{
     ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
@@ -12,12 +14,18 @@ use sequence_model::loaded::SequenceId;
 use spawn_model::loaded::Spawn;
 use spawn_play::{GameObjectSpawner, SpawnGameObjectResources};
 
+use crate::config::Dimensions;
+
 /// Display cell for a particular asset.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(VecStorage)]
 pub struct AssetDisplayCell {
     /// ID of the asset to display.
     pub asset_id: AssetId,
+    /// Size of the cell.
+    ///
+    /// This is used to position the spawned asset.
+    pub cell_size: Dimensions,
 }
 
 /// `AssetDisplayCellSystemData`.
@@ -55,10 +63,14 @@ impl<'s> ItemComponent<'s> for AssetDisplayCell {
 
             // TODO: Look up sequence ID for default sequence ID for the asset type.
             let sequence_id = SequenceId::new(0);
+            let half_cell_width = f32::from(
+                i16::try_from(self.cell_size.w >> 1)
+                    .expect("Failed to convert `cell_size.w` to `i16`."),
+            );
 
             let spawn = Spawn {
                 object: self.asset_id,
-                position: Position::default(),
+                position: Position::new(half_cell_width, 10., 0.),
                 velocity: Velocity::default(),
                 sequence_id,
             };
