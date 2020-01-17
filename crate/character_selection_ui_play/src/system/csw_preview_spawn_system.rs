@@ -67,7 +67,7 @@ pub struct CswPreviewSpawnResources<'s> {
 }
 
 impl CswPreviewSpawnSystem {
-    /// Finds the main character selectoin widget `Entity` with the given controller ID.
+    /// Finds the main character selection widget `Entity` with the given controller ID.
     fn find_csw_main_entity(
         CswPreviewSpawnResources {
             entities,

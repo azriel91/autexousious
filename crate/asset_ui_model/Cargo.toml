@@ -17,8 +17,12 @@ derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
+object_model = { path = "../object_model" }
 parent_model = { path = "../parent_model" }
+sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
+spawn_model = { path = "../spawn_model" }
+spawn_play = { path = "../spawn_play" }
 ui_label_model = { path = "../ui_label_model" }
 ui_model_spi = { path = "../ui_model_spi" }
 ui_model_spi_play = { path = "../ui_model_spi_play" }
