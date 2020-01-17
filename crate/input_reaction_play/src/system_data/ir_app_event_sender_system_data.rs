@@ -7,7 +7,7 @@ use asset_model::{
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     play::{AssetSelection, AssetSelectionEvent},
 };
-use asset_ui_model::play::AshStatus;
+use asset_ui_model::play::AssetSelectionStatus;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use character_selection_ui_model::play::CswStatus;
 use chase_model::play::TargetObject;
@@ -39,9 +39,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Write<'s, EventChannel<AssetSelectionEvent>>,
-    /// `AshStatus` components.
+    /// `AssetSelectionStatus` components.
     #[derivative(Debug = "ignore")]
-    pub ash_statuses: WriteStorage<'s, AshStatus>,
+    pub asset_selection_statuses: WriteStorage<'s, AssetSelectionStatus>,
     /// `TargetObject` components.
     #[derivative(Debug = "ignore")]
     pub target_objects: ReadStorage<'s, TargetObject>,

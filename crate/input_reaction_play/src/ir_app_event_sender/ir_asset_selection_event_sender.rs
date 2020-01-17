@@ -6,7 +6,7 @@ use asset_model::{
     loaded::AssetTypeMappings,
     play::{AssetSelection, AssetSelectionEvent},
 };
-use asset_ui_model::play::AshStatus;
+use asset_ui_model::play::AssetSelectionStatus;
 use log::debug;
 use object_type::ObjectType;
 
@@ -22,6 +22,14 @@ impl IrAssetSelectionEventSender {
         entity: Entity,
         asset_selection_event_variant: AssetSelectionEventCommand,
     ) {
+        // Entity that sends the event is not the `AssetSelectionHighlightMain` entity, but its
+        // `TargetObject` is.
+        let ash_entity = ir_app_event_sender_system_data
+            .target_objects
+            .get(entity)
+            .map(|target_object| target_object.entity)
+            .expect("Expected `AssetSelectionEventCommand` target entity to exist.");
+
         let asset_selection_event = match asset_selection_event_variant {
             AssetSelectionEventCommand::Return => {
                 if Self::asset_selection_return_preconditions_met(ir_app_event_sender_system_data) {
@@ -32,28 +40,28 @@ impl IrAssetSelectionEventSender {
             }
             AssetSelectionEventCommand::Join => {
                 ir_app_event_sender_system_data
-                    .ash_statuses
-                    .insert(entity, AshStatus::AssetSelect)
-                    .expect("Failed to insert `AshStatus` component.");
+                    .asset_selection_statuses
+                    .insert(ash_entity, AssetSelectionStatus::InProgress)
+                    .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, entity)
+                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
                     .map(|controller_id| AssetSelectionEvent::Join { controller_id })
             }
             AssetSelectionEventCommand::Leave => {
                 ir_app_event_sender_system_data
-                    .ash_statuses
-                    .insert(entity, AshStatus::Inactive)
-                    .expect("Failed to insert `AshStatus` component.");
+                    .asset_selection_statuses
+                    .insert(ash_entity, AssetSelectionStatus::Inactive)
+                    .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, entity)
+                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
                     .map(|controller_id| AssetSelectionEvent::Leave { controller_id })
             }
             AssetSelectionEventCommand::Switch(direction) => {
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, entity)
+                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
                     .and_then(|controller_id| {
                         Self::asset_selection(
                             ir_app_event_sender_system_data,
-                            entity,
+                            ash_entity,
                             Some(direction),
                         )
                         .map(|asset_selection| (controller_id, asset_selection))
@@ -67,13 +75,13 @@ impl IrAssetSelectionEventSender {
             }
             AssetSelectionEventCommand::Select => {
                 ir_app_event_sender_system_data
-                    .ash_statuses
-                    .insert(entity, AshStatus::Ready)
-                    .expect("Failed to insert `AshStatus` component.");
+                    .asset_selection_statuses
+                    .insert(ash_entity, AssetSelectionStatus::Ready)
+                    .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, entity)
+                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
                     .and_then(|controller_id| {
-                        Self::asset_selection(ir_app_event_sender_system_data, entity, None)
+                        Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None)
                             .map(|asset_selection| (controller_id, asset_selection))
                     })
                     .map(
@@ -85,17 +93,17 @@ impl IrAssetSelectionEventSender {
             }
             AssetSelectionEventCommand::Deselect => {
                 ir_app_event_sender_system_data
-                    .ash_statuses
-                    .insert(entity, AshStatus::AssetSelect)
-                    .expect("Failed to insert `AshStatus` component.");
+                    .asset_selection_statuses
+                    .insert(ash_entity, AssetSelectionStatus::InProgress)
+                    .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, entity)
+                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
                     .map(|controller_id| AssetSelectionEvent::Deselect { controller_id })
             }
             AssetSelectionEventCommand::Confirm => {
                 if Self::asset_selection_confirm_preconditions_met(
                     ir_app_event_sender_system_data,
-                    entity,
+                    ash_entity,
                 ) {
                     Some(AssetSelectionEvent::Confirm)
                 } else {
@@ -113,13 +121,16 @@ impl IrAssetSelectionEventSender {
     }
 
     fn asset_selection_return_preconditions_met(
-        IrAppEventSenderSystemData { ash_statuses, .. }: &IrAppEventSenderSystemData,
+        IrAppEventSenderSystemData {
+            asset_selection_statuses,
+            ..
+        }: &IrAppEventSenderSystemData,
     ) -> bool {
         // If all widgets are inactive, return to previous `State`.
-        ash_statuses
+        asset_selection_statuses
             .join()
             .copied()
-            .all(|ash_status| ash_status == AshStatus::Inactive)
+            .all(|asset_selection_status| asset_selection_status == AssetSelectionStatus::Inactive)
     }
 
     fn asset_selection(
@@ -131,18 +142,15 @@ impl IrAssetSelectionEventSender {
             asset_selections,
             ..
         }: &mut IrAppEventSenderSystemData,
-        entity: Entity,
+        ash_entity: Entity,
         switch_direction: Option<AssetSwitch>,
     ) -> Option<AssetSelection> {
         // Look up the `TargetObject` whose entity is the `AssetSelectionCell`
         // Then lookup the `AssetSelection` for that entity.
         let asset_selection = target_objects
-            .get(entity)
-            // Entity that sends the event is not the `AssetSelectionHighlightMain` entity, but its
-            // `TargetObject` is.
-            // Then the `TargetObject` of the `AssetSelectionHighlightMain` entity is the
+            .get(ash_entity)
+            // The `TargetObject` of the `AssetSelectionHighlightMain` entity is the
             // `AssetSelectionCell`.
-            .and_then(|target_object| target_objects.get(target_object.entity).copied())
             .and_then(|target_object| asset_selections.get(target_object.entity).copied());
 
         if let Some(asset_selection) = asset_selection {
@@ -167,7 +175,7 @@ impl IrAssetSelectionEventSender {
             IrAppEventSender::log_component_missing_error(
                 asset_ids,
                 asset_id_mappings,
-                entity,
+                ash_entity,
                 "AssetSelection",
             );
             None
@@ -211,8 +219,11 @@ impl IrAssetSelectionEventSender {
     }
 
     fn asset_selection_confirm_preconditions_met(
-        IrAppEventSenderSystemData { ash_statuses, .. }: &IrAppEventSenderSystemData,
-        entity: Entity,
+        IrAppEventSenderSystemData {
+            asset_selection_statuses,
+            ..
+        }: &IrAppEventSenderSystemData,
+        ash_entity: Entity,
     ) -> bool {
         // If:
         //
@@ -221,20 +232,26 @@ impl IrAssetSelectionEventSender {
         // * There are at least 2 `Ready` widgets`.
         //
         // Then proceed to next `State`.
-        let ash_status = ash_statuses.get(entity).copied();
+        let asset_selection_status = asset_selection_statuses.get(ash_entity).copied();
 
-        let all_ready_or_inactive = ash_statuses
+        let all_ready_or_inactive =
+            asset_selection_statuses
+                .join()
+                .copied()
+                .all(|asset_selection_status| {
+                    asset_selection_status == AssetSelectionStatus::Ready
+                        || asset_selection_status == AssetSelectionStatus::Inactive
+                });
+
+        let at_least_two_players = asset_selection_statuses
             .join()
             .copied()
-            .all(|ash_status| ash_status == AshStatus::Ready || ash_status == AshStatus::Inactive);
-
-        let at_least_two_players = ash_statuses
-            .join()
-            .copied()
-            .filter(|ash_status| *ash_status == AshStatus::Ready)
+            .filter(|asset_selection_status| *asset_selection_status == AssetSelectionStatus::Ready)
             .count()
             >= 2;
 
-        ash_status == Some(AshStatus::Ready) && at_least_two_players && all_ready_or_inactive
+        asset_selection_status == Some(AssetSelectionStatus::Ready)
+            && at_least_two_players
+            && all_ready_or_inactive
     }
 }

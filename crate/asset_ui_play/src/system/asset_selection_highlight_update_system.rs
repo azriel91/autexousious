@@ -3,7 +3,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_ui_model::play::AssetSelectionHighlightMain;
+use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
 use chase_model::play::TargetObject;
 use derivative::Derivative;
 use derive_new::new;
@@ -28,9 +28,6 @@ pub struct AssetSelectionHighlightUpdateSystemData<'s> {
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
-    /// `AssetSelectionHighlightMain` components.
-    #[derivative(Debug = "ignore")]
-    pub asset_selection_highlight_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
     /// `AssetSelectionHighlightUpdateResources`.
     pub asset_selection_highlight_update_resources: AssetSelectionHighlightUpdateResources<'s>,
 }
@@ -42,6 +39,12 @@ pub struct AssetSelectionHighlightUpdateResources<'s> {
     /// `TargetObject` components.
     #[derivative(Debug = "ignore")]
     pub target_objects: WriteStorage<'s, TargetObject>,
+    /// `AssetSelectionHighlightMain` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_highlight_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
+    /// `AssetSelectionStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_statuses: ReadStorage<'s, AssetSelectionStatus>,
     /// `Siblings` components.
     #[derivative(Debug = "ignore")]
     pub siblingses: ReadStorage<'s, Siblings>,
@@ -57,37 +60,50 @@ impl AssetSelectionHighlightUpdateSystem {
     ) {
         let AssetSelectionHighlightUpdateResources {
             target_objects,
+            asset_selection_highlight_mains,
+            asset_selection_statuses,
             siblingses,
             siblings_verticals,
         } = asset_selection_highlight_update_resources;
-        let ash_entity = axis_move_event_data.entity;
-        let asset_display_cell_entity = target_objects
-            .get(ash_entity)
+
+        let ash_entity = target_objects
+            .get(axis_move_event_data.entity)
             .map(|target_object| target_object.entity);
 
-        if let Some(asset_display_cell_entity) = asset_display_cell_entity {
-            let move_direction = MoveDirection::from(axis_move_event_data);
+        if let Some(ash_entity) = ash_entity {
+            if asset_selection_highlight_mains.contains(ash_entity)
+                && asset_selection_statuses.get(ash_entity).copied()
+                    == Some(AssetSelectionStatus::InProgress)
+            {
+                let asset_display_cell_entity = target_objects
+                    .get(ash_entity)
+                    .map(|target_object| target_object.entity);
 
-            let asset_display_cell_sibling = match move_direction {
-                MoveDirection::None => None,
-                MoveDirection::Up => siblings_verticals
-                    .get(asset_display_cell_entity)
-                    .and_then(|siblings_vertical| siblings_vertical.up),
-                MoveDirection::Down => siblings_verticals
-                    .get(asset_display_cell_entity)
-                    .and_then(|siblings_vertical| siblings_vertical.down),
-                MoveDirection::Left => siblingses
-                    .get(asset_display_cell_entity)
-                    .and_then(|siblings| siblings.previous),
-                MoveDirection::Right => siblingses
-                    .get(asset_display_cell_entity)
-                    .and_then(|siblings| siblings.next),
-            };
+                if let Some(asset_display_cell_entity) = asset_display_cell_entity {
+                    let move_direction = MoveDirection::from(axis_move_event_data);
 
-            if let Some(asset_display_cell_sibling) = asset_display_cell_sibling {
-                target_objects
-                    .insert(ash_entity, TargetObject::new(asset_display_cell_sibling))
-                    .expect("Failed to insert `TargetObject` component.");
+                    let asset_display_cell_sibling = match move_direction {
+                        MoveDirection::None => None,
+                        MoveDirection::Up => siblings_verticals
+                            .get(asset_display_cell_entity)
+                            .and_then(|siblings_vertical| siblings_vertical.up),
+                        MoveDirection::Down => siblings_verticals
+                            .get(asset_display_cell_entity)
+                            .and_then(|siblings_vertical| siblings_vertical.down),
+                        MoveDirection::Left => siblingses
+                            .get(asset_display_cell_entity)
+                            .and_then(|siblings| siblings.previous),
+                        MoveDirection::Right => siblingses
+                            .get(asset_display_cell_entity)
+                            .and_then(|siblings| siblings.next),
+                    };
+
+                    if let Some(asset_display_cell_sibling) = asset_display_cell_sibling {
+                        target_objects
+                            .insert(ash_entity, TargetObject::new(asset_display_cell_sibling))
+                            .expect("Failed to insert `TargetObject` component.");
+                    }
+                }
             }
         }
     }
@@ -100,7 +116,6 @@ impl<'s> System<'s> for AssetSelectionHighlightUpdateSystem {
         &mut self,
         AssetSelectionHighlightUpdateSystemData {
             control_input_ec,
-            asset_selection_highlight_mains,
             mut asset_selection_highlight_update_resources,
         }: Self::SystemData,
     ) {
@@ -112,11 +127,7 @@ impl<'s> System<'s> for AssetSelectionHighlightUpdateSystem {
             .read(control_input_event_rid)
             .filter_map(|ev| {
                 if let ControlInputEvent::AxisMoved(axis_move_event_data) = ev {
-                    if asset_selection_highlight_mains.contains(axis_move_event_data.entity) {
-                        Some(axis_move_event_data)
-                    } else {
-                        None
-                    }
+                    Some(axis_move_event_data)
                 } else {
                     None
                 }
