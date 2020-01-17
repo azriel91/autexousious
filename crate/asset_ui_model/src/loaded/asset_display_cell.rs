@@ -63,10 +63,9 @@ impl<'s> ItemComponent<'s> for AssetDisplayCell {
 
             // TODO: Look up sequence ID for default sequence ID for the asset type.
             let sequence_id = SequenceId::new(0);
-            let half_cell_width = f32::from(
-                i16::try_from(self.cell_size.w >> 1)
-                    .expect("Failed to convert `cell_size.w` to `i16`."),
-            );
+            let half_cell_width = i16::try_from(self.cell_size.w >> 1)
+                .expect("Failed to convert `cell_size.w` to `i16`.");
+            let half_cell_width = f32::from(half_cell_width);
 
             let spawn = Spawn {
                 object: self.asset_id,
