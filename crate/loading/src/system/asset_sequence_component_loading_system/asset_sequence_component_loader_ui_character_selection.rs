@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use std::{convert::TryFrom, iter};
 
 use amethyst::ecs::{Builder, WorldExt};
 use asset_model::{
@@ -216,11 +216,17 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         // `AssetId`s for the asset type to display.
         //
         // We want to create an item for each of these in the correct place in the grid.
-        let asset_display_cell_item_ids = asset_type_mappings
-            .iter_ids(&AssetType::Object(T::default().into()))
-            .copied()
+        let asset_display_cell_item_ids = iter::once(AssetSelectionCell::Random)
+            .chain(
+                asset_type_mappings
+                    .iter_ids(&AssetType::Object(T::default().into()))
+                    .copied()
+                    .map(|asset_id| AssetSelectionCell::Id {
+                        display_cell: AssetDisplayCell { asset_id },
+                    }),
+            )
             .enumerate()
-            .map(|(grid_index, asset_id)| {
+            .map(|(grid_index, asset_selection_cell)| {
                 let column_index = grid_index % column_count;
                 let column_index = u32::try_from(column_index).unwrap_or_else(|e| {
                     panic!("Failed to convert `column_index` to `u32`. Error: {}", e)
@@ -250,9 +256,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                 let item_entity = asset_world
                     .create_entity()
                     .with(position_asset_cell)
-                    .with(AssetSelectionCell {
-                        display_cell: AssetDisplayCell { asset_id },
-                    })
+                    .with(asset_selection_cell)
                     .build();
                 ItemId::new(item_entity)
             })

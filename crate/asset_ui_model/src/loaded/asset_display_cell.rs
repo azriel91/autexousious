@@ -5,7 +5,6 @@ use amethyst::{
 use asset_model::{loaded::AssetId, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
-use ui_model_spi::play::WidgetStatus;
 
 /// Display cell for a particular asset.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
@@ -22,9 +21,6 @@ pub struct AssetDisplayCellSystemData<'s> {
     /// `AssetDisplayCell` components.
     #[derivative(Debug = "ignore")]
     pub asset_display_cells: WriteStorage<'s, AssetDisplayCell>,
-    /// `WidgetStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub widget_statuses: WriteStorage<'s, WidgetStatus>,
 }
 
 impl<'s> ItemComponent<'s> for AssetDisplayCell {
@@ -33,18 +29,12 @@ impl<'s> ItemComponent<'s> for AssetDisplayCell {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let AssetDisplayCellSystemData {
             asset_display_cells,
-            widget_statuses,
         } = system_data;
 
         if !asset_display_cells.contains(entity) {
             asset_display_cells
                 .insert(entity, *self)
                 .expect("Failed to insert `AssetDisplayCell` component.");
-        }
-        if !widget_statuses.contains(entity) {
-            widget_statuses
-                .insert(entity, WidgetStatus::Idle)
-                .expect("Failed to insert `WidgetStatus` component.");
         }
     }
 }
