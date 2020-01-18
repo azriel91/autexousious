@@ -5,30 +5,31 @@ mod tests {
         Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication};
-    use asset_model::loaded::AssetIdMappings;
-    use assets_test::CHAR_BAT_SLUG;
-    use character_selection_model::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelectionEventArgs,
+    use asset_model::{
+        config::AssetSelectionEventArgs,
+        loaded::AssetIdMappings,
+        play::{AssetSelection, AssetSelectionEvent},
     };
+    use assets_test::CHAR_BAT_SLUG;
     use stdio_spi::{StdinMapper, StdioError};
 
-    use character_selection_stdio::CharacterSelectionEventStdinMapper;
+    use asset_selection_stdio::AssetSelectionEventStdinMapper;
 
     macro_rules! test_map_direct {
         ($test_name:ident, $variant:ident) => {
             #[test]
             fn $test_name() {
-                let args = CharacterSelectionEventArgs::$variant;
+                let args = AssetSelectionEventArgs::$variant;
                 let mut world = World::empty();
                 world.insert(AssetIdMappings::new());
 
-                let result = CharacterSelectionEventStdinMapper::map(
+                let result = AssetSelectionEventStdinMapper::map(
                     &Read::from(world.fetch::<AssetIdMappings>()),
                     args,
                 );
 
                 assert!(result.is_ok());
-                assert_eq!(CharacterSelectionEvent::$variant, result.unwrap())
+                assert_eq!(AssetSelectionEvent::$variant, result.unwrap())
             }
         };
     }
@@ -38,18 +39,18 @@ mod tests {
             #[test]
             fn $test_name() {
                 let controller_id = 0;
-                let args = CharacterSelectionEventArgs::$variant { controller_id };
+                let args = AssetSelectionEventArgs::$variant { controller_id };
                 let mut world = World::empty();
                 world.insert(AssetIdMappings::new());
 
-                let result = CharacterSelectionEventStdinMapper::map(
+                let result = AssetSelectionEventStdinMapper::map(
                     &Read::from(world.fetch::<AssetIdMappings>()),
                     args,
                 );
 
                 assert!(result.is_ok());
                 assert_eq!(
-                    CharacterSelectionEvent::$variant { controller_id },
+                    AssetSelectionEvent::$variant { controller_id },
                     result.unwrap()
                 )
             }
@@ -57,30 +58,30 @@ mod tests {
     }
 
     macro_rules! test_map_with_slug {
-        ($test_name:ident, $variant:ident, $slug_str:expr, $character_selection_fn:expr) => {
+        ($test_name:ident, $variant:ident, $slug_str:expr, $asset_selection_fn:expr) => {
             #[test]
             fn $test_name() -> Result<(), Error> {
                 AutexousiousApplication::config_base()
                     .with_assertion(|world| {
                         let controller_id = 1;
-                        let args = CharacterSelectionEventArgs::$variant {
+                        let args = AssetSelectionEventArgs::$variant {
                             controller_id,
                             selection: $slug_str,
                         };
                         let asset_id_mappings = world.read_resource::<AssetIdMappings>();
 
-                        let result = CharacterSelectionEventStdinMapper::map(
+                        let result = AssetSelectionEventStdinMapper::map(
                             &Read::from(asset_id_mappings),
                             args,
                         );
 
                         assert!(result.is_ok());
 
-                        let character_selection = $character_selection_fn(&*world);
+                        let asset_selection = $asset_selection_fn(&*world);
                         assert_eq!(
-                            CharacterSelectionEvent::$variant {
+                            AssetSelectionEvent::$variant {
                                 controller_id,
-                                character_selection
+                                asset_selection
                             },
                             result.unwrap()
                         )
@@ -96,14 +97,14 @@ mod tests {
             fn $test_name() {
                 let controller_id = 0;
                 let selection = "invalid".to_string();
-                let args = CharacterSelectionEventArgs::$variant {
+                let args = AssetSelectionEventArgs::$variant {
                     controller_id,
                     selection,
                 };
                 let mut world = World::empty();
                 world.insert(AssetIdMappings::new());
 
-                let result = CharacterSelectionEventStdinMapper::map(
+                let result = AssetSelectionEventStdinMapper::map(
                     &Read::from(world.fetch::<AssetIdMappings>()),
                     args,
                 );
@@ -122,14 +123,14 @@ mod tests {
             fn $test_name() {
                 let controller_id = 0;
                 let selection = "test/non_existent".to_string();
-                let args = CharacterSelectionEventArgs::$variant {
+                let args = AssetSelectionEventArgs::$variant {
                     controller_id,
                     selection,
                 };
                 let mut world = World::empty();
                 world.insert(AssetIdMappings::new());
 
-                let result = CharacterSelectionEventStdinMapper::map(
+                let result = AssetSelectionEventStdinMapper::map(
                     &Read::from(world.fetch::<AssetIdMappings>()),
                     args,
                 );
@@ -159,14 +160,14 @@ mod tests {
         CHAR_BAT_SLUG.to_string(),
         |world| {
             let asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
-            CharacterSelection::Id(asset_id)
+            AssetSelection::Id(asset_id)
         }
     );
     test_map_with_slug!(
         maps_select_random_event,
         Select,
         String::from("random"),
-        |_| CharacterSelection::Random
+        |_| AssetSelection::Random
     );
     test_map_with_slug!(
         maps_switch_id_event,
@@ -174,14 +175,14 @@ mod tests {
         CHAR_BAT_SLUG.to_string(),
         |world| {
             let asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
-            CharacterSelection::Id(asset_id)
+            AssetSelection::Id(asset_id)
         }
     );
     test_map_with_slug!(
         maps_switch_random_event,
         Switch,
         String::from("random"),
-        |_| CharacterSelection::Random
+        |_| AssetSelection::Random
     );
 
     test_map_with_controller_id!(maps_join_event, Join);
@@ -190,7 +191,7 @@ mod tests {
     test_map_direct!(maps_return_event, Return);
     test_map_direct!(maps_confirm_event, Confirm);
 
-    fn expect_err_msg(result: Result<CharacterSelectionEvent, Error>, expected: &str) {
+    fn expect_err_msg(result: Result<AssetSelectionEvent, Error>, expected: &str) {
         assert!(result.is_err());
         if let Some(stdio_error) = result
             .unwrap_err()

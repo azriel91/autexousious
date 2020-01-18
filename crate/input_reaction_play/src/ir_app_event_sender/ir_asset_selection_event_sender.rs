@@ -22,13 +22,15 @@ impl IrAssetSelectionEventSender {
         entity: Entity,
         asset_selection_event_variant: AssetSelectionEventCommand,
     ) {
-        // Entity that sends the event is not the `AssetSelectionHighlightMain` entity, but its
-        // `TargetObject` is.
+        // For `CharacterSelectionWidget` entities, `entity` is the `CswMain` entity.
+        //
+        // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
+        // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
         let ash_entity = ir_app_event_sender_system_data
             .target_objects
             .get(entity)
             .map(|target_object| target_object.entity)
-            .expect("Expected `AssetSelectionEventCommand` target entity to exist.");
+            .unwrap_or(entity);
 
         let asset_selection_event = match asset_selection_event_variant {
             AssetSelectionEventCommand::Return => {

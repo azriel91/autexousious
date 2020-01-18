@@ -11,7 +11,7 @@ mod tests {
         DataInit, GameData, GameDataBuilder, State, StateData, Trans,
     };
     use application_event::AppEvent;
-    use character_selection_model::CharacterSelectionEvent;
+    use asset_model::play::AssetSelectionEvent;
     use rayon::ThreadPoolBuilder;
 
     use application_state::{AppState, AppStateBuilder, HookFn, HookableFn};
@@ -47,7 +47,7 @@ mod tests {
     fn delegates_handle_event() {
         let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
 
-        let event = AppEvent::CharacterSelection(CharacterSelectionEvent::Confirm);
+        let event = AppEvent::AssetSelection(AssetSelectionEvent::Confirm);
 
         state.handle_event(StateData::new(&mut world, &mut game_data), event);
 

@@ -10,6 +10,6 @@ frames:
       press_button:
         button: { Key: "LAlt" }
         next: "walk"
-        events: [{ character_selection: "join" }]
+        events: [{ asset_selection: "join" }]
 
   - {}

@@ -1,5 +1,4 @@
 mod ir_asset_selection_event_sender;
-mod ir_character_selection_event_sender;
 
 use amethyst::ecs::{Entity, ReadStorage};
 use asset_model::loaded::{AssetId, AssetIdMappings};
@@ -14,10 +13,7 @@ use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventVari
 
 use crate::IrAppEventSenderSystemData;
 
-use self::{
-    ir_asset_selection_event_sender::IrAssetSelectionEventSender,
-    ir_character_selection_event_sender::IrCharacterSelectionEventSender,
-};
+use self::ir_asset_selection_event_sender::IrAssetSelectionEventSender;
 
 /// Maps `InputReactionAppEvent`s to the actual event and sends it to its event channel.
 #[derive(Debug)]
@@ -44,13 +40,6 @@ impl IrAppEventSender {
                     ir_app_event_sender_system_data,
                     entity,
                     asset_selection_event_variant,
-                );
-            }
-            InputReactionAppEvent::CharacterSelection(character_selection_event_variant) => {
-                IrCharacterSelectionEventSender::handle_event(
-                    ir_app_event_sender_system_data,
-                    entity,
-                    character_selection_event_variant,
                 );
             }
             InputReactionAppEvent::ControlSettings(control_settings_event) => {

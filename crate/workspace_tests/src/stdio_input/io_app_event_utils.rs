@@ -35,10 +35,10 @@ mod tests {
         assert_eq!(
             // kcov-ignore-end
             Ok(Some((
-                AppEventVariant::CharacterSelection,
-                vec!["character_selection".to_string(), "confirm".to_string()]
+                AppEventVariant::AssetSelection,
+                vec!["asset_selection".to_string(), "confirm".to_string()]
             ))),
-            IoAppEventUtils::input_to_variant_and_tokens("character_selection confirm")
+            IoAppEventUtils::input_to_variant_and_tokens("asset_selection confirm")
         );
     }
 

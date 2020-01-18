@@ -2,8 +2,7 @@ use amethyst::{
     ecs::{storage::NullStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::ItemComponent;
-use character_selection_model::CharacterSelection;
+use asset_model::{play::AssetSelection, ItemComponent};
 use derivative::Derivative;
 
 /// Marks an entity as the main character selection widget entity.
@@ -18,9 +17,9 @@ pub struct CswMainSystemData<'s> {
     /// `CswMain` components.
     #[derivative(Debug = "ignore")]
     pub csw_mains: WriteStorage<'s, CswMain>,
-    /// `CharacterSelection` components.
+    /// `AssetSelection` components.
     #[derivative(Debug = "ignore")]
-    pub character_selections: WriteStorage<'s, CharacterSelection>,
+    pub asset_selections: WriteStorage<'s, AssetSelection>,
 }
 
 impl<'s> ItemComponent<'s> for CswMain {
@@ -29,7 +28,7 @@ impl<'s> ItemComponent<'s> for CswMain {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let CswMainSystemData {
             csw_mains,
-            character_selections,
+            asset_selections,
         } = system_data;
 
         if csw_mains.get(entity).is_none() {
@@ -37,10 +36,10 @@ impl<'s> ItemComponent<'s> for CswMain {
                 .insert(entity, CswMain)
                 .expect("Failed to insert `CswMain` component.");
         }
-        if character_selections.get(entity).is_none() {
-            character_selections
-                .insert(entity, CharacterSelection::Random)
-                .expect("Failed to insert `CharacterSelection` component.");
+        if asset_selections.get(entity).is_none() {
+            asset_selections
+                .insert(entity, AssetSelection::Random)
+                .expect("Failed to insert `AssetSelection` component.");
         }
     }
 }

@@ -6,9 +6,9 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
+use asset_model::play::AssetSelectionEvent;
 use character_selection_model::{
-    CharacterSelectionEntity, CharacterSelectionEvent, CharacterSelections,
-    CharacterSelectionsStatus,
+    CharacterSelectionEntity, CharacterSelections, CharacterSelectionsStatus,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -103,14 +103,14 @@ where
         data: StateData<'_, GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let AppEvent::CharacterSelection(character_selection_event) = event {
+        if let AppEvent::AssetSelection(asset_selection_event) = event {
             debug!(
-                "Received character_selection_event: {:?}",
-                character_selection_event
+                "Received asset_selection_event: {:?}",
+                asset_selection_event
             );
-            match character_selection_event {
-                CharacterSelectionEvent::Return => Trans::Pop,
-                CharacterSelectionEvent::Confirm => {
+            match asset_selection_event {
+                AssetSelectionEvent::Return => Trans::Pop,
+                AssetSelectionEvent::Confirm => {
                     let character_selections = data.world.read_resource::<CharacterSelections>();
                     debug!(
                         "character_selections: `{:?}`",

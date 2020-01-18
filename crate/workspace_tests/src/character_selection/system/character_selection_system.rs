@@ -15,10 +15,9 @@ mod tests {
     use asset_model::{
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetTypeMappings},
+        play::{AssetSelection, AssetSelectionEvent},
     };
-    use character_selection_model::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelections,
-    };
+    use character_selection_model::CharacterSelections;
     use game_input_model::ControlBindings;
     use object_type::ObjectType;
 
@@ -29,9 +28,9 @@ mod tests {
         run_test(
             SetupParams {
                 with_character_selection_initial: false,
-                character_selection_event_fn: |asset_id| CharacterSelectionEvent::Select {
+                asset_selection_event_fn: |asset_id| AssetSelectionEvent::Select {
                     controller_id: 123,
-                    character_selection: CharacterSelection::Id(asset_id),
+                    asset_selection: AssetSelection::Id(asset_id),
                 },
             },
             ExpectedParams {
@@ -45,9 +44,9 @@ mod tests {
         run_test(
             SetupParams {
                 with_character_selection_initial: true,
-                character_selection_event_fn: |asset_id| CharacterSelectionEvent::Select {
+                asset_selection_event_fn: |asset_id| AssetSelectionEvent::Select {
                     controller_id: 123,
-                    character_selection: CharacterSelection::Id(asset_id),
+                    asset_selection: AssetSelection::Id(asset_id),
                 },
             },
             ExpectedParams {
@@ -61,9 +60,7 @@ mod tests {
         run_test(
             SetupParams {
                 with_character_selection_initial: false,
-                character_selection_event_fn: |_| CharacterSelectionEvent::Deselect {
-                    controller_id: 123,
-                },
+                asset_selection_event_fn: |_| AssetSelectionEvent::Deselect { controller_id: 123 },
             },
             ExpectedParams {
                 character_selection_fn: |_| None,
@@ -74,7 +71,7 @@ mod tests {
     fn run_test(
         SetupParams {
             with_character_selection_initial,
-            character_selection_event_fn,
+            asset_selection_event_fn,
         }: SetupParams,
         ExpectedParams {
             character_selection_fn,
@@ -116,8 +113,8 @@ mod tests {
                         .insert(asset_id_zero, AssetType::Object(ObjectType::Character));
                 }
 
-                let character_selection_event = character_selection_event_fn(asset_id_zero);
-                send_event(world, character_selection_event);
+                let asset_selection_event = asset_selection_event_fn(asset_id_zero);
+                send_event(world, asset_selection_event);
             })
             .with_assertion(move |world| {
                 let asset_id = *world.read_resource::<AssetId>();
@@ -133,15 +130,15 @@ mod tests {
             .run_isolated()
     }
 
-    fn send_event(world: &mut World, event: CharacterSelectionEvent) {
+    fn send_event(world: &mut World, event: AssetSelectionEvent) {
         world
-            .write_resource::<EventChannel<CharacterSelectionEvent>>()
+            .write_resource::<EventChannel<AssetSelectionEvent>>()
             .single_write(event);
     }
 
     struct SetupParams {
         with_character_selection_initial: bool,
-        character_selection_event_fn: fn(AssetId) -> CharacterSelectionEvent,
+        asset_selection_event_fn: fn(AssetId) -> AssetSelectionEvent,
     }
 
     struct ExpectedParams {

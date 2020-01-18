@@ -446,7 +446,6 @@ version = "0.16.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
  "asset_model 0.16.0",
- "character_selection_model 0.16.0",
  "control_settings_model 0.16.0",
  "derive_more 0.99.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.16.0",
@@ -659,6 +658,8 @@ dependencies = [
  "object_type 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -689,6 +690,18 @@ dependencies = [
  "sprite_model 0.16.0",
  "ui_label_model 0.16.0",
  "ui_menu_item_model 0.16.0",
+]
+
+[[package]]
+name = "asset_selection_stdio"
+version = "0.17.0"
+dependencies = [
+ "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "application_event 0.16.0",
+ "asset_model 0.16.0",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input_model 0.16.0",
+ "stdio_spi 0.16.0",
 ]
 
 [[package]]
@@ -1106,23 +1119,8 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
- "structopt 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "structopt-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "character_selection_stdio"
-version = "0.16.0"
-dependencies = [
- "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
- "application_event 0.16.0",
- "asset_model 0.16.0",
- "character_selection_model 0.16.0",
- "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input_model 0.16.0",
- "stdio_spi 0.16.0",
 ]
 
 [[package]]
@@ -1170,6 +1168,8 @@ name = "character_selection_ui_play"
 version = "0.16.0"
 dependencies = [
  "amethyst 0.13.2 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.16.0",
+ "asset_ui_model 0.17.0",
  "character_selection_model 0.16.0",
  "character_selection_ui_model 0.16.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5794,13 +5794,13 @@ dependencies = [
  "assert_cmd 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "asset_model 0.16.0",
  "asset_play 0.16.0",
+ "asset_selection_stdio 0.17.0",
  "asset_ui_play 0.17.0",
  "audio_loading 0.16.0",
  "background_loading 0.16.0",
  "camera_play 0.16.0",
  "character_loading 0.16.0",
  "character_prefab 0.16.0",
- "character_selection_stdio 0.16.0",
  "character_selection_ui_play 0.16.0",
  "collision_audio_loading 0.16.0",
  "collision_loading 0.16.0",
@@ -5913,6 +5913,7 @@ dependencies = [
  "asset_loading 0.16.0",
  "asset_model 0.16.0",
  "asset_play 0.16.0",
+ "asset_selection_stdio 0.17.0",
  "asset_ui_model 0.17.0",
  "assets_test 0.16.0",
  "audio_loading 0.16.0",
@@ -5928,7 +5929,6 @@ dependencies = [
  "character_prefab 0.16.0",
  "character_selection 0.16.0",
  "character_selection_model 0.16.0",
- "character_selection_stdio 0.16.0",
  "character_selection_ui 0.16.0",
  "character_selection_ui_model 0.16.0",
  "charge_model 0.16.0",

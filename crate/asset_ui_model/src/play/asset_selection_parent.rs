@@ -1,7 +1,7 @@
 use amethyst::ecs::{storage::VecStorage, Component, Entity};
 use derive_new::new;
 
-/// Links a child entity to a parent entity that has a `AssetSelection` component.
+/// Links a child entity to a parent entity that has an `AssetSelection` component.
 ///
 /// This component should be attached to the child entity.
 ///

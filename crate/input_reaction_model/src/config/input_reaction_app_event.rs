@@ -1,5 +1,4 @@
 use asset_model::config::AssetSelectionEventCommand;
-use character_selection_model::config::CharacterSelectionEventCommand;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_mode_selection_model::GameModeSelectionEventArgs;
@@ -18,8 +17,6 @@ use serde::{Deserialize, Serialize};
 pub enum InputReactionAppEvent {
     /// `asset_selection` events.
     AssetSelection(AssetSelectionEventCommand),
-    /// `character_selection` events.
-    CharacterSelection(CharacterSelectionEventCommand),
     /// `control_settings` events.
     ControlSettings(ControlSettingsEvent),
     /// `game_mode_selection` events.

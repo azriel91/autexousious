@@ -1,6 +1,7 @@
 //! Types representing asset configuration.
 
 pub use self::{
+    asset_selection_event_args::AssetSelectionEventArgs,
     asset_selection_event_command::AssetSelectionEventCommand,
     asset_slug::{AssetSlug, AssetSlugBuilder},
     asset_slug_build_error::AssetSlugBuildError,
@@ -11,6 +12,7 @@ pub use self::{
     index::{AssetIndex, AssetRecord},
 };
 
+mod asset_selection_event_args;
 mod asset_selection_event_command;
 mod asset_slug;
 mod asset_slug_build_error;

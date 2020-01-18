@@ -5,12 +5,12 @@ mod test {
     use asset_model::loaded::AssetIdMappings;
     use stdio_spi::VariantAndTokens;
 
-    use character_selection_stdio::CharacterSelectionStdioBundle;
+    use asset_selection_stdio::AssetSelectionStdioBundle;
 
     #[test]
     fn bundle_should_add_mapper_system_to_dispatcher() -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_bundle(CharacterSelectionStdioBundle::new())
+            .with_bundle(AssetSelectionStdioBundle::new())
             // kcov-ignore-start
             .with_effect(|world| {
                 world.read_resource::<EventChannel<VariantAndTokens>>();

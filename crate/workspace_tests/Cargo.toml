@@ -22,6 +22,7 @@ asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 asset_play = { path = "../asset_play" }
+asset_selection_stdio = { path = "../asset_selection_stdio" }
 asset_ui_model = { path = "../asset_ui_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
@@ -37,7 +38,6 @@ character_play = { path = "../character_play" }
 character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
-character_selection_stdio = { path = "../character_selection_stdio" }
 character_selection_ui = { path = "../character_selection_ui" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 charge_model = { path = "../charge_model" }
@@ -117,8 +117,8 @@ spawn_play = { path = "../spawn_play" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 sprite_play = { path = "../sprite_play" }
-state_registry = { path = "../state_registry" }
 state_play = { path = "../state_play" }
+state_registry = { path = "../state_registry" }
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }

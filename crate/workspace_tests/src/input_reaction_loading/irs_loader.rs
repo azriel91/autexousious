@@ -13,11 +13,11 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use application::IoUtils;
+    use asset_model::config::AssetSelectionEventCommand;
     use character_model::{
         config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},
     };
-    use character_selection_model::config::CharacterSelectionEventCommand;
     use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
     use input_reaction_model::{
@@ -466,8 +466,8 @@ mod tests {
     // Should overwrite sequence input reactions.
     fn expected_input_reactions_2() -> CharacterInputReactions {
         let mut events = InputReactionAppEvents::default();
-        events.push(InputReactionAppEvent::CharacterSelection(
-            CharacterSelectionEventCommand::Join,
+        events.push(InputReactionAppEvent::AssetSelection(
+            AssetSelectionEventCommand::Join,
         ));
 
         InputReactions::new(vec![InputReaction {

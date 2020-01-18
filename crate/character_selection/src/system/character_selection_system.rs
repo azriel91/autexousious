@@ -3,8 +3,12 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{config::AssetType, loaded::AssetTypeMappings};
-use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
+use asset_model::{
+    config::AssetType,
+    loaded::AssetTypeMappings,
+    play::{AssetSelection, AssetSelectionEvent},
+};
+use character_selection_model::CharacterSelections;
 use derivative::Derivative;
 use derive_new::new;
 use object_type::ObjectType;
@@ -12,17 +16,17 @@ use object_type::ObjectType;
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, new)]
 pub struct CharacterSelectionSystem {
-    /// Reader ID for the `CharacterSelectionEvent` event channel.
+    /// Reader ID for the `AssetSelectionEvent` event channel.
     #[new(default)]
-    character_selection_event_rid: Option<ReaderId<CharacterSelectionEvent>>,
+    asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterSelectionSystemData<'s> {
-    /// `CharacterSelectionEvent` channel.
+    /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub character_selection_ec: Read<'s, EventChannel<CharacterSelectionEvent>>,
+    pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
@@ -37,25 +41,25 @@ impl<'s> System<'s> for CharacterSelectionSystem {
     fn run(
         &mut self,
         CharacterSelectionSystemData {
-            character_selection_ec,
+            asset_selection_ec,
             asset_type_mappings,
             mut character_selections,
         }: Self::SystemData,
     ) {
-        character_selection_ec
+        asset_selection_ec
             .read(
-                self.character_selection_event_rid
+                self.asset_selection_event_rid
                     .as_mut()
-                    .expect("Expected `character_selection_event_rid` to be set."),
+                    .expect("Expected `asset_selection_event_rid` to be set."),
             )
             .for_each(|ev| match ev {
-                CharacterSelectionEvent::Select {
+                AssetSelectionEvent::Select {
                     controller_id,
-                    character_selection,
+                    asset_selection,
                 } => {
-                    let asset_id = match character_selection {
-                        CharacterSelection::Id(asset_id) => *asset_id,
-                        CharacterSelection::Random => {
+                    let asset_id = match asset_selection {
+                        AssetSelection::Id(asset_id) => *asset_id,
+                        AssetSelection::Random => {
                             // TODO: Implement Random
                             // TODO: <https://gitlab.com/azriel91/autexousious/issues/137>
                             asset_type_mappings
@@ -69,7 +73,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                         .selections
                         .insert(*controller_id, asset_id);
                 }
-                CharacterSelectionEvent::Deselect { controller_id } => {
+                AssetSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
                 }
                 _ => {}
@@ -78,9 +82,9 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.character_selection_event_rid = Some(
+        self.asset_selection_event_rid = Some(
             world
-                .fetch_mut::<EventChannel<CharacterSelectionEvent>>()
+                .fetch_mut::<EventChannel<AssetSelectionEvent>>()
                 .register_reader(),
         );
     }

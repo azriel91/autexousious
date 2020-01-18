@@ -21,12 +21,12 @@ use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
+use asset_selection_stdio::AssetSelectionStdioBundle;
 use asset_ui_play::AssetSelectionHighlightUpdateSystem;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
-use character_selection_stdio::CharacterSelectionStdioBundle;
 use character_selection_ui_play::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
@@ -131,7 +131,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             ]))?
             .with_bundle(StdioInputBundle::new())?
             .with_bundle(StdioCommandStdioBundle::new())?
-            .with_bundle(CharacterSelectionStdioBundle::new())?
+            .with_bundle(AssetSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
