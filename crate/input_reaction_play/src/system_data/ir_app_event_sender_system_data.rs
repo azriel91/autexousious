@@ -8,7 +8,7 @@ use asset_model::{
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;
-use character_selection_ui_model::play::CswStatus;
+use character_selection_ui_model::play::{CswMain, CswStatus};
 use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
@@ -48,6 +48,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_selections: ReadStorage<'s, AssetSelection>,
 
+    /// `CswMain` components.
+    #[derivative(Debug = "ignore")]
+    pub csw_mains: ReadStorage<'s, CswMain>,
     /// `CswStatus` components.
     #[derivative(Debug = "ignore")]
     pub csw_statuses: WriteStorage<'s, CswStatus>,

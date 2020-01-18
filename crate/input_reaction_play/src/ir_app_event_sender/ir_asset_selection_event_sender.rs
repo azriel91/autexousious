@@ -26,11 +26,18 @@ impl IrAssetSelectionEventSender {
         //
         // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
         // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
-        let ash_entity = ir_app_event_sender_system_data
-            .target_objects
-            .get(entity)
-            .map(|target_object| target_object.entity)
-            .unwrap_or(entity);
+        let ash_entity = if ir_app_event_sender_system_data.csw_mains.contains(entity) {
+            entity
+        } else {
+            ir_app_event_sender_system_data
+                .target_objects
+                .get(entity)
+                .map(|target_object| target_object.entity)
+                .expect(
+                    "Expected `AssetSelectionHighlightMain` entity to have `TargetObject` \
+                    component.",
+                )
+        };
 
         let asset_selection_event = match asset_selection_event_variant {
             AssetSelectionEventCommand::Return => {
@@ -142,6 +149,7 @@ impl IrAssetSelectionEventSender {
             asset_type_mappings,
             target_objects,
             asset_selections,
+            csw_mains,
             ..
         }: &mut IrAppEventSenderSystemData,
         ash_entity: Entity,
@@ -149,11 +157,20 @@ impl IrAssetSelectionEventSender {
     ) -> Option<AssetSelection> {
         // Look up the `TargetObject` whose entity is the `AssetSelectionCell`
         // Then lookup the `AssetSelection` for that entity.
-        let asset_selection = target_objects
-            .get(ash_entity)
-            // The `TargetObject` of the `AssetSelectionHighlightMain` entity is the
-            // `AssetSelectionCell`.
-            .and_then(|target_object| asset_selections.get(target_object.entity).copied());
+        let asset_selection_entity = if csw_mains.contains(ash_entity) {
+            ash_entity
+        } else {
+            target_objects
+                .get(ash_entity)
+                .map(|target_object| target_object.entity)
+                .expect(
+                    "Expected `AssetSelectionHighlightMain` entity to have `TargetObject` \
+                    component.",
+                )
+        };
+        // The `TargetObject` of the `AssetSelectionHighlightMain` entity is the
+        // `AssetSelectionCell`.
+        let asset_selection = asset_selections.get(asset_selection_entity).copied();
 
         if let Some(asset_selection) = asset_selection {
             match switch_direction {
