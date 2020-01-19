@@ -11,9 +11,11 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
+asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 character_model = { path = "../character_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
+chase_model = { path = "../chase_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
@@ -23,6 +25,7 @@ input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
+object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }

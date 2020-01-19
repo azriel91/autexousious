@@ -15,12 +15,13 @@ application_state = { path = "../../crate/application_state" }
 application_ui = { path = "../../crate/application_ui" }
 asset_model = { path = "../../crate/asset_model" }
 asset_play = { path = "../../crate/asset_play" }
+asset_selection_stdio = { path = "../../crate/asset_selection_stdio" }
+asset_ui_play = { path = "../../crate/asset_ui_play" }
 audio_loading = { path = "../../crate/audio_loading" }
 background_loading = { path = "../../crate/background_loading" }
 camera_play = { path = "../../crate/camera_play" }
 character_loading = { path = "../../crate/character_loading" }
 character_prefab = { path = "../../crate/character_prefab" }
-character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 character_selection_ui_play = { path = "../../crate/character_selection_ui_play" }
 collision_audio_loading = { path = "../../crate/collision_audio_loading" }
 collision_loading = { path = "../../crate/collision_loading" }

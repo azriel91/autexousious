@@ -5,7 +5,6 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
     ui::{Anchor, UiText, UiTransform},
 };
-use application_menu::MenuItemWidgetState;
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::AssetIdMappings;
 use derivative::Derivative;
@@ -14,6 +13,7 @@ use game_mode_selection_model::GameModeSelectionEntity;
 use log::debug;
 use shrev_support::EventChannelExt;
 use state_registry::{StateId, StateIdUpdateEvent};
+use ui_model_spi::play::WidgetStatus;
 
 /// Visible for testing.
 pub const FONT_COLOUR_IDLE: [f32; 4] = [0.65, 0.65, 0.65, 1.];
@@ -47,9 +47,9 @@ pub struct GameModeSelectionWidgetUiSystemData<'s> {
     /// `Theme` resource.
     #[derivative(Debug = "ignore")]
     pub theme: ReadExpect<'s, Theme>,
-    /// `MenuItemWidgetState` components.
+    /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
-    pub menu_item_widget_states: WriteStorage<'s, MenuItemWidgetState>,
+    pub widget_statuses: WriteStorage<'s, WidgetStatus>,
     /// `UiTransform` components.
     #[derivative(Debug = "ignore")]
     pub ui_transforms: WriteStorage<'s, UiTransform>,
@@ -142,15 +142,15 @@ impl GameModeSelectionWidgetUiSystem {
 
     fn refresh_ui(
         &self,
-        menu_item_widget_states: &WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &WriteStorage<'_, WidgetStatus>,
         ui_texts: &mut WriteStorage<'_, UiText>,
     ) {
-        (menu_item_widget_states, ui_texts)
+        (widget_statuses, ui_texts)
             .join()
-            .for_each(|(menu_item_widget_state, ui_text)| {
-                ui_text.color = match menu_item_widget_state {
-                    MenuItemWidgetState::Idle => FONT_COLOUR_IDLE,
-                    MenuItemWidgetState::Active => FONT_COLOUR_ACTIVE,
+            .for_each(|(widget_status, ui_text)| {
+                ui_text.color = match widget_status {
+                    WidgetStatus::Idle => FONT_COLOUR_IDLE,
+                    WidgetStatus::Active => FONT_COLOUR_ACTIVE,
                 }
             });
     }
@@ -176,7 +176,7 @@ impl<'s> System<'s> for GameModeSelectionWidgetUiSystem {
         }
 
         self.refresh_ui(
-            &game_mode_selection_widget_ui_system_data.menu_item_widget_states,
+            &game_mode_selection_widget_ui_system_data.widget_statuses,
             &mut game_mode_selection_widget_ui_system_data.ui_texts,
         )
     }

@@ -1,2 +1,0 @@
-mod character_selection_event_stdin_mapper;
-mod character_selection_stdio_bundle;

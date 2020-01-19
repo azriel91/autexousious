@@ -11,8 +11,9 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
+use ui_model_spi::play::{Siblings, WidgetStatus};
 
-use crate::{MenuEvent, MenuItem, MenuItemWidgetState, Siblings};
+use crate::{MenuEvent, MenuItem};
 
 /// System that processes controller input and generates `MenuEvent<I>`s.
 #[derive(Debug, Default, new)]
@@ -40,9 +41,9 @@ where
     /// `MenuItem` components.
     #[derivative(Debug = "ignore")]
     pub menu_items: ReadStorage<'s, MenuItem<I>>,
-    /// `MenuItemWidgetState` components.
+    /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
-    pub menu_item_widget_states: WriteStorage<'s, MenuItemWidgetState>,
+    pub widget_statuses: WriteStorage<'s, WidgetStatus>,
     /// `Siblings` components.
     #[derivative(Debug = "ignore")]
     pub siblingses: ReadStorage<'s, Siblings>,
@@ -70,43 +71,43 @@ where
     I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn select_previous_menu_item(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
     ) {
         if let Some(previous_menu_item) = siblings.previous.as_ref() {
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(menu_item_entity)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Idle;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Idle;
             }
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(*previous_menu_item)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Active;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Active;
             }
         }
     }
 
     fn select_next_menu_item(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
     ) {
         if let Some(next_menu_item) = siblings.next.as_ref() {
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(menu_item_entity)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Idle;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Idle;
             }
             {
-                let menu_item_widget_state = menu_item_widget_states
+                let widget_status = widget_statuses
                     .get_mut(*next_menu_item)
-                    .expect("Expected `MenuItemWidgetState` component to exist.");
-                *menu_item_widget_state = MenuItemWidgetState::Active;
+                    .expect("Expected `WidgetStatus` component to exist.");
+                *widget_status = WidgetStatus::Active;
             }
         }
     }
@@ -115,20 +116,20 @@ where
         MenuItemWidgetInputResources {
             ref entities,
             ref menu_items,
-            ref mut menu_item_widget_states,
+            ref mut widget_statuses,
             ref siblingses,
             ref mut menu_ec,
         }: &mut MenuItemWidgetInputResources<I>,
         event: ControlInputEvent,
     ) {
-        // Need to get from `menu_item_widget_states` separately, so that we do not hold an
+        // Need to get from `widget_statuses` separately, so that we do not hold an
         // immutable reference. This will then allow us to pass it to lower level functions.
-        if let Some((menu_item_entity, siblings)) = (entities, siblingses)
+        if let Some((menu_item_entity, siblings, menu_item)) = (entities, siblingses, menu_items)
             .join()
-            .filter_map(|(entity, siblings)| {
-                if let Some(menu_item_widget_state) = menu_item_widget_states.get(entity) {
-                    if *menu_item_widget_state == MenuItemWidgetState::Active {
-                        return Some((entity, siblings));
+            .filter_map(|(entity, siblings, menu_item)| {
+                if let Some(widget_status) = widget_statuses.get(entity) {
+                    if *widget_status == WidgetStatus::Active {
+                        return Some((entity, siblings, menu_item));
                     }
                 }
                 None
@@ -137,18 +138,13 @@ where
         {
             match event {
                 ControlInputEvent::AxisMoved(axis_move_event_data) => Self::handle_axis_event(
-                    menu_item_widget_states,
+                    widget_statuses,
                     menu_item_entity,
                     siblings,
                     axis_move_event_data,
                 ),
                 ControlInputEvent::ControlActionPress(control_action_event_data) => {
-                    Self::handle_control_action_event(
-                        menu_items,
-                        menu_ec,
-                        menu_item_entity,
-                        control_action_event_data,
-                    )
+                    Self::handle_control_action_event(menu_ec, menu_item, control_action_event_data)
                 }
                 ControlInputEvent::ControlActionRelease(..) => {}
             }
@@ -156,44 +152,33 @@ where
     }
 
     fn handle_axis_event(
-        menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
+        widget_statuses: &mut WriteStorage<'_, WidgetStatus>,
         menu_item_entity: Entity,
         siblings: &Siblings,
         axis_move_event_data: AxisMoveEventData,
     ) {
-        let menu_item_widget_state = *menu_item_widget_states
+        let widget_status = *widget_statuses
             .get(menu_item_entity)
-            .expect("Expected `MenuItemWidgetState` component to exist.");
-        match (menu_item_widget_state, axis_move_event_data.axis) {
-            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value < 0. => {
-                Self::select_previous_menu_item(
-                    menu_item_widget_states,
-                    menu_item_entity,
-                    siblings,
-                );
+            .expect("Expected `WidgetStatus` component to exist.");
+        match (widget_status, axis_move_event_data.axis) {
+            (WidgetStatus::Active, Axis::Z) if axis_move_event_data.value < 0. => {
+                Self::select_previous_menu_item(widget_statuses, menu_item_entity, siblings);
             }
-            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value > 0. => {
-                Self::select_next_menu_item(menu_item_widget_states, menu_item_entity, siblings);
+            (WidgetStatus::Active, Axis::Z) if axis_move_event_data.value > 0. => {
+                Self::select_next_menu_item(widget_statuses, menu_item_entity, siblings);
             }
             _ => {}
         }
     }
 
     fn handle_control_action_event(
-        menu_items: &ReadStorage<'_, MenuItem<I>>,
         menu_ec: &mut EventChannel<MenuEvent<I>>,
-        menu_item_entity: Entity,
+        menu_item: &MenuItem<I>,
         control_action_event_data: ControlActionEventData,
     ) {
         let game_mode_selection_event = match control_action_event_data.control_action {
             ControlAction::Jump => Some(MenuEvent::Close),
-            ControlAction::Attack => {
-                let menu_item = menu_items
-                    .get(menu_item_entity)
-                    .expect("Expected `MenuItem` component to exist.");
-
-                Some(MenuEvent::Select(menu_item.index))
-            }
+            ControlAction::Attack => Some(MenuEvent::Select(menu_item.index)),
             _ => None,
         };
 

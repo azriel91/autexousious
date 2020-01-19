@@ -15,8 +15,6 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 serde = { version = "1.0.104", features = ["derive"] }
-structopt = "0.3.7"
-structopt-derive = "0.4.0"
 strum = "0.17.1"
 strum_macros = "0.17.1"
 

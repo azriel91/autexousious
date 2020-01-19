@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+* Character selection menu displays a grid of available characters. ([#190])
+
+[#190]: https://gitlab.com/azriel91/autexousious/issues/190
+
 ## 0.16.0 (2019-12-20)
 
 ### Added

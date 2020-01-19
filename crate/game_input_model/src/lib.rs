@@ -15,7 +15,7 @@
 
 pub use crate::{
     axis::Axis,
-    control_action::{Attack, ControlAction, Defend, Jump, Special},
+    control_action::ControlAction,
     control_args::ControlArgs,
     control_bindings::ControlBindings,
     control_input_event_args::ControlInputEventArgs,
@@ -28,6 +28,7 @@ pub use crate::{
 };
 
 pub mod config;
+pub mod play;
 
 mod axis;
 mod control_action;

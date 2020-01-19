@@ -9,9 +9,7 @@ doctest = false
 test = false
 
 [dependencies]
+enum_variant_type = "0.2.0"
+serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-default = []
-test-support = []

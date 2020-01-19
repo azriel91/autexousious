@@ -19,7 +19,8 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 log = "0.4.8"
 shrev_support = { path = "../shrev_support" }
 state_registry = { path = "../state_registry" }
-ui_audio_model = { path = "../../crate/ui_audio_model" }
+ui_audio_model = { path = "../ui_audio_model" }
+ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]

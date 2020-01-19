@@ -1,4 +1,4 @@
-use character_selection_model::config::CharacterSelectionEventCommand;
+use asset_model::config::AssetSelectionEventCommand;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_mode_selection_model::GameModeSelectionEventArgs;
@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Copy, Debug, Deserialize, From, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum InputReactionAppEvent {
-    /// `character_selection` events.
-    CharacterSelection(CharacterSelectionEventCommand),
+    /// `asset_selection` events.
+    AssetSelection(AssetSelectionEventCommand),
     /// `control_settings` events.
     ControlSettings(ControlSettingsEvent),
     /// `game_mode_selection` events.

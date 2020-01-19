@@ -5,7 +5,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use character_selection_model::CharacterSelectionEvent;
+use asset_model::play::AssetSelectionEvent;
 use derivative::Derivative;
 use derive_new::new;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
@@ -16,18 +16,18 @@ const VOLUME: f32 = 1.0;
 /// Plays sounds for the character selection UI.
 #[derive(Debug, Default, new)]
 pub struct CharacterSelectionSfxSystem {
-    /// Reader ID for the `CharacterSelectionEvent` event channel.
+    /// Reader ID for the `AssetSelectionEvent` event channel.
     #[new(default)]
-    character_selection_event_rid: Option<ReaderId<CharacterSelectionEvent>>,
+    asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
 }
 
 /// `CharacterSelectionSfxSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterSelectionSfxSystemData<'s> {
-    /// `CharacterSelectionEvent` channel.
+    /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub character_selection_ec: Read<'s, EventChannel<CharacterSelectionEvent>>,
+    pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
     /// `UiSfxMap` resource.
     #[derivative(Debug = "ignore")]
     pub ui_sfx_map: Read<'s, UiSfxMap>,
@@ -45,15 +45,15 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
     fn run(
         &mut self,
         CharacterSelectionSfxSystemData {
-            character_selection_ec,
+            asset_selection_ec,
             ui_sfx_map,
             source_assets,
             output,
         }: Self::SystemData,
     ) {
         // Make sure we empty the event channel, even if we don't have an output device.
-        let events_iterator = character_selection_ec.read(
-            self.character_selection_event_rid
+        let events_iterator = asset_selection_ec.read(
+            self.asset_selection_event_rid
                 .as_mut()
                 .expect("Expected reader ID to exist for CharacterSelectionSfxSystem."),
         );
@@ -61,13 +61,13 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
         if let Some(output) = output {
             events_iterator.for_each(|ev| {
                 let ui_sfx_id = match ev {
-                    CharacterSelectionEvent::Return => UiSfxId::Cancel,
-                    CharacterSelectionEvent::Join { .. } => UiSfxId::Select,
-                    CharacterSelectionEvent::Switch { .. } => UiSfxId::Switch,
-                    CharacterSelectionEvent::Select { .. } => UiSfxId::Select,
-                    CharacterSelectionEvent::Deselect { .. } => UiSfxId::Deselect,
-                    CharacterSelectionEvent::Leave { .. } => UiSfxId::Deselect,
-                    CharacterSelectionEvent::Confirm => UiSfxId::Confirm,
+                    AssetSelectionEvent::Return => UiSfxId::Cancel,
+                    AssetSelectionEvent::Join { .. } => UiSfxId::Select,
+                    AssetSelectionEvent::Switch { .. } => UiSfxId::Switch,
+                    AssetSelectionEvent::Select { .. } => UiSfxId::Select,
+                    AssetSelectionEvent::Deselect { .. } => UiSfxId::Deselect,
+                    AssetSelectionEvent::Leave { .. } => UiSfxId::Deselect,
+                    AssetSelectionEvent::Confirm => UiSfxId::Confirm,
                 };
 
                 let ui_sfx = ui_sfx_map
@@ -83,9 +83,9 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.character_selection_event_rid = Some(
+        self.asset_selection_event_rid = Some(
             world
-                .fetch_mut::<EventChannel<CharacterSelectionEvent>>()
+                .fetch_mut::<EventChannel<AssetSelectionEvent>>()
                 .register_reader(),
         );
     }

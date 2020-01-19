@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod test {
+    use asset_ui_model::config::{
+        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+    };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
     use sequence_model::config::SequenceNameString;
@@ -33,6 +36,19 @@ widget_template:
     other_layer:
       sequence: "other"
       position: { x: 0, y: 0 }
+
+characters_available_selector:
+  position: { x: 100, y: 100, z: 12 }
+  layout:
+    grid:
+      column_count: 7
+      cell_size: { w: 120, h: 120 }
+
+  selection_highlights:
+    - position: { x: 0, y: -15, z: 0 }
+      sequence: "p0_highlight"
+    - position: { x: 20, y: -15, z: 0 }
+      sequence: "p1_highlight"
 "#;
 
     #[test]
@@ -77,9 +93,31 @@ widget_template:
         layers.insert(CswLayer::Name(CswLayerName::Portrait), portrait_label);
         layers.insert(CswLayer::String(String::from("other_layer")), other_label);
         let widget_template = CswTemplate { portraits, layers };
+        let position = PositionInit::new(100, 100, 12);
+        let cell_size = Dimensions { w: 120, h: 120 };
+        let asset_display_grid = AssetDisplayGrid {
+            column_count: 7,
+            cell_size,
+        };
+        let layout = AssetDisplayLayout::Grid(asset_display_grid);
+        let asset_display = AssetDisplay::new(position, layout);
+        let selection_0 = AshTemplate::new(UiSpriteLabel {
+            position: PositionInit::new(0, -15, 0),
+            sequence: SequenceNameString::String(String::from("p0_highlight")),
+        });
+        let selection_1 = AshTemplate::new(UiSpriteLabel {
+            position: PositionInit::new(20, -15, 0),
+            sequence: SequenceNameString::String(String::from("p1_highlight")),
+        });
+        let selection_highlights = vec![selection_0, selection_1];
+        let characters_available_selector = AssetSelector {
+            asset_display,
+            selection_highlights,
+        };
         let character_selection_ui_expected = CharacterSelectionUi {
             widgets,
             widget_template,
+            characters_available_selector,
         };
         assert_eq!(character_selection_ui_expected, character_selection_ui);
     }

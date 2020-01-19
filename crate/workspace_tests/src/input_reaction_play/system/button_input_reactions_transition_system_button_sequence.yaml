@@ -4,4 +4,4 @@ frames:
       press_button:
         button: { Key: A }
         next: "one"
-        events: [{ character_selection: "join" }]
+        events: [{ asset_selection: "join" }]

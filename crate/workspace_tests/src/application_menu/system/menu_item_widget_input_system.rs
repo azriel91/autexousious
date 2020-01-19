@@ -15,10 +15,10 @@ mod tests {
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};
+    use ui_model_spi::play::{Siblings, WidgetStatus};
 
     use application_menu::{
         MenuEvent, MenuItem, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
-        MenuItemWidgetState, Siblings,
     };
 
     #[test]
@@ -29,11 +29,7 @@ mod tests {
                 control_input_event_fn: None,
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Active, WidgetStatus::Idle, WidgetStatus::Idle],
                 menu_events: vec![],
             },
         )
@@ -47,11 +43,7 @@ mod tests {
                 control_input_event_fn: Some(press_up),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Active, WidgetStatus::Idle, WidgetStatus::Idle],
                 menu_events: vec![],
             },
         )
@@ -65,11 +57,7 @@ mod tests {
                 control_input_event_fn: Some(press_down),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Active, WidgetStatus::Idle],
                 menu_events: vec![],
             },
         )
@@ -83,11 +71,7 @@ mod tests {
                 control_input_event_fn: Some(press_up),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Active, WidgetStatus::Idle, WidgetStatus::Idle],
                 menu_events: vec![],
             },
         )
@@ -101,11 +85,7 @@ mod tests {
                 control_input_event_fn: Some(press_down),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Idle, WidgetStatus::Active],
                 menu_events: vec![],
             },
         )
@@ -119,11 +99,7 @@ mod tests {
                 control_input_event_fn: Some(press_up),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Active, WidgetStatus::Idle],
                 menu_events: vec![],
             },
         )
@@ -137,11 +113,7 @@ mod tests {
                 control_input_event_fn: Some(press_down),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Idle, WidgetStatus::Active],
                 menu_events: vec![],
             },
         )
@@ -155,11 +127,7 @@ mod tests {
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Idle, WidgetStatus::Active],
                 menu_events: vec![MenuEvent::Select(TestIndex::Third)],
             },
         )
@@ -173,11 +141,7 @@ mod tests {
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
-                widget_states: vec![
-                    MenuItemWidgetState::Idle,
-                    MenuItemWidgetState::Active,
-                    MenuItemWidgetState::Idle,
-                ],
+                widget_statuss: vec![WidgetStatus::Idle, WidgetStatus::Active, WidgetStatus::Idle],
                 menu_events: vec![MenuEvent::Close],
             },
         )
@@ -189,7 +153,7 @@ mod tests {
             control_input_event_fn,
         }: SetupParams,
         ExpectedParams {
-            widget_states: expected_widget_states,
+            widget_statuss: expected_widget_states,
             menu_events,
         }: ExpectedParams<TestIndex>,
     ) -> Result<(), Error> {
@@ -210,12 +174,12 @@ mod tests {
 
                 let entities = TestIndex::iter()
                     .map(|index| {
-                        let widget_state = if index == setup_active_menu_item {
-                            MenuItemWidgetState::Active
+                        let widget_status = if index == setup_active_menu_item {
+                            WidgetStatus::Active
                         } else {
-                            MenuItemWidgetState::Idle
+                            WidgetStatus::Idle
                         };
-                        menu_item_entity(world, index, widget_state)
+                        menu_item_entity(world, index, widget_status)
                     })
                     .collect::<Vec<Entity>>();
                 {
@@ -245,7 +209,7 @@ mod tests {
                 }
             })
             .with_assertion(move |world| {
-                assert_menu_item_widget_states(world, expected_widget_states.clone())
+                assert_widget_statuses(world, expected_widget_states.clone())
             })
             .with_assertion(move |world| {
                 assert_events(world, menu_events.clone());
@@ -286,27 +250,27 @@ mod tests {
     fn menu_item_entity(
         world: &mut World,
         menu_item_index: TestIndex,
-        widget_state: MenuItemWidgetState,
+        widget_status: WidgetStatus,
     ) -> Entity {
         world
             .create_entity()
             .with(MenuItem::new(menu_item_index))
-            .with(widget_state)
+            .with(widget_status)
             .build()
     }
 
-    fn assert_menu_item_widget_states(world: &mut World, expected: Vec<MenuItemWidgetState>) {
+    fn assert_widget_statuses(world: &mut World, expected: Vec<WidgetStatus>) {
         let entities = world.read_resource::<Vec<Entity>>();
 
-        let menu_item_widget_states = world.read_storage::<MenuItemWidgetState>();
+        let widget_statuses = world.read_storage::<WidgetStatus>();
         let states = entities
             .iter()
             .map(|entity| {
-                *menu_item_widget_states
+                *widget_statuses
                     .get(*entity)
-                    .expect("Expected entity to have `MenuItemWidgetState` component.")
+                    .expect("Expected entity to have `WidgetStatus` component.")
             })
-            .collect::<Vec<MenuItemWidgetState>>();
+            .collect::<Vec<WidgetStatus>>();
 
         assert_eq!(expected, states);
     }
@@ -336,7 +300,7 @@ mod tests {
     where
         I: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
     {
-        widget_states: Vec<MenuItemWidgetState>,
+        widget_statuss: Vec<WidgetStatus>,
         menu_events: Vec<MenuEvent<I>>,
     }
 
