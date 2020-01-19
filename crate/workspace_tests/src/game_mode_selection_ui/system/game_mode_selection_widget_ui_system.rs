@@ -9,13 +9,14 @@ mod tests {
         winit::VirtualKeyCode,
         Error,
     };
-    use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
+    use application_menu::MenuItem;
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
     use state_registry::StateId;
     use strum::IntoEnumIterator;
+    use ui_model_spi::play::{Siblings, WidgetStatus};
 
     use game_mode_selection_ui::{
         GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE, FONT_COLOUR_IDLE,
@@ -25,7 +26,7 @@ mod tests {
     const GAME_MODE_MENU_ITEM_COUNT: usize = 3;
 
     #[test]
-    fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
+    fn initializes_ui_when_widget_statuses_zero() -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_resource(input_config())
             .with_system(
@@ -52,14 +53,13 @@ mod tests {
             .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to idle.
             .with_effect(|world| {
-                let mut menu_item_widget_states =
-                    world.system_data::<WriteStorage<'_, MenuItemWidgetState>>();
-                let menu_item_widget_state = (&mut menu_item_widget_states)
+                let mut widget_statuses = world.system_data::<WriteStorage<'_, WidgetStatus>>();
+                let widget_status = (&mut widget_statuses)
                     .join()
                     .next()
-                    .expect("Expected entity with `MenuItemWidgetState` component.");
+                    .expect("Expected entity with `WidgetStatus` component.");
 
-                *menu_item_widget_state = MenuItemWidgetState::Idle;
+                *widget_status = WidgetStatus::Idle;
             })
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_IDLE))
             .run_isolated()
@@ -79,13 +79,10 @@ mod tests {
             .with_assertion(|world| assert_widget_count(world, GAME_MODE_MENU_ITEM_COUNT))
             // Set widget state to active.
             .with_effect(|world| {
-                let mut menu_item_widget_states =
-                    world.system_data::<WriteStorage<'_, MenuItemWidgetState>>();
-                (&mut menu_item_widget_states)
-                    .join()
-                    .for_each(|menu_item_widget_state| {
-                        *menu_item_widget_state = MenuItemWidgetState::Active;
-                    });
+                let mut widget_statuses = world.system_data::<WriteStorage<'_, WidgetStatus>>();
+                (&mut widget_statuses).join().for_each(|widget_status| {
+                    *widget_status = WidgetStatus::Active;
+                });
             })
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_ACTIVE))
             .run_isolated()
@@ -121,20 +118,15 @@ mod tests {
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
-        let (menu_items, menu_item_widget_states, siblingses, ui_texts) = world.system_data::<(
+        let (menu_items, widget_statuses, siblingses, ui_texts) = world.system_data::<(
             ReadStorage<'_, MenuItem<GameModeIndex>>,
-            ReadStorage<'_, MenuItemWidgetState>,
+            ReadStorage<'_, WidgetStatus>,
             ReadStorage<'_, Siblings>,
             ReadStorage<'_, UiText>,
         )>();
         assert_eq!(
             count,
-            (
-                &menu_items,
-                &menu_item_widget_states,
-                &siblingses,
-                &ui_texts
-            )
+            (&menu_items, &widget_statuses, &siblingses, &ui_texts)
                 .join()
                 .count()
         );
@@ -203,10 +195,8 @@ mod tests {
     }
 
     fn assert_text_colour(world: &mut World, colour: [f32; 4]) {
-        let (widgets, ui_texts) = world.system_data::<(
-            ReadStorage<'_, MenuItemWidgetState>,
-            ReadStorage<'_, UiText>,
-        )>();
+        let (widgets, ui_texts) =
+            world.system_data::<(ReadStorage<'_, WidgetStatus>, ReadStorage<'_, UiText>)>();
         let (_widget, ui_text) = (&widgets, &ui_texts)
             .join()
             .next()

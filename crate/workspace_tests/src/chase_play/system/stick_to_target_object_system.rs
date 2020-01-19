@@ -15,7 +15,14 @@ mod tests {
     fn updates_child_translation_to_match_target() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_effect(|world| create_target_and_child_entity(world, true, true, false))
+            .with_effect(|world| {
+                create_target_and_child_entity(
+                    world,
+                    WithChaseModeStick::Present(None),
+                    true,
+                    false,
+                )
+            })
             .with_effect(|world| set_target_translation(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_translation(world, 1., 2., 3.5))
             .run()
@@ -25,9 +32,50 @@ mod tests {
     fn updates_child_position_to_match_target() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_effect(|world| create_target_and_child_entity(world, true, false, true))
+            .with_effect(|world| {
+                create_target_and_child_entity(
+                    world,
+                    WithChaseModeStick::Present(None),
+                    false,
+                    true,
+                )
+            })
             .with_effect(|world| set_target_position(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_position(world, 1., 2., 3.5))
+            .run()
+    }
+
+    #[test]
+    fn updates_child_translation_to_match_target_with_offset() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_system(StickToTargetObjectSystem::new(), "", &[])
+            .with_effect(|world| {
+                create_target_and_child_entity(
+                    world,
+                    WithChaseModeStick::Present(Some(Position::new(10., 20., 30.))),
+                    true,
+                    false,
+                )
+            })
+            .with_effect(|world| set_target_translation(world, 1., 2., 3.5))
+            .with_assertion(|world| assert_child_entity_translation(world, 11., 22., 33.5))
+            .run()
+    }
+
+    #[test]
+    fn updates_child_position_to_match_target_with_offset() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_system(StickToTargetObjectSystem::new(), "", &[])
+            .with_effect(|world| {
+                create_target_and_child_entity(
+                    world,
+                    WithChaseModeStick::Present(Some(Position::new(10., 20., 30.))),
+                    false,
+                    true,
+                )
+            })
+            .with_effect(|world| set_target_position(world, 1., 2., 3.5))
+            .with_assertion(|world| assert_child_entity_position(world, 11., 22., 33.5))
             .run()
     }
 
@@ -35,7 +83,9 @@ mod tests {
     fn does_not_update_components_for_non_chase_mode_stick() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_effect(|world| create_target_and_child_entity(world, false, true, true))
+            .with_effect(|world| {
+                create_target_and_child_entity(world, WithChaseModeStick::Absent, true, true)
+            })
             .with_effect(|world| set_target_translation(world, 1., 2., 3.5))
             .with_effect(|world| set_target_position(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_translation(world, 0., 0., 0.))
@@ -45,7 +95,7 @@ mod tests {
 
     fn create_target_and_child_entity(
         world: &mut World,
-        with_chase_mode_stick: bool,
+        with_chase_mode_stick: WithChaseModeStick,
         with_transform: bool,
         with_position: bool,
     ) {
@@ -53,8 +103,8 @@ mod tests {
         let child = {
             let mut entity_builder = world.create_entity().with(TargetObject::new(target));
 
-            if with_chase_mode_stick {
-                entity_builder = entity_builder.with(ChaseModeStick::new());
+            if let WithChaseModeStick::Present(offset) = with_chase_mode_stick {
+                entity_builder = entity_builder.with(ChaseModeStick::new(offset));
             }
             if with_transform {
                 entity_builder = entity_builder.with(Transform::default());
@@ -107,5 +157,11 @@ mod tests {
             .expect("Expected child entity to have `Position` component.");
 
         assert_eq!(&Position::new(x, y, z), child_position);
+    }
+
+    #[derive(Clone, Copy, Debug)]
+    enum WithChaseModeStick {
+        Absent,
+        Present(Option<Position<f32>>),
     }
 }

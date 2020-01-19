@@ -50,12 +50,17 @@ impl<'s> System<'s> for StickToTargetObjectSystem {
     ) {
         (&entities, &target_objects, &chase_mode_sticks)
             .join()
-            .for_each(|(child_entity, target_object, _)| {
+            .for_each(|(child_entity, target_object, chase_mode_stick)| {
                 let target_position = positions.get(target_object.entity).copied();
+                let offset = chase_mode_stick.offset;
 
                 if let Some(target_position) = target_position {
                     if let Some(position) = positions.get_mut(child_entity) {
                         *position = target_position;
+
+                        if let Some(offset) = offset {
+                            *position += offset;
+                        }
                     }
                 }
 
@@ -66,6 +71,11 @@ impl<'s> System<'s> for StickToTargetObjectSystem {
 
                 if let Some(translation) = target_translation {
                     if let Some(transform) = transforms.get_mut(child_entity) {
+                        let translation = if let Some(offset) = offset {
+                            translation + offset.0
+                        } else {
+                            translation
+                        };
                         *transform.translation_mut() = translation;
                     }
                 }

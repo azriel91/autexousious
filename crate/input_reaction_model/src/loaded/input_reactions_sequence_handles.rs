@@ -4,7 +4,7 @@ use sequence_model_derive::sequence_component_data;
 
 use crate::loaded::{input_reaction::InputReaction, InputReactionsSequenceHandle};
 
-/// Vector of `InputReactionsSequenceHandle`s.
+/// Sequence of `InputReactionsSequenceHandle`s.
 #[sequence_component_data(InputReactionsSequenceHandle<InputReaction>)]
 #[derive(Component)]
 #[storage(DenseVecStorage)]

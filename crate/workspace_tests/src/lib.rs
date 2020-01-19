@@ -30,6 +30,10 @@ mod asset_model;
 #[cfg(test)]
 mod asset_play;
 #[cfg(test)]
+mod asset_selection_stdio;
+#[cfg(test)]
+mod asset_ui_model;
+#[cfg(test)]
 mod audio_loading;
 #[cfg(test)]
 mod audio_play;
@@ -49,8 +53,6 @@ mod character_play;
 mod character_prefab;
 #[cfg(test)]
 mod character_selection;
-#[cfg(test)]
-mod character_selection_stdio;
 #[cfg(test)]
 mod character_selection_ui;
 #[cfg(test)]

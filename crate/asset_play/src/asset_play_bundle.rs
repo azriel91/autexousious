@@ -6,12 +6,17 @@ use amethyst::{
     Error,
 };
 use asset_model::play::AssetWorld;
+use asset_ui_model::{
+    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    play::{AssetSelectionHighlightMain, AssetSelectionStatus},
+};
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
 use character_selection_ui_model::{
     loaded::{CharacterSelectionWidget, CswPortraits},
     play::CswMain,
 };
+use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
@@ -24,6 +29,7 @@ use kinematic_model::{
 };
 use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
+use object_type::Character;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
@@ -73,6 +79,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterSelectionWidget>();
         asset_world.register::<CswPortraits>();
         asset_world.register::<CswMain>();
+        asset_world.register::<AssetSelector<Character>>();
+        asset_world.register::<AssetDisplayCell>();
+        asset_world.register::<AssetSelectionCell>();
+        asset_world.register::<AssetSelectionStatus>();
+        asset_world.register::<AssetSelectionHighlight>();
+        asset_world.register::<AssetSelectionHighlightMain>();
+        asset_world.register::<ChaseModeStick>();
 
         world.insert(asset_world);
 
@@ -209,6 +222,51 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &any::type_name::<ItemComponentComponentAugmentSystem<CswMain>>(),
             &[&any::type_name::<
                 ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelector<Character>>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetDisplayCell>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCell>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionCell>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionStatus>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionStatus>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionHighlight>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionHighlightMain>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<ChaseModeStick>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<ChaseModeStick>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelectionHighlight>,
             >()],
         );
         builder.add_barrier();

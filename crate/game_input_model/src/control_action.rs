@@ -3,7 +3,6 @@
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
-use variant_struct::VariantStruct;
 
 /// Control actions for characters.
 #[derive(
@@ -19,7 +18,6 @@ use variant_struct::VariantStruct;
     PartialEq,
     Eq,
     Serialize,
-    VariantStruct,
 )]
 #[derivative(Default)]
 #[strum(serialize_all = "snake_case")]

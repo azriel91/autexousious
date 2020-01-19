@@ -19,7 +19,7 @@ mod velocity_init;
 
 use std::{
     fmt::Debug,
-    ops::{Deref, DerefMut},
+    ops::{Add, AddAssign, Deref, DerefMut, Sub, SubAssign},
 };
 
 use amethyst::{
@@ -186,9 +186,61 @@ macro_rules! kinematic_type {
                 &mut self.0
             }
         }
+
+        impl<S> Add for $name<S>
+        where
+            S: Add<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            type Output = Self;
+
+            fn add(self, other: Self) -> Self {
+                Self::new(self.x + other.x, self.y + other.y, self.z + other.z)
+            }
+        }
+
+        impl<S> AddAssign for $name<S>
+        where
+            S: Add<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            fn add_assign(&mut self, other: Self) {
+                *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+            }
+        }
+
+        impl<S> Sub for $name<S>
+        where
+            S: Sub<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            type Output = Self;
+
+            fn sub(self, other: Self) -> Self {
+                Self::new(self.x - other.x, self.y - other.y, self.z - other.z)
+            }
+        }
+
+        impl<S> SubAssign for $name<S>
+        where
+            S: Sub<Output = S> + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
+        {
+            fn sub_assign(&mut self, other: Self) {
+                *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+            }
+        }
     };
 }
 
 kinematic_type!(Position);
 kinematic_type!(Velocity);
 kinematic_type!(Acceleration);
+
+impl From<PositionInit> for Position<f32> {
+    fn from(position_init: PositionInit) -> Self {
+        // Note: `i32` as `f32` is a lossy conversion, which is why we cannot implement this
+        // generically with `S: From<i32>`, as `f32` is not `From<i32>`.
+        Position::new(
+            position_init.x as f32,
+            position_init.y as f32,
+            position_init.z as f32,
+        )
+    }
+}

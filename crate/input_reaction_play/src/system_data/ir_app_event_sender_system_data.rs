@@ -3,9 +3,13 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
-use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
-use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+use asset_model::{
+    loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+    play::{AssetSelection, AssetSelectionEvent},
+};
+use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
 use character_selection_ui_model::play::CswStatus;
+use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
 use game_input::InputControlled;
@@ -27,15 +31,26 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
 
-    /// `CharacterSelectionEvent` channel.
-    #[derivative(Debug = "ignore")]
-    pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `CharacterSelection` components.
+
+    /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub character_selections: WriteStorage<'s, CharacterSelection>,
+    pub asset_selection_ec: Write<'s, EventChannel<AssetSelectionEvent>>,
+    /// `AssetSelectionStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_statuses: WriteStorage<'s, AssetSelectionStatus>,
+    /// `AssetSelectionHighlightMain` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_highlight_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
+    /// `TargetObject` components.
+    #[derivative(Debug = "ignore")]
+    pub target_objects: ReadStorage<'s, TargetObject>,
+    /// `AssetSelection` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selections: ReadStorage<'s, AssetSelection>,
+
     /// `CswStatus` components.
     #[derivative(Debug = "ignore")]
     pub csw_statuses: WriteStorage<'s, CswStatus>,

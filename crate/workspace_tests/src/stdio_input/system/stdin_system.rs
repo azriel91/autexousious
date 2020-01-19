@@ -125,7 +125,7 @@ mod test {
     fn sends_vat_event_when_input_is_app_event() {
         let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup();
 
-        tx.send("character_selection confirm".to_string()).unwrap();
+        tx.send("asset_selection confirm".to_string()).unwrap();
         stdin_system.run_now(&world);
 
         let StdinSystemData {
@@ -137,8 +137,8 @@ mod test {
             &variant_and_tokens_ec,
             &mut vat_ev_id,
             Some(&(
-                AppEventVariant::CharacterSelection,
-                vec!["character_selection".to_string(), "confirm".to_string()],
+                AppEventVariant::AssetSelection,
+                vec!["asset_selection".to_string(), "confirm".to_string()],
             )),
         ); // kcov-ignore
     }
@@ -177,7 +177,7 @@ mod test {
     fn does_not_send_vat_event_when_barrier_does_not_match() {
         let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup_with_barrier(Some(false));
 
-        tx.send("character_selection confirm".to_string()).unwrap();
+        tx.send("asset_selection confirm".to_string()).unwrap();
         stdin_system.run_now(&world);
 
         let StdinSystemData {
@@ -192,7 +192,7 @@ mod test {
     fn sends_vat_event_when_barrier_matches() {
         let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup_with_barrier(Some(true));
 
-        tx.send("character_selection confirm".to_string()).unwrap();
+        tx.send("asset_selection confirm".to_string()).unwrap();
         stdin_system.run_now(&world);
 
         let StdinSystemData {
@@ -204,8 +204,8 @@ mod test {
             &variant_and_tokens_ec,
             &mut vat_ev_id,
             Some(&(
-                AppEventVariant::CharacterSelection,
-                vec!["character_selection".to_string(), "confirm".to_string()],
+                AppEventVariant::AssetSelection,
+                vec!["asset_selection".to_string(), "confirm".to_string()],
             )),
         ); // kcov-ignore
     }

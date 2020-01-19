@@ -1,3 +1,5 @@
+use asset_ui_model::config::AssetSelector;
+use object_type::Character;
 use serde::{Deserialize, Serialize};
 
 use crate::config::{CswDefinition, CswTemplate};
@@ -10,4 +12,6 @@ pub struct CharacterSelectionUi {
     pub widgets: Vec<CswDefinition>,
     /// Template to initialize each widget with.
     pub widget_template: CswTemplate,
+    /// Display sheet for all available characters, including `Random`.
+    pub characters_available_selector: AssetSelector<Character>,
 }

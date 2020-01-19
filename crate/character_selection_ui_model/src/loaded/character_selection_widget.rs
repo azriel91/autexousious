@@ -5,13 +5,14 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
+use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use log::error;
 use parent_model::play::ParentEntity;
 
-use crate::play::{CharacterSelectionParent, CswMain, CswStatus};
+use crate::play::{CswMain, CswStatus};
 
 /// Tracks the Item IDs to be attached to entities that represent the character selection widget.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -44,9 +45,9 @@ pub struct CharacterSelectionWidgetSystemData<'s> {
     /// `CswStatus` components.
     #[derivative(Debug = "ignore")]
     pub csw_statuses: WriteStorage<'s, CswStatus>,
-    /// `CharacterSelectionParent` components.
+    /// `AssetSelectionParent` components.
     #[derivative(Debug = "ignore")]
-    pub character_selection_parents: WriteStorage<'s, CharacterSelectionParent>,
+    pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
 }
 
 impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
@@ -60,7 +61,7 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
             input_controlleds,
             parent_entities,
             csw_statuses,
-            character_selection_parents,
+            asset_selection_parents,
         } = system_data;
 
         let csw_main_item = {
@@ -97,15 +98,15 @@ impl<'s> ItemComponent<'s> for CharacterSelectionWidget {
         );
 
         if let Some(csw_main_entity) = csw_main_entity {
-            let character_selection_parent = CharacterSelectionParent::new(csw_main_entity);
+            let asset_selection_parent = AssetSelectionParent::new(csw_main_entity);
             layer_entities
                 .iter()
                 .filter(|layer_entity| **layer_entity != csw_main_entity)
                 .copied()
                 .for_each(|layer_entity| {
-                    character_selection_parents
-                        .insert(layer_entity, character_selection_parent)
-                        .expect("Failed to insert `CharacterSelectionParent` component.");
+                    asset_selection_parents
+                        .insert(layer_entity, asset_selection_parent)
+                        .expect("Failed to insert `AssetSelectionParent` component.");
                 })
         } else {
             error!("Expected `CharacterSelectionWidget` template to have at least one layer.");
