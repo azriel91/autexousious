@@ -7,8 +7,8 @@ use asset_model::{
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     play::{AssetSelection, AssetSelectionEvent},
 };
-use asset_ui_model::play::AssetSelectionStatus;
-use character_selection_ui_model::play::{CswMain, CswStatus};
+use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
+use character_selection_ui_model::play::CswStatus;
 use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
@@ -41,6 +41,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetSelectionStatus` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_statuses: WriteStorage<'s, AssetSelectionStatus>,
+    /// `AssetSelectionHighlightMain` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_highlight_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
     /// `TargetObject` components.
     #[derivative(Debug = "ignore")]
     pub target_objects: ReadStorage<'s, TargetObject>,
@@ -48,9 +51,6 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_selections: ReadStorage<'s, AssetSelection>,
 
-    /// `CswMain` components.
-    #[derivative(Debug = "ignore")]
-    pub csw_mains: ReadStorage<'s, CswMain>,
     /// `CswStatus` components.
     #[derivative(Debug = "ignore")]
     pub csw_statuses: WriteStorage<'s, CswStatus>,

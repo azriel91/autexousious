@@ -120,24 +120,12 @@ mod tests {
                         .clone()
                 };
 
-                let entity = world.create_entity().build();
-                {
-                    let TestSystemData {
-                        mut sequence_ids,
-                        mut input_reactions_handles,
-                        mut button_input_controlleds,
-                    } = world.system_data::<TestSystemData>();
-
-                    sequence_ids
-                        .insert(entity, sequence_id_setup)
-                        .expect("Failed to insert `SequenceId` component.");
-                    input_reactions_handles
-                        .insert(entity, input_reactions_handle)
-                        .expect("Failed to insert `InputReactionsHandle` component.");
-                    button_input_controlleds
-                        .insert(entity, ButtonInputControlled)
-                        .expect("Failed to insert `ButtonInputControlled` component.");
-                }
+                let entity = world
+                    .create_entity()
+                    .with(sequence_id_setup)
+                    .with(input_reactions_handle)
+                    .with(ButtonInputControlled)
+                    .build();
 
                 if let Some(input_event) = input_event {
                     send_event(world, input_event);

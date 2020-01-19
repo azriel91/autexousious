@@ -26,17 +26,21 @@ impl IrAssetSelectionEventSender {
         //
         // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
         // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
-        let ash_entity = if ir_app_event_sender_system_data.csw_mains.contains(entity) {
-            entity
+        let target_object_entity = ir_app_event_sender_system_data
+            .target_objects
+            .get(entity)
+            .map(|target_object| target_object.entity);
+        let ash_entity = if let Some(target_object_entity) = target_object_entity {
+            if ir_app_event_sender_system_data
+                .asset_selection_highlight_mains
+                .contains(target_object_entity)
+            {
+                target_object_entity
+            } else {
+                entity
+            }
         } else {
-            ir_app_event_sender_system_data
-                .target_objects
-                .get(entity)
-                .map(|target_object| target_object.entity)
-                .expect(
-                    "Expected `AssetSelectionHighlightMain` entity to have `TargetObject` \
-                    component.",
-                )
+            entity
         };
 
         let asset_selection_event = match asset_selection_event_variant {
@@ -149,7 +153,7 @@ impl IrAssetSelectionEventSender {
             asset_type_mappings,
             target_objects,
             asset_selections,
-            csw_mains,
+            asset_selection_highlight_mains,
             ..
         }: &mut IrAppEventSenderSystemData,
         ash_entity: Entity,
@@ -157,9 +161,7 @@ impl IrAssetSelectionEventSender {
     ) -> Option<AssetSelection> {
         // Look up the `TargetObject` whose entity is the `AssetSelectionCell`
         // Then lookup the `AssetSelection` for that entity.
-        let asset_selection_entity = if csw_mains.contains(ash_entity) {
-            ash_entity
-        } else {
+        let asset_selection_entity = if asset_selection_highlight_mains.contains(ash_entity) {
             target_objects
                 .get(ash_entity)
                 .map(|target_object| target_object.entity)
@@ -167,6 +169,10 @@ impl IrAssetSelectionEventSender {
                     "Expected `AssetSelectionHighlightMain` entity to have `TargetObject` \
                     component.",
                 )
+        } else {
+            // `CswMain` entities directly send events.
+            // Other purpose entities likely also fallback to the same behaviour.
+            ash_entity
         };
         // The `TargetObject` of the `AssetSelectionHighlightMain` entity is the
         // `AssetSelectionCell`.
