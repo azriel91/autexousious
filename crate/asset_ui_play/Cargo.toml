@@ -10,6 +10,7 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_model = { path = "../asset_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 chase_model = { path = "../chase_model" }
 derivative = "1.0.3"

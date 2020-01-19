@@ -145,21 +145,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputReactionLoadingBundle::new())?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
-            .with(
-                AssetSelectionHighlightUpdateSystem::new(),
-                any::type_name::<AssetSelectionHighlightUpdateSystem>(),
-                &[],
-            )
-            .with(
-                CswPortraitUpdateSystem::new(),
-                any::type_name::<CswPortraitUpdateSystem>(),
-                &[],
-            )
-            .with(
-                CswPreviewSpawnSystem::new(),
-                any::type_name::<CswPreviewSpawnSystem>(),
-                &[],
-            )
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
                 StateIdEventSystem::new(),
@@ -199,6 +184,21 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
+            .with(
+                AssetSelectionHighlightUpdateSystem::new(),
+                any::type_name::<AssetSelectionHighlightUpdateSystem>(),
+                &[],
+            )
+            .with(
+                CswPortraitUpdateSystem::new(),
+                any::type_name::<CswPortraitUpdateSystem>(),
+                &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
+            )
+            .with(
+                CswPreviewSpawnSystem::new(),
+                any::type_name::<CswPreviewSpawnSystem>(),
+                &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
+            )
             .with(
                 ChildEntityDeleteSystem::new(),
                 any::type_name::<ChildEntityDeleteSystem>(),

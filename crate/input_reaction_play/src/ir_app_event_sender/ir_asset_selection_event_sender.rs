@@ -214,7 +214,6 @@ impl IrAssetSelectionEventSender {
     ) -> AssetSelection {
         let reverse = n < 0;
         let n = usize::try_from(n.wrapping_abs()).expect("Failed to convert `n` into `usize`.");
-        let n = n + 1; // skip current selection
 
         {
             let placeholder = Vec::new();

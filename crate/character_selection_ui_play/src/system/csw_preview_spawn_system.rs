@@ -89,11 +89,31 @@ impl CswPreviewSpawnSystem {
             })
     }
 
+    /// Finds the main asset selection cell `Entity` with the given controller ID.
+    fn find_asset_selection_entity(
+        CswPreviewSpawnResources {
+            input_controlleds,
+            asset_selection_parents,
+            ..
+        }: &CswPreviewSpawnResources,
+        controller_id: ControllerId,
+    ) -> Option<Entity> {
+        (input_controlleds, asset_selection_parents)
+            .join()
+            .find_map(|(input_controlled, asset_selection_parent)| {
+                if input_controlled.controller_id == controller_id {
+                    Some(asset_selection_parent.0)
+                } else {
+                    None
+                }
+            })
+    }
+
     // Deletes `CswPreview` entities belonging to the character selection widget.
     fn delete_preview_entities(
         csw_preview_spawn_resources: &CswPreviewSpawnResources,
         controller_id: ControllerId,
-        csw_main_entity: Option<Entity>,
+        asset_selection_entity: Option<Entity>,
     ) {
         let CswPreviewSpawnResources {
             entities,
@@ -102,21 +122,15 @@ impl CswPreviewSpawnSystem {
             ..
         } = csw_preview_spawn_resources;
 
-        let csw_main_entity = csw_main_entity
-            .or_else(|| Self::find_csw_main_entity(csw_preview_spawn_resources, controller_id));
+        let asset_selection_entity = asset_selection_entity.or_else(|| {
+            Self::find_asset_selection_entity(csw_preview_spawn_resources, controller_id)
+        });
 
-        // TODO: how do we link the spawned entity with the `CswMain` entity?
-        //
-        // We can attach `CswPreview` when we receive a `SpawnEvent` in another system, but we don't
-        // know which `CswMain` entity it should be attached to.
-        //
-        // Should we split the logic to spawn game objects into `GameObjectSpawner`, and attach the
-        // components that way?
-        if let Some(csw_main_entity) = csw_main_entity {
+        if let Some(asset_selection_entity) = asset_selection_entity {
             (entities, csw_previews, asset_selection_parents)
                 .join()
                 .filter_map(|(entity, _, asset_selection_parent)| {
-                    if asset_selection_parent.0 == csw_main_entity {
+                    if asset_selection_parent.0 == asset_selection_entity {
                         Some(entity)
                     } else {
                         None
@@ -134,11 +148,15 @@ impl CswPreviewSpawnSystem {
     fn spawn_preview_entities(
         csw_preview_spawn_resources: &mut CswPreviewSpawnResources,
         controller_id: ControllerId,
-        csw_main_entity: Option<Entity>,
+        asset_selection_entity: Option<Entity>,
         asset_selection: Option<AssetSelection>,
     ) {
-        let csw_main_entity = csw_main_entity
-            .or_else(|| Self::find_csw_main_entity(&csw_preview_spawn_resources, controller_id));
+        let asset_selection_entity = asset_selection_entity.or_else(|| {
+            Self::find_asset_selection_entity(&csw_preview_spawn_resources, controller_id)
+        });
+
+        let csw_main_entity =
+            Self::find_csw_main_entity(&csw_preview_spawn_resources, controller_id);
 
         let CswPreviewSpawnResources {
             csw_previews,
@@ -151,17 +169,18 @@ impl CswPreviewSpawnSystem {
         } = csw_preview_spawn_resources;
 
         let asset_selection = asset_selection.or_else(|| {
-            csw_main_entity
-                .and_then(|csw_main_entity| asset_selections.get(csw_main_entity).copied())
+            asset_selection_entity.and_then(|asset_selection_entity| {
+                asset_selections.get(asset_selection_entity).copied()
+            })
         });
 
-        if let (Some(csw_main_entity), Some(AssetSelection::Id(asset_id))) =
-            (csw_main_entity, asset_selection)
+        if let (Some(asset_selection_entity), Some(AssetSelection::Id(asset_id))) =
+            (asset_selection_entity, asset_selection)
         {
             // TODO: Take in position to spawn entity.
             let x = 60.;
             // Hack: Since characters have `PositionZAsY`, we shift the entity's Y position up by
-            // the Z position of the csw_main_entity.
+            // the Z position of the asset_selection_entity.
             let y = 30. + 12.;
             let z = 1.;
             let position = Position::new(x, y, z);
@@ -175,17 +194,22 @@ impl CswPreviewSpawnSystem {
                 velocity: Velocity::default(),
                 sequence_id,
             };
+
+            let spawn_parent_entity = csw_main_entity.unwrap_or(asset_selection_entity);
             let entity_spawned =
-                GameObjectSpawner::spawn(spawn_game_object_resources, csw_main_entity, &spawn);
+                GameObjectSpawner::spawn(spawn_game_object_resources, spawn_parent_entity, &spawn);
 
             csw_previews
                 .insert(entity_spawned, CswPreview)
                 .expect("Failed to insert `CswPreview` component.");
             asset_selection_parents
-                .insert(entity_spawned, AssetSelectionParent::new(csw_main_entity))
+                .insert(
+                    entity_spawned,
+                    AssetSelectionParent::new(asset_selection_entity),
+                )
                 .expect("Failed to insert `AssetSelectionParent` component.");
             parent_entities
-                .insert(entity_spawned, ParentEntity::new(csw_main_entity))
+                .insert(entity_spawned, ParentEntity::new(asset_selection_entity))
                 .expect("Failed to insert `ParentEntity` component.");
             groundings
                 .insert(entity_spawned, Grounding::OnGround)
@@ -231,17 +255,19 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                     controller_id,
                     asset_selection,
                 } => {
-                    let csw_main_entity =
-                        Self::find_csw_main_entity(csw_preview_spawn_resources, controller_id);
+                    let asset_selection_entity = Self::find_asset_selection_entity(
+                        csw_preview_spawn_resources,
+                        controller_id,
+                    );
                     Self::delete_preview_entities(
                         csw_preview_spawn_resources,
                         controller_id,
-                        csw_main_entity,
+                        asset_selection_entity,
                     );
                     Self::spawn_preview_entities(
                         csw_preview_spawn_resources,
                         controller_id,
-                        csw_main_entity,
+                        asset_selection_entity,
                         Some(asset_selection),
                     );
                 }

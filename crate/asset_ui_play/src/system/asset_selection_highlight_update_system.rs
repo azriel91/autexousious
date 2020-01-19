@@ -3,7 +3,10 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
+use asset_model::play::AssetSelection;
+use asset_ui_model::play::{
+    AssetSelectionHighlightMain, AssetSelectionParent, AssetSelectionStatus,
+};
 use chase_model::play::TargetObject;
 use derivative::Derivative;
 use derive_new::new;
@@ -39,6 +42,12 @@ pub struct AssetSelectionHighlightUpdateResources<'s> {
     /// `TargetObject` components.
     #[derivative(Debug = "ignore")]
     pub target_objects: WriteStorage<'s, TargetObject>,
+    /// `AssetSelectionParent` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
+    /// `AssetSelection` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_selections: WriteStorage<'s, AssetSelection>,
     /// `AssetSelectionHighlightMain` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_highlight_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
@@ -60,6 +69,8 @@ impl AssetSelectionHighlightUpdateSystem {
     ) {
         let AssetSelectionHighlightUpdateResources {
             target_objects,
+            asset_selection_parents,
+            asset_selections,
             asset_selection_highlight_mains,
             asset_selection_statuses,
             siblingses,
@@ -102,6 +113,22 @@ impl AssetSelectionHighlightUpdateSystem {
                         target_objects
                             .insert(ash_entity, TargetObject::new(asset_display_cell_sibling))
                             .expect("Failed to insert `TargetObject` component.");
+                        asset_selection_parents
+                            .insert(
+                                ash_entity,
+                                AssetSelectionParent::new(asset_display_cell_sibling),
+                            )
+                            .expect("Failed to insert `AssetSelectionParent` component.");
+                        let asset_selection = asset_selections
+                            .get(asset_display_cell_sibling)
+                            .copied()
+                            .expect(
+                                "Expected `AssetSelectionCell` entity to have `AssetSelection` \
+                                component.",
+                            );
+                        asset_selections
+                            .insert(ash_entity, asset_selection)
+                            .expect("Failed to insert `AssetSelection` component.");
                     }
                 }
             }
