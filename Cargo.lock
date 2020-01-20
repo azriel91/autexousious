@@ -2970,6 +2970,7 @@ dependencies = [
  "loading_model 0.16.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.16.0",
+ "map_selection_ui_model 0.17.0",
  "mirrored_model 0.16.0",
  "object_loading 0.16.0",
  "object_model 0.16.0",
