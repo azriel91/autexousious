@@ -4,11 +4,12 @@ use amethyst::{
     ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{loaded::AssetId, ItemComponent};
+use asset_model::{config::AssetType, loaded::AssetId, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Grounding;
+use object_type::ObjectType;
 use parent_model::play::ParentEntity;
 use sequence_model::loaded::SequenceId;
 use spawn_model::loaded::Spawn;
@@ -22,10 +23,48 @@ use crate::config::Dimensions;
 pub struct AssetDisplayCell {
     /// ID of the asset to display.
     pub asset_id: AssetId,
+    /// Type of the asset.
+    ///
+    /// This is used to determine how to display the asset.
+    pub asset_type: AssetType,
     /// Size of the cell.
     ///
     /// This is used to position the spawned asset.
     pub cell_size: Dimensions,
+}
+
+impl AssetDisplayCell {
+    fn spawn_character(
+        &self,
+        AssetDisplayCellSystemData {
+            parent_entities,
+            groundings,
+            spawn_game_object_resources,
+            ..
+        }: &mut AssetDisplayCellSystemData,
+        entity: Entity,
+    ) {
+        // TODO: Look up sequence ID for default sequence ID for the asset type.
+        let sequence_id = SequenceId::new(0);
+        let half_cell_width = i16::try_from(self.cell_size.w >> 1)
+            .expect("Failed to convert `cell_size.w` to `i16`.");
+        let half_cell_width = f32::from(half_cell_width);
+
+        let spawn = Spawn {
+            object: self.asset_id,
+            position: Position::new(half_cell_width, 10., 0.),
+            velocity: Velocity::default(),
+            sequence_id,
+        };
+        let entity_spawned = GameObjectSpawner::spawn(spawn_game_object_resources, entity, &spawn);
+
+        parent_entities
+            .insert(entity_spawned, ParentEntity::new(entity))
+            .expect("Failed to insert `ParentEntity` component.");
+        groundings
+            .insert(entity_spawned, Grounding::OnGround)
+            .expect("Failed to insert `Grounding` component.");
+    }
 }
 
 /// `AssetDisplayCellSystemData`.
@@ -48,40 +87,30 @@ pub struct AssetDisplayCellSystemData<'s> {
 impl<'s> ItemComponent<'s> for AssetDisplayCell {
     type SystemData = AssetDisplayCellSystemData<'s>;
 
-    fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
-        let AssetDisplayCellSystemData {
-            asset_display_cells,
-            parent_entities,
-            groundings,
-            spawn_game_object_resources,
-        } = system_data;
-
-        if !asset_display_cells.contains(entity) {
-            asset_display_cells
+    fn augment(&self, mut asset_display_cell_system_data: &mut Self::SystemData, entity: Entity) {
+        if !asset_display_cell_system_data
+            .asset_display_cells
+            .contains(entity)
+        {
+            asset_display_cell_system_data
+                .asset_display_cells
                 .insert(entity, *self)
                 .expect("Failed to insert `AssetDisplayCell` component.");
 
-            // TODO: Look up sequence ID for default sequence ID for the asset type.
-            let sequence_id = SequenceId::new(0);
-            let half_cell_width = i16::try_from(self.cell_size.w >> 1)
-                .expect("Failed to convert `cell_size.w` to `i16`.");
-            let half_cell_width = f32::from(half_cell_width);
-
-            let spawn = Spawn {
-                object: self.asset_id,
-                position: Position::new(half_cell_width, 10., 0.),
-                velocity: Velocity::default(),
-                sequence_id,
-            };
-            let entity_spawned =
-                GameObjectSpawner::spawn(spawn_game_object_resources, entity, &spawn);
-
-            parent_entities
-                .insert(entity_spawned, ParentEntity::new(entity))
-                .expect("Failed to insert `ParentEntity` component.");
-            groundings
-                .insert(entity_spawned, Grounding::OnGround)
-                .expect("Failed to insert `Grounding` component.");
+            match self.asset_type {
+                AssetType::Object(ObjectType::Character) => {
+                    self.spawn_character(&mut asset_display_cell_system_data, entity);
+                }
+                AssetType::Map => {
+                    // TODO: spawn and scale map.
+                }
+                asset_type => {
+                    log::error!(
+                        "`AssetDisplayCell` does not support displaying `{:?}`.",
+                        asset_type
+                    );
+                }
+            }
         }
     }
 }

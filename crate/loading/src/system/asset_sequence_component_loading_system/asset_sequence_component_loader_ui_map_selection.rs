@@ -193,14 +193,16 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // `AssetId`s for the asset type to display.
         //
         // We want to create an item for each of these in the correct place in the grid.
+        let asset_type = Into::<AssetType>::into(T::default());
         let asset_display_cell_item_ids = iter::once(AssetSelectionCell::Random)
             .chain(
                 asset_type_mappings
-                    .iter_ids(&Into::<AssetType>::into(T::default()))
+                    .iter_ids(&asset_type)
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
                         display_cell: AssetDisplayCell {
                             asset_id,
+                            asset_type,
                             cell_size,
                         },
                     }),

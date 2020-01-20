@@ -718,6 +718,7 @@ dependencies = [
  "kinematic_model 0.16.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.16.0",
+ "object_type 0.16.0",
  "parent_model 0.16.0",
  "sequence_model 0.16.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",

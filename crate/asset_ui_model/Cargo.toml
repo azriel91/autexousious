@@ -18,6 +18,7 @@ game_input = { path = "../game_input" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 object_model = { path = "../object_model" }
+object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
