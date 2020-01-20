@@ -345,6 +345,9 @@ impl AssetSequenceComponentLoaderUi {
                         character_selection_ui,
                     );
                 }
+                UiType::MapSelection(_map_selection_ui) => {
+                    unimplemented!();
+                }
                 UiType::ControlSettings(control_settings) => {
                     let keyboard_button_labels = keyboard_button_labels
                         .as_ref()

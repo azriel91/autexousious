@@ -92,6 +92,7 @@ map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 map_selection_stdio = { path = "../map_selection_stdio" }
 map_selection_ui = { path = "../map_selection_ui" }
+map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
