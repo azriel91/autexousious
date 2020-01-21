@@ -292,10 +292,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             .into_iter()
             .zip(input_controlleds.iter().copied())
             .map(|(ash_sprite_item_id, input_controlled)| {
-                let asset_selection_highlight = AssetSelectionHighlight {
-                    ash_sprite_item_id,
-                    asset_selection_status: AssetSelectionStatus::Inactive,
-                };
+                let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
@@ -305,7 +302,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)
-                    .with(AssetSelectionStatus::Inactive)
+                    .with(AssetSelectionStatus::InProgress)
                     .build();
 
                 ItemId::new(item_entity)

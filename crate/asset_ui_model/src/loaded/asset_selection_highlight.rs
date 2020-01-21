@@ -8,18 +8,13 @@ use derivative::Derivative;
 use derive_new::new;
 use parent_model::play::ParentEntity;
 
-use crate::play::{AssetSelectionParent, AssetSelectionStatus};
+use crate::play::AssetSelectionParent;
 
 /// Highlights an asset selection.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub struct AssetSelectionHighlight {
     /// `ItemId` of sprite to draw for the character selection widget.
     pub ash_sprite_item_id: ItemId,
-    /// The `AssetSelectionStatus` to begin with.
-    ///
-    /// For character selection, this would be `Inactive`. For map selection, it would be
-    /// `InProgress`.
-    pub asset_selection_status: AssetSelectionStatus,
 }
 
 /// `AssetSelectionHighlightSystemData`.
@@ -35,9 +30,6 @@ pub struct AssetSelectionHighlightSystemData<'s> {
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
-    /// `AssetSelectionStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub asset_selection_statuses: WriteStorage<'s, AssetSelectionStatus>,
     /// `AssetSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
@@ -54,7 +46,6 @@ impl<'s> ItemComponent<'s> for AssetSelectionHighlight {
             entities,
             item_ids,
             parent_entities,
-            asset_selection_statuses,
             asset_selection_parents,
             target_objects,
         } = system_data;
@@ -67,7 +58,6 @@ impl<'s> ItemComponent<'s> for AssetSelectionHighlight {
             .build_entity()
             .with(self.ash_sprite_item_id, item_ids)
             .with(parent_entity, parent_entities)
-            .with(self.asset_selection_status, asset_selection_statuses)
             .with(asset_selection_parent, asset_selection_parents)
             .with(target_object, target_objects)
             .build();

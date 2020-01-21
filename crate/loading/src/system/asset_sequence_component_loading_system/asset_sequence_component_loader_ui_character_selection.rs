@@ -318,10 +318,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .into_iter()
             .zip(input_controlleds.iter().copied())
             .map(|(ash_sprite_item_id, input_controlled)| {
-                let asset_selection_highlight = AssetSelectionHighlight {
-                    ash_sprite_item_id,
-                    asset_selection_status: AssetSelectionStatus::Inactive,
-                };
+                let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
