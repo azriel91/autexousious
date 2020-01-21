@@ -32,16 +32,19 @@ mod tests {
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
                         ControlInputEvent::AxisMoved(AxisMoveEventData {
+                            controller_id: 0,
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 1.,
                         }),
                         ControlInputEvent::AxisMoved(AxisMoveEventData {
+                            controller_id: 0,
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,
                         }),
                         ControlInputEvent::ControlActionPress(ControlActionEventData {
+                            controller_id: 0,
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
                         }),
@@ -90,29 +93,35 @@ mod tests {
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
                         ControlInputEvent::AxisMoved(AxisMoveEventData {
+                            controller_id: 0,
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 0.,
                         }),
                         ControlInputEvent::AxisMoved(AxisMoveEventData {
+                            controller_id: 0,
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,
                         }),
                         // e1
                         ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                            controller_id: 0,
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
                         }),
                         ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                            controller_id: 0,
                             entity: e1.clone(),
                             control_action: ControlAction::Jump,
                         }),
                         ControlInputEvent::ControlActionPress(ControlActionEventData {
+                            controller_id: 0,
                             entity: e1.clone(),
                             control_action: ControlAction::Attack,
                         }),
                         ControlInputEvent::ControlActionPress(ControlActionEventData {
+                            controller_id: 0,
                             entity: e1.clone(),
                             control_action: ControlAction::Special,
                         }),

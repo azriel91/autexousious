@@ -73,6 +73,7 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
                 ControlInputEvent::ControlActionPress(ControlActionEventData {
                     entity,
                     control_action,
+                    ..
                 }) => {
                     if *control_action == ControlAction::Attack {
                         Self::update_charge_components(
@@ -86,6 +87,7 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
                 ControlInputEvent::ControlActionRelease(ControlActionEventData {
                     entity,
                     control_action,
+                    ..
                 }) => {
                     if *control_action == ControlAction::Attack {
                         Self::update_charge_components(

@@ -9,7 +9,7 @@ use amethyst::{
 use approx::{relative_eq, relative_ne};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::ControllerInput;
+use game_input::{ControllerInput, InputControlled};
 use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
@@ -71,6 +71,9 @@ where
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: ReadStorage<'s, InputControlled>,
     /// `InputReactionsHandle` components.
     #[derivative(Debug = "ignore")]
     pub input_reactions_handles: ReadStorage<'s, InputReactionsHandle<InputReaction<IRR>>>,
@@ -98,9 +101,11 @@ where
             ref input_reactions_assets,
             ref mut sequence_ids,
             ref mut ir_app_event_sender_system_data,
+            ..
         }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         ControlActionEventData {
+            controller_id,
             entity,
             control_action,
         }: ControlActionEventData,
@@ -166,7 +171,12 @@ where
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
-                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                    IrAppEventSender::send(
+                        ir_app_event_sender_system_data,
+                        Some(controller_id),
+                        entity,
+                        event,
+                    )
                 });
 
                 sequence_ids
@@ -185,9 +195,11 @@ where
             ref input_reactions_assets,
             ref mut sequence_ids,
             ref mut ir_app_event_sender_system_data,
+            ..
         }: &mut InputReactionsTransitionResources<IRR>,
         requirement_system_data: &mut IRR::SystemData,
         AxisMoveEventData {
+            controller_id,
             entity,
             axis: control_axis,
             value,
@@ -254,7 +266,12 @@ where
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
-                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                    IrAppEventSender::send(
+                        ir_app_event_sender_system_data,
+                        Some(controller_id),
+                        entity,
+                        event,
+                    )
                 });
 
                 sequence_ids
@@ -272,6 +289,7 @@ where
         InputReactionsTransitionResources {
             ref entities,
             ref controller_inputs,
+            ref input_controlleds,
             ref input_reactions_handles,
             ref input_reactions_assets,
             ref mut sequence_ids,
@@ -283,63 +301,79 @@ where
             entities,
             input_reactions_handles,
             controller_inputs,
+            input_controlleds.maybe(),
             !&self.processed_entities,
         )
             .join()
-            .for_each(|(entity, input_reactions_handle, controller_input, _)| {
-                let input_reactions = input_reactions_assets
-                    .get(input_reactions_handle)
-                    .expect("Expected `InputReactions` to be loaded.");
+            .for_each(
+                |(entity, input_reactions_handle, controller_input, input_controlled, _)| {
+                    let input_reactions = input_reactions_assets
+                        .get(input_reactions_handle)
+                        .expect("Expected `InputReactions` to be loaded.");
 
-                let transition_sequence_id = input_reactions
-                    .iter()
-                    .filter_map(|input_reaction| {
-                        let input_reaction_requirement = &input_reaction.requirement;
+                    let transition_sequence_id = input_reactions
+                        .iter()
+                        .filter_map(|input_reaction| {
+                            let input_reaction_requirement = &input_reaction.requirement;
 
-                        match &input_reaction.effect {
-                            ReactionEffect::ActionHold(reaction_effect_data) => {
-                                Self::hold_transition_action(
-                                    reaction_effect_data,
-                                    *controller_input,
-                                )
-                                .map(|(transition, events)| {
-                                    (transition, events, input_reaction_requirement)
-                                })
+                            match &input_reaction.effect {
+                                ReactionEffect::ActionHold(reaction_effect_data) => {
+                                    Self::hold_transition_action(
+                                        reaction_effect_data,
+                                        *controller_input,
+                                    )
+                                    .map(
+                                        |(transition, events)| {
+                                            (transition, events, input_reaction_requirement)
+                                        },
+                                    )
+                                }
+                                ReactionEffect::AxisHold(reaction_effect_data) => {
+                                    Self::hold_transition_axis(
+                                        reaction_effect_data,
+                                        *controller_input,
+                                    )
+                                    .map(
+                                        |(transition, events)| {
+                                            (transition, events, input_reaction_requirement)
+                                        },
+                                    )
+                                }
+                                ReactionEffect::Fallback(FallbackTransition {
+                                    sequence_id,
+                                    events,
+                                }) => Some((*sequence_id, events, input_reaction_requirement)),
+                                _ => None,
                             }
-                            ReactionEffect::AxisHold(reaction_effect_data) => {
-                                Self::hold_transition_axis(reaction_effect_data, *controller_input)
-                                    .map(|(transition, events)| {
-                                        (transition, events, input_reaction_requirement)
-                                    })
-                            }
-                            ReactionEffect::Fallback(FallbackTransition {
+                        })
+                        .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                            Self::process_transition(
+                                requirement_system_data,
+                                entity,
                                 sequence_id,
                                 events,
-                            }) => Some((*sequence_id, events, input_reaction_requirement)),
-                            _ => None,
-                        }
-                    })
-                    .filter_map(|(sequence_id, events, input_reaction_requirement)| {
-                        Self::process_transition(
-                            requirement_system_data,
-                            entity,
-                            sequence_id,
-                            events,
-                            input_reaction_requirement,
-                        )
-                    })
-                    .next();
+                                input_reaction_requirement,
+                            )
+                        })
+                        .next();
 
-                if let Some((transition_sequence_id, events)) = transition_sequence_id {
-                    events.iter().copied().for_each(|event| {
-                        IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
-                    });
+                    if let Some((transition_sequence_id, events)) = transition_sequence_id {
+                        events.iter().copied().for_each(|event| {
+                            IrAppEventSender::send(
+                                ir_app_event_sender_system_data,
+                                input_controlled
+                                    .map(|input_controlled| input_controlled.controller_id),
+                                entity,
+                                event,
+                            )
+                        });
 
-                    sequence_ids
-                        .insert(entity, transition_sequence_id)
-                        .expect("Failed to insert `SequenceId` component.");
-                }
-            });
+                        sequence_ids
+                            .insert(entity, transition_sequence_id)
+                            .expect("Failed to insert `SequenceId` component.");
+                    }
+                },
+            );
     }
 
     /// Returns the transition sequence ID if the action button for that hold transition is held.

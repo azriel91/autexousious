@@ -241,6 +241,7 @@ mod tests {
 
     fn press_left(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::AxisMoved(AxisMoveEventData {
+            controller_id: 0,
             entity,
             axis: Axis::X,
             value: -1.,
@@ -249,6 +250,7 @@ mod tests {
 
     fn press_right(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::AxisMoved(AxisMoveEventData {
+            controller_id: 0,
             entity,
             axis: Axis::X,
             value: 1.,
@@ -257,6 +259,7 @@ mod tests {
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::ControlActionPress(ControlActionEventData {
+            controller_id: 0,
             entity,
             control_action: ControlAction::Jump,
         })
@@ -264,6 +267,7 @@ mod tests {
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::ControlActionPress(ControlActionEventData {
+            controller_id: 0,
             entity,
             control_action: ControlAction::Attack,
         })

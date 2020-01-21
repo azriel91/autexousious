@@ -12,8 +12,7 @@ use asset_ui_model::{
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use chase_model::play::ChaseModeStick;
-use game_input::{InputControlled, SharedInputControlled};
-use game_input_model::InputConfig;
+use game_input::SharedInputControlled;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use map_selection_ui_model::{
@@ -40,7 +39,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         item_ids_all: &mut Vec<ItemId>,
-        input_config: &InputConfig,
         map_selection_ui: &MapSelectionUi,
     ) {
         let MapSelectionUi {
@@ -52,14 +50,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                 },
             maps_available_selector,
         } = map_selection_ui;
-
-        let input_controlleds = {
-            let controller_count = input_config.controller_configs.len();
-            (0..controller_count)
-                .into_iter()
-                .map(InputControlled::new)
-                .collect::<Vec<InputControlled>>()
-        };
 
         // Store widget item IDs in `item_ids_all` to be spawned during state ID
         // updates, but don't store item IDs for widget template layers as those
@@ -158,7 +148,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             asset_slug,
             sequence_id_mappings,
             asset_sequence_component_loader_ui_components,
-            &input_controlleds,
             maps_available_selector,
         ));
     }
@@ -169,7 +158,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
-        input_controlleds: &[InputControlled],
         maps_available_selector: &config::AssetSelector<T>,
     ) -> ItemId
     where
@@ -246,8 +234,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // Create item for each `AssetSelectionHighlight`.
         let asset_selection_highlight_item_ids = selection_highlights
             .iter()
-            .zip(input_controlleds.iter().copied())
-            .map(|(ash_template, input_controlled)| {
+            .map(|ash_template| {
                 let ui_sprite_label = &ash_template.sprite;
                 let position_init = ui_sprite_label.position;
                 let offset = Position::<f32>::from(position_init);
@@ -273,7 +260,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     .with(position_init)
                     .with(sequence_id_init)
                     .with(chase_mode_stick)
-                    .with(input_controlled)
+                    .with(SharedInputControlled)
                     .with(sequence_end_transitions)
                     .with(wait_sequence_handles)
                     .with(tint_sequence_handles)
@@ -290,15 +277,14 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             })
             .collect::<Vec<ItemId>>() // Collect to reclaim `asset_world` for next closure.
             .into_iter()
-            .zip(input_controlleds.iter().copied())
-            .map(|(ash_sprite_item_id, input_controlled)| {
+            .map(|ash_sprite_item_id| {
                 let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
                     // isn't already there.
                     .with(PositionInit::default())
-                    .with(input_controlled)
+                    .with(SharedInputControlled)
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)

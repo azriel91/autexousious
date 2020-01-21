@@ -47,6 +47,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
 
         input_events.read(input_events_id).for_each(|ev| match ev {
             ControlInputEvent::AxisMoved(AxisMoveEventData {
+                controller_id: _,
                 entity,
                 axis,
                 value,
@@ -58,6 +59,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                 };
             }
             ControlInputEvent::ControlActionPress(ControlActionEventData {
+                controller_id: _,
                 entity,
                 control_action,
             }) => {
@@ -70,6 +72,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                 };
             }
             ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                controller_id: _,
                 entity,
                 control_action,
             }) => {

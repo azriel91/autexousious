@@ -64,7 +64,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
             .expect("Expected `input_event_rid` field to be set.");
 
         input_ec.read(input_event_rid).for_each(|ev| {
-            match ev {
+            match *ev {
                 InputEvent::ActionPressed(PlayerActionControl { player, action }) => {
                     // Find the entity has the `player` control id in its `InputControlled`
                     // component.
@@ -76,7 +76,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     let control_input_events_iter = (&entities, &input_controlleds)
                         .join()
                         .filter_map(|(entity, input_controlled)| {
-                            if input_controlled.controller_id == *player {
+                            if input_controlled.controller_id == player {
                                 Some(entity)
                             } else {
                                 None
@@ -85,8 +85,9 @@ impl<'s> System<'s> for InputToControlInputSystem {
                         .chain(shared_input_controlled_entities)
                         .map(|entity| {
                             ControlInputEvent::ControlActionPress(ControlActionEventData {
+                                controller_id: player,
                                 entity,
-                                control_action: *action,
+                                control_action: action,
                             })
                         });
 
@@ -100,7 +101,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     let control_input_events_iter = (&entities, &input_controlleds)
                         .join()
                         .filter_map(|(entity, input_controlled)| {
-                            if input_controlled.controller_id == *player {
+                            if input_controlled.controller_id == player {
                                 Some(entity)
                             } else {
                                 None
@@ -109,8 +110,9 @@ impl<'s> System<'s> for InputToControlInputSystem {
                         .chain(shared_input_controlled_entities)
                         .map(|entity| {
                             ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                                controller_id: player,
                                 entity,
-                                control_action: *action,
+                                control_action: action,
                             })
                         });
 
@@ -127,7 +129,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     let control_input_events_iter = (&entities, &input_controlleds)
                         .join()
                         .filter_map(|(entity, input_controlled)| {
-                            if input_controlled.controller_id == *player {
+                            if input_controlled.controller_id == player {
                                 Some(entity)
                             } else {
                                 None
@@ -136,9 +138,10 @@ impl<'s> System<'s> for InputToControlInputSystem {
                         .chain(shared_input_controlled_entities)
                         .map(|entity| {
                             ControlInputEvent::AxisMoved(AxisMoveEventData {
+                                controller_id: player,
                                 entity,
-                                axis: *axis,
-                                value: *value,
+                                axis,
+                                value,
                             })
                         });
 

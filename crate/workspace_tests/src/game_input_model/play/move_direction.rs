@@ -9,6 +9,7 @@ mod tests {
             fn $test_name() {
                 let entity = entity();
                 let move_direction = MoveDirection::from(AxisMoveEventData {
+                    controller_id: 0,
                     entity,
                     axis: $axis,
                     value: $value,

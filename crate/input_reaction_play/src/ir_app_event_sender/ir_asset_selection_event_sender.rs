@@ -7,6 +7,7 @@ use asset_model::{
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;
+use game_input_model::ControllerId;
 use log::debug;
 use object_type::ObjectType;
 use state_registry::StateId;
@@ -20,6 +21,7 @@ pub struct IrAssetSelectionEventSender;
 impl IrAssetSelectionEventSender {
     pub fn handle_event(
         ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
+        controller_id: ControllerId,
         entity: Entity,
         asset_selection_event_variant: AssetSelectionEventCommand,
     ) {
@@ -58,8 +60,7 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Join { controller_id })
+                Some(AssetSelectionEvent::Join { controller_id })
             }
             AssetSelectionEventCommand::Leave => {
                 ir_app_event_sender_system_data
@@ -67,25 +68,14 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::Inactive)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Leave { controller_id })
+                Some(AssetSelectionEvent::Leave { controller_id })
             }
             AssetSelectionEventCommand::Switch(direction) => {
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .and_then(|controller_id| {
-                        Self::asset_selection(
-                            ir_app_event_sender_system_data,
-                            ash_entity,
-                            Some(direction),
-                        )
-                        .map(|asset_selection| (controller_id, asset_selection))
+                Self::asset_selection(ir_app_event_sender_system_data, ash_entity, Some(direction))
+                    .map(|asset_selection| AssetSelectionEvent::Switch {
+                        controller_id,
+                        asset_selection,
                     })
-                    .map(
-                        |(controller_id, asset_selection)| AssetSelectionEvent::Switch {
-                            controller_id,
-                            asset_selection,
-                        },
-                    )
             }
             AssetSelectionEventCommand::Select => {
                 ir_app_event_sender_system_data
@@ -93,17 +83,12 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::Ready)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .and_then(|controller_id| {
-                        Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None)
-                            .map(|asset_selection| (controller_id, asset_selection))
-                    })
-                    .map(
-                        |(controller_id, asset_selection)| AssetSelectionEvent::Select {
-                            controller_id,
-                            asset_selection,
-                        },
-                    )
+                Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None).map(
+                    |asset_selection| AssetSelectionEvent::Select {
+                        controller_id,
+                        asset_selection,
+                    },
+                )
             }
             AssetSelectionEventCommand::Deselect => {
                 ir_app_event_sender_system_data
@@ -111,8 +96,7 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Deselect { controller_id })
+                Some(AssetSelectionEvent::Deselect { controller_id })
             }
             AssetSelectionEventCommand::Confirm => {
                 if Self::asset_selection_confirm_preconditions_met(

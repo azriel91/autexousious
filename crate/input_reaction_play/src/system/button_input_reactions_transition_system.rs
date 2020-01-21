@@ -139,7 +139,7 @@ where
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
-                    IrAppEventSender::send(ir_app_event_sender_system_data, entity, event)
+                    IrAppEventSender::send(ir_app_event_sender_system_data, None, entity, event)
                 });
 
                 sequence_ids

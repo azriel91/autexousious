@@ -22,8 +22,7 @@ mod tests {
         config::ChargePoints,
         play::{ChargeTrackerClock, ChargeUseEvent},
     };
-    use derivative::Derivative;
-    use game_input::ControllerInput;
+    use game_input::{ControllerInput, InputControlled};
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
@@ -45,6 +44,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Attack,
                     };
@@ -67,6 +67,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Special,
                     };
@@ -112,6 +113,7 @@ mod tests {
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Jump,
                     };
@@ -138,6 +140,7 @@ mod tests {
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Special,
                     };
@@ -160,6 +163,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
+                        controller_id: 0,
                         entity,
                         axis: Axis::Z,
                         value: -1.,
@@ -183,6 +187,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
+                        controller_id: 0,
                         entity,
                         axis: Axis::Z,
                         value: 0.,
@@ -228,6 +233,7 @@ mod tests {
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
+                        controller_id: 0,
                         entity,
                         axis: Axis::Z,
                         value: 1.,
@@ -255,6 +261,7 @@ mod tests {
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
+                        controller_id: 0,
                         entity,
                         axis: Axis::X,
                         value: 0.,
@@ -313,6 +320,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Special,
                     };
@@ -341,6 +349,7 @@ mod tests {
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
+                        controller_id: 0,
                         entity,
                         control_action: ControlAction::Special,
                     };
@@ -429,6 +438,7 @@ mod tests {
                         mut charge_tracker_clocks,
                         mut mirroreds,
                         mut controller_inputs,
+                        mut input_controlleds,
                     } = world.system_data::<TestSystemData>();
 
                     sequence_ids
@@ -453,6 +463,9 @@ mod tests {
                     controller_inputs
                         .insert(entity, controller_input_setup)
                         .expect("Failed to insert `ControllerInput` component.");
+                    input_controlleds
+                        .insert(entity, InputControlled::new(0))
+                        .expect("Failed to insert `InputControlled` component.");
                 }
 
                 if let Some(control_input_event_fn) = control_input_event_fn {
@@ -603,23 +616,16 @@ mod tests {
         assert_eq!(events_expected, events_actual)
     }
 
-    #[derive(Derivative, SystemData)]
-    #[derivative(Debug)]
+    #[derive(SystemData)]
     struct TestSystemData<'s> {
-        #[derivative(Debug = "ignore")]
         sequence_ids: WriteStorage<'s, SequenceId>,
-        #[derivative(Debug = "ignore")]
         character_input_reactions_handles: WriteStorage<'s, CharacterInputReactionsHandle>,
-        #[derivative(Debug = "ignore")]
         health_pointses: WriteStorage<'s, HealthPoints>,
-        #[derivative(Debug = "ignore")]
         skill_pointses: WriteStorage<'s, SkillPoints>,
-        #[derivative(Debug = "ignore")]
         charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,
-        #[derivative(Debug = "ignore")]
         mirroreds: WriteStorage<'s, Mirrored>,
-        #[derivative(Debug = "ignore")]
         controller_inputs: WriteStorage<'s, ControllerInput>,
+        input_controlleds: WriteStorage<'s, InputControlled>,
     }
 
     struct SetupParams {

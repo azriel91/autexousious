@@ -3,7 +3,6 @@ mod ir_asset_selection_event_sender;
 use amethyst::ecs::{Entity, ReadStorage};
 use asset_model::loaded::{AssetId, AssetIdMappings};
 use control_settings_model::ControlSettingsEvent;
-use game_input::InputControlled;
 use game_input_model::ControllerId;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
@@ -31,16 +30,24 @@ impl IrAppEventSender {
     /// * `event`: `AppEvent` command variant to send.
     pub fn send(
         ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
+        controller_id: Option<ControllerId>,
         entity: Entity,
         event: InputReactionAppEvent,
     ) {
         match event {
             InputReactionAppEvent::AssetSelection(asset_selection_event_variant) => {
-                IrAssetSelectionEventSender::handle_event(
-                    ir_app_event_sender_system_data,
-                    entity,
-                    asset_selection_event_variant,
-                );
+                if let Some(controller_id) = controller_id {
+                    IrAssetSelectionEventSender::handle_event(
+                        ir_app_event_sender_system_data,
+                        controller_id,
+                        entity,
+                        asset_selection_event_variant,
+                    );
+                } else {
+                    log::error!(
+                        "Expected `controller_id` to be set to send `AssetSelection` event."
+                    );
+                }
             }
             InputReactionAppEvent::ControlSettings(control_settings_event) => {
                 Self::handle_control_settings_event(
@@ -64,30 +71,6 @@ impl IrAppEventSender {
                     map_selection_event_variant,
                 );
             }
-        }
-    }
-
-    pub(crate) fn controller_id(
-        IrAppEventSenderSystemData {
-            asset_ids,
-            asset_id_mappings,
-            input_controlleds,
-            ..
-        }: &IrAppEventSenderSystemData,
-        entity: Entity,
-    ) -> Option<ControllerId> {
-        let input_controlled = input_controlleds.get(entity).copied();
-
-        if let Some(InputControlled { controller_id }) = input_controlled {
-            Some(controller_id)
-        } else {
-            IrAppEventSender::log_component_missing_error(
-                asset_ids,
-                asset_id_mappings,
-                entity,
-                "InputControlled",
-            );
-            None
         }
     }
 

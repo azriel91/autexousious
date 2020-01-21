@@ -34,20 +34,24 @@ mod tests {
             |input_controlled_entity, shared_input_controlled_entity| {
                 vec![
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
@@ -68,38 +72,46 @@ mod tests {
             |input_controlled_entity, shared_input_controlled_entity| {
                 vec![
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         axis: Axis::X,
                         value: 0.,
                     }),
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         axis: Axis::X,
                         value: 0.,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                        controller_id: 0,
                         entity: input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                        controller_id: 0,
                         entity: shared_input_controlled_entity,
                         control_action: ControlAction::Jump,
                     }),
