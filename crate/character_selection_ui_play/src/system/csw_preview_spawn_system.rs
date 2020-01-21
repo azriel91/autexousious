@@ -93,6 +93,7 @@ impl CswPreviewSpawnSystem {
     fn find_asset_selection_entity(
         CswPreviewSpawnResources {
             input_controlleds,
+            csw_mains,
             asset_selection_parents,
             ..
         }: &CswPreviewSpawnResources,
@@ -101,8 +102,13 @@ impl CswPreviewSpawnSystem {
         (input_controlleds, asset_selection_parents)
             .join()
             .find_map(|(input_controlled, asset_selection_parent)| {
-                if input_controlled.controller_id == controller_id {
-                    Some(asset_selection_parent.0)
+                let asset_selection_parent_entity = asset_selection_parent.0;
+                // Need to filter by `CswMain`s because `AssetSelectionHighlight` entities also have
+                // `InputControlled`s and `AssetSelecitonParent`s.
+                if input_controlled.controller_id == controller_id
+                    && csw_mains.get(asset_selection_parent_entity).is_some()
+                {
+                    Some(asset_selection_parent_entity)
                 } else {
                     None
                 }
