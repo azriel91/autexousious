@@ -92,6 +92,12 @@ impl<'s> ItemComponent<'s> for PositionInit {
         let scale_init = scale_inits.get(entity).map(|scale_init| *scale_init);
 
         let mut translation = Into::<Vector3<f32>>::into(*self);
+        if let Some(scale_init) = scale_init {
+            translation.x *= scale_init.x;
+            translation.y *= scale_init.y;
+            translation.z *= scale_init.z;
+        }
+
         if let Some(position_parent) = position_parent {
             translation += *position_parent;
         }
