@@ -10,7 +10,10 @@ use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::Position, play::PositionInitParent};
+use crate::{
+    config::{Position, ScaleInit},
+    play::PositionInitParent,
+};
 
 /// Position initializer for an entity.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Component, PartialEq, Eq, Serialize, new)]
@@ -60,6 +63,9 @@ pub struct PositionInitSystemData<'s> {
     /// `PositionInitParent` components.
     #[derivative(Debug = "ignore")]
     pub position_init_parents: ReadStorage<'s, PositionInitParent>,
+    /// `ScaleInit` components.
+    #[derivative(Debug = "ignore")]
+    pub scale_inits: ReadStorage<'s, ScaleInit>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
@@ -74,6 +80,7 @@ impl<'s> ItemComponent<'s> for PositionInit {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let PositionInitSystemData {
             position_init_parents,
+            scale_inits,
             positions,
             transforms,
         } = system_data;
@@ -82,6 +89,7 @@ impl<'s> ItemComponent<'s> for PositionInit {
         let position_parent = position_init_parents
             .get(entity)
             .and_then(|position_init_parent| positions.get(position_init_parent.0).copied());
+        let scale_init = scale_inits.get(entity).map(|scale_init| *scale_init);
 
         let mut translation = Into::<Vector3<f32>>::into(*self);
         if let Some(position_parent) = position_parent {
@@ -91,6 +99,10 @@ impl<'s> ItemComponent<'s> for PositionInit {
         let position = Position::from(translation);
         let mut transform = Transform::default();
         transform.set_translation(translation);
+
+        if let Some(scale_init) = scale_init {
+            transform.set_scale(Vector3::new(scale_init.x, scale_init.y, scale_init.z));
+        }
 
         if positions.get(entity).is_none() {
             positions

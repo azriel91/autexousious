@@ -1,11 +1,15 @@
+use std::cmp;
+
 use amethyst::{
-    ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
+    ecs::{storage::VecStorage, Component, Entity, Read, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use asset_model::{loaded::AssetId, ItemComponent};
+use camera_model::play::CameraZoomDimensions;
 use derivative::Derivative;
 use derive_new::new;
-use kinematic_model::play::PositionInitParent;
+use kinematic_model::{config::ScaleInit, play::PositionInitParent};
+use map_model::loaded::AssetMapBounds;
 use map_play::{MapSpawner, MapSpawnerResources};
 use parent_model::play::ParentEntity;
 
@@ -33,15 +37,25 @@ impl AssetDisplayCellMap {
     fn spawn_map(
         &self,
         AssetDisplayCellMapSystemData {
+            camera_zoom_dimensions,
+            asset_map_bounds,
             parent_entities,
             position_init_parents,
+            scale_inits,
             map_spawner_resources,
             ..
         }: &mut AssetDisplayCellMapSystemData,
         entity: Entity,
     ) {
-        // TODO: scale map down
-        // let cell_width = self.cell_size.w as f32;
+        // Scale map to fit within the cell.
+        let cell_width = self.cell_size.w as f32;
+        let map_width_assumed = asset_map_bounds
+            .get(self.asset_id)
+            .map(|map_bounds| {
+                cmp::max(camera_zoom_dimensions.width as u32, map_bounds.width) as f32
+            })
+            .unwrap_or(camera_zoom_dimensions.width);
+        let scale = cell_width / map_width_assumed;
 
         let map_entities = MapSpawner::spawn(map_spawner_resources, self.asset_id);
         let parent_entity = ParentEntity::new(entity);
@@ -52,6 +66,9 @@ impl AssetDisplayCellMap {
             position_init_parents
                 .insert(map_entity, PositionInitParent::new(entity))
                 .expect("Failed to insert `PositionInitParent` component.");
+            scale_inits
+                .insert(map_entity, ScaleInit::new(scale, scale, scale))
+                .expect("Failed to insert `ScaleInit` component.");
         });
     }
 }
@@ -63,12 +80,21 @@ pub struct AssetDisplayCellMapSystemData<'s> {
     /// `AssetDisplayCellMap` components.
     #[derivative(Debug = "ignore")]
     pub asset_display_cells: WriteStorage<'s, AssetDisplayCellMap>,
+    /// `CameraZoomDimensions` resource.
+    #[derivative(Debug = "ignore")]
+    pub camera_zoom_dimensions: Read<'s, CameraZoomDimensions>,
+    /// `AssetMapBounds` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_map_bounds: Read<'s, AssetMapBounds>,
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
     /// `PositionInitParent` components.
     #[derivative(Debug = "ignore")]
     pub position_init_parents: WriteStorage<'s, PositionInitParent>,
+    /// `ScaleInit` components.
+    #[derivative(Debug = "ignore")]
+    pub scale_inits: WriteStorage<'s, ScaleInit>,
     /// `MapSpawnerResources`.
     pub map_spawner_resources: MapSpawnerResources<'s>,
 }

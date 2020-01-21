@@ -11,12 +11,14 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
+camera_model = { path = "../camera_model" }
 chase_model = { path = "../chase_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
+map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }

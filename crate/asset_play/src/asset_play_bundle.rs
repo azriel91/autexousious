@@ -26,7 +26,7 @@ use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
 use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
-    config::{PositionInit, VelocityInit},
+    config::{PositionInit, ScaleInit, VelocityInit},
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
@@ -65,6 +65,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<ButtonInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
+        asset_world.register::<ScaleInit>();
         asset_world.register::<PositionZAsY>();
         asset_world.register::<Mirrored>();
         asset_world.register::<Grounding>();
@@ -130,6 +131,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             ItemComponentComponentAugmentSystem::<VelocityInit>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<VelocityInit>>(),
             &[],
+        );
+        // Must strictly come after `PositionInit` as it modifies the `Transform` scale.
+        builder.add(
+            ItemComponentComponentAugmentSystem::<ScaleInit>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ScaleInit>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<PositionInit>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionZAsY>::new(),

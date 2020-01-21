@@ -15,6 +15,7 @@ asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
+log = "0.4.8"
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.104", features = ["derive"] }
