@@ -683,6 +683,7 @@ dependencies = [
  "game_mode_selection_model 0.16.0",
  "input_reaction_model 0.16.0",
  "kinematic_model 0.16.0",
+ "map_selection_ui_model 0.17.0",
  "mirrored_model 0.16.0",
  "object_model 0.16.0",
  "object_type 0.16.0",

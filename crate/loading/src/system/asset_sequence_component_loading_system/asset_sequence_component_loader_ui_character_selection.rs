@@ -8,7 +8,9 @@ use asset_model::{
 };
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
-    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{
+        AssetDisplayCellCharacter, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
+    },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use character_selection_ui_model::{
@@ -224,9 +226,8 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     .iter_ids(&asset_type)
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
-                        display_cell: AssetDisplayCell {
+                        display_cell: AssetDisplayCellCharacter {
                             asset_id,
-                            asset_type,
                             cell_size,
                         },
                     }),

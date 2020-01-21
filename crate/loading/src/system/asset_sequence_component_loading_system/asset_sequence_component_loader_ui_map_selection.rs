@@ -8,7 +8,7 @@ use asset_model::{
 };
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
-    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{AssetDisplayCellMap, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use chase_model::play::ChaseModeStick;
@@ -200,9 +200,8 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     .iter_ids(&asset_type)
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
-                        display_cell: AssetDisplayCell {
+                        display_cell: AssetDisplayCellMap {
                             asset_id,
-                            asset_type,
                             cell_size,
                         },
                     }),

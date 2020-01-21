@@ -2,23 +2,24 @@ use amethyst::{
     ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{play::AssetSelection, ItemComponent};
+use asset_model::{loaded::AssetId, play::AssetSelection, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
 use ui_model_spi::play::WidgetStatus;
-
-use crate::loaded::{AssetDisplayCell, AssetDisplayCellSystemData};
 
 /// `AssetSelection` cell for a particular asset.
 ///
 /// Essentially an `AssetDisplayCell` with an `AssetSelection` attached.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(VecStorage)]
-pub enum AssetSelectionCell {
+pub enum AssetSelectionCell<ADC>
+where
+    ADC: Send + Sync + 'static,
+{
     /// Cell for an `AssetId` selection.
     Id {
         /// Inner display cell.
-        display_cell: AssetDisplayCell,
+        display_cell: ADC,
     },
     /// Cell for `Random` selection.
     Random,
@@ -27,9 +28,12 @@ pub enum AssetSelectionCell {
 /// `AssetSelectionCellSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct AssetSelectionCellSystemData<'s> {
-    /// `AssetDisplayCellSystemData`.
-    pub asset_display_cell_system_data: AssetDisplayCellSystemData<'s>,
+pub struct AssetSelectionCellSystemData<'s, AdcSystemData>
+where
+    AdcSystemData: SystemData<'s>,
+{
+    /// `AdcSystemData`.
+    pub asset_display_cell_system_data: AdcSystemData,
     /// `AssetSelection` components.
     #[derivative(Debug = "ignore")]
     pub asset_selections: WriteStorage<'s, AssetSelection>,
@@ -38,8 +42,11 @@ pub struct AssetSelectionCellSystemData<'s> {
     pub widget_statuses: WriteStorage<'s, WidgetStatus>,
 }
 
-impl<'s> ItemComponent<'s> for AssetSelectionCell {
-    type SystemData = AssetSelectionCellSystemData<'s>;
+impl<'s, ADC> ItemComponent<'s> for AssetSelectionCell<ADC>
+where
+    ADC: ItemComponent<'s> + AsRef<AssetId> + Send + Sync + 'static,
+{
+    type SystemData = AssetSelectionCellSystemData<'s, <ADC as ItemComponent<'s>>::SystemData>;
 
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let AssetSelectionCellSystemData {
@@ -53,7 +60,10 @@ impl<'s> ItemComponent<'s> for AssetSelectionCell {
                 display_cell.augment(asset_display_cell_system_data, entity);
                 if !asset_selections.contains(entity) {
                     asset_selections
-                        .insert(entity, AssetSelection::Id(display_cell.asset_id))
+                        .insert(
+                            entity,
+                            AssetSelection::Id(*AsRef::<AssetId>::as_ref(display_cell)),
+                        )
                         .expect("Failed to insert `AssetSelection` component.");
                 }
             }
