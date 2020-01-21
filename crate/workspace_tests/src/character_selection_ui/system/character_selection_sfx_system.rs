@@ -22,7 +22,10 @@ mod tests {
 
     #[test]
     fn plays_sound_on_join_event() -> Result<(), Error> {
-        run_test(|_| AssetSelectionEvent::Join { controller_id: 123 })
+        run_test(|_| AssetSelectionEvent::Join {
+            entity: None,
+            controller_id: 123,
+        })
     }
 
     #[test]
@@ -30,6 +33,7 @@ mod tests {
         let asset_selection_event_fn = |asset_id| {
             let asset_selection = AssetSelection::Id(asset_id);
             AssetSelectionEvent::Switch {
+                entity: None,
                 controller_id: 123,
                 asset_selection,
             }
@@ -42,6 +46,7 @@ mod tests {
         let asset_selection_event_fn = |asset_id| {
             let asset_selection = AssetSelection::Id(asset_id);
             AssetSelectionEvent::Select {
+                entity: None,
                 controller_id: 123,
                 asset_selection,
             }
@@ -51,12 +56,18 @@ mod tests {
 
     #[test]
     fn plays_sound_on_deselect_event() -> Result<(), Error> {
-        run_test(|_| AssetSelectionEvent::Deselect { controller_id: 123 })
+        run_test(|_| AssetSelectionEvent::Deselect {
+            entity: None,
+            controller_id: 123,
+        })
     }
 
     #[test]
     fn plays_sound_on_leave_event() -> Result<(), Error> {
-        run_test(|_| AssetSelectionEvent::Leave { controller_id: 123 })
+        run_test(|_| AssetSelectionEvent::Leave {
+            entity: None,
+            controller_id: 123,
+        })
     }
 
     #[test]

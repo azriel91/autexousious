@@ -60,7 +60,10 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                Some(AssetSelectionEvent::Join { controller_id })
+                Some(AssetSelectionEvent::Join {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Leave => {
                 ir_app_event_sender_system_data
@@ -68,11 +71,15 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::Inactive)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                Some(AssetSelectionEvent::Leave { controller_id })
+                Some(AssetSelectionEvent::Leave {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Switch(direction) => {
                 Self::asset_selection(ir_app_event_sender_system_data, ash_entity, Some(direction))
                     .map(|asset_selection| AssetSelectionEvent::Switch {
+                        entity: Some(ash_entity),
                         controller_id,
                         asset_selection,
                     })
@@ -85,6 +92,7 @@ impl IrAssetSelectionEventSender {
 
                 Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None).map(
                     |asset_selection| AssetSelectionEvent::Select {
+                        entity: Some(ash_entity),
                         controller_id,
                         asset_selection,
                     },
@@ -96,7 +104,10 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                Some(AssetSelectionEvent::Deselect { controller_id })
+                Some(AssetSelectionEvent::Deselect {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Confirm => {
                 if Self::asset_selection_confirm_preconditions_met(

@@ -50,7 +50,10 @@ mod tests {
 
                 assert!(result.is_ok());
                 assert_eq!(
-                    AssetSelectionEvent::$variant { controller_id },
+                    AssetSelectionEvent::$variant {
+                        entity: None,
+                        controller_id
+                    },
                     result.unwrap()
                 )
             }
@@ -80,6 +83,7 @@ mod tests {
                         let asset_selection = $asset_selection_fn(&*world);
                         assert_eq!(
                             AssetSelectionEvent::$variant {
+                                entity: None,
                                 controller_id,
                                 asset_selection
                             },

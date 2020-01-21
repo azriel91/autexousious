@@ -1,3 +1,4 @@
+use amethyst::ecs::Entity;
 use game_input_model::ControllerId;
 
 use crate::play::AssetSelection;
@@ -9,31 +10,51 @@ pub enum AssetSelectionEvent {
     Return,
     /// Player has joined / become active.
     Join {
-        /// ID of the controller.
+        /// Entity that the event originated from.
+        ///
+        /// This may be `None` if sent as a CLI command.
+        entity: Option<Entity>,
+        /// ID of the controller that sent the event.
         controller_id: ControllerId,
     },
     /// Player has left / become inactive.
     Leave {
-        /// ID of the controller.
+        /// Entity that the event originated from.
+        ///
+        /// This may be `None` if sent as a CLI command.
+        entity: Option<Entity>,
+        /// ID of the controller that sent the event.
         controller_id: ControllerId,
     },
     /// `AssetSelection` has switched.
     Switch {
-        /// ID of the controller.
+        /// Entity that the event originated from.
+        ///
+        /// This may be `None` if sent as a CLI command.
+        entity: Option<Entity>,
+        /// ID of the controller that sent the event.
         controller_id: ControllerId,
         /// ID of the selected asset.
         asset_selection: AssetSelection,
     },
     /// `AssetSelection` is confirmed.
     Select {
-        /// ID of the controller.
+        /// Entity that the event originated from.
+        ///
+        /// This may be `None` if sent as a CLI command.
+        entity: Option<Entity>,
+        /// ID of the controller that sent the event.
         controller_id: ControllerId,
         /// ID of the selected asset.
         asset_selection: AssetSelection,
     },
     /// Asset has been deselected.
     Deselect {
-        /// ID of the controller.
+        /// Entity that the event originated from.
+        ///
+        /// This may be `None` if sent as a CLI command.
+        entity: Option<Entity>,
+        /// ID of the controller that sent the event.
         controller_id: ControllerId,
     },
     /// Confirm `AssetSelection`s.

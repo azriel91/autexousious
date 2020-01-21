@@ -108,7 +108,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
             .read(asset_selection_event_rid)
             .for_each(|ev| match ev {
                 AssetSelectionEvent::Return => {}
-                AssetSelectionEvent::Join { controller_id } => {
+                AssetSelectionEvent::Join { controller_id, .. } => {
                     if let Some((entity_portrait, csw_portraits, asset_selection)) =
                         Self::find_csw_portrait(find_csw_data, *controller_id).and_then(
                             |(entity_portrait, csw_portraits, asset_selection_parent)| {
@@ -130,7 +130,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                             .expect("Failed to insert `SequenceId` component.");
                     }
                 }
-                AssetSelectionEvent::Leave { controller_id } => {
+                AssetSelectionEvent::Leave { controller_id, .. } => {
                     if let Some((entity_portrait, csw_portraits, _)) =
                         Self::find_csw_portrait(find_csw_data, *controller_id)
                     {
@@ -143,6 +143,7 @@ impl<'s> System<'s> for CswPortraitUpdateSystem {
                 AssetSelectionEvent::Switch {
                     controller_id,
                     asset_selection,
+                    ..
                 } => {
                     if let Some((entity_portrait, csw_portraits, _)) =
                         Self::find_csw_portrait(find_csw_data, *controller_id)
