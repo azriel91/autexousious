@@ -16,6 +16,7 @@ use game_input::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::{MapSelection, MapSelectionEvent};
+use state_registry::StateId;
 
 /// `IrAppEventSenderSystemData`.
 #[derive(Derivative, SystemData)]
@@ -30,6 +31,10 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+
+    /// `StateId` resource.
+    #[derivative(Debug = "ignore")]
+    pub state_id: Read<'s, StateId>,
 
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]

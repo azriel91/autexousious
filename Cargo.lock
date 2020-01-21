@@ -2755,6 +2755,7 @@ dependencies = [
  "map_selection_model 0.16.0",
  "object_type 0.16.0",
  "sequence_model 0.16.0",
+ "state_registry 0.16.0",
 ]
 
 [[package]]

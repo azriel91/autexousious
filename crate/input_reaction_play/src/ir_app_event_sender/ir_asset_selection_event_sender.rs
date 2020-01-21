@@ -9,6 +9,7 @@ use asset_model::{
 use asset_ui_model::play::AssetSelectionStatus;
 use log::debug;
 use object_type::ObjectType;
+use state_registry::StateId;
 
 use crate::{IrAppEventSender, IrAppEventSenderSystemData};
 
@@ -151,6 +152,7 @@ impl IrAssetSelectionEventSender {
             asset_ids,
             asset_id_mappings,
             asset_type_mappings,
+            state_id,
             target_objects,
             asset_selections,
             asset_selection_highlight_mains,
@@ -178,21 +180,27 @@ impl IrAssetSelectionEventSender {
         // `AssetSelectionCell`.
         let asset_selection = asset_selections.get(asset_selection_entity).copied();
 
+        let state_id = **state_id;
         if let Some(asset_selection) = asset_selection {
             match switch_direction {
                 None => Some(asset_selection),
                 Some(AssetSwitch::Previous) => {
                     let new_selection =
-                        Self::switch_asset(asset_type_mappings, asset_selection, -1);
+                        Self::switch_asset(asset_type_mappings, state_id, asset_selection, -1);
                     Some(new_selection)
                 }
                 Some(AssetSwitch::Next) => {
-                    let new_selection = Self::switch_asset(asset_type_mappings, asset_selection, 1);
+                    let new_selection =
+                        Self::switch_asset(asset_type_mappings, state_id, asset_selection, 1);
                     Some(new_selection)
                 }
                 Some(AssetSwitch::Skip(n)) => {
-                    let new_selection =
-                        Self::switch_asset(asset_type_mappings, asset_selection, isize::from(n));
+                    let new_selection = Self::switch_asset(
+                        asset_type_mappings,
+                        state_id,
+                        asset_selection,
+                        isize::from(n),
+                    );
                     Some(new_selection)
                 }
             }
@@ -209,6 +217,7 @@ impl IrAssetSelectionEventSender {
 
     fn switch_asset(
         asset_type_mappings: &AssetTypeMappings,
+        state_id: StateId,
         asset_selection: AssetSelection,
         n: isize,
     ) -> AssetSelection {
@@ -217,8 +226,17 @@ impl IrAssetSelectionEventSender {
 
         {
             let placeholder = Vec::new();
+
+            // Determine what kind of asset we are selecting:
+            let asset_type = match state_id {
+                StateId::CharacterSelection => AssetType::Object(ObjectType::Character),
+                StateId::MapSelection => AssetType::Map,
+                _ => {
+                    panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                }
+            };
             let asset_ids = asset_type_mappings
-                .get_ids(AssetType::Object(ObjectType::Character)) // TODO: Generic
+                .get_ids(asset_type)
                 .unwrap_or(&placeholder);
             let mut asset_selections = Vec::with_capacity(asset_ids.len() + 1);
             asset_selections.push(AssetSelection::Random);

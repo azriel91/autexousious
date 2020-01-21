@@ -28,3 +28,4 @@ log = "0.4.8"
 map_selection_model = { path = "../map_selection_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
+state_registry = { path = "../state_registry" }
