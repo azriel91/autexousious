@@ -113,24 +113,10 @@ impl CswPreviewSpawnSystem {
             })
     }
 
-    /// Finds the main asset selection cell `Entity` that the ASH entity is attached to.
-    fn find_asset_selection_entity(
-        CswPreviewSpawnResources {
-            asset_selection_parents,
-            ..
-        }: &CswPreviewSpawnResources,
-        ash_entity: Entity,
-    ) -> Option<Entity> {
-        asset_selection_parents
-            .get(ash_entity)
-            .map(|asset_selection_parent| asset_selection_parent.0)
-    }
-
     /// Deletes `CswPreview` entities for a particular ASH entity.
     fn delete_preview_entities(
         csw_preview_spawn_resources: &CswPreviewSpawnResources,
         ash_entity: Entity,
-        asset_selection_entity: Option<Entity>,
     ) {
         let CswPreviewSpawnResources {
             entities,
@@ -139,25 +125,20 @@ impl CswPreviewSpawnSystem {
             ..
         } = csw_preview_spawn_resources;
 
-        let asset_selection_entity = asset_selection_entity
-            .or_else(|| Self::find_asset_selection_entity(csw_preview_spawn_resources, ash_entity));
-
-        if let Some(asset_selection_entity) = asset_selection_entity {
-            (entities, csw_previews, asset_selection_parents)
-                .join()
-                .filter_map(|(entity, _, asset_selection_parent)| {
-                    if asset_selection_parent.0 == asset_selection_entity {
-                        Some(entity)
-                    } else {
-                        None
-                    }
-                })
-                .for_each(|entity| {
-                    if let Err(e) = entities.delete(entity) {
-                        error!("Failed to delete entity: {}", e);
-                    }
-                });
-        }
+        (entities, csw_previews, asset_selection_parents)
+            .join()
+            .filter_map(|(entity, _, asset_selection_parent)| {
+                if asset_selection_parent.0 == ash_entity {
+                    Some(entity)
+                } else {
+                    None
+                }
+            })
+            .for_each(|entity| {
+                if let Err(e) = entities.delete(entity) {
+                    error!("Failed to delete entity: {}", e);
+                }
+            });
     }
 
     // Spawns new entities that provide a preview for the character selection widget.
@@ -165,13 +146,8 @@ impl CswPreviewSpawnSystem {
         csw_preview_spawn_resources: &mut CswPreviewSpawnResources,
         ash_entity: Entity,
         controller_id: ControllerId,
-        asset_selection_entity: Option<Entity>,
         asset_selection: Option<AssetSelection>,
     ) {
-        let asset_selection_entity = asset_selection_entity.or_else(|| {
-            Self::find_asset_selection_entity(&csw_preview_spawn_resources, ash_entity)
-        });
-
         let csw_main_entity =
             Self::find_csw_main_entity(&csw_preview_spawn_resources, controller_id);
 
@@ -185,15 +161,9 @@ impl CswPreviewSpawnSystem {
             ..
         } = csw_preview_spawn_resources;
 
-        let asset_selection = asset_selection.or_else(|| {
-            asset_selection_entity.and_then(|asset_selection_entity| {
-                asset_selections.get(asset_selection_entity).copied()
-            })
-        });
+        let asset_selection = asset_selection.or_else(|| asset_selections.get(ash_entity).copied());
 
-        if let (Some(asset_selection_entity), Some(AssetSelection::Id(asset_id))) =
-            (asset_selection_entity, asset_selection)
-        {
+        if let Some(AssetSelection::Id(asset_id)) = asset_selection {
             // TODO: Take in position to spawn entity.
             let x = 60.;
             // Hack: Since characters have `PositionZAsY`, we shift the entity's Y position up by
@@ -212,7 +182,7 @@ impl CswPreviewSpawnSystem {
                 sequence_id,
             };
 
-            let spawn_parent_entity = csw_main_entity.unwrap_or(asset_selection_entity);
+            let spawn_parent_entity = csw_main_entity.unwrap_or(ash_entity);
             let entity_spawned =
                 GameObjectSpawner::spawn(spawn_game_object_resources, spawn_parent_entity, &spawn);
 
@@ -220,13 +190,10 @@ impl CswPreviewSpawnSystem {
                 .insert(entity_spawned, CswPreview)
                 .expect("Failed to insert `CswPreview` component.");
             asset_selection_parents
-                .insert(
-                    entity_spawned,
-                    AssetSelectionParent::new(asset_selection_entity),
-                )
+                .insert(entity_spawned, AssetSelectionParent::new(ash_entity))
                 .expect("Failed to insert `AssetSelectionParent` component.");
             parent_entities
-                .insert(entity_spawned, ParentEntity::new(asset_selection_entity))
+                .insert(entity_spawned, ParentEntity::new(ash_entity))
                 .expect("Failed to insert `ParentEntity` component.");
             groundings
                 .insert(entity_spawned, Grounding::OnGround)
@@ -269,7 +236,6 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                             ash_entity,
                             controller_id,
                             None,
-                            None,
                         );
                     }
                 }
@@ -284,11 +250,7 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
-                        Self::delete_preview_entities(
-                            &csw_preview_spawn_resources,
-                            ash_entity,
-                            None,
-                        );
+                        Self::delete_preview_entities(&csw_preview_spawn_resources, ash_entity);
                     }
                 }
                 AssetSelectionEvent::Switch {
@@ -303,20 +265,11 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
-                        let asset_selection_entity = Self::find_asset_selection_entity(
-                            csw_preview_spawn_resources,
-                            ash_entity,
-                        );
-                        Self::delete_preview_entities(
-                            csw_preview_spawn_resources,
-                            ash_entity,
-                            asset_selection_entity,
-                        );
+                        Self::delete_preview_entities(csw_preview_spawn_resources, ash_entity);
                         Self::spawn_preview_entities(
                             csw_preview_spawn_resources,
                             ash_entity,
                             controller_id,
-                            asset_selection_entity,
                             Some(asset_selection),
                         );
                     }
