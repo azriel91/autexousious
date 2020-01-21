@@ -2,7 +2,7 @@ use std::ops::{Add, AddAssign};
 
 use amethyst::{
     core::{math::Vector3, transform::Transform},
-    ecs::{storage::DenseVecStorage, Component, Entity, World, WriteStorage},
+    ecs::{storage::DenseVecStorage, Component, Entity, ReadStorage, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use asset_model::ItemComponent;
@@ -10,7 +10,7 @@ use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::Position;
+use crate::{config::Position, play::PositionInitParent};
 
 /// Position initializer for an entity.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Component, PartialEq, Eq, Serialize, new)]
@@ -57,6 +57,9 @@ impl Into<Vector3<f32>> for PositionInit {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct PositionInitSystemData<'s> {
+    /// `PositionInitParent` components.
+    #[derivative(Debug = "ignore")]
+    pub position_init_parents: ReadStorage<'s, PositionInitParent>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
@@ -70,11 +73,21 @@ impl<'s> ItemComponent<'s> for PositionInit {
 
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let PositionInitSystemData {
+            position_init_parents,
             positions,
             transforms,
         } = system_data;
 
-        let translation = Into::<Vector3<f32>>::into(*self);
+        // Get parent position if any.
+        let position_parent = position_init_parents
+            .get(entity)
+            .and_then(|position_init_parent| positions.get(position_init_parent.0).copied());
+
+        let mut translation = Into::<Vector3<f32>>::into(*self);
+        if let Some(position_parent) = position_parent {
+            translation += *position_parent;
+        }
+
         let position = Position::from(translation);
         let mut transform = Transform::default();
         transform.set_translation(translation);

@@ -17,6 +17,7 @@ derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
+map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }

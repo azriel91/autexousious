@@ -717,6 +717,7 @@ dependencies = [
  "game_input 0.16.0",
  "kinematic_model 0.16.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_play 0.16.0",
  "object_model 0.16.0",
  "object_type 0.16.0",
  "parent_model 0.16.0",
