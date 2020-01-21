@@ -4,8 +4,10 @@
 
 ### Added
 
-* Character selection menu displays a grid of available characters. ([#190])
+* Character selection UI displays a grid of available characters. ([#190])
+* Map selection UI displays a grid of available characters. ([#176])
 
+[#176]: https://gitlab.com/azriel91/autexousious/issues/176
 [#190]: https://gitlab.com/azriel91/autexousious/issues/190
 
 ## 0.16.0 (2019-12-20)
