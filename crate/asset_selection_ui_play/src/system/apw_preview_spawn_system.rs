@@ -1,47 +1,84 @@
+mod character_preview_spawn;
+mod map_preview_spawn;
+
+use std::{fmt::Debug, marker::PhantomData};
+
 use amethyst::{
     ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::play::{AssetSelection, AssetSelectionEvent};
+use asset_model::{
+    config::AssetType,
+    loaded::AssetTypeMappings,
+    play::{AssetSelection, AssetSelectionEvent},
+};
 use asset_selection_ui_model::play::{ApwMain, ApwPreview};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
 use derivative::Derivative;
 use derive_new::new;
 use game_input::{InputControlled, SharedInputControlled};
 use game_input_model::ControllerId;
-use kinematic_model::config::{Position, Velocity};
 use log::error;
-use object_model::play::Grounding;
-use parent_model::play::ParentEntity;
-use sequence_model::loaded::SequenceId;
-use spawn_model::loaded::Spawn;
-use spawn_play::{GameObjectSpawner, SpawnGameObjectResources};
+
+use self::{character_preview_spawn::CharacterPreviewSpawn, map_preview_spawn::MapPreviewSpawn};
+
+/// Trait of different asset preview widget spawn behaviours.
+pub trait PreviewSpawner<'s> {
+    type SystemData: SystemData<'s>;
+    const ASSET_TYPE: AssetType;
+
+    fn spawn_preview_entities(
+        apw_previews: &mut WriteStorage<'_, ApwPreview>,
+        asset_selection_parents: &mut WriteStorage<'_, AssetSelectionParent>,
+        preview_spawn_resources: &mut Self::SystemData,
+        ash_entity: Entity,
+        apw_main_entity: Option<Entity>,
+        asset_selection: AssetSelection,
+    );
+}
+
+/// System to spawn character previews.
+pub type ApwPreviewSpawnSystemCharacter = ApwPreviewSpawnSystem<CharacterPreviewSpawn>;
+
+/// System to spawn map previews.
+pub type ApwPreviewSpawnSystemMap = ApwPreviewSpawnSystem<MapPreviewSpawn>;
 
 /// Spawns / deletes character preview entities when character selection is switched.
 #[derive(Debug, Default, new)]
-pub struct ApwPreviewSpawnSystem {
+pub struct ApwPreviewSpawnSystem<PS> {
     /// Reader ID for the `AssetSelectionEvent` channel.
     #[new(default)]
     asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
+    /// Marker.
+    marker: PhantomData<PS>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ApwPreviewSpawnSystemData<'s> {
+pub struct ApwPreviewSpawnSystemData<'s, PS>
+where
+    PS: for<'ps> PreviewSpawner<'ps>,
+{
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
     /// `ApwPreviewSpawnResources`.
-    pub apw_preview_spawn_resources: ApwPreviewSpawnResources<'s>,
+    pub apw_preview_spawn_resources: ApwPreviewSpawnResources<'s, PS>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ApwPreviewSpawnResources<'s> {
+pub struct ApwPreviewSpawnResources<'s, PS>
+where
+    PS: for<'ps> PreviewSpawner<'ps>,
+{
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `ApwMain` components.
     #[derivative(Debug = "ignore")]
     pub apw_mains: ReadStorage<'s, ApwMain>,
@@ -60,20 +97,18 @@ pub struct ApwPreviewSpawnResources<'s> {
     /// `AssetSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
-    /// `ParentEntity` components.
-    #[derivative(Debug = "ignore")]
-    pub parent_entities: WriteStorage<'s, ParentEntity>,
-    /// `Grounding` components.
-    #[derivative(Debug = "ignore")]
-    pub groundings: WriteStorage<'s, Grounding>,
     /// `AssetSelection` components.
     #[derivative(Debug = "ignore")]
     pub asset_selections: ReadStorage<'s, AssetSelection>,
-    /// `SpawnGameObjectResources`.
-    pub spawn_game_object_resources: SpawnGameObjectResources<'s>,
+    /// `PreviewSpawnResources`.
+    #[derivative(Debug = "ignore")]
+    pub preview_spawn_resources: <PS as PreviewSpawner<'s>>::SystemData,
 }
 
-impl ApwPreviewSpawnSystem {
+impl<PS> ApwPreviewSpawnSystem<PS>
+where
+    PS: for<'ps> PreviewSpawner<'ps>,
+{
     /// Finds the main asset preview widget `Entity` with the given controller ID.
     fn find_apw_main_entity(
         ApwPreviewSpawnResources {
@@ -82,7 +117,7 @@ impl ApwPreviewSpawnSystem {
             input_controlleds,
             shared_input_controlleds,
             ..
-        }: &ApwPreviewSpawnResources,
+        }: &ApwPreviewSpawnResources<PS>,
         controller_id: ControllerId,
     ) -> Option<Entity> {
         (entities, apw_mains, input_controlleds)
@@ -109,7 +144,7 @@ impl ApwPreviewSpawnSystem {
             ash_mains,
             input_controlleds,
             ..
-        }: &ApwPreviewSpawnResources,
+        }: &ApwPreviewSpawnResources<PS>,
         controller_id: ControllerId,
     ) -> Option<Entity> {
         (entities, ash_mains, input_controlleds)
@@ -125,7 +160,7 @@ impl ApwPreviewSpawnSystem {
 
     /// Deletes `ApwPreview` entities for a particular ASH entity.
     fn delete_preview_entities(
-        apw_preview_spawn_resources: &ApwPreviewSpawnResources,
+        apw_preview_spawn_resources: &ApwPreviewSpawnResources<PS>,
         ash_entity: Entity,
     ) {
         let ApwPreviewSpawnResources {
@@ -153,7 +188,7 @@ impl ApwPreviewSpawnSystem {
 
     // Spawns new entities that provide a preview for the asset preview widget.
     fn spawn_preview_entities(
-        apw_preview_spawn_resources: &mut ApwPreviewSpawnResources,
+        apw_preview_spawn_resources: &mut ApwPreviewSpawnResources<PS>,
         ash_entity: Entity,
         controller_id: ControllerId,
         asset_selection: Option<AssetSelection>,
@@ -162,58 +197,41 @@ impl ApwPreviewSpawnSystem {
             Self::find_apw_main_entity(&apw_preview_spawn_resources, controller_id);
 
         let ApwPreviewSpawnResources {
+            asset_type_mappings,
             apw_previews,
             asset_selection_parents,
-            parent_entities,
-            groundings,
             asset_selections,
-            spawn_game_object_resources,
+            preview_spawn_resources,
             ..
         } = apw_preview_spawn_resources;
 
         let asset_selection = asset_selection.or_else(|| asset_selections.get(ash_entity).copied());
 
-        if let Some(AssetSelection::Id(asset_id)) = asset_selection {
-            // TODO: Take in position to spawn entity.
-            let x = 60.;
-            // Hack: Since characters have `PositionZAsY`, we shift the entity's Y position up by
-            // the Z position of the asset_selection_entity.
-            let y = 30. + 12.;
-            let z = 1.;
-            let position = Position::new(x, y, z);
-
-            // TODO: Look up sequence ID for default sequence ID for the asset type.
-            let sequence_id = SequenceId::new(0);
-
-            let spawn = Spawn {
-                object: asset_id,
-                position,
-                velocity: Velocity::default(),
-                sequence_id,
-            };
-
-            let spawn_parent_entity = apw_main_entity.unwrap_or(ash_entity);
-            let entity_spawned =
-                GameObjectSpawner::spawn(spawn_game_object_resources, spawn_parent_entity, &spawn);
-
-            apw_previews
-                .insert(entity_spawned, ApwPreview)
-                .expect("Failed to insert `ApwPreview` component.");
-            asset_selection_parents
-                .insert(entity_spawned, AssetSelectionParent::new(ash_entity))
-                .expect("Failed to insert `AssetSelectionParent` component.");
-            parent_entities
-                .insert(entity_spawned, ParentEntity::new(ash_entity))
-                .expect("Failed to insert `ParentEntity` component.");
-            groundings
-                .insert(entity_spawned, Grounding::OnGround)
-                .expect("Failed to insert `Grounding` component.");
+        if let Some(asset_selection) = asset_selection {
+            if let AssetSelection::Id(asset_id) = asset_selection {
+                let asset_type = asset_type_mappings.get(asset_id).copied();
+                if let Some(asset_type) = asset_type {
+                    if asset_type == PS::ASSET_TYPE {
+                        PS::spawn_preview_entities(
+                            apw_previews,
+                            asset_selection_parents,
+                            preview_spawn_resources,
+                            ash_entity,
+                            apw_main_entity,
+                            asset_selection,
+                        );
+                    }
+                }
+            }
         }
     }
 }
 
-impl<'s> System<'s> for ApwPreviewSpawnSystem {
-    type SystemData = ApwPreviewSpawnSystemData<'s>;
+impl<'s, PS> System<'s> for ApwPreviewSpawnSystem<PS>
+where
+    PS: for<'ps> PreviewSpawner<'ps>,
+{
+    type SystemData = ApwPreviewSpawnSystemData<'s, PS>;
 
     fn run(&mut self, mut apw_preview_spawn_system_data: Self::SystemData) {
         let ApwPreviewSpawnSystemData {

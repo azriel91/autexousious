@@ -2,6 +2,8 @@
 
 //! Provides logic for asset selection UI used at runtime.
 
-pub use crate::system::ApwPreviewSpawnSystem;
+pub use crate::system::{
+    ApwPreviewSpawnSystem, ApwPreviewSpawnSystemCharacter, ApwPreviewSpawnSystemMap,
+};
 
 mod system;

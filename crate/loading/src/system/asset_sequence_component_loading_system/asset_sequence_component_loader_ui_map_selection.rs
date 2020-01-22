@@ -50,6 +50,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                 },
             maps_available_selector,
         } = map_selection_ui;
+        let position_map_preview = *position_map_preview;
 
         // Store widget item IDs in `item_ids_all` to be spawned during state ID
         // updates, but don't store item IDs for widget template layers as those
@@ -74,7 +75,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             let mut position_inits = PositionInitsLoader::items_to_datas(layers.values());
             position_inits
                 .iter_mut()
-                .for_each(|position_init| *position_init += *position_map_preview);
+                .for_each(|position_init| *position_init += position_map_preview);
             let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
                 sequence_id_mappings,
                 asset_slug,
@@ -136,6 +137,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             };
             let item_entity = asset_world
                 .create_entity()
+                .with(position_map_preview)
                 .with(map_selection_widget)
                 .with(SharedInputControlled)
                 .build();

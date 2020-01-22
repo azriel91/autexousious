@@ -22,7 +22,7 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use asset_selection_stdio::AssetSelectionStdioBundle;
-use asset_selection_ui_play::ApwPreviewSpawnSystem;
+use asset_selection_ui_play::{ApwPreviewSpawnSystemCharacter, ApwPreviewSpawnSystemMap};
 use asset_ui_play::AssetSelectionHighlightUpdateSystem;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
@@ -196,8 +196,13 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
-                ApwPreviewSpawnSystem::new(),
-                any::type_name::<ApwPreviewSpawnSystem>(),
+                ApwPreviewSpawnSystemCharacter::new(),
+                any::type_name::<ApwPreviewSpawnSystemCharacter>(),
+                &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
+            )
+            .with(
+                ApwPreviewSpawnSystemMap::new(),
+                any::type_name::<ApwPreviewSpawnSystemMap>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
