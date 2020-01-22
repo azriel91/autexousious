@@ -10,7 +10,7 @@ mod test {
     use ui_label_model::config::UiSpriteLabel;
 
     use map_selection_ui_model::config::{
-        MapSelectionUi, MswLayer, MswLayerName, MswPortraits, MswTemplate,
+        MapSelectionUi, MpwTemplate, MswLayer, MswLayerName, MswPortraits,
     };
 
     const MAP_SELECTION_UI_YAML: &str = r#"---
@@ -71,7 +71,7 @@ maps_available_selector:
         layers.insert(MswLayer::Name(MswLayerName::Portrait), portrait_label);
         layers.insert(MswLayer::String(String::from("other_layer")), other_label);
         let position = PositionInit::new(100, 300, 0);
-        let map_preview = MswTemplate {
+        let map_preview = MpwTemplate {
             position,
             portraits,
             layers,

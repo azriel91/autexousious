@@ -6,6 +6,7 @@ use asset_model::{
     loaded::{AssetTypeMappings, ItemId},
     play::AssetWorld,
 };
+use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{AssetDisplayCellMap, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
@@ -16,9 +17,8 @@ use game_input::SharedInputControlled;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use map_selection_ui_model::{
-    config::{MapSelectionUi, MswLayer, MswLayerName, MswTemplate},
-    loaded::{MapSelectionWidget, MswPortraits},
-    play::MswMain,
+    config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName},
+    loaded::MswPortraits,
 };
 use sequence_loading::SequenceIdMapper;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
@@ -43,7 +43,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
     ) {
         let MapSelectionUi {
             map_preview:
-                MswTemplate {
+                MpwTemplate {
                     position: position_map_preview,
                     portraits: map_selection_ui_model::config::MswPortraits { random, select },
                     layers, // IndexMap<String, UiSpriteLabel>
@@ -108,7 +108,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
 
                     match msw_layer {
                         MswLayer::Name(MswLayerName::Main) => {
-                            item_entity_builder = item_entity_builder.with(MswMain);
+                            item_entity_builder = item_entity_builder.with(ApwMain);
                         }
                         MswLayer::Name(MswLayerName::Portrait) => {
                             item_entity_builder = item_entity_builder.with(msw_portraits);
@@ -129,8 +129,9 @@ impl AssetSequenceComponentLoaderUiMapSelection {
 
         // Widget item ID
         let item_id_map_preview = {
-            let map_selection_widget = MapSelectionWidget {
+            let map_selection_widget = AssetPreviewWidget {
                 layers: item_id_map_preview_layers,
+                input_controlled: None,
             };
             let item_entity = asset_world
                 .create_entity()

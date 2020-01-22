@@ -8,22 +8,25 @@ use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;
 use derive_new::new;
+use game_input::InputControlled;
 use log::error;
 use parent_model::play::ParentEntity;
 
-use crate::play::{MswMain, MswStatus};
+use crate::play::ApwMain;
 
-/// Tracks the Item IDs to be attached to entities that represent the map selection widget.
+/// Tracks the Item IDs to be attached to entities that represent the asset preview widget.
 #[derive(Clone, Component, Debug, PartialEq, new)]
-pub struct MapSelectionWidget {
-    /// Layers of sprite labels to draw for the map selection widget.
+pub struct AssetPreviewWidget {
+    /// Layers of sprite labels to draw for the asset preview widget.
     pub layers: Vec<ItemId>,
+    /// InputControlled to attach to each layer entity.
+    pub input_controlled: Option<InputControlled>,
 }
 
-/// `MapSelectionWidgetSystemData`.
+/// `AssetPreviewWidgetSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct MapSelectionWidgetSystemData<'s> {
+pub struct AssetPreviewWidgetSystemData<'s> {
     /// `AssetWorld`.
     #[derivative(Debug = "ignore")]
     pub asset_world: Read<'s, AssetWorld>,
@@ -33,67 +36,72 @@ pub struct MapSelectionWidgetSystemData<'s> {
     /// `ItemId` components.
     #[derivative(Debug = "ignore")]
     pub item_ids: WriteStorage<'s, ItemId>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: WriteStorage<'s, InputControlled>,
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
-    /// `MswStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub msw_statuses: WriteStorage<'s, MswStatus>,
     /// `AssetSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
 }
 
-impl<'s> ItemComponent<'s> for MapSelectionWidget {
-    type SystemData = MapSelectionWidgetSystemData<'s>;
+impl<'s> ItemComponent<'s> for AssetPreviewWidget {
+    type SystemData = AssetPreviewWidgetSystemData<'s>;
 
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
-        let MapSelectionWidgetSystemData {
+        let AssetPreviewWidgetSystemData {
             asset_world,
             entities,
             item_ids,
+            input_controlleds,
             parent_entities,
-            msw_statuses,
             asset_selection_parents,
         } = system_data;
 
-        let msw_main_item = {
-            let msw_mains = asset_world.read_storage::<MswMain>();
+        let apw_main_item = {
+            let apw_mains = asset_world.read_storage::<ApwMain>();
             self.layers
                 .iter()
-                .find(|layer_item_id| msw_mains.get(layer_item_id.0).is_some())
+                .find(|layer_item_id| apw_mains.get(layer_item_id.0).is_some())
                 .copied()
         };
 
-        let (msw_main_entity, layer_entities) = self.layers.iter().copied().fold(
+        let (apw_main_entity, layer_entities) = self.layers.iter().copied().fold(
             (None, Vec::with_capacity(self.layers.len())),
-            |(mut msw_main_entity, mut layer_entities), item_id| {
+            |(mut apw_main_entity, mut layer_entities), item_id| {
                 let parent_entity = ParentEntity(entity);
-                let layer_entity = entities
+                let mut layer_entity_builder = entities
                     .build_entity()
                     .with(item_id, item_ids)
-                    .with(parent_entity, parent_entities)
-                    .with(MswStatus::default(), msw_statuses)
-                    .build();
+                    .with(parent_entity, parent_entities);
 
-                if msw_main_entity.is_none() {
-                    if let Some(msw_main_item) = msw_main_item {
-                        if item_id == msw_main_item {
-                            msw_main_entity = Some(layer_entity);
+                if let Some(input_controlled) = self.input_controlled {
+                    layer_entity_builder =
+                        layer_entity_builder.with(input_controlled, input_controlleds);
+                }
+
+                let layer_entity = layer_entity_builder.build();
+
+                if apw_main_entity.is_none() {
+                    if let Some(apw_main_item) = apw_main_item {
+                        if item_id == apw_main_item {
+                            apw_main_entity = Some(layer_entity);
                         }
                     }
                 }
                 layer_entities.push(layer_entity);
 
-                (msw_main_entity, layer_entities)
+                (apw_main_entity, layer_entities)
             },
         );
 
-        if let Some(msw_main_entity) = msw_main_entity {
-            let asset_selection_parent = AssetSelectionParent::new(msw_main_entity);
+        if let Some(apw_main_entity) = apw_main_entity {
+            let asset_selection_parent = AssetSelectionParent::new(apw_main_entity);
             layer_entities
                 .iter()
-                .filter(|layer_entity| **layer_entity != msw_main_entity)
+                .filter(|layer_entity| **layer_entity != apw_main_entity)
                 .copied()
                 .for_each(|layer_entity| {
                     asset_selection_parents
@@ -101,7 +109,7 @@ impl<'s> ItemComponent<'s> for MapSelectionWidget {
                         .expect("Failed to insert `AssetSelectionParent` component.");
                 })
         } else {
-            error!("Expected `MapSelectionWidget` template to have at least one layer.");
+            error!("Expected `AssetPreviewWidget` template to have at least one layer.");
         }
     }
 }

@@ -1,7 +1,3 @@
-pub use self::{
-    csw_portrait_update_system::CswPortraitUpdateSystem,
-    csw_preview_spawn_system::CswPreviewSpawnSystem,
-};
+pub use self::csw_portrait_update_system::CswPortraitUpdateSystem;
 
 mod csw_portrait_update_system;
-mod csw_preview_spawn_system;

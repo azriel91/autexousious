@@ -22,12 +22,13 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use asset_selection_stdio::AssetSelectionStdioBundle;
+use asset_selection_ui_play::ApwPreviewSpawnSystem;
 use asset_ui_play::AssetSelectionHighlightUpdateSystem;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
-use character_selection_ui_play::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
+use character_selection_ui_play::CswPortraitUpdateSystem;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
@@ -195,8 +196,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
-                CswPreviewSpawnSystem::new(),
-                any::type_name::<CswPreviewSpawnSystem>(),
+                ApwPreviewSpawnSystem::new(),
+                any::type_name::<ApwPreviewSpawnSystem>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(

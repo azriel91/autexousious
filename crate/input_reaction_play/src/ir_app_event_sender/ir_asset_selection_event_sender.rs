@@ -25,7 +25,7 @@ impl IrAssetSelectionEventSender {
         entity: Entity,
         asset_selection_event_variant: AssetSelectionEventCommand,
     ) {
-        // For `CharacterSelectionWidget` entities, `entity` is the `CswMain` entity.
+        // For `AssetPreviewWidget` entities, `entity` is the `ApwMain` entity.
         //
         // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
         // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
@@ -167,7 +167,7 @@ impl IrAssetSelectionEventSender {
                     component.",
                 )
         } else {
-            // `CswMain` entities directly send events.
+            // `ApwMain` entities directly send events.
             // Other purpose entities likely also fallback to the same behaviour.
             ash_entity
         };

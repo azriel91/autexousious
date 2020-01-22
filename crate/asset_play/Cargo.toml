@@ -11,6 +11,7 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
+asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 character_model = { path = "../character_model" }

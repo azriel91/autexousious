@@ -4,8 +4,8 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use asset_model::play::{AssetSelection, AssetSelectionEvent};
+use asset_selection_ui_model::play::{ApwMain, ApwPreview};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
-use character_selection_ui_model::play::{CswMain, CswPreview};
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
@@ -20,7 +20,7 @@ use spawn_play::{GameObjectSpawner, SpawnGameObjectResources};
 
 /// Spawns / deletes character preview entities when character selection is switched.
 #[derive(Debug, Default, new)]
-pub struct CswPreviewSpawnSystem {
+pub struct ApwPreviewSpawnSystem {
     /// Reader ID for the `AssetSelectionEvent` channel.
     #[new(default)]
     asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
@@ -28,32 +28,32 @@ pub struct CswPreviewSpawnSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct CswPreviewSpawnSystemData<'s> {
+pub struct ApwPreviewSpawnSystemData<'s> {
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
-    /// `CswPreviewSpawnResources`.
-    pub csw_preview_spawn_resources: CswPreviewSpawnResources<'s>,
+    /// `ApwPreviewSpawnResources`.
+    pub apw_preview_spawn_resources: ApwPreviewSpawnResources<'s>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct CswPreviewSpawnResources<'s> {
+pub struct ApwPreviewSpawnResources<'s> {
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `CswMain` components.
+    /// `ApwMain` components.
     #[derivative(Debug = "ignore")]
-    pub csw_mains: ReadStorage<'s, CswMain>,
+    pub apw_mains: ReadStorage<'s, ApwMain>,
     /// `AssetSelectionHighlightMain` components.
     #[derivative(Debug = "ignore")]
     pub ash_mains: ReadStorage<'s, AssetSelectionHighlightMain>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `CswPreview` components.
+    /// `ApwPreview` components.
     #[derivative(Debug = "ignore")]
-    pub csw_previews: WriteStorage<'s, CswPreview>,
+    pub apw_previews: WriteStorage<'s, ApwPreview>,
     /// `AssetSelectionParent` components.
     #[derivative(Debug = "ignore")]
     pub asset_selection_parents: WriteStorage<'s, AssetSelectionParent>,
@@ -70,18 +70,18 @@ pub struct CswPreviewSpawnResources<'s> {
     pub spawn_game_object_resources: SpawnGameObjectResources<'s>,
 }
 
-impl CswPreviewSpawnSystem {
-    /// Finds the main character selection widget `Entity` with the given controller ID.
-    fn find_csw_main_entity(
-        CswPreviewSpawnResources {
+impl ApwPreviewSpawnSystem {
+    /// Finds the main asset preview widget `Entity` with the given controller ID.
+    fn find_apw_main_entity(
+        ApwPreviewSpawnResources {
             entities,
-            csw_mains,
+            apw_mains,
             input_controlleds,
             ..
-        }: &CswPreviewSpawnResources,
+        }: &ApwPreviewSpawnResources,
         controller_id: ControllerId,
     ) -> Option<Entity> {
-        (entities, csw_mains, input_controlleds)
+        (entities, apw_mains, input_controlleds)
             .join()
             .find_map(|(entity, _, input_controlled)| {
                 if input_controlled.controller_id == controller_id {
@@ -94,12 +94,12 @@ impl CswPreviewSpawnSystem {
 
     /// Finds the main asset selection cell `Entity` that the ASH entity is attached to.
     fn find_asset_selection_highlight_entity(
-        CswPreviewSpawnResources {
+        ApwPreviewSpawnResources {
             entities,
             ash_mains,
             input_controlleds,
             ..
-        }: &CswPreviewSpawnResources,
+        }: &ApwPreviewSpawnResources,
         controller_id: ControllerId,
     ) -> Option<Entity> {
         (entities, ash_mains, input_controlleds)
@@ -113,19 +113,19 @@ impl CswPreviewSpawnSystem {
             })
     }
 
-    /// Deletes `CswPreview` entities for a particular ASH entity.
+    /// Deletes `ApwPreview` entities for a particular ASH entity.
     fn delete_preview_entities(
-        csw_preview_spawn_resources: &CswPreviewSpawnResources,
+        apw_preview_spawn_resources: &ApwPreviewSpawnResources,
         ash_entity: Entity,
     ) {
-        let CswPreviewSpawnResources {
+        let ApwPreviewSpawnResources {
             entities,
-            csw_previews,
+            apw_previews,
             asset_selection_parents,
             ..
-        } = csw_preview_spawn_resources;
+        } = apw_preview_spawn_resources;
 
-        (entities, csw_previews, asset_selection_parents)
+        (entities, apw_previews, asset_selection_parents)
             .join()
             .filter_map(|(entity, _, asset_selection_parent)| {
                 if asset_selection_parent.0 == ash_entity {
@@ -141,25 +141,25 @@ impl CswPreviewSpawnSystem {
             });
     }
 
-    // Spawns new entities that provide a preview for the character selection widget.
+    // Spawns new entities that provide a preview for the asset preview widget.
     fn spawn_preview_entities(
-        csw_preview_spawn_resources: &mut CswPreviewSpawnResources,
+        apw_preview_spawn_resources: &mut ApwPreviewSpawnResources,
         ash_entity: Entity,
         controller_id: ControllerId,
         asset_selection: Option<AssetSelection>,
     ) {
-        let csw_main_entity =
-            Self::find_csw_main_entity(&csw_preview_spawn_resources, controller_id);
+        let apw_main_entity =
+            Self::find_apw_main_entity(&apw_preview_spawn_resources, controller_id);
 
-        let CswPreviewSpawnResources {
-            csw_previews,
+        let ApwPreviewSpawnResources {
+            apw_previews,
             asset_selection_parents,
             parent_entities,
             groundings,
             asset_selections,
             spawn_game_object_resources,
             ..
-        } = csw_preview_spawn_resources;
+        } = apw_preview_spawn_resources;
 
         let asset_selection = asset_selection.or_else(|| asset_selections.get(ash_entity).copied());
 
@@ -182,13 +182,13 @@ impl CswPreviewSpawnSystem {
                 sequence_id,
             };
 
-            let spawn_parent_entity = csw_main_entity.unwrap_or(ash_entity);
+            let spawn_parent_entity = apw_main_entity.unwrap_or(ash_entity);
             let entity_spawned =
                 GameObjectSpawner::spawn(spawn_game_object_resources, spawn_parent_entity, &spawn);
 
-            csw_previews
-                .insert(entity_spawned, CswPreview)
-                .expect("Failed to insert `CswPreview` component.");
+            apw_previews
+                .insert(entity_spawned, ApwPreview)
+                .expect("Failed to insert `ApwPreview` component.");
             asset_selection_parents
                 .insert(entity_spawned, AssetSelectionParent::new(ash_entity))
                 .expect("Failed to insert `AssetSelectionParent` component.");
@@ -202,14 +202,14 @@ impl CswPreviewSpawnSystem {
     }
 }
 
-impl<'s> System<'s> for CswPreviewSpawnSystem {
-    type SystemData = CswPreviewSpawnSystemData<'s>;
+impl<'s> System<'s> for ApwPreviewSpawnSystem {
+    type SystemData = ApwPreviewSpawnSystemData<'s>;
 
-    fn run(&mut self, mut csw_portrait_update_system_data: Self::SystemData) {
-        let CswPreviewSpawnSystemData {
+    fn run(&mut self, mut apw_preview_spawn_system_data: Self::SystemData) {
+        let ApwPreviewSpawnSystemData {
             ref asset_selection_ec,
-            ref mut csw_preview_spawn_resources,
-        } = csw_portrait_update_system_data;
+            ref mut apw_preview_spawn_resources,
+        } = apw_preview_spawn_system_data;
 
         let asset_selection_event_rid = self
             .asset_selection_event_rid
@@ -226,13 +226,13 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                 } => {
                     let ash_entity = entity.or_else(|| {
                         Self::find_asset_selection_highlight_entity(
-                            csw_preview_spawn_resources,
+                            apw_preview_spawn_resources,
                             controller_id,
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
                         Self::spawn_preview_entities(
-                            csw_preview_spawn_resources,
+                            apw_preview_spawn_resources,
                             ash_entity,
                             controller_id,
                             None,
@@ -245,12 +245,12 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                 } => {
                     let ash_entity = entity.or_else(|| {
                         Self::find_asset_selection_highlight_entity(
-                            csw_preview_spawn_resources,
+                            apw_preview_spawn_resources,
                             controller_id,
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
-                        Self::delete_preview_entities(&csw_preview_spawn_resources, ash_entity);
+                        Self::delete_preview_entities(&apw_preview_spawn_resources, ash_entity);
                     }
                 }
                 AssetSelectionEvent::Switch {
@@ -260,14 +260,14 @@ impl<'s> System<'s> for CswPreviewSpawnSystem {
                 } => {
                     let ash_entity = entity.or_else(|| {
                         Self::find_asset_selection_highlight_entity(
-                            csw_preview_spawn_resources,
+                            apw_preview_spawn_resources,
                             controller_id,
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
-                        Self::delete_preview_entities(csw_preview_spawn_resources, ash_entity);
+                        Self::delete_preview_entities(apw_preview_spawn_resources, ash_entity);
                         Self::spawn_preview_entities(
-                            csw_preview_spawn_resources,
+                            apw_preview_spawn_resources,
                             ash_entity,
                             controller_id,
                             Some(asset_selection),

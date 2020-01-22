@@ -13,7 +13,7 @@ use crate::play::AssetSelectionParent;
 /// Highlights an asset selection.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub struct AssetSelectionHighlight {
-    /// `ItemId` of sprite to draw for the character selection widget.
+    /// `ItemId` of sprite to draw for the asset preview widget.
     pub ash_sprite_item_id: ItemId,
 }
 

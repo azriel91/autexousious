@@ -8,7 +8,7 @@ use crate::config::{MswLayer, MswPortraits};
 /// Configuration for initializing the map selection preview.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
-pub struct MswTemplate {
+pub struct MpwTemplate {
     /// Position of the map selection widget on screen.
     pub position: PositionInit,
     /// Portraits to use while map selection is not present.

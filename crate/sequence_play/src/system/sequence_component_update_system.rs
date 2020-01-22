@@ -114,7 +114,7 @@ where
                     .and_then(|item_id| item_components.get(item_id.0));
 
                 // Some entities will have sequence update events, but not this particular sequence
-                // component data asset.
+                // component datan asset.
                 if let Some(sequence_component_data) = sequence_component_data {
                     Self::update_component(
                         &mut sequence_components,

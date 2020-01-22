@@ -6,6 +6,7 @@ use amethyst::{
     Error,
 };
 use asset_model::{config::asset_type::Map, play::AssetWorld};
+use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
@@ -15,10 +16,7 @@ use asset_ui_model::{
 };
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
-use character_selection_ui_model::{
-    loaded::{CharacterSelectionWidget, CswPortraits},
-    play::CswMain,
-};
+use character_selection_ui_model::loaded::CswPortraits;
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
@@ -30,10 +28,7 @@ use kinematic_model::{
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
-use map_selection_ui_model::{
-    loaded::{MapSelectionWidget, MswPortraits},
-    play::MswMain,
-};
+use map_selection_ui_model::loaded::MswPortraits;
 use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
 use object_type::Character;
@@ -85,16 +80,15 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenuItem<GameModeIndex>>();
 
-        asset_world.register::<CharacterSelectionWidget>();
+        asset_world.register::<AssetPreviewWidget>();
+        asset_world.register::<ApwMain>();
+
         asset_world.register::<CswPortraits>();
-        asset_world.register::<CswMain>();
         asset_world.register::<AssetSelector<Character>>();
         asset_world.register::<AssetDisplayCellCharacter>();
         asset_world.register::<AssetSelectionCell<AssetDisplayCellCharacter>>();
 
-        asset_world.register::<MapSelectionWidget>();
         asset_world.register::<MswPortraits>();
-        asset_world.register::<MswMain>();
         asset_world.register::<AssetSelector<Map>>();
         asset_world.register::<AssetDisplayCellMap>();
         asset_world.register::<AssetSelectionCell<AssetDisplayCellMap>>();
@@ -231,24 +225,26 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
 
-        // Character Selection UI
+        // Asset selection UI common systems.
         builder.add(
-            ItemComponentComponentAugmentSystem::<CharacterSelectionWidget>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CharacterSelectionWidget>>(),
+            ItemComponentComponentAugmentSystem::<AssetPreviewWidget>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetPreviewWidget>>(),
             &[],
         );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<ApwMain>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<ApwMain>>(),
+            &[&any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
+            >()],
+        );
+
+        // Character Selection UI
         builder.add(
             ItemComponentComponentAugmentSystem::<CswPortraits>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<CswPortraits>>(),
             &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
-            >()],
-        );
-        builder.add(
-            ItemComponentComponentAugmentSystem::<CswMain>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CswMain>>(),
-            &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
+                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
         builder.add(
@@ -273,22 +269,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
 
         // Map Selection UI
         builder.add(
-            ItemComponentComponentAugmentSystem::<MapSelectionWidget>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<MapSelectionWidget>>(),
-            &[],
-        );
-        builder.add(
             ItemComponentComponentAugmentSystem::<MswPortraits>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<MswPortraits>>(),
             &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<MapSelectionWidget>,
-            >()],
-        );
-        builder.add(
-            ItemComponentComponentAugmentSystem::<MswMain>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<MswMain>>(),
-            &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<MapSelectionWidget>,
+                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
         builder.add(

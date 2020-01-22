@@ -5,36 +5,36 @@ use amethyst::{
 use asset_model::{play::AssetSelection, ItemComponent};
 use derivative::Derivative;
 
-/// Marks an entity as the main map selection widget entity.
+/// Marks an entity as the main asset preview widget entity.
 #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
 #[storage(NullStorage)]
-pub struct MswMain;
+pub struct ApwMain;
 
-/// `MswMainSystemData`.
+/// `ApwMainSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct MswMainSystemData<'s> {
-    /// `MswMain` components.
+pub struct ApwMainSystemData<'s> {
+    /// `ApwMain` components.
     #[derivative(Debug = "ignore")]
-    pub msw_mains: WriteStorage<'s, MswMain>,
+    pub apw_mains: WriteStorage<'s, ApwMain>,
     /// `AssetSelection` components.
     #[derivative(Debug = "ignore")]
     pub asset_selections: WriteStorage<'s, AssetSelection>,
 }
 
-impl<'s> ItemComponent<'s> for MswMain {
-    type SystemData = MswMainSystemData<'s>;
+impl<'s> ItemComponent<'s> for ApwMain {
+    type SystemData = ApwMainSystemData<'s>;
 
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
-        let MswMainSystemData {
-            msw_mains,
+        let ApwMainSystemData {
+            apw_mains,
             asset_selections,
         } = system_data;
 
-        if msw_mains.get(entity).is_none() {
-            msw_mains
-                .insert(entity, MswMain)
-                .expect("Failed to insert `MswMain` component.");
+        if apw_mains.get(entity).is_none() {
+            apw_mains
+                .insert(entity, ApwMain)
+                .expect("Failed to insert `ApwMain` component.");
         }
         if asset_selections.get(entity).is_none() {
             asset_selections

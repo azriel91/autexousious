@@ -16,6 +16,7 @@ application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 background_model = { path = "../background_model" }

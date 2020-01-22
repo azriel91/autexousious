@@ -6,6 +6,7 @@ use asset_model::{
     loaded::{AssetTypeMappings, ItemId},
     play::AssetWorld,
 };
+use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{
@@ -15,8 +16,7 @@ use asset_ui_model::{
 };
 use character_selection_ui_model::{
     config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
-    loaded::{CharacterSelectionWidget, CswPortraits},
-    play::CswMain,
+    loaded::CswPortraits,
 };
 use chase_model::play::ChaseModeStick;
 use game_input::InputControlled;
@@ -136,7 +136,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
 
                         match csw_layer {
                             CswLayer::Name(CswLayerName::Main) => {
-                                item_entity_builder = item_entity_builder.with(CswMain);
+                                item_entity_builder = item_entity_builder.with(ApwMain);
                             }
                             CswLayer::Name(CswLayerName::Portrait) => {
                                 item_entity_builder = item_entity_builder.with(csw_portraits);
@@ -161,16 +161,14 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         let mut item_ids_widgets = item_ids_layers
             .into_iter()
             .zip(input_controlleds.iter().copied())
-            .map(
-                |(layer_item_ids, input_controlled)| CharacterSelectionWidget {
-                    layers: layer_item_ids,
-                    input_controlled,
-                },
-            )
-            .map(|character_selection_widget| {
+            .map(|(layer_item_ids, input_controlled)| AssetPreviewWidget {
+                layers: layer_item_ids,
+                input_controlled: Some(input_controlled),
+            })
+            .map(|asset_preview_widget| {
                 asset_world
                     .create_entity()
-                    .with(character_selection_widget)
+                    .with(asset_preview_widget)
                     .build()
             })
             .map(ItemId::new)
