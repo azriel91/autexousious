@@ -23,6 +23,7 @@ log = "0.4.8"
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }
+object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
