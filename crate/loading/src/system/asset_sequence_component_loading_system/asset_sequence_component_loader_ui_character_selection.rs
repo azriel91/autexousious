@@ -164,6 +164,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .map(|(layer_item_ids, input_controlled)| AssetPreviewWidget {
                 layers: layer_item_ids,
                 input_controlled: Some(input_controlled),
+                shared_input_controlled: None,
             })
             .map(|asset_preview_widget| {
                 asset_world

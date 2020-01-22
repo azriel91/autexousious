@@ -8,7 +8,7 @@ use asset_selection_ui_model::play::{ApwMain, ApwPreview};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
+use game_input::{InputControlled, SharedInputControlled};
 use game_input_model::ControllerId;
 use kinematic_model::config::{Position, Velocity};
 use log::error;
@@ -51,6 +51,9 @@ pub struct ApwPreviewSpawnResources<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `SharedInputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub shared_input_controlleds: ReadStorage<'s, SharedInputControlled>,
     /// `ApwPreview` components.
     #[derivative(Debug = "ignore")]
     pub apw_previews: WriteStorage<'s, ApwPreview>,
@@ -77,6 +80,7 @@ impl ApwPreviewSpawnSystem {
             entities,
             apw_mains,
             input_controlleds,
+            shared_input_controlleds,
             ..
         }: &ApwPreviewSpawnResources,
         controller_id: ControllerId,
@@ -89,6 +93,12 @@ impl ApwPreviewSpawnSystem {
                 } else {
                     None
                 }
+            })
+            .or_else(|| {
+                (entities, apw_mains, shared_input_controlleds)
+                    .join()
+                    .map(|(entity, _, _)| entity)
+                    .next()
             })
     }
 

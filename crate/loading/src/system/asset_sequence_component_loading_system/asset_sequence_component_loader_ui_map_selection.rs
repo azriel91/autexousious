@@ -132,6 +132,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             let map_selection_widget = AssetPreviewWidget {
                 layers: item_id_map_preview_layers,
                 input_controlled: None,
+                shared_input_controlled: Some(SharedInputControlled),
             };
             let item_entity = asset_world
                 .create_entity()

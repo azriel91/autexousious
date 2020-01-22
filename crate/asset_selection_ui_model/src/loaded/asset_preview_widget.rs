@@ -8,7 +8,7 @@ use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
+use game_input::{InputControlled, SharedInputControlled};
 use log::error;
 use parent_model::play::ParentEntity;
 
@@ -21,6 +21,8 @@ pub struct AssetPreviewWidget {
     pub layers: Vec<ItemId>,
     /// InputControlled to attach to each layer entity.
     pub input_controlled: Option<InputControlled>,
+    /// SharedInputControlled to attach to each layer entity.
+    pub shared_input_controlled: Option<SharedInputControlled>,
 }
 
 /// `AssetPreviewWidgetSystemData`.
@@ -39,6 +41,9 @@ pub struct AssetPreviewWidgetSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
+    /// `SharedInputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub shared_input_controlleds: WriteStorage<'s, SharedInputControlled>,
     /// `ParentEntity` components.
     #[derivative(Debug = "ignore")]
     pub parent_entities: WriteStorage<'s, ParentEntity>,
@@ -56,6 +61,7 @@ impl<'s> ItemComponent<'s> for AssetPreviewWidget {
             entities,
             item_ids,
             input_controlleds,
+            shared_input_controlleds,
             parent_entities,
             asset_selection_parents,
         } = system_data;
@@ -80,6 +86,10 @@ impl<'s> ItemComponent<'s> for AssetPreviewWidget {
                 if let Some(input_controlled) = self.input_controlled {
                     layer_entity_builder =
                         layer_entity_builder.with(input_controlled, input_controlleds);
+                }
+                if let Some(shared_input_controlled) = self.shared_input_controlled {
+                    layer_entity_builder = layer_entity_builder
+                        .with(shared_input_controlled, shared_input_controlleds);
                 }
 
                 let layer_entity = layer_entity_builder.build();
