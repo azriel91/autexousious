@@ -3,10 +3,10 @@ mod tests {
     use std::any;
 
     use amethyst::{
-        ecs::{Builder, Entity, Join, ReadStorage, WorldExt, WriteStorage},
+        ecs::{Builder, Entity, Join, ReadStorage, SystemData, WorldExt, WriteStorage},
         Error,
     };
-    use amethyst_test::{AmethystApplication, EffectReturn};
+    use amethyst_test::AmethystApplication;
     use game_input_model::{ControlBindings, ControllerId};
 
     use game_input::{
@@ -17,6 +17,7 @@ mod tests {
     fn merges_axes_controller_input_with_limit_correction() -> Result<(), Error> {
         let controller_count = 3;
         AmethystApplication::ui_base::<ControlBindings>()
+            .with_setup(ReadStorage::<'_, InputControlled>::setup)
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 any::type_name::<SharedControllerInputUpdateSystem>(),
@@ -33,10 +34,10 @@ mod tests {
                             .build()
                     })
                     .collect::<Vec<Entity>>();
-                world.insert(EffectReturn(controller_entities));
+                world.insert(controller_entities);
 
                 let entity = world.create_entity().with(SharedInputControlled).build();
-                world.insert(EffectReturn(entity));
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let store = world.read_storage::<ControllerInput>();
@@ -46,22 +47,19 @@ mod tests {
                 );
             })
             .with_effect(|world| {
-                world.exec(
-                    |(input_controlleds, mut controller_inputs): (
-                        ReadStorage<'_, InputControlled>,
-                        WriteStorage<'_, ControllerInput>,
-                    )| {
-                        (&input_controlleds, &mut controller_inputs)
-                            .join()
-                            .for_each(|(_, controller_input)| {
-                                controller_input.x_axis_value = -1.;
-                                controller_input.z_axis_value = 1.;
-                            });
-                    }, // kcov-ignore
-                );
+                let (input_controlleds, mut controller_inputs) = world.system_data::<(
+                    ReadStorage<'_, InputControlled>,
+                    WriteStorage<'_, ControllerInput>,
+                )>();
+                (&input_controlleds, &mut controller_inputs)
+                    .join()
+                    .for_each(|(_, controller_input)| {
+                        controller_input.x_axis_value = -1.;
+                        controller_input.z_axis_value = 1.;
+                    });
             })
             .with_assertion(|world| {
-                let entity = world.read_resource::<EffectReturn<Entity>>().0;
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(-1., 1., false, false, false, false)),
@@ -69,22 +67,19 @@ mod tests {
                 );
             })
             .with_effect(|world| {
-                world.exec(
-                    |(input_controlleds, mut controller_inputs): (
-                        ReadStorage<'_, InputControlled>,
-                        WriteStorage<'_, ControllerInput>,
-                    )| {
-                        (&input_controlleds, &mut controller_inputs)
-                            .join()
-                            .for_each(|(_, controller_input)| {
-                                controller_input.x_axis_value = 1.;
-                                controller_input.z_axis_value = -1.;
-                            });
-                    }, // kcov-ignore
-                );
+                let (input_controlleds, mut controller_inputs) = world.system_data::<(
+                    ReadStorage<'_, InputControlled>,
+                    WriteStorage<'_, ControllerInput>,
+                )>();
+                (&input_controlleds, &mut controller_inputs)
+                    .join()
+                    .for_each(|(_, controller_input)| {
+                        controller_input.x_axis_value = 1.;
+                        controller_input.z_axis_value = -1.;
+                    });
             })
             .with_assertion(|world| {
-                let entity = world.read_resource::<EffectReturn<Entity>>().0;
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(1., -1., false, false, false, false)),
@@ -92,7 +87,8 @@ mod tests {
                 );
             })
             .with_effect(|world| {
-                let controller_entities = (world.read_resource::<EffectReturn<Vec<Entity>>>().0)
+                let controller_entities = world
+                    .read_resource::<Vec<Entity>>()
                     .iter()
                     .map(|e| *e)
                     .collect::<Vec<_>>();
@@ -105,7 +101,7 @@ mod tests {
             })
             .with_assertion(|world| {
                 // Make sure it unsets the control input when released
-                let entity = world.read_resource::<EffectReturn<Entity>>().0;
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(0., 0., false, false, false, false)),
@@ -118,6 +114,7 @@ mod tests {
     #[test]
     fn merges_action_controller_input() -> Result<(), Error> {
         AmethystApplication::ui_base::<ControlBindings>()
+            .with_setup(ReadStorage::<'_, InputControlled>::setup)
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 any::type_name::<SharedControllerInputUpdateSystem>(),
@@ -125,10 +122,10 @@ mod tests {
             )
             .with_effect(|world| {
                 let entity = world.create_entity().with(SharedInputControlled).build();
-                world.insert(EffectReturn(entity));
+                world.insert(entity);
             })
             .with_assertion(|world| {
-                let entity = world.read_resource::<EffectReturn<Entity>>().0;
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(0., 0., false, false, false, false)),
@@ -157,10 +154,10 @@ mod tests {
                     .build();
 
                 let controller_entities = vec![entity_0, entity_1];
-                world.insert(EffectReturn(controller_entities));
+                world.insert(controller_entities);
             })
             .with_assertion(|world| {
-                let entity = world.read_resource::<EffectReturn<Entity>>().0;
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(0., 0., true, true, true, true)),
@@ -168,7 +165,8 @@ mod tests {
                 );
             })
             .with_effect(|world| {
-                let entities = (world.read_resource::<EffectReturn<Vec<Entity>>>().0)
+                let entities = world
+                    .read_resource::<Vec<Entity>>()
                     .iter()
                     .map(|e| *e)
                     .collect::<Vec<_>>();
@@ -179,10 +177,11 @@ mod tests {
             })
             .with_assertion(|world| {
                 // Make sure it unsets the control input when released
+                let entity = *world.read_resource::<Entity>();
                 let store = world.read_storage::<ControllerInput>();
                 assert_eq!(
                     Some(&ControllerInput::new(0., 0., true, false, false, true)),
-                    store.join().next()
+                    store.get(entity)
                 );
             })
             .run()
