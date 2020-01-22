@@ -165,18 +165,44 @@ where
     ) {
         let ApwPreviewSpawnResources {
             entities,
+            asset_type_mappings,
             apw_previews,
             asset_selection_parents,
+            asset_selections,
             ..
         } = apw_preview_spawn_resources;
 
+        // Need to not delete entities that are just spawned.
         (entities, apw_previews, asset_selection_parents)
             .join()
             .filter_map(|(entity, _, asset_selection_parent)| {
                 if asset_selection_parent.0 == ash_entity {
-                    Some(entity)
+                    Some((entity, asset_selection_parent.0))
                 } else {
                     None
+                }
+            })
+            .filter_map(|(entity, asset_selection_parent_entity)| {
+                let asset_type = asset_selections
+                    .get(asset_selection_parent_entity)
+                    .copied()
+                    .and_then(|asset_selection| {
+                        if let AssetSelection::Id(asset_id) = asset_selection {
+                            Some(asset_id)
+                        } else {
+                            None
+                        }
+                    })
+                    .and_then(|asset_id| asset_type_mappings.get(asset_id))
+                    .copied();
+                if let Some(asset_type) = asset_type {
+                    if asset_type == PS::ASSET_TYPE {
+                        Some(entity)
+                    } else {
+                        None
+                    }
+                } else {
+                    Some(entity)
                 }
             })
             .for_each(|entity| {

@@ -130,17 +130,12 @@ impl AssetSequenceComponentLoaderUiMapSelection {
 
         // Widget item ID
         let item_id_map_preview = {
-            let map_selection_widget = AssetPreviewWidget {
+            let map_preview_widget = AssetPreviewWidget {
                 layers: item_id_map_preview_layers,
                 input_controlled: None,
                 shared_input_controlled: Some(SharedInputControlled),
             };
-            let item_entity = asset_world
-                .create_entity()
-                .with(position_map_preview)
-                .with(map_selection_widget)
-                .with(SharedInputControlled)
-                .build();
+            let item_entity = asset_world.create_entity().with(map_preview_widget).build();
 
             ItemId::new(item_entity)
         };
@@ -288,7 +283,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
                     // isn't already there.
                     .with(PositionInit::default())
-                    .with(SharedInputControlled)
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)
