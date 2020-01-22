@@ -8,11 +8,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{
-    config::AssetType,
-    loaded::AssetTypeMappings,
-    play::{AssetSelection, AssetSelectionEvent},
-};
+use asset_model::play::{AssetSelection, AssetSelectionEvent};
 use asset_selection_ui_model::play::{ApwMain, ApwPreview};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
 use derivative::Derivative;
@@ -26,7 +22,6 @@ use self::{character_preview_spawn::CharacterPreviewSpawn, map_preview_spawn::Ma
 /// Trait of different asset preview widget spawn behaviours.
 pub trait PreviewSpawner<'s> {
     type SystemData: SystemData<'s>;
-    const ASSET_TYPE: AssetType;
 
     fn spawn_preview_entities(
         apw_previews: &mut WriteStorage<'_, ApwPreview>,
@@ -76,9 +71,6 @@ where
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `ApwMain` components.
     #[derivative(Debug = "ignore")]
     pub apw_mains: ReadStorage<'s, ApwMain>,
@@ -197,7 +189,6 @@ where
             Self::find_apw_main_entity(&apw_preview_spawn_resources, controller_id);
 
         let ApwPreviewSpawnResources {
-            asset_type_mappings,
             apw_previews,
             asset_selection_parents,
             asset_selections,
@@ -208,21 +199,14 @@ where
         let asset_selection = asset_selection.or_else(|| asset_selections.get(ash_entity).copied());
 
         if let Some(asset_selection) = asset_selection {
-            if let AssetSelection::Id(asset_id) = asset_selection {
-                let asset_type = asset_type_mappings.get(asset_id).copied();
-                if let Some(asset_type) = asset_type {
-                    if asset_type == PS::ASSET_TYPE {
-                        PS::spawn_preview_entities(
-                            apw_previews,
-                            asset_selection_parents,
-                            preview_spawn_resources,
-                            ash_entity,
-                            apw_main_entity,
-                            asset_selection,
-                        );
-                    }
-                }
-            }
+            PS::spawn_preview_entities(
+                apw_previews,
+                asset_selection_parents,
+                preview_spawn_resources,
+                ash_entity,
+                apw_main_entity,
+                asset_selection,
+            );
         }
     }
 }

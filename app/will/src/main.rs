@@ -5,7 +5,7 @@ use std::{any, convert::TryFrom, process};
 use amethyst::{
     assets::HotReloadBundle,
     audio::AudioBundle,
-    core::transform::TransformBundle,
+    core::{transform::TransformBundle, SystemExt},
     input::{Bindings, InputBundle},
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -196,12 +196,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
-                ApwPreviewSpawnSystemCharacter::new(),
+                ApwPreviewSpawnSystemCharacter::new().pausable(StateId::CharacterSelection),
                 any::type_name::<ApwPreviewSpawnSystemCharacter>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
-                ApwPreviewSpawnSystemMap::new(),
+                ApwPreviewSpawnSystemMap::new().pausable(StateId::MapSelection),
                 any::type_name::<ApwPreviewSpawnSystemMap>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )

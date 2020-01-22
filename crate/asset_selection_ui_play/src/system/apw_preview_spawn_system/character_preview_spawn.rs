@@ -2,14 +2,13 @@ use amethyst::{
     ecs::{Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, play::AssetSelection};
+use asset_model::play::AssetSelection;
 use asset_selection_ui_model::play::ApwPreview;
 use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Grounding;
-use object_type::ObjectType;
 use parent_model::play::ParentEntity;
 use sequence_model::loaded::SequenceId;
 use spawn_model::loaded::Spawn;
@@ -36,7 +35,6 @@ pub struct CharacterPreviewSpawnResources<'s> {
 
 impl<'s> PreviewSpawner<'s> for CharacterPreviewSpawn {
     type SystemData = CharacterPreviewSpawnResources<'s>;
-    const ASSET_TYPE: AssetType = AssetType::Object(ObjectType::Character);
 
     // Spawns new entities that provide a preview for the asset preview widget.
     fn spawn_preview_entities(

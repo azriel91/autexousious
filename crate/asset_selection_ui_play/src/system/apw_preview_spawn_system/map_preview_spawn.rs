@@ -4,7 +4,7 @@ use amethyst::{
     ecs::{Entity, Read, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, play::AssetSelection};
+use asset_model::play::AssetSelection;
 use asset_selection_ui_model::play::ApwPreview;
 use asset_ui_model::play::AssetSelectionParent;
 use camera_model::play::CameraZoomDimensions;
@@ -45,7 +45,6 @@ pub struct MapPreviewSpawnResources<'s> {
 
 impl<'s> PreviewSpawner<'s> for MapPreviewSpawn {
     type SystemData = MapPreviewSpawnResources<'s>;
-    const ASSET_TYPE: AssetType = AssetType::Map;
 
     // Spawns new entities that provide a preview for the asset preview widget.
     fn spawn_preview_entities(
