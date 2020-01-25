@@ -1,3 +1,4 @@
+use asset_ui_model::config::Dimensions;
 use indexmap::IndexMap;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
@@ -11,6 +12,8 @@ use crate::config::{MswLayer, MswPortraits};
 pub struct MpwTemplate {
     /// Position of the map selection widget on screen.
     pub position: PositionInit,
+    /// Dimensions that the map preview should fit into.
+    pub dimensions: Dimensions,
     /// Portraits to use while map selection is not present.
     pub portraits: MswPortraits,
     /// Layers to render for the map selection preview.

@@ -45,12 +45,14 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             map_preview:
                 MpwTemplate {
                     position: position_map_preview,
+                    dimensions: dimensions_map_preview,
                     portraits: map_selection_ui_model::config::MswPortraits { random, select },
                     layers, // IndexMap<String, UiSpriteLabel>
                 },
             maps_available_selector,
         } = map_selection_ui;
         let position_map_preview = *position_map_preview;
+        let dimensions_map_preview = *dimensions_map_preview;
 
         // Store widget item IDs in `item_ids_all` to be spawned during state ID
         // updates, but don't store item IDs for widget template layers as those
@@ -109,7 +111,9 @@ impl AssetSequenceComponentLoaderUiMapSelection {
 
                     match msw_layer {
                         MswLayer::Name(MswLayerName::Main) => {
-                            item_entity_builder = item_entity_builder.with(ApwMain);
+                            item_entity_builder = item_entity_builder
+                                .with(ApwMain)
+                                .with(dimensions_map_preview);
                         }
                         MswLayer::Name(MswLayerName::Portrait) => {
                             item_entity_builder = item_entity_builder.with(msw_portraits);

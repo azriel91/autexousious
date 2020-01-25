@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     config::{Position, ScaleInit},
-    play::PositionInitParent,
+    play::{PositionInitOffset, PositionInitParent},
 };
 
 /// Position initializer for an entity.
@@ -63,6 +63,9 @@ pub struct PositionInitSystemData<'s> {
     /// `PositionInitParent` components.
     #[derivative(Debug = "ignore")]
     pub position_init_parents: ReadStorage<'s, PositionInitParent>,
+    /// `PositionInitOffset` components.
+    #[derivative(Debug = "ignore")]
+    pub position_init_offsets: ReadStorage<'s, PositionInitOffset>,
     /// `ScaleInit` components.
     #[derivative(Debug = "ignore")]
     pub scale_inits: ReadStorage<'s, ScaleInit>,
@@ -80,6 +83,7 @@ impl<'s> ItemComponent<'s> for PositionInit {
     fn augment(&self, system_data: &mut Self::SystemData, entity: Entity) {
         let PositionInitSystemData {
             position_init_parents,
+            position_init_offsets,
             scale_inits,
             positions,
             transforms,
@@ -89,9 +93,24 @@ impl<'s> ItemComponent<'s> for PositionInit {
         let position_parent = position_init_parents
             .get(entity)
             .and_then(|position_init_parent| positions.get(position_init_parent.0).copied());
+        let position_init_offset = position_init_offsets.get(entity);
         let scale_init = scale_inits.get(entity).map(|scale_init| *scale_init);
 
-        let mut translation = Into::<Vector3<f32>>::into(*self);
+        let mut translation = Into::<Position<f32>>::into(*self);
+        if let Some(position_init_offset) = position_init_offset {
+            let mut position_init_offset = **position_init_offset;
+
+            // Since scaling affects the whole transform, we need to divide the offset by the scale
+            // factor to retain the original values.
+            if let Some(scale_init) = scale_init {
+                position_init_offset.x /= scale_init.x;
+                position_init_offset.y /= scale_init.y;
+                position_init_offset.z /= scale_init.z;
+            }
+
+            translation += position_init_offset;
+        }
+        let mut translation = Into::<Vector3<f32>>::into(translation);
         if let Some(scale_init) = scale_init {
             translation.x *= scale_init.x;
             translation.y *= scale_init.y;

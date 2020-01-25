@@ -8,6 +8,7 @@ use amethyst::{
 use asset_model::{config::asset_type::Map, play::AssetWorld};
 use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
+    config::Dimensions,
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
         AssetSelectionHighlight, AssetSelector,
@@ -96,6 +97,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<AssetSelectionStatus>();
         asset_world.register::<AssetSelectionHighlight>();
         asset_world.register::<AssetSelectionHighlightMain>();
+        asset_world.register::<Dimensions>();
         asset_world.register::<ChaseModeStick>();
 
         world.insert(asset_world);
@@ -317,6 +319,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlightMain>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<Dimensions>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<Dimensions>>(),
             &[],
         );
         builder.add(

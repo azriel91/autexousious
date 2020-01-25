@@ -16,6 +16,7 @@ mod test {
     const MAP_SELECTION_UI_YAML: &str = r#"---
 map_preview:
   position: { x: 100, y: 300 }
+  dimensions: { w: 400, h: 300 }
   portraits:
     random: "portrait_random"
     select: "portrait_select"
@@ -71,8 +72,10 @@ maps_available_selector:
         layers.insert(MswLayer::Name(MswLayerName::Portrait), portrait_label);
         layers.insert(MswLayer::String(String::from("other_layer")), other_label);
         let position = PositionInit::new(100, 300, 0);
+        let dimensions = Dimensions { w: 400, h: 300 };
         let map_preview = MpwTemplate {
             position,
+            dimensions,
             portraits,
             layers,
         };
