@@ -11,7 +11,6 @@ use game_loading::GameLoadingState;
 use game_mode_selection_model::GameModeIndex;
 use game_play::GamePlayState;
 use map_selection::{MapSelectionBundle, MapSelectionStateBuilder, MapSelectionStateDelegate};
-use map_selection_ui::MapSelectionUiBundle;
 
 /// Returns the `Trans` for a given `GameModeIndex`.
 #[derive(Debug)]
@@ -33,11 +32,7 @@ impl GameModeSelectionTrans {
                     let state = MapSelectionStateBuilder::new(MapSelectionStateDelegate::new(
                         game_loading_fn,
                     ))
-                    .with_bundle(MapSelectionUiBundle::new())
-                    .with_bundle(
-                        MapSelectionBundle::new()
-                            .with_system_dependencies(MapSelectionUiBundle::system_names()),
-                    )
+                    .with_bundle(MapSelectionBundle::new())
                     .build();
 
                     Box::new(state)

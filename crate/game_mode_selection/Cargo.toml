@@ -23,7 +23,6 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play = { path = "../game_play" }
 log = "0.4.8"
 map_selection = { path = "../map_selection" }
-map_selection_ui = { path = "../map_selection_ui" }
 state_registry = { path = "../state_registry" }
 
 [features]
