@@ -3,7 +3,6 @@ use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_mode_selection_model::GameModeSelectionEventArgs;
 use game_play_model::GamePlayEventArgs;
-use map_selection_model::MapSelectionEventVariant;
 use serde::{Deserialize, Serialize};
 
 /// Configuration type to indicate what `AppEvent` to send as part of an `InputReaction`.
@@ -23,6 +22,4 @@ pub enum InputReactionAppEvent {
     GameModeSelection(GameModeSelectionEventArgs),
     /// `game_play` events.
     GamePlay(GamePlayEventArgs),
-    /// `map_selection` events.
-    MapSelection(MapSelectionEventVariant),
 }

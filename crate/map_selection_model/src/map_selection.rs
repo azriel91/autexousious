@@ -1,5 +1,5 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
-use asset_model::loaded::AssetId;
+use asset_model::{loaded::AssetId, play::AssetSelection};
 use derivative::Derivative;
 
 /// Selected map ID or random for a particular controller.
@@ -22,6 +22,15 @@ impl MapSelection {
             MapSelection::None => None,
             MapSelection::Random(asset_id) => asset_id,
             MapSelection::Id(asset_id) => Some(asset_id),
+        }
+    }
+}
+
+impl From<AssetSelection> for MapSelection {
+    fn from(asset_selection: AssetSelection) -> Self {
+        match asset_selection {
+            AssetSelection::Random => MapSelection::Random(None),
+            AssetSelection::Id(asset_id) => MapSelection::Id(asset_id),
         }
     }
 }

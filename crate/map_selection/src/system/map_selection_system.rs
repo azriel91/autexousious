@@ -3,10 +3,11 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{config::AssetType, loaded::AssetTypeMappings};
+use asset_model::{config::AssetType, loaded::AssetTypeMappings, play::AssetSelectionEvent};
 use derivative::Derivative;
 use derive_new::new;
-use map_selection_model::{MapSelection, MapSelectionEvent};
+use log::warn;
+use map_selection_model::MapSelection;
 
 use crate::MapSelectionStatus;
 
@@ -15,7 +16,7 @@ use crate::MapSelectionStatus;
 pub struct MapSelectionSystem {
     /// ID for reading map selection events.
     #[new(default)]
-    map_selection_event_rid: Option<ReaderId<MapSelectionEvent>>,
+    asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
 }
 
 /// `MapSelectionSystemData`.
@@ -25,9 +26,9 @@ pub struct MapSelectionSystemData<'s> {
     /// `MapSelectionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection_status: Write<'s, MapSelectionStatus>,
-    /// `MapSelectionEvent` channel.
+    /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub map_selection_ec: Read<'s, EventChannel<MapSelectionEvent>>,
+    pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: WriteExpect<'s, MapSelection>,
@@ -40,31 +41,35 @@ impl<'s> System<'s> for MapSelectionSystem {
         &mut self,
         MapSelectionSystemData {
             mut map_selection_status,
-            map_selection_ec,
+            asset_selection_ec,
             mut map_selection,
         }: Self::SystemData,
     ) {
-        map_selection_ec
+        asset_selection_ec
             .read(
-                self.map_selection_event_rid
+                self.asset_selection_event_rid
                     .as_mut()
-                    .expect("Expected `map_selection_event_rid` to be set."),
+                    .expect("Expected `asset_selection_event_rid` to be set."),
             )
+            .copied()
             .for_each(|ev| match ev {
-                MapSelectionEvent::Return => {}
-                MapSelectionEvent::Switch {
-                    map_selection: selection,
+                AssetSelectionEvent::Return => {}
+                AssetSelectionEvent::Switch {
+                    asset_selection, ..
                 }
-                | MapSelectionEvent::Select {
-                    map_selection: selection,
+                | AssetSelectionEvent::Select {
+                    asset_selection, ..
                 } => {
-                    *map_selection = *selection;
+                    *map_selection = MapSelection::from(asset_selection);
                 }
-                MapSelectionEvent::Deselect => {
+                AssetSelectionEvent::Deselect { .. } => {
                     *map_selection_status = MapSelectionStatus::Pending;
                 }
-                MapSelectionEvent::Confirm => {
+                AssetSelectionEvent::Confirm => {
                     *map_selection_status = MapSelectionStatus::Confirmed;
+                }
+                AssetSelectionEvent::Join { .. } | AssetSelectionEvent::Leave { .. } => {
+                    warn!("Received `{:?}` in `MapSelectionSystem`.", ev);
                 }
             });
     }
@@ -83,7 +88,7 @@ impl<'s> System<'s> for MapSelectionSystem {
             world.insert(MapSelection::Random(Some(first_map_id)));
         }
 
-        let mut map_selection_ec = world.fetch_mut::<EventChannel<MapSelectionEvent>>();
-        self.map_selection_event_rid = Some(map_selection_ec.register_reader());
+        let mut asset_selection_ec = world.fetch_mut::<EventChannel<AssetSelectionEvent>>();
+        self.asset_selection_event_rid = Some(asset_selection_ec.register_reader());
     }
 }

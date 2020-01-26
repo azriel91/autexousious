@@ -14,7 +14,6 @@ use derivative::Derivative;
 use game_input::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
-use map_selection_model::{MapSelection, MapSelectionEvent};
 use state_registry::StateId;
 
 /// `IrAppEventSenderSystemData`.
@@ -64,11 +63,4 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `GamePlayEvent` channel.
     #[derivative(Debug = "ignore")]
     pub game_play_ec: Write<'s, EventChannel<GamePlayEvent>>,
-
-    /// `MapSelectionEvent` channel.
-    #[derivative(Debug = "ignore")]
-    pub map_selection_ec: Write<'s, EventChannel<MapSelectionEvent>>,
-    /// `MapSelection` components.
-    #[derivative(Debug = "ignore")]
-    pub map_selections: ReadStorage<'s, MapSelection>,
 }

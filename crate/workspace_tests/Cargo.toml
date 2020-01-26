@@ -90,7 +90,6 @@ map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
-map_selection_stdio = { path = "../map_selection_stdio" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_loading = { path = "../object_loading" }

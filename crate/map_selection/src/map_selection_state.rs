@@ -6,10 +6,11 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
+use asset_model::play::AssetSelectionEvent;
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use map_selection_model::{MapSelection, MapSelectionEntity, MapSelectionEvent};
+use map_selection_model::{MapSelection, MapSelectionEntity};
 use state_registry::StateId;
 
 use crate::MapSelectionStatus;
@@ -95,12 +96,15 @@ where
         data: StateData<'_, GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let AppEvent::MapSelection(map_selection_event) = event {
-            debug!("Received map_selection_event: {:?}", map_selection_event);
+        if let AppEvent::AssetSelection(asset_selection_event) = event {
+            debug!(
+                "Received asset_selection_event: {:?}",
+                asset_selection_event
+            );
 
-            match map_selection_event {
-                MapSelectionEvent::Return => Trans::Pop,
-                MapSelectionEvent::Confirm => {
+            match asset_selection_event {
+                AssetSelectionEvent::Return => Trans::Pop,
+                AssetSelectionEvent::Confirm => {
                     let map_selection = data.world.read_resource::<MapSelection>();
                     debug!("map_selection: `{:?}`", &*map_selection);
 

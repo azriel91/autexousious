@@ -8,7 +8,6 @@ use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventAr
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;
 use log::error;
-use map_selection_model::{MapSelection, MapSelectionEvent, MapSelectionEventVariant};
 
 use crate::IrAppEventSenderSystemData;
 
@@ -64,13 +63,6 @@ impl IrAppEventSender {
             InputReactionAppEvent::GamePlay(game_play_event_args) => {
                 Self::handle_game_play_event(ir_app_event_sender_system_data, game_play_event_args);
             }
-            InputReactionAppEvent::MapSelection(map_selection_event_variant) => {
-                Self::handle_map_selection_event(
-                    ir_app_event_sender_system_data,
-                    entity,
-                    map_selection_event_variant,
-                );
-            }
         }
     }
 
@@ -113,51 +105,6 @@ impl IrAppEventSender {
         ir_app_event_sender_system_data
             .game_play_ec
             .single_write(game_play_event);
-    }
-
-    fn handle_map_selection_event(
-        ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
-        entity: Entity,
-        map_selection_event_variant: MapSelectionEventVariant,
-    ) {
-        let map_selection_event = match map_selection_event_variant {
-            MapSelectionEventVariant::Return => Some(MapSelectionEvent::Return),
-            MapSelectionEventVariant::Switch => {
-                Self::map_selection(ir_app_event_sender_system_data, entity)
-                    .map(|map_selection| MapSelectionEvent::Switch { map_selection })
-            }
-            MapSelectionEventVariant::Select => {
-                Self::map_selection(ir_app_event_sender_system_data, entity)
-                    .map(|map_selection| MapSelectionEvent::Select { map_selection })
-            }
-            MapSelectionEventVariant::Deselect => Some(MapSelectionEvent::Deselect),
-            MapSelectionEventVariant::Confirm => Some(MapSelectionEvent::Confirm),
-        };
-
-        if let Some(map_selection_event) = map_selection_event {
-            ir_app_event_sender_system_data
-                .map_selection_ec
-                .single_write(map_selection_event);
-        }
-    }
-
-    fn map_selection(
-        IrAppEventSenderSystemData {
-            asset_ids,
-            asset_id_mappings,
-            map_selections,
-            ..
-        }: &IrAppEventSenderSystemData,
-        entity: Entity,
-    ) -> Option<MapSelection> {
-        let map_selection = map_selections.get(entity).copied();
-
-        if let Some(map_selection) = map_selection {
-            Some(map_selection)
-        } else {
-            Self::log_component_missing_error(asset_ids, asset_id_mappings, entity, "MapSelection");
-            None
-        }
     }
 
     pub(crate) fn log_component_missing_error(

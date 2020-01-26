@@ -11,8 +11,9 @@ mod tests {
     use asset_model::{
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+        play::{AssetSelection, AssetSelectionEvent},
     };
-    use map_selection_model::{MapSelection, MapSelectionEvent};
+    use map_selection_model::MapSelection;
 
     use map_selection::{MapSelectionStatus, MapSelectionSystem, MapSelectionSystemData};
 
@@ -21,7 +22,7 @@ mod tests {
         run_test(
             SetupParams {
                 map_selection_status: MapSelectionStatus::Pending,
-                map_selection_event_fn: |_world| MapSelectionEvent::Return,
+                map_selection_event_fn: |_world| AssetSelectionEvent::Return,
             },
             ExpectedParams {
                 map_select: MapSelect::One,
@@ -36,8 +37,12 @@ mod tests {
             SetupParams {
                 map_selection_status: MapSelectionStatus::Pending,
                 map_selection_event_fn: |world| {
-                    let map_selection = map_selection(world, MapSelect::Two);
-                    MapSelectionEvent::Switch { map_selection }
+                    let asset_selection = asset_selection(world, MapSelect::Two);
+                    AssetSelectionEvent::Switch {
+                        entity: None,
+                        controller_id: 0,
+                        asset_selection,
+                    }
                 },
             },
             ExpectedParams {
@@ -53,8 +58,12 @@ mod tests {
             SetupParams {
                 map_selection_status: MapSelectionStatus::Pending,
                 map_selection_event_fn: |world| {
-                    let map_selection = map_selection(world, MapSelect::Two);
-                    MapSelectionEvent::Select { map_selection }
+                    let asset_selection = asset_selection(world, MapSelect::Two);
+                    AssetSelectionEvent::Select {
+                        entity: None,
+                        controller_id: 0,
+                        asset_selection,
+                    }
                 },
             },
             ExpectedParams {
@@ -69,7 +78,10 @@ mod tests {
         run_test(
             SetupParams {
                 map_selection_status: MapSelectionStatus::Confirmed,
-                map_selection_event_fn: |_world| MapSelectionEvent::Deselect,
+                map_selection_event_fn: |_world| AssetSelectionEvent::Deselect {
+                    entity: None,
+                    controller_id: 0,
+                },
             },
             ExpectedParams {
                 map_select: MapSelect::One,
@@ -83,7 +95,7 @@ mod tests {
         run_test(
             SetupParams {
                 map_selection_status: MapSelectionStatus::Pending,
-                map_selection_event_fn: |_world| MapSelectionEvent::Confirm,
+                map_selection_event_fn: |_world| AssetSelectionEvent::Confirm,
             },
             ExpectedParams {
                 map_select: MapSelect::One,
@@ -122,7 +134,8 @@ mod tests {
                 send_event(world, map_selection_event)
             })
             .with_assertion(move |world| {
-                let map_selection_expected = map_selection(world, map_select_expected);
+                let map_selection_expected =
+                    MapSelection::from(asset_selection(world, map_select_expected));
                 let map_selection_actual = world.read_resource::<MapSelection>();
                 assert_eq!(map_selection_expected, *map_selection_actual);
 
@@ -160,24 +173,24 @@ mod tests {
         world.insert(asset_ids);
     }
 
-    fn send_event(world: &mut World, event: MapSelectionEvent) {
+    fn send_event(world: &mut World, event: AssetSelectionEvent) {
         world
-            .write_resource::<EventChannel<MapSelectionEvent>>()
+            .write_resource::<EventChannel<AssetSelectionEvent>>()
             .single_write(event);
     }
 
-    fn map_selection(world: &World, map_select: MapSelect) -> MapSelection {
+    fn asset_selection(world: &World, map_select: MapSelect) -> AssetSelection {
         let index = match map_select {
             MapSelect::One => 0,
             MapSelect::Two => 1,
         };
         let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
-        MapSelection::Id(map_asset_ids[index])
+        AssetSelection::Id(map_asset_ids[index])
     }
 
     struct SetupParams {
         map_selection_status: MapSelectionStatus,
-        map_selection_event_fn: fn(&mut World) -> MapSelectionEvent,
+        map_selection_event_fn: fn(&mut World) -> AssetSelectionEvent,
     }
 
     struct ExpectedParams {
