@@ -256,6 +256,23 @@ impl IrAssetSelectionEventSender {
     }
 
     fn asset_selection_confirm_preconditions_met(
+        ir_app_event_sender_system_data: &IrAppEventSenderSystemData,
+        ash_entity: Entity,
+    ) -> bool {
+        let state_id = *ir_app_event_sender_system_data.state_id;
+        match state_id {
+            StateId::CharacterSelection => Self::character_selection_confirm_preconditions_met(
+                ir_app_event_sender_system_data,
+                ash_entity,
+            ),
+            StateId::MapSelection => true,
+            _ => {
+                panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+            }
+        }
+    }
+
+    fn character_selection_confirm_preconditions_met(
         IrAppEventSenderSystemData {
             asset_selection_statuses,
             ..
