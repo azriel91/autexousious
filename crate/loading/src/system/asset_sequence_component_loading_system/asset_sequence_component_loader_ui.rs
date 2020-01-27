@@ -124,7 +124,7 @@ impl AssetSequenceComponentLoaderUi {
             ..
         }) = ui_definition.as_mut()
         {
-            Some(KeyboardUiGen::generate(
+            Some(KeyboardUiGen::generate_full(
                 &control_settings.keyboard,
                 &input_config,
                 sequences,
