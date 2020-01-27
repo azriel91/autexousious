@@ -6,11 +6,12 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{InputControlled, SharedInputControlled};
 use game_input_model::{
     AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
+
+use crate::{InputControlled, SharedInputControlled};
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
 #[derive(Debug, Default, new)]

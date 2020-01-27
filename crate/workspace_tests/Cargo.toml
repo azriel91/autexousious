@@ -61,7 +61,6 @@ enumflags2 = "0.6.2"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
-game_input_ui = { path = "../game_input_ui" }
 game_loading = { path = "../game_loading" }
 game_mode_selection = { path = "../game_mode_selection" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }

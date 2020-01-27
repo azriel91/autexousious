@@ -32,7 +32,6 @@ frame_rate = { path = "../../crate/frame_rate" }
 game_input = { path = "../../crate/game_input" }
 game_input_model = { path = "../../crate/game_input_model" }
 game_input_stdio = { path = "../../crate/game_input_stdio" }
-game_input_ui = { path = "../../crate/game_input_ui" }
 game_mode_selection = { path = "../../crate/game_mode_selection" }
 game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }

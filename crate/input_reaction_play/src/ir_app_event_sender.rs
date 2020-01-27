@@ -7,7 +7,7 @@ use game_input_model::ControllerId;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;
-use log::error;
+use log::{debug, error};
 
 use crate::IrAppEventSenderSystemData;
 
@@ -33,6 +33,7 @@ impl IrAppEventSender {
         entity: Entity,
         event: InputReactionAppEvent,
     ) {
+        debug!("Sending {:?}.", event);
         match event {
             InputReactionAppEvent::AssetSelection(asset_selection_event_variant) => {
                 if let Some(controller_id) = controller_id {
@@ -43,9 +44,7 @@ impl IrAppEventSender {
                         asset_selection_event_variant,
                     );
                 } else {
-                    log::error!(
-                        "Expected `controller_id` to be set to send `AssetSelection` event."
-                    );
+                    error!("Expected `controller_id` to be set to send `AssetSelection` event.");
                 }
             }
             InputReactionAppEvent::ControlSettings(control_settings_event) => {

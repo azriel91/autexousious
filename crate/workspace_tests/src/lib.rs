@@ -86,8 +86,6 @@ mod game_input_model;
 #[cfg(test)]
 mod game_input_stdio;
 #[cfg(test)]
-mod game_input_ui;
-#[cfg(test)]
 mod game_loading;
 #[cfg(test)]
 mod game_mode_selection;
