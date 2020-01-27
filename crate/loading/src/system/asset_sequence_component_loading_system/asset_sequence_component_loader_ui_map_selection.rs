@@ -9,7 +9,10 @@ use asset_model::{
 use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
-    loaded::{AssetDisplayCellMap, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{
+        AssetDisplayCellMap, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
+        AswPortraits,
+    },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use chase_model::play::ChaseModeStick;
@@ -17,10 +20,7 @@ use game_input::{InputControlled, SharedInputControlled};
 use game_input_model::InputConfig;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
-use map_selection_ui_model::{
-    config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName},
-    loaded::MswPortraits,
-};
+use map_selection_ui_model::config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName};
 use sequence_loading::SequenceIdMapper;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use sprite_model::config::SpriteSequenceName;
@@ -48,7 +48,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                 MpwTemplate {
                     position: position_map_preview,
                     dimensions: dimensions_map_preview,
-                    portraits: map_selection_ui_model::config::MswPortraits { random, select },
+                    portraits,
                     layers, // IndexMap<String, UiSpriteLabel>
                 },
             maps_available_selector,
@@ -61,20 +61,17 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // are instantiated when each widget item ID is attached to an entity.
 
         // Layer item IDs
-        let sequence_id_random = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            random,
-        );
-        let sequence_id_select = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            select,
-        );
-        let msw_portraits = MswPortraits {
-            random: sequence_id_random,
-            select: sequence_id_select,
-        };
+        let asw_portraits = portraits
+            .iter()
+            .map(|(asw_portrait_name, sequence_name_string)| {
+                let sequence_id = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                    sequence_id_mappings,
+                    asset_slug,
+                    sequence_name_string,
+                );
+                (*asw_portrait_name, sequence_id)
+            })
+            .collect::<AswPortraits>();
         let item_id_map_preview_layers = {
             let mut position_inits = PositionInitsLoader::items_to_datas(layers.values());
             position_inits
@@ -118,7 +115,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                                 .with(dimensions_map_preview);
                         }
                         MswLayer::Name(MswLayerName::Portrait) => {
-                            item_entity_builder = item_entity_builder.with(msw_portraits);
+                            item_entity_builder = item_entity_builder.with(asw_portraits.clone());
                         }
                         _ => {}
                     }

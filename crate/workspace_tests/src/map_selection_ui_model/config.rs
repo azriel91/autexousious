@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod test {
     use asset_ui_model::config::{
-        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector,
+        AswPortraitName, AswPortraits, Dimensions,
     };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
@@ -9,9 +10,7 @@ mod test {
     use serde_yaml;
     use ui_label_model::config::UiSpriteLabel;
 
-    use map_selection_ui_model::config::{
-        MapSelectionUi, MpwTemplate, MswLayer, MswLayerName, MswPortraits,
-    };
+    use map_selection_ui_model::config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName};
 
     const MAP_SELECTION_UI_YAML: &str = r#"---
 map_preview:
@@ -51,9 +50,17 @@ maps_available_selector:
         let map_selection_ui = serde_yaml::from_str::<MapSelectionUi>(MAP_SELECTION_UI_YAML)
             .expect("Failed to deserialize `MapSelectionUi`.");
 
-        let portraits = MswPortraits {
-            random: SequenceNameString::String(String::from("portrait_random")),
-            select: SequenceNameString::String(String::from("portrait_select")),
+        let portraits = {
+            let mut asw_portraits = AswPortraits::default();
+            asw_portraits.insert(
+                AswPortraitName::Random,
+                SequenceNameString::String(String::from("portrait_random")),
+            );
+            asw_portraits.insert(
+                AswPortraitName::Select,
+                SequenceNameString::String(String::from("portrait_select")),
+            );
+            asw_portraits
         };
         let main_label = UiSpriteLabel {
             sequence: SequenceNameString::String(String::from("widget_inactive")),

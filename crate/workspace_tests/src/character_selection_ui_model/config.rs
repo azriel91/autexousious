@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod test {
     use asset_ui_model::config::{
-        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector,
+        AswPortraitName, AswPortraits, Dimensions,
     };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
@@ -10,7 +11,7 @@ mod test {
     use ui_label_model::config::UiSpriteLabel;
 
     use character_selection_ui_model::config::{
-        CharacterSelectionUi, CswDefinition, CswLayer, CswLayerName, CswPortraits, CswTemplate,
+        CharacterSelectionUi, CswDefinition, CswLayer, CswLayerName, CswTemplate,
     };
 
     const CHARACTER_SELECTION_UI_YAML: &str = r#"---
@@ -71,10 +72,21 @@ characters_available_selector:
                 position: PositionInit::new(400, 100, 0),
             },
         ];
-        let portraits = CswPortraits {
-            join: SequenceNameString::String(String::from("portrait_press_to_join")),
-            random: SequenceNameString::String(String::from("portrait_random")),
-            select: SequenceNameString::String(String::from("portrait_select")),
+        let portraits = {
+            let mut asw_portraits = AswPortraits::default();
+            asw_portraits.insert(
+                AswPortraitName::Join,
+                SequenceNameString::String(String::from("portrait_press_to_join")),
+            );
+            asw_portraits.insert(
+                AswPortraitName::Random,
+                SequenceNameString::String(String::from("portrait_random")),
+            );
+            asw_portraits.insert(
+                AswPortraitName::Select,
+                SequenceNameString::String(String::from("portrait_select")),
+            );
+            asw_portraits
         };
         let main_label = UiSpriteLabel {
             sequence: SequenceNameString::String(String::from("widget_inactive")),

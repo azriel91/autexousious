@@ -11,12 +11,12 @@ use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{
         AssetDisplayCellCharacter, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
+        AswPortraits,
     },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
-use character_selection_ui_model::{
-    config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
-    loaded::CswPortraits,
+use character_selection_ui_model::config::{
+    CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
 };
 use chase_model::play::ChaseModeStick;
 use game_input::InputControlled;
@@ -50,12 +50,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             widgets, // Vec<CswDefinition>
             widget_template:
                 CswTemplate {
-                    portraits:
-                        character_selection_ui_model::config::CswPortraits {
-                            join,
-                            random,
-                            select,
-                        },
+                    portraits,
                     layers, // IndexMap<String, UiSpriteLabel>
                 },
             characters_available_selector,
@@ -75,26 +70,17 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
 
         // Layer item IDs
         let position_inits_widgets = PositionInitsLoader::items_to_datas(widgets.iter());
-        let sequence_id_join = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            join,
-        );
-        let sequence_id_random = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            random,
-        );
-        let sequence_id_select = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            select,
-        );
-        let csw_portraits = CswPortraits {
-            join: sequence_id_join,
-            random: sequence_id_random,
-            select: sequence_id_select,
-        };
+        let asw_portraits = portraits
+            .iter()
+            .map(|(asw_portrait_name, sequence_name_string)| {
+                let sequence_id = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                    sequence_id_mappings,
+                    asset_slug,
+                    sequence_name_string,
+                );
+                (*asw_portrait_name, sequence_id)
+            })
+            .collect::<AswPortraits>();
         let item_ids_layers = position_inits_widgets
             .0
             .into_iter()
@@ -139,7 +125,8 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                                 item_entity_builder = item_entity_builder.with(ApwMain);
                             }
                             CswLayer::Name(CswLayerName::Portrait) => {
-                                item_entity_builder = item_entity_builder.with(csw_portraits);
+                                item_entity_builder =
+                                    item_entity_builder.with(asw_portraits.clone());
                             }
                             _ => {}
                         }

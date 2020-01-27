@@ -11,13 +11,12 @@ use asset_ui_model::{
     config::Dimensions,
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
-        AssetSelectionHighlight, AssetSelector,
+        AssetSelectionHighlight, AssetSelector, AswPortraits,
     },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
-use character_selection_ui_model::loaded::CswPortraits;
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
@@ -29,7 +28,6 @@ use kinematic_model::{
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
-use map_selection_ui_model::loaded::MswPortraits;
 use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
 use object_type::Character;
@@ -83,13 +81,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
 
         asset_world.register::<AssetPreviewWidget>();
         asset_world.register::<ApwMain>();
+        asset_world.register::<AswPortraits>();
 
-        asset_world.register::<CswPortraits>();
         asset_world.register::<AssetSelector<Character>>();
         asset_world.register::<AssetDisplayCellCharacter>();
         asset_world.register::<AssetSelectionCell<AssetDisplayCellCharacter>>();
 
-        asset_world.register::<MswPortraits>();
         asset_world.register::<AssetSelector<Map>>();
         asset_world.register::<AssetDisplayCellMap>();
         asset_world.register::<AssetSelectionCell<AssetDisplayCellMap>>();
@@ -240,15 +237,15 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
                 ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
-
-        // Character Selection UI
         builder.add(
-            ItemComponentComponentAugmentSystem::<CswPortraits>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CswPortraits>>(),
+            ItemComponentComponentAugmentSystem::<AswPortraits>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AswPortraits>>(),
             &[&any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
+
+        // Character Selection UI
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelector<Character>>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
@@ -270,13 +267,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
 
         // Map Selection UI
-        builder.add(
-            ItemComponentComponentAugmentSystem::<MswPortraits>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<MswPortraits>>(),
-            &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
-            >()],
-        );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelector<Map>>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),

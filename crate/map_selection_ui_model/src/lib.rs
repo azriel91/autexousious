@@ -3,4 +3,3 @@
 //! Types used to represent map selection UI data.
 
 pub mod config;
-pub mod loaded;

@@ -1,10 +1,10 @@
-use asset_ui_model::config::Dimensions;
+use asset_ui_model::config::{AswPortraits, Dimensions};
 use indexmap::IndexMap;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
 use ui_label_model::config::UiSpriteLabel;
 
-use crate::config::{MswLayer, MswPortraits};
+use crate::config::MswLayer;
 
 /// Configuration for initializing the map selection preview.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -15,7 +15,7 @@ pub struct MpwTemplate {
     /// Dimensions that the map preview should fit into.
     pub dimensions: Dimensions,
     /// Portraits to use while map selection is not present.
-    pub portraits: MswPortraits,
+    pub portraits: AswPortraits,
     /// Layers to render for the map selection preview.
     pub layers: IndexMap<MswLayer, UiSpriteLabel>,
 }
