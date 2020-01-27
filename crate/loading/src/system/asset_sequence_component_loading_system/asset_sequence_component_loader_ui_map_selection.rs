@@ -13,7 +13,8 @@ use asset_ui_model::{
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use chase_model::play::ChaseModeStick;
-use game_input::SharedInputControlled;
+use game_input::{InputControlled, SharedInputControlled};
+use game_input_model::InputConfig;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use map_selection_ui_model::{
@@ -39,6 +40,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         item_ids_all: &mut Vec<ItemId>,
+        input_config: &InputConfig,
         map_selection_ui: &MapSelectionUi,
     ) {
         let MapSelectionUi {
@@ -153,6 +155,19 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             asset_sequence_component_loader_ui_components,
             maps_available_selector,
         ));
+
+        // Since the `AssetSelectionHighlight` entities use a `SharedInputControlled`, we still need
+        // entities with `InputControlled` to that the individual `ControllerInput`s are stored
+        // against.
+        let input_controlled_items = {
+            let controller_count = input_config.controller_configs.len();
+            (0..controller_count)
+                .into_iter()
+                .map(InputControlled::new)
+                .map(|input_controlled| asset_world.create_entity().with(input_controlled).build())
+                .map(ItemId::new)
+        };
+        item_ids_all.extend(input_controlled_items);
     }
 
     fn asset_selector_item<T>(
