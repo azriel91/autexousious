@@ -13,7 +13,7 @@ mod tests {
     };
     use object_type::ObjectType;
 
-    use character_selection_ui::CharacterSelectionSfxSystem;
+    use asset_selection_ui_play::AssetSelectionSfxSystem;
 
     #[test]
     fn plays_sound_on_return_event() -> Result<(), Error> {
@@ -77,7 +77,7 @@ mod tests {
 
     fn run_test(asset_selection_event_fn: fn(AssetId) -> AssetSelectionEvent) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(CharacterSelectionSfxSystem::new(), "", &[])
+            .with_system(AssetSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
                 let asset_id =
                     AssetQueries::first_id(world, AssetType::Object(ObjectType::Character));

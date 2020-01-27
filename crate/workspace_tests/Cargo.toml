@@ -23,6 +23,7 @@ asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 asset_play = { path = "../asset_play" }
 asset_selection_stdio = { path = "../asset_selection_stdio" }
+asset_selection_ui_play = { path = "../asset_selection_ui_play" }
 asset_ui_model = { path = "../asset_ui_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
@@ -38,7 +39,6 @@ character_play = { path = "../character_play" }
 character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
-character_selection_ui = { path = "../character_selection_ui" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 charge_model = { path = "../charge_model" }
 charge_play = { path = "../charge_play" }

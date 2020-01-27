@@ -2,10 +2,10 @@ use std::any;
 
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
+use asset_selection_ui_play::AssetSelectionSfxSystem;
 use character_selection::{
     CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
 };
-use character_selection_ui::CharacterSelectionSfxSystem;
 use control_settings::ControlSettingsState;
 use game_loading::GameLoadingState;
 use game_mode_selection_model::GameModeIndex;
@@ -44,12 +44,12 @@ impl GameModeSelectionTrans {
                             map_selection_fn,
                         ))
                         .with_system(
-                            CharacterSelectionSfxSystem::new(),
-                            any::type_name::<CharacterSelectionSfxSystem>(),
+                            AssetSelectionSfxSystem::new(),
+                            any::type_name::<AssetSelectionSfxSystem>(),
                             &[],
                         )
                         .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(
-                            vec![any::type_name::<CharacterSelectionSfxSystem>()],
+                            vec![any::type_name::<AssetSelectionSfxSystem>()],
                         ))
                         .build();
 

@@ -15,16 +15,16 @@ const VOLUME: f32 = 1.0;
 
 /// Plays sounds for the character selection UI.
 #[derive(Debug, Default, new)]
-pub struct CharacterSelectionSfxSystem {
+pub struct AssetSelectionSfxSystem {
     /// Reader ID for the `AssetSelectionEvent` event channel.
     #[new(default)]
     asset_selection_event_rid: Option<ReaderId<AssetSelectionEvent>>,
 }
 
-/// `CharacterSelectionSfxSystemData`.
+/// `AssetSelectionSfxSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct CharacterSelectionSfxSystemData<'s> {
+pub struct AssetSelectionSfxSystemData<'s> {
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
@@ -39,12 +39,12 @@ pub struct CharacterSelectionSfxSystemData<'s> {
     pub output: Option<Read<'s, Output>>,
 }
 
-impl<'s> System<'s> for CharacterSelectionSfxSystem {
-    type SystemData = CharacterSelectionSfxSystemData<'s>;
+impl<'s> System<'s> for AssetSelectionSfxSystem {
+    type SystemData = AssetSelectionSfxSystemData<'s>;
 
     fn run(
         &mut self,
-        CharacterSelectionSfxSystemData {
+        AssetSelectionSfxSystemData {
             asset_selection_ec,
             ui_sfx_map,
             source_assets,
@@ -55,7 +55,7 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
         let events_iterator = asset_selection_ec.read(
             self.asset_selection_event_rid
                 .as_mut()
-                .expect("Expected reader ID to exist for CharacterSelectionSfxSystem."),
+                .expect("Expected reader ID to exist for AssetSelectionSfxSystem."),
         );
 
         if let Some(output) = output {

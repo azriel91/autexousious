@@ -4,6 +4,7 @@
 
 pub use crate::system::{
     ApwPreviewSpawnSystem, ApwPreviewSpawnSystemCharacter, ApwPreviewSpawnSystemMap,
+    AssetSelectionSfxSystem, AssetSelectionSfxSystemData,
 };
 
 mod system;
