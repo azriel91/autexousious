@@ -108,12 +108,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(TransformBundle::new())?
             .with_bundle(
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
-            .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
@@ -226,6 +224,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 any::type_name::<ChildEntityDeleteSystem>(),
                 &[],
             )
+            .with_barrier()
+            // To remove the 1 frame of flicker issue, we must run `TransformSystem` near the end,
+            // so that the global matrix is updated even when the local matrix is up to date.
+            //
+            // `UiBundle` has a hardcoded dependency on `"transform_system"`, so we have to shift it
+            // down as well.
+            .with_bundle(TransformBundle::new())?
+            .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(
