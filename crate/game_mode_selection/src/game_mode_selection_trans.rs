@@ -1,8 +1,5 @@
-use std::any;
-
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
-use asset_selection_ui_play::AssetSelectionSfxSystem;
 use character_selection::{
     CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
 };
@@ -39,19 +36,11 @@ impl GameModeSelectionTrans {
                 };
                 // kcov-ignore-end
                 let character_selection_state = {
-                    let state =
-                        CharacterSelectionStateBuilder::new(CharacterSelectionStateDelegate::new(
-                            map_selection_fn,
-                        ))
-                        .with_system(
-                            AssetSelectionSfxSystem::new(),
-                            any::type_name::<AssetSelectionSfxSystem>(),
-                            &[],
-                        )
-                        .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(
-                            vec![any::type_name::<AssetSelectionSfxSystem>()],
-                        ))
-                        .build();
+                    let state = CharacterSelectionStateBuilder::new(
+                        CharacterSelectionStateDelegate::new(map_selection_fn),
+                    )
+                    .with_bundle(CharacterSelectionBundle::new())
+                    .build();
 
                     Box::new(state)
                 };
