@@ -3,7 +3,7 @@ mod tests {
     use std::any;
 
     use amethyst::{
-        ecs::{Builder, Entity, Join, ReadStorage, SystemData, WorldExt, WriteStorage},
+        ecs::{Builder, Entity, Join, ReadStorage, WorldExt, WriteStorage},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -17,7 +17,6 @@ mod tests {
     fn merges_axes_controller_input_with_limit_correction() -> Result<(), Error> {
         let controller_count = 3;
         AmethystApplication::ui_base::<ControlBindings>()
-            .with_setup(ReadStorage::<'_, InputControlled>::setup)
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 any::type_name::<SharedControllerInputUpdateSystem>(),
@@ -114,7 +113,6 @@ mod tests {
     #[test]
     fn merges_action_controller_input() -> Result<(), Error> {
         AmethystApplication::ui_base::<ControlBindings>()
-            .with_setup(ReadStorage::<'_, InputControlled>::setup)
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 any::type_name::<SharedControllerInputUpdateSystem>(),
