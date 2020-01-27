@@ -1,7 +1,9 @@
+use std::any;
+
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
 use character_selection::{
-    CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
+    CharacterSelectionStateBuilder, CharacterSelectionStateDelegate, CharacterSelectionSystem,
 };
 use control_settings::ControlSettingsState;
 use game_loading::GameLoadingState;
@@ -39,7 +41,11 @@ impl GameModeSelectionTrans {
                     let state = CharacterSelectionStateBuilder::new(
                         CharacterSelectionStateDelegate::new(map_selection_fn),
                     )
-                    .with_bundle(CharacterSelectionBundle::new())
+                    .with_system(
+                        CharacterSelectionSystem::new(),
+                        any::type_name::<CharacterSelectionSystem>(),
+                        &[],
+                    )
                     .build();
 
                     Box::new(state)
