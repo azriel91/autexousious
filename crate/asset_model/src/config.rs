@@ -19,5 +19,5 @@ mod asset_slug_build_error;
 mod asset_slug_segment;
 mod asset_slug_visitor;
 mod asset_switch;
-mod asset_type;
+pub mod asset_type;
 mod index;

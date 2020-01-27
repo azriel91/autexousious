@@ -53,7 +53,7 @@ nightly:conformance:
   variables:
     RUSTUP_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
     # Uncomment the next line if clippy is not compatible with the latest nightly.
-    # CLIPPY_ENABLED: 'false'
+    CLIPPY_ENABLED: 'false'
   before_script:
     - *print_tool_versions_linux
     - scripts/install_packages_linux.sh

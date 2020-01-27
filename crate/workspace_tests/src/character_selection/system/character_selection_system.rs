@@ -29,6 +29,7 @@ mod tests {
             SetupParams {
                 with_character_selection_initial: false,
                 asset_selection_event_fn: |asset_id| AssetSelectionEvent::Select {
+                    entity: None,
                     controller_id: 123,
                     asset_selection: AssetSelection::Id(asset_id),
                 },
@@ -45,6 +46,7 @@ mod tests {
             SetupParams {
                 with_character_selection_initial: true,
                 asset_selection_event_fn: |asset_id| AssetSelectionEvent::Select {
+                    entity: None,
                     controller_id: 123,
                     asset_selection: AssetSelection::Id(asset_id),
                 },
@@ -60,7 +62,10 @@ mod tests {
         run_test(
             SetupParams {
                 with_character_selection_initial: false,
-                asset_selection_event_fn: |_| AssetSelectionEvent::Deselect { controller_id: 123 },
+                asset_selection_event_fn: |_| AssetSelectionEvent::Deselect {
+                    entity: None,
+                    controller_id: 123,
+                },
             },
             ExpectedParams {
                 character_selection_fn: |_| None,

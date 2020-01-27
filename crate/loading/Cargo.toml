@@ -16,6 +16,7 @@ application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 background_model = { path = "../background_model" }
@@ -41,6 +42,7 @@ kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
 log = "0.4.8"
 map_model = { path = "../map_model" }
+map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }

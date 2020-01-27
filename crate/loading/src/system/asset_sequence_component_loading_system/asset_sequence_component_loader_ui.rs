@@ -24,8 +24,8 @@ use ui_model::config::{UiDefinition, UiType};
 use crate::{
     AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
     AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-    AssetSequenceComponentLoaderUiMenu, DefinitionLoadingResourcesRead,
-    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+    AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
+    DefinitionLoadingResourcesRead, SequenceComponentLoadingResources, TextureLoadingResourcesRead,
 };
 
 /// Loads sequence components for UI assets.
@@ -343,6 +343,18 @@ impl AssetSequenceComponentLoaderUi {
                         &mut item_ids_all,
                         input_config,
                         character_selection_ui,
+                    );
+                }
+                UiType::MapSelection(map_selection_ui) => {
+                    AssetSequenceComponentLoaderUiMapSelection::load(
+                        asset_type_mappings,
+                        asset_world,
+                        asset_slug,
+                        sequence_id_mappings,
+                        &asset_sequence_component_loader_ui_components,
+                        &mut item_ids_all,
+                        input_config,
+                        map_selection_ui,
                     );
                 }
                 UiType::ControlSettings(control_settings) => {

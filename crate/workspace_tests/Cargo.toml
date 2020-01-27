@@ -23,6 +23,7 @@ asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 asset_play = { path = "../asset_play" }
 asset_selection_stdio = { path = "../asset_selection_stdio" }
+asset_selection_ui_play = { path = "../asset_selection_ui_play" }
 asset_ui_model = { path = "../asset_ui_model" }
 assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
@@ -38,7 +39,6 @@ character_play = { path = "../character_play" }
 character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
-character_selection_ui = { path = "../character_selection_ui" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 charge_model = { path = "../charge_model" }
 charge_play = { path = "../charge_play" }
@@ -61,7 +61,6 @@ enumflags2 = "0.6.2"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
-game_input_ui = { path = "../game_input_ui" }
 game_loading = { path = "../game_loading" }
 game_mode_selection = { path = "../game_mode_selection" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
@@ -90,8 +89,7 @@ map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
-map_selection_stdio = { path = "../map_selection_stdio" }
-map_selection_ui = { path = "../map_selection_ui" }
+map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }

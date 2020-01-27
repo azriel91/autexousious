@@ -6,15 +6,17 @@ use asset_model::{
     loaded::{AssetTypeMappings, ItemId},
     play::AssetWorld,
 };
+use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
-    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    loaded::{
+        AssetDisplayCellCharacter, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
+        AswPortraits,
+    },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
-use character_selection_ui_model::{
-    config::{CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate},
-    loaded::{CharacterSelectionWidget, CswPortraits},
-    play::CswMain,
+use character_selection_ui_model::config::{
+    CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
 };
 use chase_model::play::ChaseModeStick;
 use game_input::InputControlled;
@@ -48,12 +50,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             widgets, // Vec<CswDefinition>
             widget_template:
                 CswTemplate {
-                    portraits:
-                        character_selection_ui_model::config::CswPortraits {
-                            join,
-                            random,
-                            select,
-                        },
+                    portraits,
                     layers, // IndexMap<String, UiSpriteLabel>
                 },
             characters_available_selector,
@@ -73,26 +70,17 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
 
         // Layer item IDs
         let position_inits_widgets = PositionInitsLoader::items_to_datas(widgets.iter());
-        let sequence_id_join = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            join,
-        );
-        let sequence_id_random = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            random,
-        );
-        let sequence_id_select = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
-            sequence_id_mappings,
-            asset_slug,
-            select,
-        );
-        let csw_portraits = CswPortraits {
-            join: sequence_id_join,
-            random: sequence_id_random,
-            select: sequence_id_select,
-        };
+        let asw_portraits = portraits
+            .iter()
+            .map(|(asw_portrait_name, sequence_name_string)| {
+                let sequence_id = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                    sequence_id_mappings,
+                    asset_slug,
+                    sequence_name_string,
+                );
+                (*asw_portrait_name, sequence_id)
+            })
+            .collect::<AswPortraits>();
         let item_ids_layers = position_inits_widgets
             .0
             .into_iter()
@@ -134,10 +122,11 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
 
                         match csw_layer {
                             CswLayer::Name(CswLayerName::Main) => {
-                                item_entity_builder = item_entity_builder.with(CswMain);
+                                item_entity_builder = item_entity_builder.with(ApwMain);
                             }
                             CswLayer::Name(CswLayerName::Portrait) => {
-                                item_entity_builder = item_entity_builder.with(csw_portraits);
+                                item_entity_builder =
+                                    item_entity_builder.with(asw_portraits.clone());
                             }
                             _ => {}
                         }
@@ -159,16 +148,15 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         let mut item_ids_widgets = item_ids_layers
             .into_iter()
             .zip(input_controlleds.iter().copied())
-            .map(
-                |(layer_item_ids, input_controlled)| CharacterSelectionWidget {
-                    layers: layer_item_ids,
-                    input_controlled,
-                },
-            )
-            .map(|character_selection_widget| {
+            .map(|(layer_item_ids, input_controlled)| AssetPreviewWidget {
+                layers: layer_item_ids,
+                input_controlled: Some(input_controlled),
+                shared_input_controlled: None,
+            })
+            .map(|asset_preview_widget| {
                 asset_world
                     .create_entity()
-                    .with(character_selection_widget)
+                    .with(asset_preview_widget)
                     .build()
             })
             .map(ItemId::new)
@@ -216,13 +204,15 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         // `AssetId`s for the asset type to display.
         //
         // We want to create an item for each of these in the correct place in the grid.
+        let object_type = Into::<ObjectType>::into(T::default());
+        let asset_type = AssetType::Object(object_type);
         let asset_display_cell_item_ids = iter::once(AssetSelectionCell::Random)
             .chain(
                 asset_type_mappings
-                    .iter_ids(&AssetType::Object(T::default().into()))
+                    .iter_ids(&asset_type)
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
-                        display_cell: AssetDisplayCell {
+                        display_cell: AssetDisplayCellCharacter {
                             asset_id,
                             cell_size,
                         },
@@ -314,10 +304,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .into_iter()
             .zip(input_controlleds.iter().copied())
             .map(|(ash_sprite_item_id, input_controlled)| {
-                let asset_selection_highlight = AssetSelectionHighlight {
-                    ash_sprite_item_id,
-                    asset_selection_status: AssetSelectionStatus::Inactive,
-                };
+                let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it

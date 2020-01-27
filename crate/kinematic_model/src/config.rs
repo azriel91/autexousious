@@ -5,7 +5,8 @@ pub use self::{
     object_acceleration_value::ObjectAccelerationValue,
     object_acceleration_value_expr::ObjectAccelerationValueExpr,
     object_acceleration_value_multiplier::ObjectAccelerationValueMultiplier,
-    position_init::PositionInit, vector3::Vector3, velocity_init::VelocityInit,
+    position_init::PositionInit, scale_init::ScaleInit, vector3::Vector3,
+    velocity_init::VelocityInit,
 };
 
 mod object_acceleration;
@@ -14,6 +15,7 @@ mod object_acceleration_value;
 mod object_acceleration_value_expr;
 mod object_acceleration_value_multiplier;
 mod position_init;
+mod scale_init;
 mod vector3;
 mod velocity_init;
 

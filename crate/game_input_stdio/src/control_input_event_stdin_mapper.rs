@@ -32,31 +32,34 @@ impl StdinMapper for ControlInputEventStdinMapper {
         args: Self::Args,
     ) -> Result<Self::Event, Error> {
         let ControlInputEventArgs {
-            controller,
+            controller_id,
             control,
-        } = &args;
+        } = args;
 
         (entities, input_controlleds)
             .join()
-            .find(|(_e, input_controlled)| input_controlled.controller_id == *controller)
+            .find(|(_e, input_controlled)| input_controlled.controller_id == controller_id)
             .map(|(entity, _input_controlled)| match control {
                 ControlArgs::Axis { axis, value } => {
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id,
                         entity,
-                        axis: *axis,
-                        value: *value,
+                        axis,
+                        value,
                     })
                 }
                 ControlArgs::ActionPressed { action } => {
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id,
                         entity,
-                        control_action: *action,
+                        control_action: action,
                     })
                 }
                 ControlArgs::ActionReleased { action } => {
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                        controller_id,
                         entity,
-                        control_action: *action,
+                        control_action: action,
                     })
                 }
             })
@@ -66,7 +69,7 @@ impl StdinMapper for ControlInputEventStdinMapper {
                     .map(|input_controlled| input_controlled.controller_id)
                     .collect::<Vec<_>>();
                 Error::new(GameInputStdioError::EntityWithControllerIdNotFound {
-                    controller_id: *controller,
+                    controller_id,
                     existent_controllers,
                 })
             })

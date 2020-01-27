@@ -12,7 +12,9 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_event = { path = "../application_event" }
 asset_model = { path = "../asset_model" }
+derivative = "1.0.3"
 derive-new = "0.5.8"
+game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 stdio_spi = { path = "../stdio_spi" }
 

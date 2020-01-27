@@ -1,5 +1,10 @@
 //! Contains data types used at runtime.
 
-pub use self::position_z_as_y::PositionZAsY;
+pub use self::{
+    position_init_offset::PositionInitOffset, position_init_parent::PositionInitParent,
+    position_z_as_y::PositionZAsY,
+};
 
+mod position_init_offset;
+mod position_init_parent;
 mod position_z_as_y;

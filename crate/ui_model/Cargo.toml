@@ -18,6 +18,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 input_reaction_model = { path = "../input_reaction_model" }
+map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 slotmap = { version = "0.4.0", features = ["serde"] }

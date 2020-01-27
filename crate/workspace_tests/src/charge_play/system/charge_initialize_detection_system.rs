@@ -101,6 +101,7 @@ mod tests {
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::ControlActionPress(ControlActionEventData {
+            controller_id: 0,
             entity,
             control_action: ControlAction::Attack,
         })
@@ -108,6 +109,7 @@ mod tests {
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::ControlActionPress(ControlActionEventData {
+            controller_id: 0,
             entity,
             control_action: ControlAction::Jump,
         })
@@ -115,6 +117,7 @@ mod tests {
 
     fn release_attack(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::ControlActionRelease(ControlActionEventData {
+            controller_id: 0,
             entity,
             control_action: ControlAction::Attack,
         })

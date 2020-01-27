@@ -18,24 +18,28 @@ use amethyst::{
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
 use application::{AppDir, AppFile, Format};
-use application_event::{AppEvent, AppEventReader};
+use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use asset_selection_stdio::AssetSelectionStdioBundle;
+use asset_selection_ui_play::{
+    ApwPreviewSpawnSystemCharacter, ApwPreviewSpawnSystemMap, AssetSelectionSfxSystem,
+    AswPortraitUpdateSystem,
+};
 use asset_ui_play::AssetSelectionHighlightUpdateSystem;
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use camera_play::CameraPlayBundle;
 use character_loading::CharacterLoadingBundle;
-use character_selection_ui_play::{CswPortraitUpdateSystem, CswPreviewSpawnSystem};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
-use game_input::GameInputBundle;
+use game_input::{
+    ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+};
 use game_input_model::{ControlBindings, InputConfig};
-use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
-use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
+use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
@@ -45,7 +49,6 @@ use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
-use map_selection_stdio::MapSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
@@ -105,12 +108,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(TransformBundle::new())?
             .with_bundle(
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
-            .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
@@ -118,23 +119,32 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameModeSelectionUiBundle::new())?
-            .with_bundle(GameInputUiBundle::new(input_config))?
-            .with_bundle(
-                GameInputStdioBundle::new()
-                    // Note: Depend on the input handler updated system, so that stdin input takes
-                    // priority
-                    .with_system_dependencies(vec![any::type_name::<InputToControlInputSystem>()]),
-            )?
-            .with_bundle(GameInputBundle::new().with_system_dependencies(vec![
-                any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
+            .with(
+                InputToControlInputSystem::new(input_config),
                 any::type_name::<InputToControlInputSystem>(),
-            ]))?
+                &["input_system"],
+            )
+            .with(
+                MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
+                any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
+                // Depend on the input handler updated system, so that stdin input takes priority.
+                &[any::type_name::<InputToControlInputSystem>()],
+            )
+            .with(
+                ControllerInputUpdateSystem::new(),
+                any::type_name::<ControllerInputUpdateSystem>(),
+                &[any::type_name::<MapperSystem<ControlInputEventStdinMapper>>()],
+            )
+            .with(
+                SharedControllerInputUpdateSystem::new(),
+                any::type_name::<SharedControllerInputUpdateSystem>(),
+                &[any::type_name::<ControllerInputUpdateSystem>()],
+            )
             .with_bundle(StdioInputBundle::new())?
             .with_bundle(StdioCommandStdioBundle::new())?
             .with_bundle(AssetSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
-            .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?
@@ -185,18 +195,28 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
             .with(
+                AssetSelectionSfxSystem::new(),
+                any::type_name::<AssetSelectionSfxSystem>(),
+                &[],
+            )
+            .with(
                 AssetSelectionHighlightUpdateSystem::new(),
                 any::type_name::<AssetSelectionHighlightUpdateSystem>(),
                 &[],
             )
             .with(
-                CswPortraitUpdateSystem::new(),
-                any::type_name::<CswPortraitUpdateSystem>(),
+                AswPortraitUpdateSystem::new(),
+                any::type_name::<AswPortraitUpdateSystem>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
-                CswPreviewSpawnSystem::new(),
-                any::type_name::<CswPreviewSpawnSystem>(),
+                ApwPreviewSpawnSystemCharacter::new(),
+                any::type_name::<ApwPreviewSpawnSystemCharacter>(),
+                &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
+            )
+            .with(
+                ApwPreviewSpawnSystemMap::new(),
+                any::type_name::<ApwPreviewSpawnSystemMap>(),
                 &[any::type_name::<AssetSelectionHighlightUpdateSystem>()],
             )
             .with(
@@ -204,6 +224,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 any::type_name::<ChildEntityDeleteSystem>(),
                 &[],
             )
+            .with_barrier()
+            // To remove the 1 frame of flicker issue, we must run `TransformSystem` near the end,
+            // so that the global matrix is updated even when the local matrix is up to date.
+            //
+            // `UiBundle` has a hardcoded dependency on `"transform_system"`, so we have to shift it
+            // down as well.
+            .with_bundle(TransformBundle::new())?
+            .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(
                 RenderingBundle::<DefaultBackend>::new()
                     .with_plugin(

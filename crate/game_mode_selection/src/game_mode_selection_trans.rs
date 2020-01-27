@@ -3,15 +3,13 @@ use std::any;
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
 use character_selection::{
-    CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
+    CharacterSelectionStateBuilder, CharacterSelectionStateDelegate, CharacterSelectionSystem,
 };
-use character_selection_ui::CharacterSelectionSfxSystem;
 use control_settings::ControlSettingsState;
 use game_loading::GameLoadingState;
 use game_mode_selection_model::GameModeIndex;
 use game_play::GamePlayState;
 use map_selection::{MapSelectionBundle, MapSelectionStateBuilder, MapSelectionStateDelegate};
-use map_selection_ui::MapSelectionUiBundle;
 
 /// Returns the `Trans` for a given `GameModeIndex`.
 #[derive(Debug)]
@@ -33,30 +31,22 @@ impl GameModeSelectionTrans {
                     let state = MapSelectionStateBuilder::new(MapSelectionStateDelegate::new(
                         game_loading_fn,
                     ))
-                    .with_bundle(MapSelectionUiBundle::new())
-                    .with_bundle(
-                        MapSelectionBundle::new()
-                            .with_system_dependencies(MapSelectionUiBundle::system_names()),
-                    )
+                    .with_bundle(MapSelectionBundle::new())
                     .build();
 
                     Box::new(state)
                 };
                 // kcov-ignore-end
                 let character_selection_state = {
-                    let state =
-                        CharacterSelectionStateBuilder::new(CharacterSelectionStateDelegate::new(
-                            map_selection_fn,
-                        ))
-                        .with_system(
-                            CharacterSelectionSfxSystem::new(),
-                            any::type_name::<CharacterSelectionSfxSystem>(),
-                            &[],
-                        )
-                        .with_bundle(CharacterSelectionBundle::new().with_system_dependencies(
-                            vec![any::type_name::<CharacterSelectionSfxSystem>()],
-                        ))
-                        .build();
+                    let state = CharacterSelectionStateBuilder::new(
+                        CharacterSelectionStateDelegate::new(map_selection_fn),
+                    )
+                    .with_system(
+                        CharacterSelectionSystem::new(),
+                        any::type_name::<CharacterSelectionSystem>(),
+                        &[],
+                    )
+                    .build();
 
                     Box::new(state)
                 };

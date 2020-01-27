@@ -1,16 +1,10 @@
 //! User defined configuration types for sprites.
 
 pub use self::{
-    scale::{Scale, SCALE_DEFAULT},
-    sprite_frame::SpriteFrame,
-    sprite_item::SpriteItem,
-    sprite_offset::SpriteOffset,
-    sprite_ref::SpriteRef,
-    sprite_sequence::SpriteSequence,
-    sprite_sequence_name::SpriteSequenceName,
-    sprite_sheet_definition::SpriteSheetDefinition,
-    sprites_definition::SpritesDefinition,
-    tint::Tint,
+    scale::Scale, sprite_frame::SpriteFrame, sprite_item::SpriteItem, sprite_offset::SpriteOffset,
+    sprite_ref::SpriteRef, sprite_sequence::SpriteSequence,
+    sprite_sequence_name::SpriteSequenceName, sprite_sheet_definition::SpriteSheetDefinition,
+    sprites_definition::SpritesDefinition, tint::Tint,
 };
 
 mod scale;

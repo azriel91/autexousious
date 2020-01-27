@@ -4,6 +4,7 @@ mod asset_sequence_component_loader_ui;
 mod asset_sequence_component_loader_ui_character_selection;
 mod asset_sequence_component_loader_ui_components;
 mod asset_sequence_component_loader_ui_control_settings;
+mod asset_sequence_component_loader_ui_map_selection;
 mod asset_sequence_component_loader_ui_menu;
 
 use amethyst::ecs::WorldExt;
@@ -32,6 +33,7 @@ pub use self::{
     asset_sequence_component_loader_ui_character_selection::AssetSequenceComponentLoaderUiCharacterSelection,
     asset_sequence_component_loader_ui_components::AssetSequenceComponentLoaderUiComponents,
     asset_sequence_component_loader_ui_control_settings::AssetSequenceComponentLoaderUiControlSettings,
+    asset_sequence_component_loader_ui_map_selection::AssetSequenceComponentLoaderUiMapSelection,
     asset_sequence_component_loader_ui_menu::AssetSequenceComponentLoaderUiMenu,
 };
 

@@ -16,7 +16,7 @@ use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
 use audio_loading::AudioLoadingBundle;
 use background_loading::BackgroundLoadingBundle;
 use character_loading::CharacterLoadingBundle;
-use character_selection::CharacterSelectionBundle;
+use character_selection::CharacterSelectionSystem;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
@@ -109,7 +109,11 @@ impl AutexousiousApplication {
             .with_bundle(InputReactionLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(CharacterSelectionBundle::new())
+            .with_system(
+                CharacterSelectionSystem::new(),
+                any::type_name::<CharacterSelectionSystem>(),
+                &[],
+            )
             .with_bundle(AssetPlayBundle::new())
             .with_state(|| LoadingState::new(PopState))
     }
@@ -148,7 +152,11 @@ impl AutexousiousApplication {
             .with_bundle(InputReactionLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_bundle(CharacterSelectionBundle::new())
+            .with_system(
+                CharacterSelectionSystem::new(),
+                any::type_name::<CharacterSelectionSystem>(),
+                &[],
+            )
             .with_system(
                 StateIdEventSystem::new(),
                 any::type_name::<StateIdEventSystem>(),

@@ -23,7 +23,7 @@ scale: 2.0
                 wait: Wait::new(2),
                 sprite: SpriteRef::new(0, 0),
                 tint: Tint::new(1., 1., 1., 1.),
-                scale: Scale::new(1.),
+                scale: Scale(None),
             },
             sprite_frame
         );

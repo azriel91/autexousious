@@ -4,10 +4,10 @@
 
 pub use crate::{
     component::{ButtonInputControlled, ControllerInput, InputControlled, SharedInputControlled},
-    game_input_bundle::GameInputBundle,
-    system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem},
+    system::{
+        ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+    },
 };
 
 mod component;
-mod game_input_bundle;
 mod system;
