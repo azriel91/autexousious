@@ -36,10 +36,12 @@ impl<'s> System<'s> for SpriteScaleUpdateSystem {
             .join()
             .for_each(|(scale, transform)| {
                 let scale = **scale;
-                let transform_scale = transform.scale_mut();
-                transform_scale.x = scale;
-                transform_scale.y = scale;
-                transform_scale.z = scale;
+                if let Some(scale) = scale {
+                    let transform_scale = transform.scale_mut();
+                    transform_scale.x = scale;
+                    transform_scale.y = scale;
+                    transform_scale.z = scale;
+                }
             });
     } // kcov-ignore
 }

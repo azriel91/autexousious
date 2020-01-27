@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Keys for special handling of character selection widget layers.
+/// Keys for special handling of asset preview widget layers.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Hash, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum CswLayerName {

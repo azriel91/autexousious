@@ -15,3 +15,6 @@ derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = 
 
 # Waiting for release > 0.15.1
 specs-derive = { git = "https://github.com/slide-rs/specs.git" }
+
+# https://github.com/Peternator7/strum/pull/82
+strum_macros = { git = "https://github.com/azriel91/strum.git", branch = "bugfix/73/whitelist-variant-attributes-to-copy" }

@@ -32,6 +32,8 @@ mod asset_play;
 #[cfg(test)]
 mod asset_selection_stdio;
 #[cfg(test)]
+mod asset_selection_ui_play;
+#[cfg(test)]
 mod asset_ui_model;
 #[cfg(test)]
 mod audio_loading;
@@ -53,8 +55,6 @@ mod character_play;
 mod character_prefab;
 #[cfg(test)]
 mod character_selection;
-#[cfg(test)]
-mod character_selection_ui;
 #[cfg(test)]
 mod character_selection_ui_model;
 #[cfg(test)]
@@ -85,8 +85,6 @@ mod game_input;
 mod game_input_model;
 #[cfg(test)]
 mod game_input_stdio;
-#[cfg(test)]
-mod game_input_ui;
 #[cfg(test)]
 mod game_loading;
 #[cfg(test)]
@@ -124,9 +122,7 @@ mod map_play;
 #[cfg(test)]
 mod map_selection;
 #[cfg(test)]
-mod map_selection_stdio;
-#[cfg(test)]
-mod map_selection_ui;
+mod map_selection_ui_model;
 #[cfg(test)]
 mod object_loading;
 #[cfg(test)]

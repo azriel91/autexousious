@@ -52,13 +52,15 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     .as_mut()
                     .expect("Expected `asset_selection_event_rid` to be set."),
             )
+            .copied()
             .for_each(|ev| match ev {
                 AssetSelectionEvent::Select {
                     controller_id,
                     asset_selection,
+                    ..
                 } => {
                     let asset_id = match asset_selection {
-                        AssetSelection::Id(asset_id) => *asset_id,
+                        AssetSelection::Id(asset_id) => asset_id,
                         AssetSelection::Random => {
                             // TODO: Implement Random
                             // TODO: <https://gitlab.com/azriel91/autexousious/issues/137>
@@ -71,9 +73,9 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     };
                     character_selections
                         .selections
-                        .insert(*controller_id, asset_id);
+                        .insert(controller_id, asset_id);
                 }
-                AssetSelectionEvent::Deselect { controller_id } => {
+                AssetSelectionEvent::Deselect { controller_id, .. } => {
                     character_selections.selections.remove(&controller_id);
                 }
                 _ => {}

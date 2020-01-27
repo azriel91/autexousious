@@ -26,7 +26,7 @@ mod tests {
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
-                    controller: 1,
+                    controller_id: 1,
                     control: ControlArgs::Axis {
                         axis: Axis::X,
                         value: -1.,
@@ -41,6 +41,7 @@ mod tests {
                 let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        controller_id: 1,
                         entity,
                         axis: Axis::X,
                         value: -1.,
@@ -63,7 +64,7 @@ mod tests {
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
-                    controller: 1,
+                    controller_id: 1,
                     control: ControlArgs::ActionPressed {
                         action: ControlAction::Jump,
                     },
@@ -77,6 +78,7 @@ mod tests {
                 let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
+                        controller_id: 1,
                         entity,
                         control_action: ControlAction::Jump,
                     }),
@@ -98,7 +100,7 @@ mod tests {
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
-                    controller: 1,
+                    controller_id: 1,
                     control: ControlArgs::ActionReleased {
                         action: ControlAction::Jump,
                     },
@@ -112,6 +114,7 @@ mod tests {
                 let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
+                        controller_id: 1,
                         entity,
                         control_action: ControlAction::Jump,
                     }),
@@ -131,7 +134,7 @@ mod tests {
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
-                    controller: 2,
+                    controller_id: 2,
                     control: ControlArgs::ActionPressed {
                         action: ControlAction::Jump,
                     },

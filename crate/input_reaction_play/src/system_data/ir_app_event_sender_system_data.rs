@@ -8,14 +8,13 @@ use asset_model::{
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
-use character_selection_ui_model::play::CswStatus;
 use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
 use game_input::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
-use map_selection_model::{MapSelection, MapSelectionEvent};
+use state_registry::StateId;
 
 /// `IrAppEventSenderSystemData`.
 #[derive(Derivative, SystemData)]
@@ -30,6 +29,10 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+
+    /// `StateId` resource.
+    #[derivative(Debug = "ignore")]
+    pub state_id: Read<'s, StateId>,
 
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
@@ -51,10 +54,6 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub asset_selections: ReadStorage<'s, AssetSelection>,
 
-    /// `CswStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub csw_statuses: WriteStorage<'s, CswStatus>,
-
     /// `ControlSettingsEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_settings_ec: Write<'s, EventChannel<ControlSettingsEvent>>,
@@ -64,11 +63,4 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `GamePlayEvent` channel.
     #[derivative(Debug = "ignore")]
     pub game_play_ec: Write<'s, EventChannel<GamePlayEvent>>,
-
-    /// `MapSelectionEvent` channel.
-    #[derivative(Debug = "ignore")]
-    pub map_selection_ec: Write<'s, EventChannel<MapSelectionEvent>>,
-    /// `MapSelection` components.
-    #[derivative(Debug = "ignore")]
-    pub map_selections: ReadStorage<'s, MapSelection>,
 }

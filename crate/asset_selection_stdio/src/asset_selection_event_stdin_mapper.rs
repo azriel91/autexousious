@@ -32,6 +32,7 @@ impl AssetSelectionEventStdinMapper {
         let asset_selection = Self::find_character(asset_id_mappings, selection)?;
 
         let asset_selection_event = AssetSelectionEvent::Switch {
+            entity: None,
             controller_id,
             asset_selection,
         };
@@ -47,6 +48,7 @@ impl AssetSelectionEventStdinMapper {
         let asset_selection = Self::find_character(asset_id_mappings, selection)?;
 
         let asset_selection_event = AssetSelectionEvent::Select {
+            entity: None,
             controller_id,
             asset_selection,
         };
@@ -97,14 +99,19 @@ impl StdinMapper for AssetSelectionEventStdinMapper {
                 selection,
             } => Self::map_select_event(asset_id_mappings, controller_id, &selection),
             AssetSelectionEventArgs::Deselect { controller_id } => {
-                Ok(AssetSelectionEvent::Deselect { controller_id })
+                Ok(AssetSelectionEvent::Deselect {
+                    entity: None,
+                    controller_id,
+                })
             }
-            AssetSelectionEventArgs::Join { controller_id } => {
-                Ok(AssetSelectionEvent::Join { controller_id })
-            }
-            AssetSelectionEventArgs::Leave { controller_id } => {
-                Ok(AssetSelectionEvent::Leave { controller_id })
-            }
+            AssetSelectionEventArgs::Join { controller_id } => Ok(AssetSelectionEvent::Join {
+                entity: None,
+                controller_id,
+            }),
+            AssetSelectionEventArgs::Leave { controller_id } => Ok(AssetSelectionEvent::Leave {
+                entity: None,
+                controller_id,
+            }),
             AssetSelectionEventArgs::Confirm => Ok(AssetSelectionEvent::Confirm),
         }
     }

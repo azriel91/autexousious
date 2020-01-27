@@ -1,4 +1,4 @@
-use amethyst::ecs::prelude::*;
+use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
 use derive_new::new;
 
 use crate::{ControllerInput, InputControlled, SharedInputControlled};
@@ -19,11 +19,11 @@ impl<'s> System<'s> for SharedControllerInputUpdateSystem {
 
     fn run(
         &mut self,
-        (input_controlleds, mut controller_inputs, shared_input_controlleds,  entities): Self::SystemData,
+        (input_controlleds, mut controller_inputs, shared_input_controlleds, entities): Self::SystemData,
     ) {
-        let mut merged_input = (&input_controlleds, &controller_inputs).join().fold(
+        let mut merged_input = (&controller_inputs, &input_controlleds).join().fold(
             ControllerInput::default(),
-            |mut merged, (_, controller_input)| {
+            |mut merged, (controller_input, _)| {
                 merged.x_axis_value += controller_input.x_axis_value;
                 merged.z_axis_value += controller_input.z_axis_value;
                 merged.defend |= controller_input.defend;
@@ -47,7 +47,7 @@ impl<'s> System<'s> for SharedControllerInputUpdateSystem {
             merged_input.z_axis_value = 1.;
         }
 
-        for (entity, _) in (&*entities, &shared_input_controlleds).join() {
+        for (entity, _) in (&entities, &shared_input_controlleds).join() {
             controller_inputs
                 .insert(entity, merged_input)
                 // kcov-ignore-start

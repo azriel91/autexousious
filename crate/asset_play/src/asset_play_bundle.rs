@@ -5,17 +5,18 @@ use amethyst::{
     ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
-use asset_model::play::AssetWorld;
+use asset_model::{config::asset_type::Map, play::AssetWorld};
+use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
-    loaded::{AssetDisplayCell, AssetSelectionCell, AssetSelectionHighlight, AssetSelector},
+    config::Dimensions,
+    loaded::{
+        AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
+        AssetSelectionHighlight, AssetSelector, AswPortraits,
+    },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use audio_model::loaded::SourceSequenceHandles;
 use character_model::loaded::CharacterIrsHandles;
-use character_selection_ui_model::{
-    loaded::{CharacterSelectionWidget, CswPortraits},
-    play::CswMain,
-};
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
@@ -23,7 +24,7 @@ use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
 use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
-    config::{PositionInit, VelocityInit},
+    config::{PositionInit, ScaleInit, VelocityInit},
     loaded::ObjectAccelerationSequenceHandles,
     play::PositionZAsY,
 };
@@ -58,6 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<ButtonInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
+        asset_world.register::<ScaleInit>();
         asset_world.register::<PositionZAsY>();
         asset_world.register::<Mirrored>();
         asset_world.register::<Grounding>();
@@ -76,15 +78,23 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenuItem<GameModeIndex>>();
-        asset_world.register::<CharacterSelectionWidget>();
-        asset_world.register::<CswPortraits>();
-        asset_world.register::<CswMain>();
+
+        asset_world.register::<AssetPreviewWidget>();
+        asset_world.register::<ApwMain>();
+        asset_world.register::<AswPortraits>();
+
         asset_world.register::<AssetSelector<Character>>();
-        asset_world.register::<AssetDisplayCell>();
-        asset_world.register::<AssetSelectionCell>();
+        asset_world.register::<AssetDisplayCellCharacter>();
+        asset_world.register::<AssetSelectionCell<AssetDisplayCellCharacter>>();
+
+        asset_world.register::<AssetSelector<Map>>();
+        asset_world.register::<AssetDisplayCellMap>();
+        asset_world.register::<AssetSelectionCell<AssetDisplayCellMap>>();
+
         asset_world.register::<AssetSelectionStatus>();
         asset_world.register::<AssetSelectionHighlight>();
         asset_world.register::<AssetSelectionHighlightMain>();
+        asset_world.register::<Dimensions>();
         asset_world.register::<ChaseModeStick>();
 
         world.insert(asset_world);
@@ -114,6 +124,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             ItemComponentComponentAugmentSystem::<VelocityInit>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<VelocityInit>>(),
             &[],
+        );
+        // Must strictly come after `PositionInit` as it modifies the `Transform` scale.
+        builder.add(
+            ItemComponentComponentAugmentSystem::<ScaleInit>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ScaleInit>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<PositionInit>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<PositionZAsY>::new(),
@@ -205,61 +223,97 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             any::type_name::<ItemComponentComponentAugmentSystem<UiMenuItem<GameModeIndex>>>(),
             &[],
         );
+
+        // Asset selection UI common systems.
         builder.add(
-            ItemComponentComponentAugmentSystem::<CharacterSelectionWidget>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CharacterSelectionWidget>>(),
+            ItemComponentComponentAugmentSystem::<AssetPreviewWidget>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetPreviewWidget>>(),
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<CswPortraits>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CswPortraits>>(),
+            ItemComponentComponentAugmentSystem::<ApwMain>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<ApwMain>>(),
             &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
+                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<CswMain>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<CswMain>>(),
+            ItemComponentComponentAugmentSystem::<AswPortraits>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AswPortraits>>(),
             &[&any::type_name::<
-                ItemComponentComponentAugmentSystem<CharacterSelectionWidget>,
+                ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
+
+        // Character Selection UI
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelector<Character>>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<AssetDisplayCell>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCell>>(),
+            ItemComponentComponentAugmentSystem::<AssetDisplayCellCharacter>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellCharacter>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<AssetSelectionCell>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell>>(),
+            ItemComponentComponentAugmentSystem::<AssetSelectionCell<AssetDisplayCellCharacter>>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell<AssetDisplayCellCharacter>>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],
         );
+
+        // Map Selection UI
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelector<Map>>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetDisplayCellMap>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellMap>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Map>>,
+            >()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<AssetSelectionCell<AssetDisplayCellMap>>::new(),
+            &any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelectionCell<AssetDisplayCellMap>>,
+            >(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<AssetSelector<Map>>,
+            >()],
+        );
+
+        // Common Asset selection systems
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionStatus>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionStatus>>(),
-            &[any::type_name::<
-                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
-            >()],
+            &[
+                any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
+                any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
+            ],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlight>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
-            &[any::type_name::<
-                ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
-            >()],
+            &[
+                any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
+                any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
+            ],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlightMain>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<Dimensions>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<Dimensions>>(),
             &[],
         );
         builder.add(

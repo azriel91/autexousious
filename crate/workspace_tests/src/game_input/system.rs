@@ -1,2 +1,3 @@
 mod controller_input_update_system;
+mod input_to_control_input_system;
 mod shared_controller_input_update_system;

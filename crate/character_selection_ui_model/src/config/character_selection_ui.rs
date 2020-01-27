@@ -8,7 +8,7 @@ use crate::config::{CswDefinition, CswTemplate};
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub struct CharacterSelectionUi {
-    /// Positions of the character selection widgets on screen.
+    /// Positions of the asset preview widgets on screen.
     pub widgets: Vec<CswDefinition>,
     /// Template to initialize each widget with.
     pub widget_template: CswTemplate,

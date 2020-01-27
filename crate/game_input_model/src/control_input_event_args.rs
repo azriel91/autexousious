@@ -15,7 +15,7 @@ use crate::{ControlArgs, ControllerId};
 #[structopt(rename_all = "snake_case")]
 pub struct ControlInputEventArgs {
     /// ID of the controller, as laid out in `input_config.ron`.
-    pub controller: ControllerId,
+    pub controller_id: ControllerId,
     /// Axis or Action
     #[structopt(subcommand)]
     pub control: ControlArgs,

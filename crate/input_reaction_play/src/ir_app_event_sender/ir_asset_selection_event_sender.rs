@@ -7,8 +7,10 @@ use asset_model::{
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;
+use game_input_model::ControllerId;
 use log::debug;
 use object_type::ObjectType;
+use state_registry::StateId;
 
 use crate::{IrAppEventSender, IrAppEventSenderSystemData};
 
@@ -19,10 +21,11 @@ pub struct IrAssetSelectionEventSender;
 impl IrAssetSelectionEventSender {
     pub fn handle_event(
         ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
+        controller_id: ControllerId,
         entity: Entity,
         asset_selection_event_variant: AssetSelectionEventCommand,
     ) {
-        // For `CharacterSelectionWidget` entities, `entity` is the `CswMain` entity.
+        // For `AssetPreviewWidget` entities, `entity` is the `ApwMain` entity.
         //
         // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
         // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
@@ -57,8 +60,10 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Join { controller_id })
+                Some(AssetSelectionEvent::Join {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Leave => {
                 ir_app_event_sender_system_data
@@ -66,25 +71,18 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::Inactive)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Leave { controller_id })
+                Some(AssetSelectionEvent::Leave {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Switch(direction) => {
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .and_then(|controller_id| {
-                        Self::asset_selection(
-                            ir_app_event_sender_system_data,
-                            ash_entity,
-                            Some(direction),
-                        )
-                        .map(|asset_selection| (controller_id, asset_selection))
+                Self::asset_selection(ir_app_event_sender_system_data, ash_entity, Some(direction))
+                    .map(|asset_selection| AssetSelectionEvent::Switch {
+                        entity: Some(ash_entity),
+                        controller_id,
+                        asset_selection,
                     })
-                    .map(
-                        |(controller_id, asset_selection)| AssetSelectionEvent::Switch {
-                            controller_id,
-                            asset_selection,
-                        },
-                    )
             }
             AssetSelectionEventCommand::Select => {
                 ir_app_event_sender_system_data
@@ -92,17 +90,13 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::Ready)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .and_then(|controller_id| {
-                        Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None)
-                            .map(|asset_selection| (controller_id, asset_selection))
-                    })
-                    .map(
-                        |(controller_id, asset_selection)| AssetSelectionEvent::Select {
-                            controller_id,
-                            asset_selection,
-                        },
-                    )
+                Self::asset_selection(ir_app_event_sender_system_data, ash_entity, None).map(
+                    |asset_selection| AssetSelectionEvent::Select {
+                        entity: Some(ash_entity),
+                        controller_id,
+                        asset_selection,
+                    },
+                )
             }
             AssetSelectionEventCommand::Deselect => {
                 ir_app_event_sender_system_data
@@ -110,8 +104,10 @@ impl IrAssetSelectionEventSender {
                     .insert(ash_entity, AssetSelectionStatus::InProgress)
                     .expect("Failed to insert `AssetSelectionStatus` component.");
 
-                IrAppEventSender::controller_id(ir_app_event_sender_system_data, ash_entity)
-                    .map(|controller_id| AssetSelectionEvent::Deselect { controller_id })
+                Some(AssetSelectionEvent::Deselect {
+                    entity: Some(ash_entity),
+                    controller_id,
+                })
             }
             AssetSelectionEventCommand::Confirm => {
                 if Self::asset_selection_confirm_preconditions_met(
@@ -151,6 +147,7 @@ impl IrAssetSelectionEventSender {
             asset_ids,
             asset_id_mappings,
             asset_type_mappings,
+            state_id,
             target_objects,
             asset_selections,
             asset_selection_highlight_mains,
@@ -170,7 +167,7 @@ impl IrAssetSelectionEventSender {
                     component.",
                 )
         } else {
-            // `CswMain` entities directly send events.
+            // `ApwMain` entities directly send events.
             // Other purpose entities likely also fallback to the same behaviour.
             ash_entity
         };
@@ -178,21 +175,27 @@ impl IrAssetSelectionEventSender {
         // `AssetSelectionCell`.
         let asset_selection = asset_selections.get(asset_selection_entity).copied();
 
+        let state_id = **state_id;
         if let Some(asset_selection) = asset_selection {
             match switch_direction {
                 None => Some(asset_selection),
                 Some(AssetSwitch::Previous) => {
                     let new_selection =
-                        Self::switch_asset(asset_type_mappings, asset_selection, -1);
+                        Self::switch_asset(asset_type_mappings, state_id, asset_selection, -1);
                     Some(new_selection)
                 }
                 Some(AssetSwitch::Next) => {
-                    let new_selection = Self::switch_asset(asset_type_mappings, asset_selection, 1);
+                    let new_selection =
+                        Self::switch_asset(asset_type_mappings, state_id, asset_selection, 1);
                     Some(new_selection)
                 }
                 Some(AssetSwitch::Skip(n)) => {
-                    let new_selection =
-                        Self::switch_asset(asset_type_mappings, asset_selection, isize::from(n));
+                    let new_selection = Self::switch_asset(
+                        asset_type_mappings,
+                        state_id,
+                        asset_selection,
+                        isize::from(n),
+                    );
                     Some(new_selection)
                 }
             }
@@ -209,6 +212,7 @@ impl IrAssetSelectionEventSender {
 
     fn switch_asset(
         asset_type_mappings: &AssetTypeMappings,
+        state_id: StateId,
         asset_selection: AssetSelection,
         n: isize,
     ) -> AssetSelection {
@@ -217,8 +221,17 @@ impl IrAssetSelectionEventSender {
 
         {
             let placeholder = Vec::new();
+
+            // Determine what kind of asset we are selecting:
+            let asset_type = match state_id {
+                StateId::CharacterSelection => AssetType::Object(ObjectType::Character),
+                StateId::MapSelection => AssetType::Map,
+                _ => {
+                    panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                }
+            };
             let asset_ids = asset_type_mappings
-                .get_ids(AssetType::Object(ObjectType::Character)) // TODO: Generic
+                .get_ids(asset_type)
                 .unwrap_or(&placeholder);
             let mut asset_selections = Vec::with_capacity(asset_ids.len() + 1);
             asset_selections.push(AssetSelection::Random);
@@ -243,6 +256,23 @@ impl IrAssetSelectionEventSender {
     }
 
     fn asset_selection_confirm_preconditions_met(
+        ir_app_event_sender_system_data: &IrAppEventSenderSystemData,
+        ash_entity: Entity,
+    ) -> bool {
+        let state_id = *ir_app_event_sender_system_data.state_id;
+        match state_id {
+            StateId::CharacterSelection => Self::character_selection_confirm_preconditions_met(
+                ir_app_event_sender_system_data,
+                ash_entity,
+            ),
+            StateId::MapSelection => true,
+            _ => {
+                panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+            }
+        }
+    }
+
+    fn character_selection_confirm_preconditions_met(
         IrAppEventSenderSystemData {
             asset_selection_statuses,
             ..

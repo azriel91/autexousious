@@ -10,7 +10,8 @@ pub use self::{
     asset_sequence_component_loading_system::{
         AssetSequenceComponentLoader, AssetSequenceComponentLoaderUiCharacterSelection,
         AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-        AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoadingSystem,
+        AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
+        AssetSequenceComponentLoadingSystem,
     },
     asset_sprites_definition_loading_system::{
         AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem,

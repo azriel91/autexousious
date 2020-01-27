@@ -5,6 +5,8 @@
 pub use crate::{
     comparative::Comparative,
     map_bounds_checks::MapBoundsChecks,
+    map_spawner::MapSpawner,
+    map_spawner_resources::MapSpawnerResources,
     system::{
         KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
         MapOutOfBoundsDeletionSystem, MapSpawnOutOfBoundsDetectionSystem,
@@ -14,4 +16,6 @@ pub use crate::{
 
 mod comparative;
 mod map_bounds_checks;
+mod map_spawner;
+mod map_spawner_resources;
 mod system;
