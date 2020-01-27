@@ -1,6 +1,7 @@
 use control_settings_model::config::{ControlButtonLabel, ControlButtonLabels, KeyboardSettings};
 use game_input_model::InputConfig;
 use log::error;
+use sprite_model::config::Scale;
 use ui_model::config::UiSequences;
 
 use crate::ButtonToPlayerIndexMapper;
@@ -44,9 +45,16 @@ impl KeyboardUiGen {
                             .copied()
                     });
 
-                    if let (Some(ui_sequence), Some(tint)) = (ui_sequence, tint) {
+                    if let Some(ui_sequence) = ui_sequence {
                         ui_sequence.sequence.frames.iter_mut().for_each(|ui_frame| {
-                            ui_frame.sprite_frame.tint = tint;
+                            if let Some(tint) = tint {
+                                ui_frame.sprite_frame.tint = tint;
+                            }
+
+                            if let Scale(Some(scale)) = keyboard_settings.scale {
+                                ui_frame.sprite_frame.scale = keyboard_settings.scale;
+                                ui_sprite_label.position *= scale;
+                            }
                         });
                     }
                     ui_sprite_label.position += keyboard_settings.position;

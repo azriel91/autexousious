@@ -1526,6 +1526,7 @@ dependencies = [
  "game_input_model 0.16.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_model 0.16.0",
  "ui_model 0.16.0",
 ]
 

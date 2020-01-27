@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign};
+use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 use amethyst::{
     core::{math::Vector3, transform::Transform},
@@ -46,6 +46,28 @@ impl AddAssign for PositionInit {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+        }
+    }
+}
+
+impl Mul<f32> for PositionInit {
+    type Output = Self;
+
+    fn mul(self, other: f32) -> Self {
+        Self {
+            x: (self.x as f32 * other) as i32,
+            y: (self.y as f32 * other) as i32,
+            z: (self.z as f32 * other) as i32,
+        }
+    }
+}
+
+impl MulAssign<f32> for PositionInit {
+    fn mul_assign(&mut self, other: f32) {
+        *self = Self {
+            x: (self.x as f32 * other) as i32,
+            y: (self.y as f32 * other) as i32,
+            z: (self.z as f32 * other) as i32,
         }
     }
 }
