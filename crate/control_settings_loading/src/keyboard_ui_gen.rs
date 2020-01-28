@@ -1,10 +1,15 @@
-use control_settings_model::config::{ControlButtonLabel, ControlButtonLabels, KeyboardSettings};
-use game_input_model::InputConfig;
+use control_settings_model::{
+    config::{ControlButtonLabel, ControlButtonLabels, KeyboardSettings},
+    loaded::PlayerControlButtonsLabels,
+};
+use game_input_model::{Axis, ControlAction, ControlButton, InputConfig};
+use indexmap::IndexMap;
 use log::error;
 use sprite_model::config::Scale;
+use strum::IntoEnumIterator;
 use ui_model::config::UiSequences;
 
-use crate::ButtonToPlayerIndexMapper;
+use crate::{ButtonToPlayerIndexMapper, ControlButtonToButtonMapper};
 
 /// Generates UI items to represent the keyboard control settings.
 #[derive(Debug)]
@@ -72,6 +77,79 @@ impl KeyboardUiGen {
             );
 
             ControlButtonLabels::default()
+        }
+    }
+
+    /// Returns `UiSpriteLabel`s for only control button keys, including tints.
+    pub fn generate_mini(
+        keyboard_settings: &KeyboardSettings,
+        input_config: &InputConfig,
+        sequences: &mut UiSequences,
+    ) -> Vec<PlayerControlButtonsLabels> {
+        let layout_positions = keyboard_settings
+            .layout_positions
+            .get(&keyboard_settings.layout);
+
+        if let Some(layout_positions) = layout_positions {
+            ControlButtonToButtonMapper::map(input_config)
+                .into_iter()
+                .enumerate()
+                .map(|(controller_id, control_buttons_to_buttons)| {
+                    let (axes, actions) = control_buttons_to_buttons.into_iter().fold(
+                        (
+                            IndexMap::with_capacity(Axis::iter().len()),
+                            IndexMap::with_capacity(ControlAction::iter().len()),
+                        ),
+                        |(mut axes, mut actions), (control_button, key)| {
+                            let ui_sprite_label = layout_positions.get(&key).cloned();
+                            if let Some(ui_sprite_label) = ui_sprite_label {
+                                // Sequence to adjust tint.
+                                let ui_sequence = sequences.get_mut(&ui_sprite_label.sequence);
+                                let tint = keyboard_settings
+                                    .controller_tints
+                                    .get(controller_id)
+                                    .copied();
+
+                                if let (Some(ui_sequence), Some(tint)) = (ui_sequence, tint) {
+                                    ui_sequence.sequence.frames.iter_mut().for_each(|ui_frame| {
+                                        ui_frame.sprite_frame.tint = tint;
+                                    });
+                                }
+
+                                // Store `ControlButtonLabel` for current button.
+                                match control_button {
+                                    ControlButton::Axis(control_axis) => {
+                                        let control_button_label = ControlButtonLabel::new(
+                                            ui_sprite_label,
+                                            Some(controller_id),
+                                        );
+                                        axes.insert(control_axis, control_button_label);
+                                    }
+                                    ControlButton::Action(control_action) => {
+                                        let control_button_label = ControlButtonLabel::new(
+                                            ui_sprite_label,
+                                            Some(controller_id),
+                                        );
+                                        actions.insert(control_action, control_button_label);
+                                    }
+                                }
+                            }
+
+                            (axes, actions)
+                        },
+                    );
+
+                    PlayerControlButtonsLabels::new(axes, actions)
+                })
+                .collect::<Vec<PlayerControlButtonsLabels>>()
+        } else {
+            error!(
+                "Keyboard layout `{layout:?}` specified, but `\"{layout:?}\"` not found in \
+                 `layout_positions`.",
+                layout = keyboard_settings.layout
+            );
+
+            vec![PlayerControlButtonsLabels::default(); input_config.controller_configs.len()]
         }
     }
 }

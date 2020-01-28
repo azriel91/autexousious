@@ -1,5 +1,3 @@
-#![allow(missing_debug_implementations)] // needed for `EnumIter`
-
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
