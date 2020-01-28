@@ -1,9 +1,13 @@
 use std::{iter::FromIterator, str::FromStr};
 
 use amethyst::ecs::{Builder, Entity, WorldExt};
-use asset_model::loaded::{AssetId, ItemId, ItemIds};
+use asset_loading::ASSETS_DEFAULT_DIR;
+use asset_model::{
+    config::AssetSlugBuilder,
+    loaded::{AssetId, ItemId, ItemIds},
+};
 use control_settings_loading::KeyboardUiGen;
-use game_input::SharedInputControlled;
+use game_input::{ButtonInputControlled, SharedInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -19,6 +23,7 @@ use sprite_loading::{
     SpriteRenderSequenceLoader, TintSequenceHandlesLoader, TintSequenceLoader,
 };
 use sprite_model::config::SpriteSequenceName;
+use state_registry::StateId;
 use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
@@ -118,6 +123,27 @@ impl AssetSequenceComponentLoaderUi {
             .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
             .cloned(); // Clone so that we don't mutate the actual read data.
 
+        // Look up ControlSettings asset for mini control buttons display.
+        let asset_id_control_settings = {
+            let asset_slug_control_settings = AssetSlugBuilder::default()
+                .namespace(ASSETS_DEFAULT_DIR.to_string())
+                .name(StateId::ControlSettings.to_string())
+                .build()
+                .expect("Expected control settings asset slug to be valid.");
+
+            let asset_id_control_settings =
+                asset_id_mappings.id(&asset_slug_control_settings).copied();
+            if asset_id_control_settings == Some(asset_id) {
+                // If the current asset ID is the same as the control_settings `AssetId`, then we
+                // return None -- we don't allow displaying the mini control buttons. This also
+                // prevents waiting on our own asset ID to be loaded.
+                None
+            } else {
+                asset_id_control_settings
+            }
+        };
+
+        // Keyboard button labels for `ControlSettings` UI
         let keyboard_button_labels = if let Some(UiDefinition {
             ui_type: UiType::ControlSettings(control_settings),
             sequences,
@@ -129,6 +155,42 @@ impl AssetSequenceComponentLoaderUi {
                 &input_config,
                 sequences,
             ))
+        } else {
+            None
+        };
+
+        // Mini control button labels for other UIs
+        let control_buttons_display_labels = if let Some(asset_id_control_settings) =
+            asset_id_control_settings
+        {
+            if let Some(UiDefinition {
+                display_control_buttons: true,
+                ..
+            }) = ui_definition.as_ref()
+            {
+                // Look up UiDefinition for the control settings asset
+                let mut ui_definition_control_settings = asset_ui_definition_handle
+                    .get(asset_id_control_settings)
+                    .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
+                    .cloned(); // Clone so that we don't mutate the actual read data.
+
+                if let Some(UiDefinition {
+                    ui_type: UiType::ControlSettings(control_settings),
+                    sequences,
+                    ..
+                }) = ui_definition_control_settings.as_mut()
+                {
+                    Some(KeyboardUiGen::generate_mini(
+                        &control_settings.keyboard,
+                        &input_config,
+                        sequences,
+                    ))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
         } else {
             None
         };
@@ -371,6 +433,64 @@ impl AssetSequenceComponentLoaderUi {
                         keyboard_button_labels,
                     );
                 }
+            }
+
+            // Display control buttons if requested
+            if let Some(control_buttons_display_labels) = control_buttons_display_labels {
+                let control_button_labels = control_buttons_display_labels.iter().flat_map(
+                    |player_control_buttons_labels| {
+                        player_control_buttons_labels
+                            .axes
+                            .values()
+                            .chain(player_control_buttons_labels.actions.values())
+                    },
+                );
+
+                let position_inits =
+                    PositionInitsLoader::items_to_datas(control_button_labels.clone());
+                let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                    sequence_id_mappings,
+                    asset_slug,
+                    control_button_labels
+                        .map(|control_button_label| &control_button_label.sprite.sequence),
+                );
+
+                let item_ids = position_inits
+                    .0
+                    .into_iter()
+                    .zip(sequence_id_inits.into_iter())
+                    .map(|(position_init, sequence_id_init)| {
+                        let AssetSequenceComponentLoaderUiComponents {
+                            sequence_end_transitions,
+                            wait_sequence_handles,
+                            tint_sequence_handles,
+                            scale_sequence_handles,
+                            input_reactions_sequence_handles,
+                            sprite_render_sequence_handles,
+                        } = asset_sequence_component_loader_ui_components.clone();
+
+                        let mut item_entity_builder = asset_world
+                            .create_entity()
+                            .with(position_init)
+                            .with(sequence_id_init)
+                            .with(sequence_end_transitions)
+                            .with(wait_sequence_handles)
+                            .with(tint_sequence_handles)
+                            .with(scale_sequence_handles)
+                            .with(input_reactions_sequence_handles)
+                            .with(ButtonInputControlled);
+
+                        if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles
+                        {
+                            item_entity_builder =
+                                item_entity_builder.with(sprite_render_sequence_handles);
+                        }
+
+                        item_entity_builder.build()
+                    })
+                    .map(ItemId::new);
+
+                item_ids_all.extend(item_ids);
             }
         }
 
