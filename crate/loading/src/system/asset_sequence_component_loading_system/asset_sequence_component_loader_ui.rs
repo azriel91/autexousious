@@ -30,7 +30,8 @@ use crate::{
     AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
     AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
     AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
-    DefinitionLoadingResourcesRead, SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+    DefinitionLoadingResourcesRead, IdMappingResourcesRead, SequenceComponentLoadingResources,
+    TextureLoadingResourcesRead,
 };
 
 /// Loads sequence components for UI assets.
@@ -41,13 +42,27 @@ impl AssetSequenceComponentLoaderUi {
     /// Loads sequence components for UI assets.
     pub fn load(
         asset_loading_resources: &mut AssetLoadingResources<'_>,
-        SequenceComponentLoadingResources {
+        sequence_component_loading_resources: &mut SequenceComponentLoadingResources<'_>,
+        asset_id: AssetId,
+    ) {
+        let AssetLoadingResources {
+            asset_id_mappings,
+            asset_type_mappings,
+            loader,
+            ..
+        } = asset_loading_resources;
+        let SequenceComponentLoadingResources {
             definition_loading_resources_read:
                 DefinitionLoadingResourcesRead {
                     background_definition_assets,
                     ui_definition_assets,
                     asset_background_definition_handle,
                     asset_ui_definition_handle,
+                    ..
+                },
+            id_mapping_resources_read:
+                IdMappingResourcesRead {
+                    asset_sequence_id_mappings_sprite,
                     ..
                 },
             texture_loading_resources_read:
@@ -65,15 +80,7 @@ impl AssetSequenceComponentLoaderUi {
             tint_sequence_assets,
             scale_sequence_assets,
             ..
-        }: &mut SequenceComponentLoadingResources<'_>,
-        asset_id: AssetId,
-    ) {
-        let AssetLoadingResources {
-            asset_id_mappings,
-            asset_type_mappings,
-            loader,
-            ..
-        } = asset_loading_resources;
+        } = sequence_component_loading_resources;
 
         let asset_slug = asset_id_mappings
             .slug(asset_id)
@@ -123,26 +130,6 @@ impl AssetSequenceComponentLoaderUi {
             .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
             .cloned(); // Clone so that we don't mutate the actual read data.
 
-        // Look up ControlSettings asset for mini control buttons display.
-        let asset_id_control_settings = {
-            let asset_slug_control_settings = AssetSlugBuilder::default()
-                .namespace(ASSETS_DEFAULT_DIR.to_string())
-                .name(StateId::ControlSettings.to_string())
-                .build()
-                .expect("Expected control settings asset slug to be valid.");
-
-            let asset_id_control_settings =
-                asset_id_mappings.id(&asset_slug_control_settings).copied();
-            if asset_id_control_settings == Some(asset_id) {
-                // If the current asset ID is the same as the control_settings `AssetId`, then we
-                // return None -- we don't allow displaying the mini control buttons. This also
-                // prevents waiting on our own asset ID to be loaded.
-                None
-            } else {
-                asset_id_control_settings
-            }
-        };
-
         // Keyboard button labels for `ControlSettings` UI
         let keyboard_button_labels = if let Some(UiDefinition {
             ui_type: UiType::ControlSettings(control_settings),
@@ -155,42 +142,6 @@ impl AssetSequenceComponentLoaderUi {
                 &input_config,
                 sequences,
             ))
-        } else {
-            None
-        };
-
-        // Mini control button labels for other UIs
-        let control_buttons_display_labels = if let Some(asset_id_control_settings) =
-            asset_id_control_settings
-        {
-            if let Some(UiDefinition {
-                display_control_buttons: true,
-                ..
-            }) = ui_definition.as_ref()
-            {
-                // Look up UiDefinition for the control settings asset
-                let mut ui_definition_control_settings = asset_ui_definition_handle
-                    .get(asset_id_control_settings)
-                    .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
-                    .cloned(); // Clone so that we don't mutate the actual read data.
-
-                if let Some(UiDefinition {
-                    ui_type: UiType::ControlSettings(control_settings),
-                    sequences,
-                    ..
-                }) = ui_definition_control_settings.as_mut()
-                {
-                    Some(KeyboardUiGen::generate_mini(
-                        &control_settings.keyboard,
-                        &input_config,
-                        sequences,
-                    ))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
         } else {
             None
         };
@@ -284,13 +235,19 @@ impl AssetSequenceComponentLoaderUi {
                 input_reactions_sequence_assets,
             };
 
-            let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
-            let sequence_id_mappings = &sequence_id_mappings;
+            let sequence_id_mappings = asset_sequence_id_mappings_sprite
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceIdMappings<SpriteSequenceName>` to exist for `{}`.",
+                        asset_slug
+                    )
+                });
             let sequence_end_transitions_loader = SequenceEndTransitionsLoader {
                 sequence_id_mappings,
             };
 
-            // TODO: Sequences per item instead of per asset.
+            // Should we have sequences per `ItemId` instead of per `AssetId`?
             let sequence_end_transitions =
                 sequence_end_transitions_loader.items_to_datas(sequences.values(), asset_slug);
             let wait_sequence_handles = wait_sequence_handles_loader
@@ -435,65 +392,172 @@ impl AssetSequenceComponentLoaderUi {
                 }
             }
 
-            // Display control buttons if requested
-            if let Some(control_buttons_display_labels) = control_buttons_display_labels {
-                let control_button_labels = control_buttons_display_labels.iter().flat_map(
-                    |player_control_buttons_labels| {
-                        player_control_buttons_labels
-                            .axes
-                            .values()
-                            .chain(player_control_buttons_labels.actions.values())
-                    },
+            if ui_definition.display_control_buttons {
+                Self::control_buttons_display(
+                    asset_loading_resources,
+                    sequence_component_loading_resources,
+                    asset_id,
+                    &mut item_ids_all,
                 );
-
-                let position_inits =
-                    PositionInitsLoader::items_to_datas(control_button_labels.clone());
-                let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
-                    sequence_id_mappings,
-                    asset_slug,
-                    control_button_labels
-                        .map(|control_button_label| &control_button_label.sprite.sequence),
-                );
-
-                let item_ids = position_inits
-                    .0
-                    .into_iter()
-                    .zip(sequence_id_inits.into_iter())
-                    .map(|(position_init, sequence_id_init)| {
-                        let AssetSequenceComponentLoaderUiComponents {
-                            sequence_end_transitions,
-                            wait_sequence_handles,
-                            tint_sequence_handles,
-                            scale_sequence_handles,
-                            input_reactions_sequence_handles,
-                            sprite_render_sequence_handles,
-                        } = asset_sequence_component_loader_ui_components.clone();
-
-                        let mut item_entity_builder = asset_world
-                            .create_entity()
-                            .with(position_init)
-                            .with(sequence_id_init)
-                            .with(sequence_end_transitions)
-                            .with(wait_sequence_handles)
-                            .with(tint_sequence_handles)
-                            .with(scale_sequence_handles)
-                            .with(input_reactions_sequence_handles)
-                            .with(ButtonInputControlled);
-
-                        if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles
-                        {
-                            item_entity_builder =
-                                item_entity_builder.with(sprite_render_sequence_handles);
-                        }
-
-                        item_entity_builder.build()
-                    })
-                    .map(ItemId::new);
-
-                item_ids_all.extend(item_ids);
             }
         }
 
         asset_item_ids.insert(asset_id, item_ids_all);
+    }
+
+    /// Adds `ItemId`s for control buttons display if requested
+    fn control_buttons_display(
+        asset_loading_resources: &mut AssetLoadingResources<'_>,
+        SequenceComponentLoadingResources {
+            definition_loading_resources_read:
+                DefinitionLoadingResourcesRead {
+                    background_definition_assets,
+                    ui_definition_assets,
+                    asset_background_definition_handle,
+                    asset_ui_definition_handle,
+                    ..
+                },
+            id_mapping_resources_read:
+                IdMappingResourcesRead {
+                    asset_sequence_id_mappings_sprite,
+                    ..
+                },
+            texture_loading_resources_read:
+                TextureLoadingResourcesRead {
+                    asset_sprite_sheet_handles,
+                    ..
+                },
+            asset_world,
+            asset_item_ids,
+            input_config,
+            wait_sequence_assets,
+            sprite_render_sequence_assets,
+            input_reactions_assets,
+            input_reactions_sequence_assets,
+            tint_sequence_assets,
+            scale_sequence_assets,
+            ..
+        }: &mut SequenceComponentLoadingResources<'_>,
+        asset_id: AssetId,
+        item_ids_all: &mut Vec<ItemId>,
+    ) {
+        let AssetLoadingResources {
+            asset_id_mappings,
+            asset_type_mappings,
+            loader,
+            ..
+        } = asset_loading_resources;
+
+        // Look up ControlSettings asset for mini control buttons display.
+        let asset_slug_control_settings = AssetSlugBuilder::default()
+            .namespace(ASSETS_DEFAULT_DIR.to_string())
+            .name(StateId::ControlSettings.to_string())
+            .build()
+            .expect("Expected control settings asset slug to be valid.");
+        let asset_id_control_settings = {
+            let asset_id_control_settings =
+                asset_id_mappings.id(&asset_slug_control_settings).copied();
+            if asset_id_control_settings == Some(asset_id) {
+                // If the current asset ID is the same as the control_settings `AssetId`, then we
+                // return None -- we don't allow displaying the mini control buttons. This also
+                // prevents waiting on our own asset ID to be loaded.
+                None
+            } else {
+                asset_id_control_settings
+            }
+        };
+
+        // Mini control button labels for other UIs
+        let control_buttons_display_labels =
+            if let Some(asset_id_control_settings) = asset_id_control_settings {
+                // Look up UiDefinition for the control settings asset
+                let mut ui_definition_control_settings = asset_ui_definition_handle
+                    .get(asset_id_control_settings)
+                    .and_then(|ui_definition_handle| ui_definition_assets.get(ui_definition_handle))
+                    .cloned(); // Clone so that we don't mutate the actual read data.
+
+                if let Some(UiDefinition {
+                    ui_type: UiType::ControlSettings(control_settings),
+                    sequences,
+                    ..
+                }) = ui_definition_control_settings.as_mut()
+                {
+                    Some(KeyboardUiGen::generate_mini(
+                        &control_settings.keyboard,
+                        &input_config,
+                        sequences,
+                    ))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+        if let (Some(asset_id_control_settings), Some(control_buttons_display_labels)) =
+            (asset_id_control_settings, control_buttons_display_labels)
+        {
+            let sequence_id_mappings_control_settings = asset_sequence_id_mappings_sprite
+                .get(asset_id_control_settings)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceIdMappings<SpriteSequenceName>` to exist for `{}`.",
+                        asset_slug_control_settings
+                    )
+                });
+
+            let control_button_labels =
+                control_buttons_display_labels
+                    .iter()
+                    .flat_map(|player_control_buttons_labels| {
+                        player_control_buttons_labels
+                            .axes
+                            .values()
+                            .chain(player_control_buttons_labels.actions.values())
+                    });
+
+            let position_inits = PositionInitsLoader::items_to_datas(control_button_labels.clone());
+            let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                sequence_id_mappings_control_settings,
+                &asset_slug_control_settings,
+                control_button_labels
+                    .map(|control_button_label| &control_button_label.sprite.sequence),
+            );
+
+            let item_ids = position_inits
+                .0
+                .into_iter()
+                .zip(sequence_id_inits.into_iter())
+                .map(|(position_init, sequence_id_init)| {
+                    let AssetSequenceComponentLoaderUiComponents {
+                        sequence_end_transitions,
+                        wait_sequence_handles,
+                        tint_sequence_handles,
+                        scale_sequence_handles,
+                        input_reactions_sequence_handles,
+                        sprite_render_sequence_handles,
+                    } = asset_sequence_component_loader_ui_components.clone();
+
+                    let mut item_entity_builder = asset_world
+                        .create_entity()
+                        .with(position_init)
+                        .with(sequence_id_init)
+                        .with(sequence_end_transitions)
+                        .with(wait_sequence_handles)
+                        .with(tint_sequence_handles)
+                        .with(scale_sequence_handles)
+                        .with(input_reactions_sequence_handles)
+                        .with(ButtonInputControlled);
+
+                    if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {
+                        item_entity_builder =
+                            item_entity_builder.with(sprite_render_sequence_handles);
+                    }
+
+                    item_entity_builder.build()
+                })
+                .map(ItemId::new);
+            item_ids_all.extend(item_ids);
+        }
     }
 }
