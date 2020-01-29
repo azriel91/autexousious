@@ -113,7 +113,9 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
         // TODO: We may actually want this system to run during gameplay, e.g. when changing which
         // game object is controlled.
 
-        if game_loading_status.character_augment_status != CharacterAugmentStatus::Rectify {
+        if game_loading_status.character_augment_status != CharacterAugmentStatus::Rectify
+            || map_selection.asset_id().is_none()
+        {
             return;
         }
 
