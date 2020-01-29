@@ -5,8 +5,10 @@
 pub use crate::{
     button_to_player_index_mapper::ButtonToPlayerIndexMapper,
     control_button_to_button_mapper::ControlButtonToButtonMapper, keyboard_ui_gen::KeyboardUiGen,
+    pcbl_repositioner::PcblRepositioner,
 };
 
 mod button_to_player_index_mapper;
 mod control_button_to_button_mapper;
 mod keyboard_ui_gen;
+mod pcbl_repositioner;

@@ -6,6 +6,7 @@ use amethyst::{
 };
 use asset_model::{loaded::AssetItemIds, play::AssetWorld};
 use audio_model::loaded::SourceSequence;
+use camera_model::play::CameraZoomDimensions;
 use character_model::loaded::{CharacterInputReactions, CharacterIrs};
 use collision_model::{
     config::{Body, Interactions},
@@ -42,6 +43,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `InputConfig` resource.
     #[derivative(Debug = "ignore")]
     pub input_config: Read<'s, InputConfig>,
+    /// `CameraZoomDimensions` resource.
+    #[derivative(Debug = "ignore")]
+    pub camera_zoom_dimensions: Read<'s, CameraZoomDimensions>,
 
     /// `Source`s assets.
     #[derivative(Debug = "ignore")]

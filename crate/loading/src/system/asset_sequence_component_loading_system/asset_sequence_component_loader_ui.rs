@@ -552,6 +552,7 @@ impl AssetSequenceComponentLoaderUi {
                     ..
                 },
             ref input_config,
+            ref camera_zoom_dimensions,
             ref input_reactions_assets,
             ref input_reactions_sequence_assets,
             ..
@@ -593,7 +594,8 @@ impl AssetSequenceComponentLoaderUi {
                 {
                     let control_buttons_display_labels = KeyboardUiGen::generate_mini(
                         &control_settings.keyboard,
-                        &input_config,
+                        input_config,
+                        **camera_zoom_dimensions,
                         sequences,
                     );
 
