@@ -66,6 +66,8 @@ impl PcblRepositioner {
         // * 5 gaps, so we divide 800 by 5, then skip the first coordinate.
         // * Then we must account for the width of each set of buttons, and make sure the midpoint
         //   is at each of those coordinates.
+        //
+        // May want to revert commit: <87bff3b9>
         let midpoint_distance = camera_zoom_dimensions.width as i32
             / (player_control_buttons_labelses.len() + 1) as i32;
 
