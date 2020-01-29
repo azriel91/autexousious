@@ -132,14 +132,26 @@ impl IrAssetSelectionEventSender {
     fn asset_selection_return_preconditions_met(
         IrAppEventSenderSystemData {
             asset_selection_statuses,
+            state_id,
             ..
         }: &IrAppEventSenderSystemData,
     ) -> bool {
-        // If all widgets are inactive, return to previous `State`.
-        asset_selection_statuses
-            .join()
-            .copied()
-            .all(|asset_selection_status| asset_selection_status == AssetSelectionStatus::Inactive)
+        let state_id = **state_id;
+        match state_id {
+            StateId::CharacterSelection => {
+                // If all widgets are inactive, return to previous `State`.
+                asset_selection_statuses
+                    .join()
+                    .copied()
+                    .all(|asset_selection_status| {
+                        asset_selection_status == AssetSelectionStatus::Inactive
+                    })
+            }
+            StateId::MapSelection => true,
+            _ => {
+                panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+            }
+        }
     }
 
     fn asset_selection(
