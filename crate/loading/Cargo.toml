@@ -20,6 +20,7 @@ asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 background_model = { path = "../background_model" }
+camera_model = { path = "../camera_model" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
