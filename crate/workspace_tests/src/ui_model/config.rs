@@ -34,6 +34,8 @@ buttons:
     label: { position: { x: -7, y: -8, z: -9 }, text: "Button Zero" }
     sprite: { position: { x: -10, y: -11, z: -12 }, sequence: "button_inactive" }
 
+display_control_buttons: true
+
 sequences:
   start_game_inactive:
     next: "none"
@@ -151,6 +153,7 @@ sequences:
         let ui_definition_expected = UiDefinition {
             ui_type,
             buttons,
+            display_control_buttons: true,
             sequences,
         };
 
