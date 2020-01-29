@@ -3,7 +3,11 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{config::AssetType, loaded::AssetTypeMappings, play::AssetSelectionEvent};
+use asset_model::{
+    config::AssetType,
+    loaded::AssetTypeMappings,
+    play::{AssetSelection, AssetSelectionEvent},
+};
 use derivative::Derivative;
 use derive_new::new;
 use log::warn;
@@ -29,6 +33,9 @@ pub struct MapSelectionSystemData<'s> {
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub asset_selection_ec: Read<'s, EventChannel<AssetSelectionEvent>>,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: WriteExpect<'s, MapSelection>,
@@ -42,6 +49,7 @@ impl<'s> System<'s> for MapSelectionSystem {
         MapSelectionSystemData {
             mut map_selection_status,
             asset_selection_ec,
+            asset_type_mappings,
             mut map_selection,
         }: Self::SystemData,
     ) {
@@ -60,7 +68,19 @@ impl<'s> System<'s> for MapSelectionSystem {
                 | AssetSelectionEvent::Select {
                     asset_selection, ..
                 } => {
-                    *map_selection = MapSelection::from(asset_selection);
+                    *map_selection = match asset_selection {
+                        AssetSelection::Random => {
+                            let first_map_id = asset_type_mappings
+                                .iter_ids(&AssetType::Map)
+                                .next()
+                                .copied()
+                                .expect("Expected at least one map to be loaded.");
+
+                            // TODO: implement random.
+                            MapSelection::Random(Some(first_map_id))
+                        }
+                        AssetSelection::Id(asset_id) => MapSelection::Id(asset_id),
+                    };
                 }
                 AssetSelectionEvent::Deselect { .. } => {
                     *map_selection_status = MapSelectionStatus::Pending;

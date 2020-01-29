@@ -106,9 +106,17 @@ where
                 AssetSelectionEvent::Return => Trans::Pop,
                 AssetSelectionEvent::Confirm => {
                     let map_selection = data.world.read_resource::<MapSelection>();
-                    debug!("map_selection: `{:?}`", &*map_selection);
 
-                    Trans::Switch((self.next_state_fn)())
+                    // Hack: `AssetSelectionEvent`s are carried through from the previous state
+                    // when multiple controllers send input at the same time.
+                    if map_selection.asset_id().is_some() {
+                        debug!("map_selection: `{:?}`", &*map_selection);
+
+                        Trans::Switch((self.next_state_fn)())
+                    } else {
+                        debug!("Ignoring asset selection event: {:?}", event);
+                        Trans::None
+                    }
                 }
                 _ => Trans::None,
             }

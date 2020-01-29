@@ -50,7 +50,7 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         // TODO: implement Random
         let asset_id = map_selection
             .asset_id()
-            .expect("Expected `MapSelection` to contain ID.");
+            .expect("Expected map selection to have an `AssetId`.");
         let map_entities = MapSpawner::spawn(&mut map_spawner_resources, asset_id);
 
         game_entities.map_layers = map_entities;
