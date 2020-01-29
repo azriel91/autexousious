@@ -8,7 +8,7 @@ use asset_model::{
 };
 use asset_ui_model::play::AssetSelectionStatus;
 use game_input_model::ControllerId;
-use log::debug;
+use log::{debug, warn};
 use object_type::ObjectType;
 use state_registry::StateId;
 
@@ -149,7 +149,8 @@ impl IrAssetSelectionEventSender {
             }
             StateId::MapSelection => true,
             _ => {
-                panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                warn!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                false
             }
         }
     }
@@ -239,7 +240,8 @@ impl IrAssetSelectionEventSender {
                 StateId::CharacterSelection => AssetType::Object(ObjectType::Character),
                 StateId::MapSelection => AssetType::Map,
                 _ => {
-                    panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                    warn!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                    return asset_selection;
                 }
             };
             let asset_ids = asset_type_mappings
@@ -279,7 +281,8 @@ impl IrAssetSelectionEventSender {
             ),
             StateId::MapSelection => true,
             _ => {
-                panic!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                warn!("`AssetSelection` is not supported during `{:?}`.", state_id);
+                false
             }
         }
     }
