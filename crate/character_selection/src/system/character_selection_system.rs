@@ -11,6 +11,7 @@ use asset_model::{
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
 use derive_new::new;
+use log::warn;
 use object_type::ObjectType;
 
 /// Populates the `CharacterSelections` based on user input.
@@ -71,9 +72,19 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                                 .expect("Expected at least one character to be loaded.")
                         }
                     };
-                    character_selections
-                        .selections
-                        .insert(controller_id, asset_id);
+
+                    let asset_type = asset_type_mappings.get(asset_id);
+                    if let Some(AssetType::Object(ObjectType::Character)) = asset_type {
+                        character_selections
+                            .selections
+                            .insert(controller_id, asset_id);
+                    } else {
+                        warn!(
+                            "Received `AssetSelectionEvent` for {:?} which has type: {:?} in \
+                            `CharacterSelectionSystem`",
+                            asset_id, asset_type
+                        );
+                    }
                 }
                 AssetSelectionEvent::Deselect { controller_id, .. } => {
                     character_selections.selections.remove(&controller_id);
