@@ -15,6 +15,9 @@ pub struct UiDefinition {
     /// Buttons in the UI.
     #[serde(default)]
     pub buttons: UiButtons,
+    /// Whether or not to display mini control settings.
+    #[serde(default)]
+    pub display_control_buttons: bool,
     /// Sequences used by the UI type.
     #[serde(default)]
     pub sequences: UiSequences,

@@ -4,7 +4,7 @@ use amethyst::winit::VirtualKeyCode;
 use derive_new::new;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
-use sprite_model::config::Tint;
+use sprite_model::config::{Scale, Tint};
 use ui_label_model::config::UiSpriteLabel;
 
 use crate::config::KeyboardLayout;
@@ -15,6 +15,9 @@ use crate::config::KeyboardLayout;
 pub struct KeyboardSettings {
     /// Position of the keyboard on screen.
     pub position: PositionInit,
+    /// Factor to scale the keys by.
+    #[serde(default)]
+    pub scale: Scale,
     /// `Tint`s to highlight controller keys.
     #[serde(default)]
     pub controller_tints: Vec<Tint>,

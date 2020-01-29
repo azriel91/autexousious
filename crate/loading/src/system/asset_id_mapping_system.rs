@@ -9,6 +9,7 @@ use object_type::ObjectType;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteSequenceName;
+use ui_model::config::UiDefinition;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
@@ -55,9 +56,11 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                     character_definition_assets,
                     energy_definition_assets,
                     map_definition_assets,
+                    ui_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
                     asset_map_definition_handle,
+                    asset_ui_definition_handle,
                     ..
                 },
             asset_sequence_id_mappings_sprite,
@@ -128,7 +131,47 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
 
                 asset_sequence_id_mappings_sprite.insert(asset_id, sequence_id_mappings);
             }
-            AssetType::Ui => {}
+            AssetType::Ui => {
+                // For UI, sequences exist in both `BackgroundDefinition` and `UiDefinition`.
+                // However, we cannot simply merge both `sequence_id_mappings` because we would also
+                // need to merge the sequences when being loaded, which is not possible --
+                // `BackgroundDefinition` uses `SpriteSequence`, and `UiDefinition` uses
+                // `UiSequence`.
+                //
+                // In addition, different UIs need to reference the `ControlSettings` UI's
+                // configuration to display the mini control buttons display. The relevant
+                // sequence ID mappings are the ones from `UiDefinition`. So we choose to store
+                // those against the `AssetId`.
+                //
+                // Perhaps we should store `SequenceIdMappings` per `Asset` file instead of per
+                // `AssetId` (which is a grouping of `Asset`s).
+
+                // let background_definition = asset_background_definition_handle.get(asset_id)
+                //     .and_then(|background_definition_handle| {
+                //         background_definition_assets.get(background_definition_handle)
+                //     },
+                // );
+                // if let Some(background_definition) = background_definition {
+                //     let sequence_id_mappings = SequenceIdMappings::from_iter(
+                //         background_definition.layers.keys().map(|sequence_string| {
+                //             SequenceNameString::from_str(sequence_string)
+                //                 .expect("Expected `SequenceNameString::from_str` to succeed.")
+                //         }),
+                //     );
+                // }
+
+                let ui_definition =
+                    asset_ui_definition_handle
+                        .get(asset_id)
+                        .and_then(|ui_definition_handle| {
+                            ui_definition_assets.get(ui_definition_handle)
+                        });
+
+                if let Some(UiDefinition { sequences, .. }) = ui_definition {
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(sequences.keys());
+                    asset_sequence_id_mappings_sprite.insert(asset_id, sequence_id_mappings);
+                }
+            }
         }
     }
 
@@ -149,6 +192,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                     energy_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
+                    asset_ui_definition_handle,
                     ..
                 },
             asset_sequence_id_mappings_sprite,
@@ -205,7 +249,12 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
             AssetType::Map => asset_sequence_id_mappings_sprite.get(asset_id).is_some(),
-            AssetType::Ui => true,
+            AssetType::Ui => {
+                asset_ui_definition_handle
+                    .get(asset_id)
+                    .map(|_| asset_sequence_id_mappings_sprite.get(asset_id).is_some())
+                    .unwrap_or(true) // Default to true when there is no asset UI definition.
+            }
         }
     }
 }
