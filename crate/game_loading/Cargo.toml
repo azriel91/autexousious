@@ -23,6 +23,7 @@ game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
 kinematic_model = { path = "../kinematic_model" }
+log = "0.4.8"
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 map_selection_model = { path = "../map_selection_model" }
