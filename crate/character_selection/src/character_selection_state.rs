@@ -91,11 +91,11 @@ where
         self.initialize_character_selections(&mut data.world);
     }
 
-    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         data.world.insert(StateId::CharacterSelection);
 
-        let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
-        *selections_status = CharacterSelectionsStatus::Confirmed;
+        // TODO: Initialize in the "confirmed" state, including widgets.
+        self.initialize_character_selections(&mut data.world);
     }
 
     fn handle_event(
