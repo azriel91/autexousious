@@ -77,7 +77,10 @@ impl PcblRepositioner {
             .for_each(|(index, buttons_position_init_iter)| {
                 let x_shift = (index + 1) as i32 * midpoint_distance;
 
-                buttons_position_init_iter.for_each(|position_init| position_init.x += x_shift);
+                buttons_position_init_iter.for_each(|position_init| {
+                    position_init.x += x_shift;
+                    position_init.z += 100
+                });
             });
     }
 
