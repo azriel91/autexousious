@@ -5,7 +5,6 @@ use amethyst::{
     },
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use camera_model::play::CameraTracked;
 use derivative::Derivative;
 use derive_new::new;
@@ -13,7 +12,6 @@ use game_input::InputControlled;
 use game_play_hud::{CpBarPrefab, HpBarPrefab};
 use game_play_model::GamePlayEntity;
 use kinematic_model::config::Position;
-use log::warn;
 use map_model::loaded::AssetMapBounds;
 use map_selection_model::MapSelection;
 
@@ -36,9 +34,6 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: Read<'s, MapSelection>,
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,
@@ -106,7 +101,6 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             entities,
             mut game_loading_status,
             map_selection,
-            asset_type_mappings,
             asset_map_bounds,
             input_controlleds,
             mut camera_trackeds,
@@ -126,16 +120,11 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
         // Read map to determine bounds where the characters can be spawned.
         let (width, height, depth) = {
             asset_map_bounds
-                .get(map_selection.asset_id().unwrap_or_else(|| {
-                    // TODO: Fix `MapSelectionSystem`, `MapSelectionSpawningSystem`, and
-                    // `CharacterAugmentRectifySystem`
-                    warn!("Expected map selection to have an `AssetId`.");
-                    asset_type_mappings
-                        .iter_ids(&AssetType::Map)
-                        .next()
-                        .copied()
-                        .expect("Expected at least one map to be loaded.")
-                }))
+                .get(
+                    map_selection
+                        .asset_id()
+                        .expect("Expected map selection to have an `AssetId`."),
+                )
                 .map(|bounds| {
                     (
                         bounds.width as f32,

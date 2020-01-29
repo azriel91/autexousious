@@ -2265,7 +2265,6 @@ dependencies = [
  "game_play_hud 0.16.0",
  "game_play_model 0.16.0",
  "kinematic_model 0.16.0",
- "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.16.0",
  "map_play 0.16.0",
  "map_selection_model 0.16.0",

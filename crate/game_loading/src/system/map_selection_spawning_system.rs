@@ -2,11 +2,9 @@ use amethyst::{
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
-use log::warn;
 use map_play::{MapSpawner, MapSpawnerResources};
 use map_selection_model::MapSelection;
 
@@ -29,9 +27,6 @@ pub struct MapSelectionSpawningSystemData<'s> {
     /// `GameEntities` resource.
     #[derivative(Debug = "ignore")]
     pub game_entities: Write<'s, GameEntities>,
-    /// `AssetTypeMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `MapSpawnerResources`.
     pub map_spawner_resources: MapSpawnerResources<'s>,
 }
@@ -45,7 +40,6 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
             mut game_loading_status,
             map_selection,
             mut game_entities,
-            asset_type_mappings,
             mut map_spawner_resources,
         }: Self::SystemData,
     ) {
@@ -54,16 +48,9 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         }
 
         // TODO: implement Random
-        let asset_id = map_selection.asset_id().unwrap_or_else(|| {
-            // TODO: Fix `MapSelectionSystem`, `MapSelectionSpawningSystem`, and
-            // `CharacterAugmentRectifySystem`
-            warn!("Expected map selection to have an `AssetId`.");
-            asset_type_mappings
-                .iter_ids(&AssetType::Map)
-                .next()
-                .copied()
-                .expect("Expected at least one map to be loaded.")
-        });
+        let asset_id = map_selection
+            .asset_id()
+            .expect("Expected map selection to have an `AssetId`.");
         let map_entities = MapSpawner::spawn(&mut map_spawner_resources, asset_id);
 
         game_entities.map_layers = map_entities;

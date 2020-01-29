@@ -70,8 +70,6 @@ impl<'s> System<'s> for MapSelectionSystem {
                 } => {
                     *map_selection = match asset_selection {
                         AssetSelection::Random => {
-                            // TODO: Fix `MapSelectionSystem`, `MapSelectionSpawningSystem`, and
-                            // `CharacterAugmentRectifySystem`
                             let first_map_id = asset_type_mappings
                                 .iter_ids(&AssetType::Map)
                                 .next()
