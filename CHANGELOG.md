@@ -6,9 +6,11 @@
 
 * Character selection UI displays a grid of available characters. ([#190])
 * Map selection UI displays a grid of available characters. ([#176])
+* Control buttons are displayed on UIs. ([#191])
 
 [#176]: https://gitlab.com/azriel91/autexousious/issues/176
 [#190]: https://gitlab.com/azriel91/autexousious/issues/190
+[#191]: https://gitlab.com/azriel91/autexousious/issues/191
 
 ## 0.16.0 (2019-12-20)
 
