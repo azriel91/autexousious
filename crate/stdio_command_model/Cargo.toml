@@ -13,4 +13,4 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 serde = { version = "1.0.104", features = ["derive"] }
 state_registry = { path = "../state_registry" }
-structopt = "0.3.7"
+structopt = "0.3.9"

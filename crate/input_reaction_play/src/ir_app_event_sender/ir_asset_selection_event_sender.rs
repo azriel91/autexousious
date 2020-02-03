@@ -249,7 +249,7 @@ impl IrAssetSelectionEventSender {
                 .unwrap_or(&placeholder);
             let mut asset_selections = Vec::with_capacity(asset_ids.len() + 1);
             asset_selections.push(AssetSelection::Random);
-            asset_selections.extend(asset_ids.into_iter().copied().map(AssetSelection::Id));
+            asset_selections.extend(asset_ids.iter().copied().map(AssetSelection::Id));
 
             if reverse {
                 asset_selections

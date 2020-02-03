@@ -1,5 +1,4 @@
 use std::{
-    ops::Deref,
     sync::mpsc::{self, Receiver, TryRecvError},
     thread,
 };
@@ -93,7 +92,7 @@ impl<'s> System<'s> for StdinSystem {
         }: Self::SystemData,
     ) {
         // Get an `Option<StateId>` from `Option<Read<StateId>>`.
-        let state_id = state_id.as_ref().map(Deref::deref).copied();
+        let state_id = state_id.as_deref().copied();
         if let Some(state_id) = state_id {
             let state_id = state_id;
             if let Some(state_id_barrier) = (*stdin_command_barrier).state_id {
