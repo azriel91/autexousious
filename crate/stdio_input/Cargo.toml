@@ -13,7 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 bitflags = "1.2.1"
-console = "0.9.1"
+console = "0.9.2"
 derivative = "1.0.3"
 derive-new = "0.5.8"
 itertools = "0.8.2"
@@ -22,7 +22,7 @@ shell-words = "0.1.0"
 state_registry = { path = "../state_registry" }
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.7"
+structopt = "0.3.9"
 strum = "0.17.1"
 
 [dev-dependencies]
@@ -30,7 +30,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_robot = { path = "../application_robot" }
 assert_cmd = "0.12.0"
 escargot = "0.5.0"
-structopt-derive = "0.4.0"
+structopt-derive = "0.4.2"
 
 [features]
 nightly = ["amethyst/nightly"]

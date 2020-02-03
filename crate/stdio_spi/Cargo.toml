@@ -13,9 +13,9 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_event = { path = "../application_event" }
 clap = "2.33.0"
 derive-new = "0.5.8"
-err-derive = "0.2.1"
+err-derive = "0.2.2"
 log = "0.4.8"
-structopt = "0.3.7"
+structopt = "0.3.9"
 
 [features]
 nightly = ["amethyst/nightly"]
