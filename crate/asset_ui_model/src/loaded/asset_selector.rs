@@ -74,9 +74,7 @@ where
         asset_display_cell_entities: &[Entity],
     ) {
         match self.layout {
-            AssetDisplayLayout::Grid(AssetDisplayGrid {
-                column_count: _, ..
-            }) => UiWidgetRectifier::rectify(
+            AssetDisplayLayout::Grid(AssetDisplayGrid { .. }) => UiWidgetRectifier::rectify(
                 ui_rectify_system_data,
                 SiblingsBoundaryAction::CycleNext,
                 asset_display_cell_entities,

@@ -35,7 +35,7 @@ energy_model = { path = "../energy_model" }
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
-humantime = "1.3.0"
+humantime = "2.0.0"
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_loading = { path = "../kinematic_loading" }
@@ -54,7 +54,7 @@ sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
 slotmap = { version = "0.4.0", features = ["serde"] }
-smallvec = "1.1.0"
+smallvec = "1.2.0"
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }

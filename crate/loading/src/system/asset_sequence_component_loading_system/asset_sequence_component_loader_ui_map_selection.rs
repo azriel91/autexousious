@@ -159,7 +159,6 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         let input_controlled_items = {
             let controller_count = input_config.controller_configs.len();
             (0..controller_count)
-                .into_iter()
                 .map(InputControlled::new)
                 .map(|input_controlled| asset_world.create_entity().with(input_controlled).build())
                 .map(ItemId::new)
@@ -179,12 +178,9 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         T: Default + Into<AssetType> + Send + Sync + 'static,
     {
         let config::AssetSelector {
-            asset_display:
-                AssetDisplay {
-                    position,
-                    layout,
-                    marker: _,
-                },
+            asset_display: AssetDisplay {
+                position, layout, ..
+            },
             selection_highlights,
         } = maps_available_selector;
 
@@ -309,21 +305,17 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             })
             .collect::<Vec<ItemId>>();
 
-        let asset_selector_item = {
-            let asset_selector = AssetSelector::<T>::new(
-                asset_display_cell_item_ids,
-                asset_selection_highlight_item_ids,
-                *layout,
-            );
-            let item_entity = asset_world
-                .create_entity()
-                .with(*position)
-                .with(asset_selector)
-                .build();
+        let asset_selector = AssetSelector::<T>::new(
+            asset_display_cell_item_ids,
+            asset_selection_highlight_item_ids,
+            *layout,
+        );
+        let item_entity = asset_world
+            .create_entity()
+            .with(*position)
+            .with(asset_selector)
+            .build();
 
-            ItemId::new(item_entity)
-        };
-
-        asset_selector_item
+        ItemId::new(item_entity)
     }
 }

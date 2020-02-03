@@ -11,7 +11,6 @@ use application_ui::ThemeLoader;
 use asset_model::loaded::{AssetIdMappings, AssetTypeMappings};
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
-use humantime;
 use loading_model::loaded::{AssetLoadStage, LoadStage};
 use log::{error, warn};
 use state_registry::StateId;

@@ -12,8 +12,8 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_menu = { path = "../application_menu" }
 serde = { version = "1.0.104", features = ["derive"] }
-structopt = "0.3.7"
-structopt-derive = "0.4.0"
+structopt = "0.3.9"
+structopt-derive = "0.4.2"
 strum = "0.17.1"
 strum_macros = "0.17.1"
 

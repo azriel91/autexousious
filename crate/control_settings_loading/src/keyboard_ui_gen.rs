@@ -95,7 +95,6 @@ impl KeyboardUiGen {
         if let Some(layout_positions) = layout_positions {
             let mut player_control_buttons_labelses =
                 ControlButtonToButtonMapper::map(input_config)
-                    .into_iter()
                     .enumerate()
                     .map(|(controller_id, control_buttons_to_buttons)| {
                         let (axes, actions) = control_buttons_to_buttons.into_iter().fold(
