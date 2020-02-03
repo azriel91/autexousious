@@ -8,7 +8,7 @@ use sequence_model::{
 };
 
 /// Maps `SequenceId`s from sequence strings.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct SequenceIdMapper<SeqName>
 where
     SeqName: SequenceName,
@@ -23,9 +23,7 @@ where
 {
     /// Returns a new SequenceIdMapper.
     pub fn new() -> Self {
-        SequenceIdMapper {
-            marker: PhantomData,
-        }
+        Default::default()
     }
 
     /// Maps items to `SequenceId`.

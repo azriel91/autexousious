@@ -47,10 +47,10 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
 
         input_events.read(input_events_id).for_each(|ev| match ev {
             ControlInputEvent::AxisMoved(AxisMoveEventData {
-                controller_id: _,
                 entity,
                 axis,
                 value,
+                ..
             }) => {
                 let controller_input = Self::get_or_insert_mut(&mut controller_inputs, *entity);
                 match axis {
@@ -59,9 +59,9 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                 };
             }
             ControlInputEvent::ControlActionPress(ControlActionEventData {
-                controller_id: _,
                 entity,
                 control_action,
+                ..
             }) => {
                 let controller_input = Self::get_or_insert_mut(&mut controller_inputs, *entity);
                 match control_action {
@@ -72,9 +72,9 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                 };
             }
             ControlInputEvent::ControlActionRelease(ControlActionEventData {
-                controller_id: _,
                 entity,
                 control_action,
+                ..
             }) => {
                 let controller_input = Self::get_or_insert_mut(&mut controller_inputs, *entity);
                 match control_action {

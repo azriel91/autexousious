@@ -116,7 +116,7 @@ impl<'s> ItemComponent<'s> for PositionInit {
             .get(entity)
             .and_then(|position_init_parent| positions.get(position_init_parent.0).copied());
         let position_init_offset = position_init_offsets.get(entity);
-        let scale_init = scale_inits.get(entity).map(|scale_init| *scale_init);
+        let scale_init = scale_inits.get(entity).copied();
 
         let mut translation = Into::<Position<f32>>::into(*self);
         if let Some(position_init_offset) = position_init_offset {
