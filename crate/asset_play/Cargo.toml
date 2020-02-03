@@ -15,7 +15,6 @@ asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 audio_model = { path = "../audio_model" }
 character_model = { path = "../character_model" }
-character_selection_ui_model = { path = "../character_selection_ui_model" }
 chase_model = { path = "../chase_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
@@ -24,7 +23,6 @@ game_input = { path = "../game_input" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
-map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
