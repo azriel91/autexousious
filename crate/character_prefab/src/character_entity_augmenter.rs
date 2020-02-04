@@ -6,7 +6,7 @@ use character_model::{
     config::CharacterSequenceName, loaded::CharacterHitTransitions, play::RunCounter,
 };
 use charge_model::play::{ChargeRetention, ChargeTrackerClock};
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use map_model::play::MapBounded;
 use object_model::{config::Mass, play::HealthPoints};
 use object_status_model::config::StunPoints;

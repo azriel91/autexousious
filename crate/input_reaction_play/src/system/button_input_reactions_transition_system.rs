@@ -9,8 +9,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::ButtonInputControlled;
-use game_input_model::ControlBindings;
+use game_input_model::{play::ButtonInputControlled, ControlBindings};
 use input_reaction_model::{
     config::{InputReactionAppEvents, InputReactionRequirement},
     loaded::{

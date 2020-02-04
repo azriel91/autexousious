@@ -1,7 +1,6 @@
 use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
 use derive_new::new;
-
-use crate::{ControllerInput, InputControlled, SharedInputControlled};
+use game_input_model::play::{ControllerInput, InputControlled, SharedInputControlled};
 
 /// Updates the `ControllerInput` component based on input from the sharing controllers.
 #[derive(Debug, Default, new)]

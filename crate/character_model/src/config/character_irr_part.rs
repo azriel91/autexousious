@@ -1,7 +1,9 @@
 use approx::{relative_eq, relative_ne};
 use charge_model::config::{ChargePoints, ChargeUseMode};
-use game_input::ControllerInput;
-use game_input_model::config::{InputDirection, InputDirectionZ};
+use game_input_model::{
+    config::{InputDirection, InputDirectionZ},
+    play::ControllerInput,
+};
 use mirrored_model::play::Mirrored;
 use object_model::play::{HealthPoints, SkillPoints};
 use serde::{Deserialize, Serialize};

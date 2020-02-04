@@ -1,6 +1,5 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
-
-use crate::loaded::AssetId;
+use asset_model::loaded::AssetId;
 
 /// Selected `AssetId` or `Random`.
 #[derive(Clone, Component, Copy, Debug, PartialEq)]

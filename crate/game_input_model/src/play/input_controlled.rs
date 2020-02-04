@@ -6,7 +6,8 @@ use amethyst::ecs::{
 use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::ControllerId;
+
+use crate::ControllerId;
 
 /// Marks a game input controlled entity.
 ///

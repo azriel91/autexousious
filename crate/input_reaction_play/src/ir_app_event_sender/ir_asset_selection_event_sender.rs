@@ -1,9 +1,9 @@
 use std::convert::TryFrom;
 
 use amethyst::ecs::{Entity, Join};
-use asset_model::{
-    config::{AssetSelectionEventCommand, AssetSwitch, AssetType},
-    loaded::AssetTypeMappings,
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
+use asset_selection_model::{
+    config::{AssetSelectionEventCommand, AssetSwitch},
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;

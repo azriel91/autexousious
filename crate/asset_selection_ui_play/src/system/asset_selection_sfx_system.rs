@@ -5,7 +5,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::play::AssetSelectionEvent;
+use asset_selection_model::play::AssetSelectionEvent;
 use derivative::Derivative;
 use derive_new::new;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};

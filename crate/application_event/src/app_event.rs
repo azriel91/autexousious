@@ -1,5 +1,5 @@
 use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel, winit::Event};
-use asset_model::play::AssetSelectionEvent;
+use asset_selection_model::play::AssetSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_input_model::ControlInputEvent;

@@ -1,4 +1,4 @@
-use asset_model::config::AssetSelectionEventCommand;
+use asset_selection_model::config::AssetSelectionEventCommand;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_mode_selection_model::GameModeSelectionEventArgs;

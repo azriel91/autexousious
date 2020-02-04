@@ -7,11 +7,12 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use game_input_model::{ControlBindings, ControllerId};
-
-    use game_input::{
-        ControllerInput, InputControlled, SharedControllerInputUpdateSystem, SharedInputControlled,
+    use game_input_model::{
+        play::{ControllerInput, InputControlled, SharedInputControlled},
+        ControlBindings, ControllerId,
     };
+
+    use game_input::SharedControllerInputUpdateSystem;
 
     #[test]
     fn merges_axes_controller_input_with_limit_correction() -> Result<(), Error> {

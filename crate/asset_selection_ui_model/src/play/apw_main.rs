@@ -2,7 +2,8 @@ use amethyst::{
     ecs::{storage::NullStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{play::AssetSelection, ItemComponent};
+use asset_model::ItemComponent;
+use asset_selection_model::play::AssetSelection;
 use derivative::Derivative;
 
 /// Marks an entity as the main asset preview widget entity.

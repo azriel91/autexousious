@@ -5,9 +5,9 @@ mod tests {
         Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication};
-    use asset_model::{
+    use asset_model::loaded::AssetIdMappings;
+    use asset_selection_model::{
         config::AssetSelectionEventArgs,
-        loaded::AssetIdMappings,
         play::{AssetSelection, AssetSelectionEvent},
     };
     use assets_test::CHAR_BAT_SLUG;

@@ -13,7 +13,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use application::IoUtils;
-    use asset_model::config::AssetSelectionEventCommand;
+    use asset_selection_model::config::AssetSelectionEventCommand;
     use character_model::{
         config::{CharacterIrr, CharacterIrrPart, CharacterSequence, CharacterSequenceName},
         loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},

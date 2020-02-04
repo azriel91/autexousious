@@ -1,7 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use game_input::ControllerInput;
-    use game_input_model::config::{InputDirection, InputDirectionZ};
+    use game_input_model::{
+        config::{InputDirection, InputDirectionZ},
+        play::ControllerInput,
+    };
     use mirrored_model::play::Mirrored;
 
     use input_reaction_model::config::{BasicIrrParams, BasicIrrPart};

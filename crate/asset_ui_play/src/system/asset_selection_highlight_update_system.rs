@@ -3,7 +3,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::play::AssetSelection;
+use asset_selection_model::play::AssetSelection;
 use asset_ui_model::play::{
     AssetSelectionHighlightMain, AssetSelectionParent, AssetSelectionStatus,
 };

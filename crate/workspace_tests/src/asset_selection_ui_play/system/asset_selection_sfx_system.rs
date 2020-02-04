@@ -6,11 +6,8 @@ mod tests {
         Error,
     };
     use application_test_support::{AssetQueries, AutexousiousApplication};
-    use asset_model::{
-        config::AssetType,
-        loaded::AssetId,
-        play::{AssetSelection, AssetSelectionEvent},
-    };
+    use asset_model::{config::AssetType, loaded::AssetId};
+    use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
     use object_type::ObjectType;
 
     use asset_selection_ui_play::AssetSelectionSfxSystem;

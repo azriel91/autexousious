@@ -9,8 +9,7 @@ use amethyst::{
 use application_ui::{FontVariant, Theme};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
-use game_input_model::InputConfig;
+use game_input_model::{play::InputControlled, InputConfig};
 use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use team_model::play::Team;

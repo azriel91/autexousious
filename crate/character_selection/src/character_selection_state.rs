@@ -6,7 +6,7 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
-use asset_model::play::AssetSelectionEvent;
+use asset_selection_model::play::AssetSelectionEvent;
 use character_selection_model::{
     CharacterSelectionEntity, CharacterSelections, CharacterSelectionsStatus,
 };

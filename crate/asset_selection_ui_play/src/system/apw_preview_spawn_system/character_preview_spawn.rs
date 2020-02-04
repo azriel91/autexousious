@@ -2,7 +2,8 @@ use amethyst::{
     ecs::{Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, play::AssetSelection};
+use asset_model::config::AssetType;
+use asset_selection_model::play::AssetSelection;
 use asset_selection_ui_model::play::ApwPreview;
 use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;

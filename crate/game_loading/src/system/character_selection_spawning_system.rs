@@ -9,7 +9,7 @@ use character_prefab::{
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
+use game_input_model::play::InputControlled;
 use game_model::play::GameEntities;
 use object_type::ObjectType;
 use team_model::play::{IndependentCounter, Team};

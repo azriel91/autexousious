@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
-use asset_model::{
-    config::{AssetSelectionEventArgs, AssetSlug},
-    loaded::AssetIdMappings,
+use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
+use asset_selection_model::{
+    config::AssetSelectionEventArgs,
     play::{AssetSelection, AssetSelectionEvent},
 };
 use game_input_model::ControllerId;

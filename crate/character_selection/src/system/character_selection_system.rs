@@ -3,11 +3,8 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{
-    config::AssetType,
-    loaded::AssetTypeMappings,
-    play::{AssetSelection, AssetSelectionEvent},
-};
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
+use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
 use derive_new::new;

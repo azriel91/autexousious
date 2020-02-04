@@ -22,8 +22,8 @@ mod tests {
         config::ChargePoints,
         play::{ChargeTrackerClock, ChargeUseEvent},
     };
-    use game_input::{ControllerInput, InputControlled};
     use game_input_model::{
+        play::{ControllerInput, InputControlled},
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use input_reaction_loading::{IrsLoader, IrsLoaderParams};

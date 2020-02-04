@@ -1,6 +1,6 @@
 [package]
-name = "asset_selection_stdio"
-version = "0.17.0"
+name = "asset_selection_model"
+version = "0.1.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -10,13 +10,8 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-application_event = { path = "../application_event" }
 asset_model = { path = "../asset_model" }
-asset_selection_model = { path = "../asset_selection_model" }
-derivative = "1.0.3"
-derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
-stdio_spi = { path = "../stdio_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]
+serde = { version = "1.0.104", features = ["derive"] }
+structopt = "0.3.9"
+structopt-derive = "0.4.2"

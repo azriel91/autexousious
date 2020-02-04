@@ -5,7 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
 use tracker::Last;
 

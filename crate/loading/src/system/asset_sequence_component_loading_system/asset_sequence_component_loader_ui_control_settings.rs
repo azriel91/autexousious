@@ -1,7 +1,7 @@
 use amethyst::ecs::{Builder, WorldExt};
 use asset_model::{config::AssetSlug, loaded::ItemId, play::AssetWorld};
 use control_settings_model::config::{ControlButtonLabels, ControlSettings};
-use game_input::ButtonInputControlled;
+use game_input_model::play::ButtonInputControlled;
 use kinematic_loading::PositionInitsLoader;
 use sequence_loading::SequenceIdMapper;
 use sequence_model::loaded::SequenceIdMappings;

@@ -9,8 +9,8 @@ use amethyst::{
 use approx::{relative_eq, relative_ne};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{ControllerInput, InputControlled};
 use game_input_model::{
+    play::{ControllerInput, InputControlled},
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use input_reaction_model::{
