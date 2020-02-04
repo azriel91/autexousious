@@ -1,5 +1,5 @@
 use derive_new::new;
-use game_input_model::Axis;
+use game_input_model::config::Axis;
 use sequence_model::loaded::SequenceId;
 
 use crate::config::InputReactionAppEvents;

@@ -5,8 +5,10 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{ControllerInput, InputControlled};
-use game_input_model::{ControllerId, InputConfig};
+use game_input_model::{
+    config::{ControllerId, InputConfig},
+    play::{ControllerInput, InputControlled},
+};
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use ui_model_spi::play::WidgetStatus;

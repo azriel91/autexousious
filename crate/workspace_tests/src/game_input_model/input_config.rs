@@ -9,7 +9,7 @@ mod tests {
     use hamcrest::prelude::*;
     use indexmap::IndexMap;
 
-    use game_input_model::{
+    use game_input_model::config::{
         Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig, PlayerActionControl,
         PlayerAxisControl,
     };

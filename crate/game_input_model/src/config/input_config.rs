@@ -10,7 +10,7 @@ use indexmap::IndexMap;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisControl};
+use crate::config::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisControl};
 
 /// Structure for holding the input configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]

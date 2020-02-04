@@ -20,7 +20,7 @@ use character_model::loaded::CharacterIrsHandles;
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
-use game_input::{ButtonInputControlled, InputControlled, SharedInputControlled};
+use game_input_model::play::{ButtonInputControlled, InputControlled, SharedInputControlled};
 use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{

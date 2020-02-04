@@ -9,11 +9,11 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
-        ControlInputEvent,
+        config::{Axis, ControlAction, ControlBindings},
+        play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput},
     };
 
-    use game_input::{ControllerInput, ControllerInputUpdateSystem};
+    use game_input::ControllerInputUpdateSystem;
 
     #[test]
     fn inserts_controller_input_if_non_existent() -> Result<(), Error> {

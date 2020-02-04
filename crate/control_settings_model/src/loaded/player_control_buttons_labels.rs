@@ -1,5 +1,5 @@
 use derive_new::new;
-use game_input_model::{ControlAction, ControlAxis};
+use game_input_model::{config::ControlAction, loaded::ControlAxis};
 use indexmap::IndexMap;
 
 use crate::config::ControlButtonLabel;

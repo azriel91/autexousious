@@ -6,7 +6,7 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
-use asset_model::play::AssetSelectionEvent;
+use asset_selection_model::play::AssetSelectionEvent;
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;

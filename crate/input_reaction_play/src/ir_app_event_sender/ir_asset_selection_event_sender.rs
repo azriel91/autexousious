@@ -1,13 +1,13 @@
 use std::convert::TryFrom;
 
 use amethyst::ecs::{Entity, Join};
-use asset_model::{
-    config::{AssetSelectionEventCommand, AssetSwitch, AssetType},
-    loaded::AssetTypeMappings,
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
+use asset_selection_model::{
+    config::{AssetSelectionEventCommand, AssetSwitch},
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use log::{debug, warn};
 use object_type::ObjectType;
 use state_registry::StateId;

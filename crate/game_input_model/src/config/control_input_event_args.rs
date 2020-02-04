@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
-use crate::{ControlArgs, ControllerId};
+use crate::config::{ControlArgs, ControllerId};
 
 /// Parameters to the mapper.
 ///

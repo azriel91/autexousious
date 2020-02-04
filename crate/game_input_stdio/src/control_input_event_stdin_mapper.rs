@@ -2,10 +2,9 @@ use amethyst::{
     ecs::{Entities, Join, ReadStorage},
     Error,
 };
-use game_input::InputControlled;
 use game_input_model::{
-    AxisMoveEventData, ControlActionEventData, ControlArgs, ControlInputEvent,
-    ControlInputEventArgs,
+    config::{ControlArgs, ControlInputEventArgs},
+    play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled},
 };
 use stdio_spi::{MapperSystemData, StdinMapper};
 

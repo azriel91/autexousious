@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use character_model::config::CharacterSequenceName;
-    use game_input::ControllerInput;
+    use game_input_model::play::ControllerInput;
     use mirrored_model::play::Mirrored;
     use sequence_model::config::SequenceNameString;
 

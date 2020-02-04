@@ -26,7 +26,7 @@ use collision_play::{
     HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem, HittingEffectSystem,
 };
 use derive_new::new;
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use input_reaction_model::{
     config::BasicIrr,

@@ -7,7 +7,7 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use game_input::ControllerInput;
+    use game_input_model::play::ControllerInput;
     use kinematic_model::config::Position;
     use map_model::loaded::AssetMargins;
     use map_selection_model::MapSelection;

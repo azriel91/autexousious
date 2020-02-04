@@ -4,7 +4,7 @@ use amethyst::{
     input::{Axis, Button},
     winit::VirtualKeyCode,
 };
-use game_input_model::{ControllerId, InputConfig};
+use game_input_model::config::{ControllerId, InputConfig};
 use smallvec::SmallVec;
 
 /// Creates a map of `InputConfig` buttons to the player index that uses the button.

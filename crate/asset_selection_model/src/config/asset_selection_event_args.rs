@@ -1,4 +1,4 @@
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 

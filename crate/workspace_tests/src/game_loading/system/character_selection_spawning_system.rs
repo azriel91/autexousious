@@ -13,7 +13,7 @@ mod tests {
         loaded::{AssetId, AssetTypeMappings},
     };
     use character_selection_model::CharacterSelections;
-    use game_input::InputControlled;
+    use game_input_model::play::InputControlled;
     use game_model::play::GameEntities;
     use object_type::ObjectType;
     use team_model::play::{IndependentCounter, Team};

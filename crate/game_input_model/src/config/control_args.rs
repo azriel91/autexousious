@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 use strum_macros::EnumString;
 
-use crate::{Axis, ControlAction};
+use crate::config::{Axis, ControlAction};
 
 /// Parameters for control input.
 #[derive(Clone, Copy, Debug, Deserialize, EnumString, PartialEq, Serialize, StructOpt)]

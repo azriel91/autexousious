@@ -38,7 +38,7 @@ use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
     ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
 };
-use game_input_model::{ControlBindings, InputConfig};
+use game_input_model::config::{ControlBindings, InputConfig};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;

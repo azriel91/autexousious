@@ -8,17 +8,16 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::{
-    config::AssetType,
-    loaded::AssetTypeMappings,
-    play::{AssetSelection, AssetSelectionEvent},
-};
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
+use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
 use asset_selection_ui_model::play::{ApwMain, ApwPreview};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{InputControlled, SharedInputControlled};
-use game_input_model::ControllerId;
+use game_input_model::{
+    config::ControllerId,
+    play::{InputControlled, SharedInputControlled},
+};
 use log::error;
 
 use self::{character_preview_spawn::CharacterPreviewSpawn, map_preview_spawn::MapPreviewSpawn};

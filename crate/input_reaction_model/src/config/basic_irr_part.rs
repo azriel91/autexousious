@@ -1,6 +1,8 @@
 use approx::{relative_eq, relative_ne};
-use game_input::ControllerInput;
-use game_input_model::config::{InputDirection, InputDirectionZ};
+use game_input_model::{
+    config::{InputDirection, InputDirectionZ},
+    play::ControllerInput,
+};
 use mirrored_model::play::Mirrored;
 use serde::{Deserialize, Serialize};
 

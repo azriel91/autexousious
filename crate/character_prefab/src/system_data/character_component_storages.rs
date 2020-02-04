@@ -8,7 +8,7 @@ use charge_model::{
     play::{ChargeRetention, ChargeTrackerClock},
 };
 use derivative::Derivative;
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use map_model::play::MapBounded;
 use object_model::{config::Mass, play::HealthPoints};
 use object_status_model::config::StunPoints;

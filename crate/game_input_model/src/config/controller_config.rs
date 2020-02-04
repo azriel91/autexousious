@@ -5,7 +5,7 @@ use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::{Axis, ControlAction};
+use crate::config::{Axis, ControlAction};
 
 /// Structure for each controller's configuration.
 #[derive(Clone, Derivative, Default, PartialEq, Serialize, Deserialize, new)]

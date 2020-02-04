@@ -13,7 +13,7 @@ use amethyst::{
 use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use collision_loading::CollisionLoadingBundle;
-use game_input_model::ControlBindings;
+use game_input_model::config::ControlBindings;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;

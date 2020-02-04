@@ -2,7 +2,7 @@ use character_model::{
     config::{CharacterSequenceName, CharacterSequenceNameString},
     play::RunCounter,
 };
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
 use sequence_model::config::SequenceNameString;

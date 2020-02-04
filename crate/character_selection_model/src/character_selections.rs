@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use asset_model::loaded::AssetId;
 use derive_new::new;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 
 /// Stores the selected characters for each controller.
 ///

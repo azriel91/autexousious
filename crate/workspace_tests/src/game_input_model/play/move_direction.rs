@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod tests {
     use amethyst::ecs::{Builder, Entity, World, WorldExt};
-    use game_input_model::{play::MoveDirection, Axis, AxisMoveEventData};
+    use game_input_model::{
+        config::Axis,
+        play::{AxisMoveEventData, MoveDirection},
+    };
 
     macro_rules! test {
         ($test_name:ident, $axis:expr, $value:expr, $expected:expr) => {

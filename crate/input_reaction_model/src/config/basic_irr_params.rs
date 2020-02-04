@@ -1,4 +1,4 @@
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use mirrored_model::play::Mirrored;
 
 /// Parameters to check if a `BasicIrr` is met.

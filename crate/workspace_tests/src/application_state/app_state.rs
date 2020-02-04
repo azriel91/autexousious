@@ -11,7 +11,7 @@ mod tests {
         DataInit, GameData, GameDataBuilder, State, StateData, Trans,
     };
     use application_event::AppEvent;
-    use asset_model::play::AssetSelectionEvent;
+    use asset_selection_model::play::AssetSelectionEvent;
     use rayon::ThreadPoolBuilder;
 
     use application_state::{AppState, AppStateBuilder, HookFn, HookableFn};
