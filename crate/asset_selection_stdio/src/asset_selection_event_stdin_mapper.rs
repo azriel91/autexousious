@@ -1,12 +1,12 @@
 use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
-use asset_model::{
-    config::{AssetSelectionEventArgs, AssetSlug},
-    loaded::AssetIdMappings,
+use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
+use asset_selection_model::{
+    config::AssetSelectionEventArgs,
     play::{AssetSelection, AssetSelectionEvent},
 };
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 
 /// Magic string to indicate `random` selection.

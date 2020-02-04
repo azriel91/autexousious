@@ -21,7 +21,7 @@ use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
-use game_input_model::ControlBindings;
+use game_input_model::config::ControlBindings;
 use game_loading::GameLoadingState;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;

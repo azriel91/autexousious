@@ -2,7 +2,8 @@ use amethyst::{
     ecs::{storage::VecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{loaded::AssetId, play::AssetSelection, ItemComponent};
+use asset_model::{loaded::AssetId, ItemComponent};
+use asset_selection_model::play::AssetSelection;
 use derivative::Derivative;
 use derive_new::new;
 use ui_model_spi::play::WidgetStatus;

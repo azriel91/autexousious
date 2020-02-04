@@ -1,8 +1,8 @@
 use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel, winit::Event};
-use asset_model::play::AssetSelectionEvent;
+use asset_selection_model::play::AssetSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
-use game_input_model::ControlInputEvent;
+use game_input_model::play::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use stdio_command_model::StdioCommandEvent;

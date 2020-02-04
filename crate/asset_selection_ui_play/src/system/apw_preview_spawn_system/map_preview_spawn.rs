@@ -4,7 +4,8 @@ use amethyst::{
     ecs::{Entity, Read, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::{config::AssetType, loaded::AssetId, play::AssetSelection};
+use asset_model::{config::AssetType, loaded::AssetId};
+use asset_selection_model::play::AssetSelection;
 use asset_selection_ui_model::play::ApwPreview;
 use asset_ui_model::{config::Dimensions, play::AssetSelectionParent};
 use camera_model::play::CameraZoomDimensions;

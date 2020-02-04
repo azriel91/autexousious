@@ -5,7 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input::ControllerInput;
+use game_input_model::play::ControllerInput;
 use kinematic_model::config::{
     ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
     ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Velocity,

@@ -2,7 +2,7 @@
 mod test {
     use amethyst::Error;
     use amethyst_test::AmethystApplication;
-    use game_input_model::ControlBindings;
+    use game_input_model::config::ControlBindings;
 
     use game_play::GamePlayBundle;
 

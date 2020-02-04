@@ -1,5 +1,5 @@
 use amethyst::ecs::Entity;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 
 use crate::play::AssetSelection;
 

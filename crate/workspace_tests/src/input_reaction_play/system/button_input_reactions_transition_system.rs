@@ -14,8 +14,7 @@ mod tests {
     use application::IoUtils;
     use application_test_support::AutexousiousApplication;
     use derivative::Derivative;
-    use game_input::ButtonInputControlled;
-    use game_input_model::ControlBindings;
+    use game_input_model::{config::ControlBindings, play::ButtonInputControlled};
     use input_reaction_loading::{IrsLoader, IrsLoaderParams};
     use input_reaction_model::{
         config::BasicIrr,

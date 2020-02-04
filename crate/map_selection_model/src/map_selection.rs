@@ -1,5 +1,6 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
-use asset_model::{loaded::AssetId, play::AssetSelection};
+use asset_model::loaded::AssetId;
+use asset_selection_model::play::AssetSelection;
 use derivative::Derivative;
 
 /// Selected map ID or random for a particular controller.

@@ -17,7 +17,7 @@ mod walk;
 #[cfg(test)]
 mod test {
     use character_model::{config::CharacterSequenceName, play::RunCounter};
-    use game_input::ControllerInput;
+    use game_input_model::play::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use mirrored_model::play::Mirrored;
     use object_model::play::{Grounding, HealthPoints};

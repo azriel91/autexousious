@@ -10,8 +10,8 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
-        ControlInputEvent,
+        config::{Axis, ControlAction, ControlBindings},
+        play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent},
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};

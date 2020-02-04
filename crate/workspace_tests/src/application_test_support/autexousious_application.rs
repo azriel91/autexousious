@@ -2,7 +2,7 @@
 mod test {
     use amethyst::{ecs::WorldExt, input::InputHandler, ui::Interactable, Error};
     use asset_model::{config::AssetType, loaded::AssetTypeMappings};
-    use game_input_model::ControlBindings;
+    use game_input_model::config::ControlBindings;
     use game_model::play::GameEntities;
     use object_type::ObjectType;
     use strum::IntoEnumIterator;

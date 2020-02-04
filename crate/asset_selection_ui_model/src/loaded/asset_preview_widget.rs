@@ -8,7 +8,7 @@ use asset_model::{loaded::ItemId, play::AssetWorld, ItemComponent};
 use asset_ui_model::play::AssetSelectionParent;
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{InputControlled, SharedInputControlled};
+use game_input_model::play::{InputControlled, SharedInputControlled};
 use log::error;
 use parent_model::play::ParentEntity;
 

@@ -11,8 +11,8 @@ mod tests {
     use asset_model::{
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
-        play::{AssetSelection, AssetSelectionEvent},
     };
+    use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
     use map_selection_model::MapSelection;
 
     use map_selection::{MapSelectionStatus, MapSelectionSystem, MapSelectionSystemData};

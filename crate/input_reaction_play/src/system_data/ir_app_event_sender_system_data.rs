@@ -3,15 +3,13 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
-use asset_model::{
-    loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
-    play::{AssetSelection, AssetSelectionEvent},
-};
+use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
+use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
 use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
 use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
-use game_input::InputControlled;
+use game_input_model::play::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use state_registry::StateId;

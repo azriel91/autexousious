@@ -3,12 +3,14 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::play::{AssetSelection, AssetSelectionEvent};
+use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
 use asset_ui_model::{config::AswPortraitName, loaded::AswPortraits, play::AssetSelectionParent};
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{InputControlled, SharedInputControlled};
-use game_input_model::ControllerId;
+use game_input_model::{
+    config::ControllerId,
+    play::{InputControlled, SharedInputControlled},
+};
 use sequence_model::loaded::SequenceId;
 
 /// Switches `AssetSelectionWidget` portrait entity when receving a `AssetSelectionEvent`.

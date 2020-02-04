@@ -7,7 +7,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use control_settings_loading::KeyboardUiGen;
-use game_input::{ButtonInputControlled, SharedInputControlled};
+use game_input_model::play::{ButtonInputControlled, SharedInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,

@@ -8,7 +8,7 @@ use amethyst::{
 use camera_model::play::CameraTracked;
 use derivative::Derivative;
 use derive_new::new;
-use game_input::InputControlled;
+use game_input_model::play::InputControlled;
 use game_play_hud::{CpBarPrefab, HpBarPrefab};
 use game_play_model::GamePlayEntity;
 use kinematic_model::config::Position;

@@ -1,4 +1,4 @@
-use crate::{AxisMoveEventData, ControlActionEventData};
+use crate::play::{AxisMoveEventData, ControlActionEventData};
 
 /// Event indicating a change in `ControlInput`.
 #[derive(Clone, Copy, Debug, PartialEq)]

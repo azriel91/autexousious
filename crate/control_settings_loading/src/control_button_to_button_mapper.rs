@@ -2,7 +2,10 @@ use amethyst::{
     input::{Axis as InputAxis, Button},
     winit::VirtualKeyCode,
 };
-use game_input_model::{Axis, ControlAxis, ControlButton, InputConfig};
+use game_input_model::{
+    config::{Axis, InputConfig},
+    loaded::{ControlAxis, ControlButton},
+};
 use smallvec::SmallVec;
 
 /// Creates a map of `InputConfig` buttons to the logical control button.

@@ -14,13 +14,16 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input_model::{
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
-        ControlInputEvent, ControllerConfig, InputConfig,
+        config::{Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig},
+        play::{
+            AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
+            SharedInputControlled,
+        },
     };
     use hamcrest::prelude::*;
     use indexmap::IndexMap;
 
-    use game_input::{InputControlled, InputToControlInputSystem, SharedInputControlled};
+    use game_input::InputToControlInputSystem;
 
     const ACTION_JUMP: VirtualKeyCode = VirtualKeyCode::Key1;
     const AXIS_POSITIVE: VirtualKeyCode = VirtualKeyCode::D;

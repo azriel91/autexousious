@@ -8,7 +8,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use game_input::ControllerInput;
+    use game_input_model::play::ControllerInput;
     use kinematic_model::config::{
         ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
         ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Velocity,

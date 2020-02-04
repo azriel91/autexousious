@@ -6,7 +6,10 @@ use amethyst::{
 use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+use game_input_model::{
+    config::ControlAction,
+    play::{ControlActionEventData, ControlInputEvent},
+};
 
 /// Default number of ticks to wait before beginning to charge.
 pub const CHARGE_DELAY_DEFAULT: usize = 10;

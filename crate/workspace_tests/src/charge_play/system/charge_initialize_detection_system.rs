@@ -7,7 +7,10 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
-    use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+    use game_input_model::{
+        config::ControlAction,
+        play::{ControlActionEventData, ControlInputEvent},
+    };
 
     use charge_play::{ChargeInitializeDetectionSystem, CHARGE_DELAY_DEFAULT};
 

@@ -13,7 +13,7 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
-use game_input_model::InputConfig;
+use game_input_model::config::InputConfig;
 use input_reaction_model::loaded::{InputReaction, InputReactions, InputReactionsSequence};
 use kinematic_model::loaded::ObjectAccelerationSequence;
 use map_model::loaded::{AssetMapBounds, AssetMargins};

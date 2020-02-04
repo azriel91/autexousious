@@ -3,7 +3,7 @@ mod ir_asset_selection_event_sender;
 use amethyst::ecs::{Entity, ReadStorage};
 use asset_model::loaded::{AssetId, AssetIdMappings};
 use control_settings_model::ControlSettingsEvent;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;

@@ -10,7 +10,7 @@ mod tests {
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
-    use game_input::ControllerInput;
+    use game_input_model::play::ControllerInput;
     use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent, GamePlayStatus};
     use tracker::Last;
 

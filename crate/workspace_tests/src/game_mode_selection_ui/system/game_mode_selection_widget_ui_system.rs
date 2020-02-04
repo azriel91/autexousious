@@ -11,7 +11,7 @@ mod tests {
     };
     use application_menu::MenuItem;
     use application_test_support::AutexousiousApplication;
-    use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
+    use game_input_model::config::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
     use state_registry::StateId;

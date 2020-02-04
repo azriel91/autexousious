@@ -15,10 +15,10 @@ mod tests {
     use asset_model::{
         config::{AssetSlug, AssetType},
         loaded::{AssetId, AssetTypeMappings},
-        play::{AssetSelection, AssetSelectionEvent},
     };
+    use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
     use character_selection_model::CharacterSelections;
-    use game_input_model::ControlBindings;
+    use game_input_model::config::ControlBindings;
     use object_type::ObjectType;
 
     use character_selection::CharacterSelectionSystem;

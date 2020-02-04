@@ -16,8 +16,10 @@ use asset_ui_model::{
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
 use chase_model::play::ChaseModeStick;
-use game_input::{InputControlled, SharedInputControlled};
-use game_input_model::InputConfig;
+use game_input_model::{
+    config::InputConfig,
+    play::{InputControlled, SharedInputControlled},
+};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use map_selection_ui_model::config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName};

@@ -4,10 +4,9 @@ use amethyst::{
 };
 use derive_new::new;
 use game_input_model::{
-    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    config::{Axis, ControlAction},
+    play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput},
 };
-
-use crate::ControllerInput;
 
 /// Updates `ControllerInput` based on input events.
 #[derive(Debug, Default, new)]
