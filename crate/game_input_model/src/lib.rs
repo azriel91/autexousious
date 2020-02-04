@@ -13,35 +13,6 @@
 //! * Attack
 //! * Special
 
-pub use crate::{
-    axis::Axis,
-    control_action::ControlAction,
-    control_args::ControlArgs,
-    control_axis::ControlAxis,
-    control_bindings::ControlBindings,
-    control_button::ControlButton,
-    control_input_event_args::ControlInputEventArgs,
-    controller_config::ControllerConfig,
-    controller_id::ControllerId,
-    event::{AxisMoveEventData, ControlActionEventData, ControlInputEvent},
-    input_config::InputConfig,
-    player_action_control::PlayerActionControl,
-    player_axis_control::PlayerAxisControl,
-};
-
 pub mod config;
+pub mod loaded;
 pub mod play;
-
-mod axis;
-mod control_action;
-mod control_args;
-mod control_axis;
-mod control_bindings;
-mod control_button;
-mod control_input_event_args;
-mod controller_config;
-mod controller_id;
-mod event;
-mod input_config;
-mod player_action_control;
-mod player_axis_control;

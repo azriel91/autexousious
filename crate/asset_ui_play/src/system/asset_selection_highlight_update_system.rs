@@ -10,7 +10,7 @@ use asset_ui_model::play::{
 use chase_model::play::TargetObject;
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::{play::MoveDirection, AxisMoveEventData, ControlInputEvent};
+use game_input_model::play::{AxisMoveEventData, ControlInputEvent, MoveDirection};
 use ui_model_spi::play::{Siblings, SiblingsVertical};
 
 /// Updates the `AssetSelectionHighlight` when receving a `ControlInputEvent`.

@@ -8,8 +8,8 @@ use asset_ui_model::{config::AswPortraitName, loaded::AswPortraits, play::AssetS
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
+    config::ControllerId,
     play::{InputControlled, SharedInputControlled},
-    ControllerId,
 };
 use sequence_model::loaded::SequenceId;
 

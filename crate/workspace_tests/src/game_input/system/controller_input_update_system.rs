@@ -9,8 +9,8 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        play::ControllerInput, Axis, AxisMoveEventData, ControlAction, ControlActionEventData,
-        ControlBindings, ControlInputEvent,
+        config::{Axis, ControlAction, ControlBindings},
+        play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput},
     };
 
     use game_input::ControllerInputUpdateSystem;

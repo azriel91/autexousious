@@ -3,19 +3,21 @@ use std::fmt;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::{Axis, ControllerId};
+use crate::config::{ControlAction, ControllerId};
 
-/// Axis control for a player.
+/// Action control for a player.
+///
+/// This defines the control buttons for the actions.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
-pub struct PlayerAxisControl {
+pub struct PlayerActionControl {
     /// Control ID of the player.
     pub player: ControllerId,
     /// Game coordinate axis that this controls.
-    pub axis: Axis,
+    pub action: ControlAction,
 }
 
-impl fmt::Display for PlayerAxisControl {
+impl fmt::Display for PlayerActionControl {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Player {} {} axis", self.player, self.axis)
+        write!(f, "Player {} {}", self.player, self.action)
     }
 }

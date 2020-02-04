@@ -1,6 +1,6 @@
 use std::{error, fmt};
 
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 
 /// Errors when mapping events from the `game_input` crates.
 #[derive(Clone, Debug, PartialEq)]

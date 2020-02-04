@@ -7,9 +7,11 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    play::{InputControlled, SharedInputControlled},
-    AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
-    PlayerActionControl, PlayerAxisControl,
+    config::{ControlBindings, InputConfig, PlayerActionControl, PlayerAxisControl},
+    play::{
+        AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
+        SharedInputControlled,
+    },
 };
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.

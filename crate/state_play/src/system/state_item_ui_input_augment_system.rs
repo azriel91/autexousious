@@ -6,8 +6,8 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
+    config::{ControllerId, InputConfig},
     play::{ControllerInput, InputControlled},
-    ControllerId, InputConfig,
 };
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};

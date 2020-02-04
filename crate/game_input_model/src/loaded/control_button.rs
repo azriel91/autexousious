@@ -1,4 +1,4 @@
-use crate::{ControlAction, ControlAxis};
+use crate::{config::ControlAction, loaded::ControlAxis};
 
 /// Enum representing all possible control buttons.
 ///

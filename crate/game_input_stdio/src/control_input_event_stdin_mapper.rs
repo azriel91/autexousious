@@ -3,8 +3,8 @@ use amethyst::{
     Error,
 };
 use game_input_model::{
-    play::InputControlled, AxisMoveEventData, ControlActionEventData, ControlArgs,
-    ControlInputEvent, ControlInputEventArgs,
+    config::{ControlArgs, ControlInputEventArgs},
+    play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled},
 };
 use stdio_spi::{MapperSystemData, StdinMapper};
 

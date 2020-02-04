@@ -19,7 +19,7 @@ use character_selection_ui_model::config::{
     CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
 };
 use chase_model::play::ChaseModeStick;
-use game_input_model::{play::InputControlled, InputConfig};
+use game_input_model::{config::InputConfig, play::InputControlled};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use object_type::ObjectType;

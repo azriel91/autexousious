@@ -6,8 +6,8 @@ mod tests {
     };
     use application_test_support::AutexousiousApplication;
     use game_input_model::{
-        play::InputControlled, Axis, AxisMoveEventData, ControlAction, ControlActionEventData,
-        ControlArgs, ControlInputEvent, ControlInputEventArgs,
+        config::{Axis, ControlAction, ControlArgs, ControlInputEventArgs},
+        play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled},
     };
     use stdio_spi::StdinMapper;
 

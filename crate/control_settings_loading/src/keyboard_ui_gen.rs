@@ -3,7 +3,10 @@ use control_settings_model::{
     config::{ControlButtonLabel, ControlButtonLabels, KeyboardSettings},
     loaded::PlayerControlButtonsLabels,
 };
-use game_input_model::{Axis, ControlAction, ControlButton, InputConfig};
+use game_input_model::{
+    config::{Axis, ControlAction, InputConfig},
+    loaded::ControlButton,
+};
 use indexmap::IndexMap;
 use log::error;
 use sprite_model::config::Scale;

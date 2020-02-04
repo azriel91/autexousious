@@ -8,7 +8,8 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    config::{Axis, ControlAction},
+    play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent},
 };
 use log::debug;
 use ui_model_spi::play::{Siblings, WidgetStatus};

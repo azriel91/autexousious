@@ -6,7 +6,7 @@ use asset_selection_model::{
     config::AssetSelectionEventArgs,
     play::{AssetSelection, AssetSelectionEvent},
 };
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 
 /// Magic string to indicate `random` selection.

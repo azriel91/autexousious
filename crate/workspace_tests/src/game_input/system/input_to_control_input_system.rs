@@ -14,9 +14,11 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input_model::{
-        play::{InputControlled, SharedInputControlled},
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
-        ControlInputEvent, ControllerConfig, InputConfig,
+        config::{Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig},
+        play::{
+            AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
+            SharedInputControlled,
+        },
     };
     use hamcrest::prelude::*;
     use indexmap::IndexMap;

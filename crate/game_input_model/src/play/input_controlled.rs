@@ -7,7 +7,7 @@ use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
 
-use crate::ControllerId;
+use crate::config::ControllerId;
 
 /// Marks a game input controlled entity.
 ///

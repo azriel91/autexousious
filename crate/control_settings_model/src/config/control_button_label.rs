@@ -1,5 +1,5 @@
 use derive_new::new;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
 use ui_label_model::config::UiSpriteLabel;

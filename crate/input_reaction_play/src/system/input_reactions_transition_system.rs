@@ -10,8 +10,11 @@ use approx::{relative_eq, relative_ne};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    play::{ControllerInput, InputControlled},
-    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    config::{Axis, ControlAction},
+    play::{
+        AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput,
+        InputControlled,
+    },
 };
 use input_reaction_model::{
     config::{InputReactionAppEvents, InputReactionRequirement},

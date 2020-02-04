@@ -1,14 +1,16 @@
 use amethyst::ecs::Entity;
 
-use crate::{ControlAction, ControllerId};
+use crate::config::{Axis, ControllerId};
 
-/// `ControlAction` controller event data.
+/// `AxisMove` controller event data.
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct ControlActionEventData {
+pub struct AxisMoveEventData {
     /// `ControllerId` that the input originated from.
     pub controller_id: ControllerId,
     /// `Entity` this control event applies to.
     pub entity: Entity,
-    /// `ControlAction` whose value changed.
-    pub control_action: ControlAction,
+    /// `Axis` whose value changed.
+    pub axis: Axis,
+    /// New value for the axis input.
+    pub value: f32,
 }

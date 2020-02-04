@@ -7,7 +7,7 @@ use asset_selection_model::{
     play::{AssetSelection, AssetSelectionEvent},
 };
 use asset_ui_model::play::AssetSelectionStatus;
-use game_input_model::ControllerId;
+use game_input_model::config::ControllerId;
 use log::{debug, warn};
 use object_type::ObjectType;
 use state_registry::StateId;

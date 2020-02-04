@@ -19,7 +19,7 @@ mod tests {
         loaded::{CharacterInputReactions, CharacterIrs, CharacterIrsHandle},
     };
     use charge_model::config::ChargePoints;
-    use game_input_model::{config::InputDirection, Axis, ControlAction};
+    use game_input_model::config::{Axis, ControlAction, InputDirection};
     use input_reaction_model::{
         config::{InputReactionAppEvent, InputReactionAppEvents},
         loaded::{

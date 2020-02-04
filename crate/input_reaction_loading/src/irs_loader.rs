@@ -1,7 +1,7 @@
 use std::{convert::AsRef, default::Default, marker::PhantomData};
 
 use amethyst::assets::{AssetStorage, Loader};
-use game_input_model::{Axis, ControlAction};
+use game_input_model::config::{Axis, ControlAction};
 use input_reaction_model::{
     config::{self, InputReactionAppEvents, InputReactionSingle},
     loaded::{

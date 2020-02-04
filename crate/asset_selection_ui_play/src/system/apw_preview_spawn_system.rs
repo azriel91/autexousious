@@ -15,8 +15,8 @@ use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionParent};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
+    config::ControllerId,
     play::{InputControlled, SharedInputControlled},
-    ControllerId,
 };
 use log::error;
 

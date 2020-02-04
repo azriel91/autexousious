@@ -8,8 +8,8 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
+        config::{ControlBindings, ControllerId},
         play::{ControllerInput, InputControlled, SharedInputControlled},
-        ControlBindings, ControllerId,
     };
 
     use game_input::SharedControllerInputUpdateSystem;

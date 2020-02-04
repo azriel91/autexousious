@@ -23,8 +23,11 @@ mod tests {
         play::{ChargeTrackerClock, ChargeUseEvent},
     };
     use game_input_model::{
-        play::{ControllerInput, InputControlled},
-        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        config::{Axis, ControlAction},
+        play::{
+            AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput,
+            InputControlled,
+        },
     };
     use input_reaction_loading::{IrsLoader, IrsLoaderParams};
     use mirrored_model::play::Mirrored;

@@ -1,6 +1,6 @@
 use amethyst::input::BindingTypes;
 
-use crate::{PlayerActionControl, PlayerAxisControl};
+use crate::config::{PlayerActionControl, PlayerAxisControl};
 
 /// Type used for Amethyst input bindings.
 #[derive(Debug)]

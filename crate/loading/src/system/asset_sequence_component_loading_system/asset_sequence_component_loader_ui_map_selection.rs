@@ -17,8 +17,8 @@ use asset_ui_model::{
 };
 use chase_model::play::ChaseModeStick;
 use game_input_model::{
+    config::InputConfig,
     play::{InputControlled, SharedInputControlled},
-    InputConfig,
 };
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};

@@ -4,8 +4,8 @@ use amethyst::{
 };
 use derive_new::new;
 use game_input_model::{
-    play::ControllerInput, Axis, AxisMoveEventData, ControlAction, ControlActionEventData,
-    ControlInputEvent,
+    config::{Axis, ControlAction},
+    play::{AxisMoveEventData, ControlActionEventData, ControlInputEvent, ControllerInput},
 };
 
 /// Updates `ControllerInput` based on input events.

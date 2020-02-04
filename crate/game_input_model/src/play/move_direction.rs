@@ -1,4 +1,4 @@
-use crate::{Axis, AxisMoveEventData};
+use crate::{config::Axis, play::AxisMoveEventData};
 
 /// Directional input variants.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
