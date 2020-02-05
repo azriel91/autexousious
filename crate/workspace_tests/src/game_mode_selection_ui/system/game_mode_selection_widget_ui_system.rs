@@ -23,7 +23,7 @@ mod tests {
     };
 
     // See `assets_test/assets/test/ui/game_mode_selection/ui.yaml`.
-    const GAME_MODE_MENU_ITEM_COUNT: usize = 3;
+    const GAME_MODE_MENU_ITEM_COUNT: usize = 4;
 
     #[test]
     fn initializes_ui_when_widget_statuses_zero() -> Result<(), Error> {
@@ -151,6 +151,26 @@ mod tests {
                     if let Some(next) = siblings.next.as_ref() {
                         let next_menu_item = menu_items.get(*next);
                         assert_eq!(
+                            Some(MenuItem::new(GameModeIndex::NetworkPlay)).as_ref(),
+                            next_menu_item
+                        );
+                    } else {
+                        panic!("Expected `StartGame` to have `next` sibling.")
+                    }
+                }
+                GameModeIndex::NetworkPlay => {
+                    if let Some(previous) = siblings.previous.as_ref() {
+                        let previous_menu_item = menu_items.get(*previous);
+                        assert_eq!(
+                            Some(MenuItem::new(GameModeIndex::StartGame)).as_ref(),
+                            previous_menu_item
+                        );
+                    } else {
+                        panic!("Expected `NetworkPlay` to have `previous` sibling.")
+                    }
+                    if let Some(next) = siblings.next.as_ref() {
+                        let next_menu_item = menu_items.get(*next);
+                        assert_eq!(
                             Some(MenuItem::new(GameModeIndex::ControlSettings)).as_ref(),
                             next_menu_item
                         );
@@ -162,7 +182,7 @@ mod tests {
                     if let Some(previous) = siblings.previous.as_ref() {
                         let previous_menu_item = menu_items.get(*previous);
                         assert_eq!(
-                            Some(MenuItem::new(GameModeIndex::StartGame)).as_ref(),
+                            Some(MenuItem::new(GameModeIndex::NetworkPlay)).as_ref(),
                             previous_menu_item
                         );
                     } else {

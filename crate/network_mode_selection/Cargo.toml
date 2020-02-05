@@ -1,6 +1,6 @@
 [package]
-name = "game_mode_selection"
-version = "0.17.0"
+name = "network_mode_selection"
+version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -13,16 +13,10 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_event = { path = "../application_event" }
 application_menu = { path = "../application_menu" }
 application_state = { path = "../application_state" }
-character_selection = { path = "../character_selection" }
-control_settings = { path = "../control_settings" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-game_loading = { path = "../game_loading" }
-game_mode_selection_model = { path = "../game_mode_selection_model" }
-game_play = { path = "../game_play" }
+network_mode_selection_model = { path = "../network_mode_selection_model" }
 log = "0.4.8"
-map_selection = { path = "../map_selection" }
-network_mode_selection = { path = "../network_mode_selection" }
 state_registry = { path = "../state_registry" }
 
 [features]

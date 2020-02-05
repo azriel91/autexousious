@@ -2,8 +2,13 @@ menu:
   # First item is active by default. The sequence here should correspond to the active status.
   - index: "start_game"
     label: { position: { x: 20, y: 20, z: 0 }, text: "Start Game" }
-    position: { x: 300, y: 300, z: 10 }
+    position: { x: 300, y: 350, z: 10 }
     sprite: { sequence: "start_game_active" }
+
+  - index: "network_play"
+    label: { position: { x: 20, y: 20, z: 0 }, text: "Network Play" }
+    position: { x: 300, y: 300, z: 10 }
+    sprite: { sequence: "network_play_inactive" }
 
   - index: "control_settings"
     label: { position: { x: 20, y: 20, z: 0 }, text: "Control Settings" }
@@ -20,5 +25,6 @@ sequences:
     frames: []
   start_game_active: *empty_sequence
   start_game_selected: *empty_sequence
+  network_play_inactive: *empty_sequence
   control_settings_inactive: *empty_sequence
   exit_inactive: *empty_sequence

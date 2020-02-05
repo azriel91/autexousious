@@ -2313,6 +2313,7 @@ dependencies = [
  "game_play 0.17.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_selection 0.17.0",
+ "network_mode_selection 0.18.0",
  "state_registry 0.17.0",
 ]
 
@@ -3325,6 +3326,34 @@ dependencies = [
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "typenum 1.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "network_mode_selection"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_event 0.17.0",
+ "application_menu 0.17.0",
+ "application_state 0.17.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "network_mode_selection_model 0.18.0",
+ "state_registry 0.17.0",
+]
+
+[[package]]
+name = "network_mode_selection_model"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_menu 0.17.0",
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt-derive 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
 ]
 
 [[package]]
