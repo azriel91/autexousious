@@ -1,10 +1,14 @@
 use amethyst::{GameData, State, StateData, Trans};
 use application_event::AppEvent;
+use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
+use log::debug;
 use network_mode_selection_model::NetworkModeSelectionEntity;
 use state_registry::StateId;
+
+use crate::NetworkModeSelectionTrans;
 
 /// `State` where network mode selection takes place.
 ///
@@ -52,8 +56,19 @@ impl State<GameData<'static, 'static>, AppEvent> for NetworkModeSelectionStateDe
     fn handle_event(
         &mut self,
         _data: StateData<'_, GameData<'static, 'static>>,
-        _event: AppEvent,
+        event: AppEvent,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
-        Trans::None
+        if let AppEvent::NetworkModeSelection(network_mode_selection_event) = event {
+            debug!(
+                "Received network_mode_selection_event: {:?}",
+                network_mode_selection_event
+            );
+            match network_mode_selection_event {
+                MenuEvent::Select(idx) => NetworkModeSelectionTrans::trans(idx),
+                MenuEvent::Close => Trans::Pop,
+            }
+        } else {
+            Trans::None
+        }
     }
 }

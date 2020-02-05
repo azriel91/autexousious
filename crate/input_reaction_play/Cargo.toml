@@ -23,6 +23,7 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 log = "0.4.8"
+network_mode_selection_model = { path = "../network_mode_selection_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 state_registry = { path = "../state_registry" }
