@@ -5,9 +5,9 @@ use amethyst::{
     ecs::{DispatcherBuilder, World},
     Error,
 };
-use application_menu::MenuItemWidgetInputSystem;
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
+use menu_model::MenuItemWidgetInputSystem;
 
 use crate::{GameModeSelectionSfxSystem, GameModeSelectionWidgetUiSystem};
 

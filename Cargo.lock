@@ -462,20 +462,6 @@ name = "application_input"
 version = "0.17.0"
 
 [[package]]
-name = "application_menu"
-version = "0.17.0"
-dependencies = [
- "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
- "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input_model 0.17.0",
- "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
- "ui_model_spi 0.17.0",
-]
-
-[[package]]
 name = "application_robot"
 version = "0.17.0"
 dependencies = [
@@ -2303,7 +2289,6 @@ version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.17.0",
- "application_menu 0.17.0",
  "application_state 0.17.0",
  "character_selection 0.17.0",
  "control_settings 0.17.0",
@@ -2314,6 +2299,7 @@ dependencies = [
  "game_play 0.17.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_selection 0.17.0",
+ "menu_model 0.17.0",
  "network_mode_selection 0.18.0",
  "state_registry 0.17.0",
 ]
@@ -2323,7 +2309,7 @@ name = "game_mode_selection_model"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
- "application_menu 0.17.0",
+ "menu_model 0.17.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2337,9 +2323,9 @@ version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.17.0",
- "application_menu 0.17.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_selection_model 0.17.0",
+ "menu_model 0.17.0",
  "stdio_spi 0.17.0",
 ]
 
@@ -2348,13 +2334,13 @@ name = "game_mode_selection_ui"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
- "application_menu 0.17.0",
  "application_ui 0.17.0",
  "asset_model 0.17.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_selection_model 0.17.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "menu_model 0.17.0",
  "shrev_support 0.17.0",
  "state_registry 0.17.0",
  "ui_audio_model 0.17.0",
@@ -3247,6 +3233,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "menu_model"
+version = "0.17.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input_model 0.17.0",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
+ "ui_model_spi 0.17.0",
+]
+
+[[package]]
 name = "minimp3"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3337,11 +3337,11 @@ version = "0.18.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.17.0",
- "application_menu 0.17.0",
  "application_state 0.17.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "menu_model 0.17.0",
  "network_mode_selection_model 0.18.0",
  "state_registry 0.17.0",
 ]
@@ -3351,7 +3351,7 @@ name = "network_mode_selection_model"
 version = "0.18.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
- "application_menu 0.17.0",
+ "menu_model 0.17.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5604,12 +5604,12 @@ name = "ui_menu_item_model"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
- "application_menu 0.17.0",
  "asset_model 0.17.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "kinematic_model 0.17.0",
+ "menu_model 0.17.0",
  "sequence_model 0.17.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5953,7 +5953,6 @@ dependencies = [
  "application 0.17.0",
  "application_event 0.17.0",
  "application_input 0.17.0",
- "application_menu 0.17.0",
  "application_robot 0.17.0",
  "application_state 0.17.0",
  "application_test_support 0.17.0",
@@ -6034,6 +6033,7 @@ dependencies = [
  "map_selection 0.17.0",
  "map_selection_model 0.17.0",
  "map_selection_ui_model 0.17.0",
+ "menu_model 0.17.0",
  "mirrored_model 0.17.0",
  "object_loading 0.17.0",
  "object_model 0.17.0",

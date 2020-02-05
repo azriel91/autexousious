@@ -17,7 +17,7 @@ mod tests {
     use strum_macros::{Display, EnumIter, EnumString};
     use ui_model_spi::play::{Siblings, WidgetStatus};
 
-    use application_menu::{
+    use menu_model::{
         MenuEvent, MenuItem, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
     };
 

@@ -4,10 +4,10 @@ use amethyst::{
     ecs::{storage::DenseVecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use application_menu::MenuItem;
 use asset_model::ItemComponent;
 use derivative::Derivative;
 use derive_new::new;
+use menu_model::MenuItem;
 use ui_model_spi::play::WidgetStatus;
 
 /// Defines a UI menu item.

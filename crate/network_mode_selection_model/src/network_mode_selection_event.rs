@@ -1,4 +1,4 @@
-use application_menu::MenuEvent;
+use menu_model::MenuEvent;
 
 use crate::NetworkModeIndex;
 
