@@ -122,8 +122,6 @@ mod map_selection;
 #[cfg(test)]
 mod map_selection_ui_model;
 #[cfg(test)]
-mod menu_model;
-#[cfg(test)]
 mod object_loading;
 #[cfg(test)]
 mod object_model;
