@@ -54,17 +54,17 @@ use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
-    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
 };
 use state_registry::StateId;
-use stdio_command_stdio::StdioCommandStdioBundle;
+use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle};
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
+use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -157,9 +157,19 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
+                UiActiveWidgetUpdateSystem::new(),
+                any::type_name::<UiActiveWidgetUpdateSystem>(),
+                &[any::type_name::<StdioCommandProcessingSystem>()],
+            )
+            .with(
+                UiTextColourUpdateSystem::new(),
+                any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with(
                 StateIdEventSystem::new(),
                 any::type_name::<StateIdEventSystem>(),
-                &[],
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with(
                 StateCameraResetSystem::new(),
@@ -177,11 +187,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())?
-            .with(
-                StateItemUiRectifySystem::new(),
-                any::type_name::<StateItemUiRectifySystem>(),
-                &[],
-            )
             .with(
                 StateItemUiInputAugmentSystem::new(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),

@@ -1,7 +1,6 @@
 use amethyst::{
     ecs::{World, WriteStorage},
     shred::{ResourceId, SystemData},
-    ui::UiText,
 };
 use derivative::Derivative;
 use ui_model_spi::play::{Siblings, WidgetStatus};
@@ -16,7 +15,4 @@ pub struct UiRectifySystemData<'s> {
     /// `Siblings` components.
     #[derivative(Debug = "ignore")]
     pub siblingses: WriteStorage<'s, Siblings>,
-    /// `UiText` components.
-    #[derivative(Debug = "ignore")]
-    pub ui_texts: WriteStorage<'s, UiText>,
 }

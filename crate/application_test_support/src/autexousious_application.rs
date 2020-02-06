@@ -32,13 +32,13 @@ use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
-    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
 };
 use state_registry::StateId;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
+use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem};
 
 use crate::{AssetQueries, SetupFunction};
 
@@ -114,6 +114,11 @@ impl AutexousiousApplication {
                 any::type_name::<CharacterSelectionSystem>(),
                 &[],
             )
+            .with_system(
+                UiActiveWidgetUpdateSystem::new(),
+                any::type_name::<UiActiveWidgetUpdateSystem>(),
+                &[],
+            )
             .with_bundle(AssetPlayBundle::new())
             .with_state(|| LoadingState::new(PopState))
     }
@@ -158,9 +163,19 @@ impl AutexousiousApplication {
                 &[],
             )
             .with_system(
+                UiActiveWidgetUpdateSystem::new(),
+                any::type_name::<UiActiveWidgetUpdateSystem>(),
+                &[],
+            )
+            .with_system(
+                UiTextColourUpdateSystem::new(),
+                any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with_system(
                 StateIdEventSystem::new(),
                 any::type_name::<StateIdEventSystem>(),
-                &[],
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with_system(
                 StateCameraResetSystem::new(),
@@ -178,11 +193,6 @@ impl AutexousiousApplication {
                 &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())
-            .with_system(
-                StateItemUiRectifySystem::new(),
-                any::type_name::<StateItemUiRectifySystem>(),
-                &[],
-            )
             .with_system(
                 StateItemUiInputAugmentSystem::new(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),

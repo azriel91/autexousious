@@ -462,6 +462,15 @@ name = "application_input"
 version = "0.17.0"
 
 [[package]]
+name = "application_menu"
+version = "0.1.0"
+dependencies = [
+ "game_mode_selection_model 0.17.0",
+ "network_mode_selection_model 0.18.0",
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "application_robot"
 version = "0.17.0"
 dependencies = [
@@ -528,6 +537,7 @@ dependencies = [
  "tracker 0.17.0",
  "ui_audio_loading 0.17.0",
  "ui_loading 0.17.0",
+ "ui_play 0.18.0",
 ]
 
 [[package]]
@@ -655,6 +665,7 @@ name = "asset_play"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_menu 0.1.0",
  "asset_model 0.17.0",
  "asset_selection_ui_model 0.17.0",
  "asset_ui_model 0.17.0",
@@ -665,7 +676,6 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.17.0",
- "game_mode_selection_model 0.17.0",
  "input_reaction_model 0.17.0",
  "kinematic_model 0.17.0",
  "mirrored_model 0.17.0",
@@ -2950,6 +2960,7 @@ dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.17.0",
  "application_event 0.17.0",
+ "application_menu 0.1.0",
  "application_state 0.17.0",
  "application_ui 0.17.0",
  "asset_loading 0.17.0",
@@ -2972,7 +2983,6 @@ dependencies = [
  "energy_model 0.17.0",
  "game_input 0.17.0",
  "game_input_model 0.17.0",
- "game_mode_selection_model 0.17.0",
  "humantime 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "input_reaction_loading 0.17.0",
  "input_reaction_model 0.17.0",
@@ -5588,6 +5598,7 @@ dependencies = [
  "sprite_model 0.17.0",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]
@@ -5610,12 +5621,14 @@ dependencies = [
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "kinematic_model 0.17.0",
  "menu_model 0.17.0",
+ "parent_model 0.17.0",
  "sequence_model 0.17.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
  "ui_label_model 0.17.0",
  "ui_model_spi 0.17.0",
+ "ui_model_spi_play 0.1.0",
 ]
 
 [[package]]
@@ -5623,13 +5636,13 @@ name = "ui_model"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_menu 0.1.0",
  "asset_derive 0.17.0",
  "asset_model 0.17.0",
  "character_selection_ui_model 0.17.0",
  "control_settings_model 0.17.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_mode_selection_model 0.17.0",
  "input_reaction_model 0.17.0",
  "map_selection_ui_model 0.17.0",
  "sequence_model 0.17.0",
@@ -5657,6 +5670,17 @@ version = "0.1.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_model_spi 0.17.0",
+]
+
+[[package]]
+name = "ui_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input_model 0.17.0",
  "ui_model_spi 0.17.0",
 ]
 
@@ -5889,6 +5913,7 @@ dependencies = [
  "tracker 0.17.0",
  "ui_audio_loading 0.17.0",
  "ui_loading 0.17.0",
+ "ui_play 0.18.0",
 ]
 
 [[package]]
@@ -5953,6 +5978,7 @@ dependencies = [
  "application 0.17.0",
  "application_event 0.17.0",
  "application_input 0.17.0",
+ "application_menu 0.1.0",
  "application_robot 0.17.0",
  "application_state 0.17.0",
  "application_test_support 0.17.0",

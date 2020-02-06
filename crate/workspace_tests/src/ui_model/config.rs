@@ -2,6 +2,7 @@
 mod test {
     use std::str::FromStr;
 
+    use application_menu::MenuIndex;
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
     use input_reaction_model::config::{InputReaction, InputReactions};
@@ -92,7 +93,7 @@ sequences:
                     PositionInit::new(0, 0, 0),
                     SequenceNameString::String(String::from("active")),
                 ),
-                GameModeIndex::StartGame,
+                MenuIndex::GameMode(GameModeIndex::StartGame),
             ),
             UiMenuItem::new(
                 position_init,
@@ -103,7 +104,7 @@ sequences:
                         "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
                     ),
                 ),
-                GameModeIndex::Exit,
+                MenuIndex::GameMode(GameModeIndex::Exit),
             ),
         ]));
         let buttons = UiButtons::new(vec![UiButton::new(

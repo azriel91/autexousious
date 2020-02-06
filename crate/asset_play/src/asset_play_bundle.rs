@@ -5,6 +5,7 @@ use amethyst::{
     ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
+use application_menu::MenuIndex;
 use asset_model::{config::asset_type::Map, play::AssetWorld};
 use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
@@ -21,7 +22,6 @@ use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
 use game_input_model::play::{ButtonInputControlled, InputControlled, SharedInputControlled};
-use game_mode_selection_model::GameModeIndex;
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
     config::{PositionInit, ScaleInit, VelocityInit},
@@ -37,7 +37,7 @@ use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
 use ui_label_model::config::UiLabel;
-use ui_menu_item_model::loaded::UiMenuItem;
+use ui_menu_item_model::loaded::{UiMenu, UiMenuItem};
 
 use crate::ItemComponentComponentAugmentSystem;
 
@@ -77,7 +77,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<UiLabel>();
-        asset_world.register::<UiMenuItem<GameModeIndex>>();
+        asset_world.register::<UiMenu>();
+        asset_world.register::<UiMenuItem<MenuIndex>>();
 
         asset_world.register::<AssetPreviewWidget>();
         asset_world.register::<ApwMain>();
@@ -219,9 +220,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<UiMenuItem<GameModeIndex>>::new(),
-            any::type_name::<ItemComponentComponentAugmentSystem<UiMenuItem<GameModeIndex>>>(),
+            ItemComponentComponentAugmentSystem::<UiMenu>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiMenu>>(),
             &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<UiMenuItem<MenuIndex>>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiMenuItem<MenuIndex>>>(),
+            &[any::type_name::<ItemComponentComponentAugmentSystem<UiMenu>>()],
         );
 
         // Asset selection UI common systems.

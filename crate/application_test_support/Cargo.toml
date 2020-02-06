@@ -50,6 +50,7 @@ state_registry = { path = "../state_registry" }
 tracker = { path = "../tracker" }
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_loading = { path = "../ui_loading" }
+ui_play = { path = "../ui_play" }
 
 [features]
 nightly = ["amethyst/nightly"]
