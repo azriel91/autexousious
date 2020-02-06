@@ -42,7 +42,7 @@ use game_input_model::config::{ControlBindings, InputConfig};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
-use game_mode_selection_ui::GameModeSelectionUiBundle;
+use game_mode_selection_ui::GameModeSelectionSfxSystem;
 use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
@@ -118,7 +118,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
-            .with_bundle(GameModeSelectionUiBundle::new())?
             .with(
                 InputToControlInputSystem::new(input_config),
                 any::type_name::<InputToControlInputSystem>(),
@@ -199,6 +198,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
+            .with(
+                GameModeSelectionSfxSystem::new(),
+                any::type_name::<GameModeSelectionSfxSystem>(),
+                &[],
+            )
             .with(
                 AssetSelectionSfxSystem::new(),
                 any::type_name::<AssetSelectionSfxSystem>(),

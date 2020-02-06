@@ -10,7 +10,6 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-derivative = "1.0.3"
 derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 log = "0.4.8"
