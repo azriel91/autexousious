@@ -75,7 +75,8 @@ impl AssetSequenceComponentLoaderUiMenu {
                         .with(wait_sequence_handles)
                         .with(tint_sequence_handles)
                         .with(scale_sequence_handles)
-                        .with(input_reactions_sequence_handles);
+                        .with(input_reactions_sequence_handles)
+                        .with(SharedInputControlled);
 
                     if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {
                         item_entity_builder =
