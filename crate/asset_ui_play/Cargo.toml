@@ -15,7 +15,6 @@ asset_ui_model = { path = "../asset_ui_model" }
 chase_model = { path = "../chase_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 ui_model_spi = { path = "../ui_model_spi" }
 
