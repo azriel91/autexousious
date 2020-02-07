@@ -6,7 +6,10 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::play::{AxisMoveEventData, ControlInputEvent, MoveDirection};
-use ui_model_spi::play::{Siblings, SiblingsVertical, WidgetStatus};
+use ui_model_spi::{
+    config::WidgetStatus,
+    play::{Siblings, SiblingsVertical},
+};
 
 /// Updates `WidgetStatus` based on `ControlInputEvent`s and `Sibling`s.
 #[derive(Debug, Default, new)]

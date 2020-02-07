@@ -3,7 +3,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use ui_model_spi::play::{Siblings, WidgetStatus};
+use ui_model_spi::{config::WidgetStatus, play::Siblings};
 
 /// `UiRectifySystemData`.
 #[derive(Derivative, SystemData)]

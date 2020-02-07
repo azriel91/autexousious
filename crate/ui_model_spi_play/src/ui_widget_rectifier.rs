@@ -1,5 +1,8 @@
 use amethyst::ecs::Entity;
-use ui_model_spi::play::{Siblings, SiblingsBoundaryAction, WidgetStatus};
+use ui_model_spi::{
+    config::WidgetStatus,
+    play::{Siblings, SiblingsBoundaryAction},
+};
 
 use crate::UiRectifySystemData;
 

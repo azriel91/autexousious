@@ -5,7 +5,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use ui_model_spi::play::WidgetStatus;
+use ui_model_spi::config::WidgetStatus;
 
 /// Visible for testing.
 pub const FONT_COLOUR_IDLE: [f32; 4] = [0.55, 0.55, 0.55, 1.];
