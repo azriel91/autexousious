@@ -2995,6 +2995,7 @@ dependencies = [
  "ui_label_model 0.17.0",
  "ui_menu_item_model 0.17.0",
  "ui_model 0.17.0",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]

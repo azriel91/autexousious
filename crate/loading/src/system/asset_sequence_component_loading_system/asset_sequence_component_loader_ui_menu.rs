@@ -12,6 +12,7 @@ use ui_menu_item_model::{
     config::UiMenuItems,
     loaded::{UiMenu, UiMenuItem},
 };
+use ui_model_spi::loaded::WidgetStatusSequences;
 
 use crate::AssetSequenceComponentLoaderUiComponents;
 
@@ -65,6 +66,18 @@ impl AssetSequenceComponentLoaderUiMenu {
                     asset_slug,
                     &ui_sprite_label.sequence,
                 );
+                let widget_status_sequences = ui_menu_item_cfg
+                    .widget_status_sequences
+                    .iter()
+                    .map(|(widget_status, sequence_name_string)| {
+                        let sequence_id = SequenceIdMapper::<SpriteSequenceName>::item_to_data(
+                            sequence_id_mappings,
+                            asset_slug,
+                            sequence_name_string,
+                        );
+                        (*widget_status, sequence_id)
+                    })
+                    .collect::<WidgetStatusSequences>();
 
                 let item_entity_sprite = {
                     let mut item_entity_builder = asset_world
@@ -76,7 +89,8 @@ impl AssetSequenceComponentLoaderUiMenu {
                         .with(tint_sequence_handles)
                         .with(scale_sequence_handles)
                         .with(input_reactions_sequence_handles)
-                        .with(SharedInputControlled);
+                        .with(SharedInputControlled)
+                        .with(widget_status_sequences);
 
                     if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {
                         item_entity_builder =
