@@ -38,7 +38,7 @@ use state_registry::StateId;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
-use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem};
+use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem};
 
 use crate::{AssetQueries, SetupFunction};
 
@@ -119,6 +119,16 @@ impl AutexousiousApplication {
                 any::type_name::<UiActiveWidgetUpdateSystem>(),
                 &[],
             )
+            .with_system(
+                UiTextColourUpdateSystem::new(),
+                any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with_system(
+                WidgetSequenceUpdateSystem::new(),
+                any::type_name::<WidgetSequenceUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
             .with_bundle(AssetPlayBundle::new())
             .with_state(|| LoadingState::new(PopState))
     }
@@ -170,6 +180,11 @@ impl AutexousiousApplication {
             .with_system(
                 UiTextColourUpdateSystem::new(),
                 any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with_system(
+                WidgetSequenceUpdateSystem::new(),
+                any::type_name::<WidgetSequenceUpdateSystem>(),
                 &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with_system(

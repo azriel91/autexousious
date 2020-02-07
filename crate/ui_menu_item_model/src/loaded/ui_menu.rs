@@ -85,15 +85,20 @@ impl<'s> ItemComponent<'s> for UiMenu {
         // Add `Siblings` component for each `UiMenuItem` for navigation.
         self.augment_siblings(ui_rectify_system_data, &ui_menu_item_entities);
 
-        self.sprite_item_ids
+        let sprite_item_entities = self
+            .sprite_item_ids
             .iter()
             .copied()
-            .for_each(|sprite_item_item_id| {
+            .map(|sprite_item_item_id| {
                 entities
                     .build_entity()
                     .with(sprite_item_item_id, item_ids)
                     .with(parent_entity, parent_entities)
-                    .build();
-            });
+                    .build()
+            })
+            .collect::<Vec<Entity>>();
+
+        // Add `Siblings` component for each sprite for active sequence changes.
+        self.augment_siblings(ui_rectify_system_data, &sprite_item_entities);
     }
 }

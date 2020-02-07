@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, System, World, WriteStorage},
+    ecs::{BitSet, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -17,6 +17,9 @@ pub struct UiActiveWidgetUpdateSystem {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
+    /// Pre-allocated bitset to track entities that have just become active.
+    #[new(default)]
+    just_active: BitSet,
 }
 
 /// `UiActiveWidgetInputResources`.
@@ -47,14 +50,19 @@ pub struct UiActiveWidgetUpdateSystemData<'s> {
 
 impl UiActiveWidgetUpdateSystem {
     fn handle_event(
+        &mut self,
         UiActiveWidgetInputResources {
             ref mut widget_statuses,
             ref siblingses,
             ref siblings_verticals,
         }: &mut UiActiveWidgetInputResources,
         axis_move_event_data: AxisMoveEventData,
-    ) -> bool {
+    ) {
         let ui_entity = axis_move_event_data.entity;
+        if self.just_active.contains(ui_entity.id()) {
+            return;
+        }
+
         let widget_status = widget_statuses.get(ui_entity).copied();
 
         let move_direction = MoveDirection::from(axis_move_event_data);
@@ -82,9 +90,7 @@ impl UiActiveWidgetUpdateSystem {
                 .insert(ui_entity_sibling, WidgetStatus::Active)
                 .expect("Failed to insert `WidgetStatus` component.");
 
-            true
-        } else {
-            false
+            self.just_active.add(ui_entity_sibling.id());
         }
     }
 }
@@ -99,28 +105,18 @@ impl<'s> System<'s> for UiActiveWidgetUpdateSystem {
             mut ui_active_widget_input_resources,
         }: Self::SystemData,
     ) {
+        self.just_active.clear();
         let control_input_event_rid = self
             .control_input_event_rid
             .as_mut()
             .expect("Expected `control_input_event_rid` field to be set.");
 
-        // Ignore result as it is only used for the quick exit.
-        let _ = control_input_ec
+        control_input_ec
             .read(control_input_event_rid)
             .copied()
-            .try_for_each(|ev| {
+            .for_each(|ev| {
                 if let ControlInputEvent::AxisMoved(axis_move_event_data) = ev {
-                    let event_handled = Self::handle_event(
-                        &mut ui_active_widget_input_resources,
-                        axis_move_event_data,
-                    );
-                    if event_handled {
-                        Err(())
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Ok(())
+                    self.handle_event(&mut ui_active_widget_input_resources, axis_move_event_data)
                 }
             });
     }

@@ -64,7 +64,7 @@ use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
-use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem};
+use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -163,6 +163,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with(
                 UiTextColourUpdateSystem::new(),
                 any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with(
+                WidgetSequenceUpdateSystem::new(),
+                any::type_name::<WidgetSequenceUpdateSystem>(),
                 &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with(
