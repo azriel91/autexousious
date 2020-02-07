@@ -165,3 +165,5 @@ mod ui_audio_loading;
 mod ui_loading;
 #[cfg(test)]
 mod ui_model;
+#[cfg(test)]
+mod ui_play;

@@ -38,6 +38,7 @@ use sprite_model::loaded::{
 };
 use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::{UiMenu, UiMenuItem};
+use ui_model_spi::loaded::WidgetStatusSequences;
 
 use crate::ItemComponentComponentAugmentSystem;
 
@@ -76,6 +77,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<ScaleSequenceHandles>();
         asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<InputReactionsSequenceHandles>();
+        asset_world.register::<WidgetStatusSequences>();
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenu>();
         asset_world.register::<UiMenuItem<MenuIndex>>();
@@ -212,6 +214,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<InputReactionsSequenceHandles>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<InputReactionsSequenceHandles>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<WidgetStatusSequences>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<WidgetStatusSequences>>(),
             &[],
         );
         builder.add(

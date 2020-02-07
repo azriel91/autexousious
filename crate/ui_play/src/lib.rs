@@ -2,6 +2,8 @@
 
 //! Provides logic for UI widgets at runtime.
 
-pub use crate::system::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem};
+pub use crate::system::{
+    UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem,
+};
 
 mod system;

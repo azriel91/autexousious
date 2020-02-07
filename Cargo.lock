@@ -684,6 +684,7 @@ dependencies = [
  "sprite_model 0.17.0",
  "ui_label_model 0.17.0",
  "ui_menu_item_model 0.17.0",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]
@@ -5635,6 +5636,7 @@ name = "ui_model_spi"
 version = "0.17.0"
 dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.17.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
@@ -5661,6 +5663,7 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.17.0",
+ "sequence_model 0.17.0",
  "ui_model_spi 0.17.0",
 ]
 
@@ -6088,6 +6091,7 @@ dependencies = [
  "ui_menu_item_model 0.17.0",
  "ui_model 0.17.0",
  "ui_model_spi 0.17.0",
+ "ui_play 0.18.0",
 ]
 
 [[package]]

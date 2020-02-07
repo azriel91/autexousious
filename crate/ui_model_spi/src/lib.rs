@@ -3,4 +3,5 @@
 //! Types used to represent UI configuration for UI provider crates.
 
 pub mod config;
+pub mod loaded;
 pub mod play;
