@@ -40,4 +40,6 @@ pub enum StateId {
     MapSelection,
     /// `NetworkModeSelectionState` ID.
     NetworkModeSelection,
+    /// `NetworkJoinState` ID.
+    NetworkJoin,
 }
