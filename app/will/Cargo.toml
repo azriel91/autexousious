@@ -41,6 +41,8 @@ kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
+network_join_stdio = { path = "../../crate/network_join_stdio" }
+network_mode_selection_stdio = { path = "../../crate/network_mode_selection_stdio" }
 parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }
 spawn_loading = { path = "../../crate/spawn_loading" }

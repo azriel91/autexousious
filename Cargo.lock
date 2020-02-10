@@ -5936,6 +5936,8 @@ dependencies = [
  "loading 0.17.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.17.0",
+ "network_join_stdio 0.18.0",
+ "network_mode_selection_stdio 0.18.0",
  "parent_play 0.17.0",
  "sequence_loading 0.17.0",
  "spawn_loading 0.17.0",
