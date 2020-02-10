@@ -4,7 +4,7 @@ use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use network_join_model::NetworkJoinEntity;
+use network_join_model::{NetworkJoinEntity, NetworkJoinEvent};
 use state_registry::StateId;
 
 /// `State` where game mode selection takes place.
@@ -52,7 +52,10 @@ impl State<GameData<'static, 'static>, AppEvent> for NetworkJoinStateDelegate {
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
         if let AppEvent::NetworkJoin(network_join_event) = event {
             debug!("Received network_join_event: {:?}", network_join_event);
-            Trans::None
+            match network_join_event {
+                NetworkJoinEvent::Back => Trans::Pop,
+                _ => Trans::None,
+            }
         } else {
             Trans::None
         }

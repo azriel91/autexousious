@@ -3360,6 +3360,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "menu_model 0.17.0",
+ "network_join 0.18.0",
  "network_mode_selection_model 0.18.0",
  "state_registry 0.17.0",
 ]

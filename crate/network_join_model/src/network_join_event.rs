@@ -14,4 +14,6 @@ pub enum NetworkJoinEvent {
     JoinCancel,
     /// Server accepted the client's request.
     SessionAccept(SessionAcceptResponse),
+    /// Return to the previous menu.
+    Back,
 }

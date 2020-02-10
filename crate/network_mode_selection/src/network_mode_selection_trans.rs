@@ -1,5 +1,6 @@
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
+use network_join::{NetworkJoinStateBuilder, NetworkJoinStateDelegate};
 use network_mode_selection_model::NetworkModeIndex;
 
 /// Returns the `Trans` for a given `NetworkModeIndex`.
@@ -17,7 +18,11 @@ impl NetworkModeSelectionTrans {
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
         match network_mode_index {
             NetworkModeIndex::Host => Trans::None,
-            NetworkModeIndex::Join => Trans::None,
+            NetworkModeIndex::Join => {
+                let state = NetworkJoinStateBuilder::new(NetworkJoinStateDelegate::new()).build();
+
+                Trans::Push(Box::new(state))
+            }
             NetworkModeIndex::Back => Trans::Pop,
         }
     } // kcov-ignore
