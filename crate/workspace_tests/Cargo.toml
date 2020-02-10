@@ -11,7 +11,6 @@ application = { path = "../application" }
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 application_menu = { path = "../application_menu" }
-menu_model = { path = "../menu_model" }
 application_robot = { path = "../application_robot" }
 application_state = { path = "../application_state" }
 application_test_support = { path = "../application_test_support" }
@@ -92,7 +91,10 @@ map_play = { path = "../map_play" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
+menu_model = { path = "../menu_model" }
 mirrored_model = { path = "../mirrored_model" }
+network_mode_selection_model = { path = "../network_mode_selection_model" }
+network_mode_selection_stdio = { path = "../network_mode_selection_stdio" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }

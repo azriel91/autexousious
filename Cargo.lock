@@ -3379,6 +3379,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "network_mode_selection_stdio"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_event 0.17.0",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "menu_model 0.17.0",
+ "network_mode_selection_model 0.18.0",
+ "stdio_spi 0.17.0",
+]
+
+[[package]]
 name = "nix"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6075,6 +6087,8 @@ dependencies = [
  "map_selection_ui_model 0.17.0",
  "menu_model 0.17.0",
  "mirrored_model 0.17.0",
+ "network_mode_selection_model 0.18.0",
+ "network_mode_selection_stdio 0.18.0",
  "object_loading 0.17.0",
  "object_model 0.17.0",
  "object_play 0.17.0",
