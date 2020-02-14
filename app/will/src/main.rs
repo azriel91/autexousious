@@ -7,6 +7,7 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
+    network::simulation::laminar::{LaminarConfig, LaminarNetworkBundle, LaminarSocket},
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
@@ -48,7 +49,9 @@ use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
+use log::{debug, warn};
 use map_loading::MapLoadingBundle;
+use network_join_play::{SessionJoinRequestSystem, SessionJoinRequestSystemDesc};
 use network_join_stdio::NetworkJoinStdioBundle;
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
@@ -77,6 +80,22 @@ struct Opt {
     /// Frame rate to run the game at.
     #[structopt(long)]
     frame_rate: Option<u32>,
+}
+
+fn local_socket() -> Option<LaminarSocket> {
+    let local_socket_config = LaminarConfig {
+        blocking_mode: false,
+        ..Default::default()
+    };
+    let local_socket = LaminarSocket::bind_any_with_config(local_socket_config);
+    match local_socket {
+        Ok(local_socket) => Some(local_socket),
+        Err(e) => {
+            warn!("Unable to bind to local socket. Network play will be unavailable.");
+            debug!("Local socket bind error: {}", e);
+            None
+        }
+    }
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
@@ -114,6 +133,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
+            .with_bundle(LaminarNetworkBundle::new(local_socket()))?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
@@ -195,6 +215,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())?
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::default(),
+                any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
             .with(
                 StateItemUiInputAugmentSystem::new(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),

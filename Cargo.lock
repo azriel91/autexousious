@@ -525,6 +525,7 @@ dependencies = [
  "map_model 0.17.0",
  "map_selection 0.17.0",
  "map_selection_model 0.17.0",
+ "network_join_play 0.18.0",
  "object_model 0.17.0",
  "object_type 0.17.0",
  "sequence_loading 0.17.0",
@@ -3350,6 +3351,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "network_join_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "network_join_model 0.18.0",
+]
+
+[[package]]
 name = "network_join_stdio"
 version = "0.18.0"
 dependencies = [
@@ -5936,6 +5948,7 @@ dependencies = [
  "loading 0.17.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.17.0",
+ "network_join_play 0.18.0",
  "network_join_stdio 0.18.0",
  "network_mode_selection_stdio 0.18.0",
  "parent_play 0.17.0",

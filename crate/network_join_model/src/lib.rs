@@ -4,6 +4,7 @@
 
 pub use crate::{network_join_entity::NetworkJoinEntity, network_join_event::NetworkJoinEvent};
 
+pub mod config;
 pub mod play;
 
 mod network_join_entity;

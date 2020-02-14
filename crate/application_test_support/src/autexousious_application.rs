@@ -10,6 +10,7 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
+use network_join_play::{SessionJoinRequestSystem, SessionJoinRequestSystemDesc};
 use asset_model::config::AssetType;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
@@ -130,6 +131,11 @@ impl AutexousiousApplication {
                 &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::default(),
+                any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
             .with_state(|| LoadingState::new(PopState))
     }
 
@@ -208,6 +214,11 @@ impl AutexousiousApplication {
                 &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::default(),
+                any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
             .with_system(
                 StateItemUiInputAugmentSystem::new(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
