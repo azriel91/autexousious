@@ -14,6 +14,8 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
 network_join_model = { path = "../network_join_model" }
+shell-words = "0.1.0"
+structopt = "0.3.9"
 
 [features]
 nightly = ["amethyst/nightly"]
