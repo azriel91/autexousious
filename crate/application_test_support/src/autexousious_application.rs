@@ -28,7 +28,8 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use network_join_play::{
-    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
+    SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
     SessionJoinServerListenerSystemDesc,
 };
 use object_type::ObjectType;
@@ -144,6 +145,11 @@ impl AutexousiousApplication {
                 any::type_name::<SessionJoinServerListenerSystem>(),
                 &[],
             )
+            .with_system_desc(
+                SessionJoinAcceptedSystemDesc::default(),
+                any::type_name::<SessionJoinAcceptedSystem>(),
+                &[any::type_name::<SessionJoinServerListenerSystem>()],
+            )
             .with_state(|| LoadingState::new(PopState))
     }
 
@@ -231,6 +237,11 @@ impl AutexousiousApplication {
                 SessionJoinServerListenerSystemDesc::default(),
                 any::type_name::<SessionJoinServerListenerSystem>(),
                 &[],
+            )
+            .with_system_desc(
+                SessionJoinAcceptedSystemDesc::default(),
+                any::type_name::<SessionJoinAcceptedSystem>(),
+                &[any::type_name::<SessionJoinServerListenerSystem>()],
             )
             .with_system(
                 StateItemUiInputAugmentSystem::new(),

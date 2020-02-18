@@ -7,7 +7,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::{error, warn};
+use log::{debug, error};
 use network_join_model::NetworkJoinEvent;
 use structopt::StructOpt;
 
@@ -45,7 +45,7 @@ impl<'s> System<'s> for SessionJoinServerListenerSystem {
             .read(&mut self.network_simulation_event_rid)
             .for_each(|ev| match ev {
                 NetworkSimulationEvent::Message(socket_addr, bytes) => {
-                    warn!("Socket: {}, Message: {:?}", socket_addr, bytes);
+                    debug!("Socket: {}, Message: {:?}", socket_addr, bytes);
                     let network_join_event = String::from_utf8(bytes.to_vec())
                         .map_err(|e| format!("{}", e))
                         .and_then(|args| shell_words::split(&args).map_err(|e| format!("{}", e)))
