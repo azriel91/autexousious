@@ -57,7 +57,10 @@ use loading::{LoadingBundle, LoadingState};
 use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
 use network_join_model::config::SessionServerConfig;
-use network_join_play::{SessionJoinRequestSystem, SessionJoinRequestSystemDesc};
+use network_join_play::{
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
+    SessionJoinServerListenerSystemDesc,
+};
 use network_join_stdio::NetworkJoinStdioBundle;
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
@@ -276,6 +279,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_system_desc(
                 SessionJoinRequestSystemDesc::new(session_server_config),
                 any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionJoinServerListenerSystemDesc::default(),
+                any::type_name::<SessionJoinServerListenerSystem>(),
                 &[],
             )
             .with(

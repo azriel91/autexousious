@@ -10,7 +10,6 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
-use network_join_play::{SessionJoinRequestSystem, SessionJoinRequestSystemDesc};
 use asset_model::config::AssetType;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
@@ -28,6 +27,10 @@ use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
+use network_join_play::{
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
+    SessionJoinServerListenerSystemDesc,
+};
 use object_type::ObjectType;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
@@ -136,6 +139,11 @@ impl AutexousiousApplication {
                 any::type_name::<SessionJoinRequestSystem>(),
                 &[],
             )
+            .with_system_desc(
+                SessionJoinServerListenerSystemDesc::default(),
+                any::type_name::<SessionJoinServerListenerSystem>(),
+                &[],
+            )
             .with_state(|| LoadingState::new(PopState))
     }
 
@@ -217,6 +225,11 @@ impl AutexousiousApplication {
             .with_system_desc(
                 SessionJoinRequestSystemDesc::default(),
                 any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionJoinServerListenerSystemDesc::default(),
+                any::type_name::<SessionJoinServerListenerSystem>(),
                 &[],
             )
             .with_system(

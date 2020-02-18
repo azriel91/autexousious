@@ -2,6 +2,9 @@
 
 //! Provides logic for the network play join process.
 
-pub use crate::system::{SessionJoinRequestSystem, SessionJoinRequestSystemDesc};
+pub use crate::system::{
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
+    SessionJoinServerListenerSystemDesc,
+};
 
 mod system;

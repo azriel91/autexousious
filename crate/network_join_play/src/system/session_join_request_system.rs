@@ -3,15 +3,12 @@ use std::net::SocketAddr;
 use amethyst::{
     core::SystemDesc,
     ecs::{Read, ReadExpect, System, World, Write},
-    network::simulation::{
-        DeliveryRequirement, NetworkSimulationEvent, TransportResource, UrgencyRequirement,
-    },
+    network::simulation::{DeliveryRequirement, TransportResource, UrgencyRequirement},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::{error, warn};
 use network_join_model::{config::SessionServerConfig, NetworkJoinEvent};
 
 /// Builds a `SessionJoinRequestSystem`.
@@ -28,13 +25,10 @@ impl<'a, 'b> SystemDesc<'a, 'b, SessionJoinRequestSystem> for SessionJoinRequest
         let network_join_event_rid = world
             .fetch_mut::<EventChannel<NetworkJoinEvent>>()
             .register_reader();
-        let network_simulation_event_rid = world
-            .fetch_mut::<EventChannel<NetworkSimulationEvent>>()
-            .register_reader();
 
         world.insert(self.session_server_config);
 
-        SessionJoinRequestSystem::new(network_join_event_rid, network_simulation_event_rid)
+        SessionJoinRequestSystem::new(network_join_event_rid)
     }
 }
 
@@ -43,8 +37,6 @@ impl<'a, 'b> SystemDesc<'a, 'b, SessionJoinRequestSystem> for SessionJoinRequest
 pub struct SessionJoinRequestSystem {
     /// Reader ID for the `NetworkJoinEvent` channel.
     network_join_event_rid: ReaderId<NetworkJoinEvent>,
-    /// Reader ID for the `NetworkSimulationEvent` channel.
-    network_simulation_event_rid: ReaderId<NetworkSimulationEvent>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -59,9 +51,6 @@ pub struct SessionJoinRequestSystemData<'s> {
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
-    /// `NetworkSimulationEvent` channel.
-    #[derivative(Debug = "ignore")]
-    pub network_simulation_ec: Read<'s, EventChannel<NetworkSimulationEvent>>,
 }
 
 impl<'s> System<'s> for SessionJoinRequestSystem {
@@ -73,7 +62,6 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
             network_join_ec,
             session_server_config,
             mut transport_resource,
-            network_simulation_ec,
         }: Self::SystemData,
     ) {
         // Only process one session join event if multiple are received.
@@ -109,26 +97,5 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
                 UrgencyRequirement::OnTick,
             );
         }
-
-        network_simulation_ec
-            .read(&mut self.network_simulation_event_rid)
-            .for_each(|ev| match ev {
-                NetworkSimulationEvent::Message(socket_addr, bytes) => {
-                    warn!("Socket: {}, Message: {:?}", socket_addr, bytes);
-                }
-                NetworkSimulationEvent::SendError(io_error, message) => {
-                    error!("Send error: `{}`, message: `{:?}`", io_error, message);
-                }
-                NetworkSimulationEvent::RecvError(io_error) => {
-                    error!("Receive error: `{}`", io_error);
-                }
-                NetworkSimulationEvent::ConnectionError(io_error, socket_addr) => {
-                    error!(
-                        "Connection error: `{}`, socket_addr: `{:?}`",
-                        io_error, socket_addr
-                    );
-                }
-                _ => {}
-            });
     }
 }
