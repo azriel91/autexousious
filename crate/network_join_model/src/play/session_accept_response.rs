@@ -2,7 +2,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
-use crate::play::{SessionCode, SessionDevices};
+use network_session_model::play::{SessionCode, SessionDevices};
 
 /// Response when a session join request is accepted.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt, new)]

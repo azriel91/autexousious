@@ -1,5 +1,5 @@
 [package]
-name = "network_join_model"
+name = "network_session_model"
 version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
@@ -12,7 +12,6 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-network_session_model = { path = "../network_session_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 structopt = "0.3.9"
 structopt-derive = "0.4.2"

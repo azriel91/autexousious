@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests {
     use network_join_model::{
-        play::{
-            SessionAcceptResponse, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName,
-            SessionDevices, SessionJoinRequestParams,
-        },
+        play::{SessionAcceptResponse, SessionJoinRequestParams},
         NetworkJoinEvent,
+    };
+    use network_session_model::play::{
+        SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
     };
     use stdio_spi::StdinMapper;
 

@@ -3343,6 +3343,7 @@ dependencies = [
  "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "network_session_model 0.18.0",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3413,6 +3414,20 @@ dependencies = [
  "menu_model 0.17.0",
  "network_mode_selection_model 0.18.0",
  "stdio_spi 0.17.0",
+]
+
+[[package]]
+name = "network_session_model"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt-derive 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
 ]
 
 [[package]]
@@ -6120,6 +6135,7 @@ dependencies = [
  "network_join_stdio 0.18.0",
  "network_mode_selection_model 0.18.0",
  "network_mode_selection_stdio 0.18.0",
+ "network_session_model 0.18.0",
  "object_loading 0.17.0",
  "object_model 0.17.0",
  "object_play 0.17.0",

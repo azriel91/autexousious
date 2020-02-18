@@ -97,6 +97,7 @@ network_join_model = { path = "../network_join_model" }
 network_join_stdio = { path = "../network_join_stdio" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 network_mode_selection_stdio = { path = "../network_mode_selection_stdio" }
+network_session_model = { path = "../network_session_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }
