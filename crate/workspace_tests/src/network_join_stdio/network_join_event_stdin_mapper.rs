@@ -39,6 +39,7 @@ mod tests {
     #[test]
     fn maps_session_accept_event() {
         let session_code = SessionCode::from(String::from("abcd"));
+        let session_device_id = SessionDeviceId::new(1);
         let session_devices = SessionDevices::new(vec![
             SessionDevice {
                 id: SessionDeviceId::new(1),
@@ -55,6 +56,7 @@ mod tests {
         ]);
         let args = NetworkJoinEvent::SessionAccept(SessionAcceptResponse {
             session_code,
+            session_device_id,
             session_devices,
         });
 

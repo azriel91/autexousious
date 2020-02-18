@@ -3360,6 +3360,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "network_join_model 0.18.0",
+ "network_session_model 0.18.0",
  "shell-words 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -6132,6 +6133,7 @@ dependencies = [
  "menu_model 0.17.0",
  "mirrored_model 0.17.0",
  "network_join_model 0.18.0",
+ "network_join_play 0.18.0",
  "network_join_stdio 0.18.0",
  "network_mode_selection_model 0.18.0",
  "network_mode_selection_stdio 0.18.0",

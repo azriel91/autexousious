@@ -5,7 +5,9 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Server generated ID for a session device (`u64` newtype).
-#[derive(Clone, Copy, Debug, Deref, DerefMut, Deserialize, Eq, Hash, PartialEq, Serialize, new)]
+#[derive(
+    Clone, Copy, Debug, Default, Deref, DerefMut, Deserialize, Eq, Hash, PartialEq, Serialize, new,
+)]
 pub struct SessionDeviceId(pub u64);
 
 impl FromStr for SessionDeviceId {

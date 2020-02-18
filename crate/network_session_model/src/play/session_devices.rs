@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::play::{SessionDevice, SessionDeviceName, SessionDevicesParseError};
 
+/// Devices in the network session.
+///
 /// Newtype for `Vec<SessionDevice>`.
 #[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]

@@ -94,6 +94,7 @@ map_selection_ui_model = { path = "../map_selection_ui_model" }
 menu_model = { path = "../menu_model" }
 mirrored_model = { path = "../mirrored_model" }
 network_join_model = { path = "../network_join_model" }
+network_join_play = { path = "../network_join_play" }
 network_join_stdio = { path = "../network_join_stdio" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 network_mode_selection_stdio = { path = "../network_mode_selection_stdio" }
