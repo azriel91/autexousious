@@ -21,6 +21,3 @@ network_mode_selection_model = { path = "../network_mode_selection_model" }
 stdio_command_model = { path = "../stdio_command_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

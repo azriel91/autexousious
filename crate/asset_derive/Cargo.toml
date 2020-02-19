@@ -17,6 +17,3 @@ syn = { version = "1.0.14", features = ["extra-traits", "visit"] }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
-
-[features]
-nightly = ["amethyst/nightly"]

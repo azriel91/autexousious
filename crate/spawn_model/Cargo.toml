@@ -19,6 +19,3 @@ sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.104", features = ["derive"] }
-
-[features]
-nightly = ["amethyst/nightly"]

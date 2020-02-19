@@ -16,6 +16,3 @@ game_input_model = { path = "../game_input_model" }
 stdio_spi = { path = "../stdio_spi" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -18,6 +18,3 @@ structopt = "0.3.9"
 structopt-derive = "0.4.2"
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

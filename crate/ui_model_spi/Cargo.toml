@@ -14,7 +14,7 @@ asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-indexmap = { version = "1.3.1", features = ["serde-1"] }
+indexmap = { version = "1.3.2", features = ["serde-1"] }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }

@@ -21,6 +21,3 @@ map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

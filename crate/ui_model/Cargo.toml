@@ -27,6 +27,3 @@ strum = "0.17.1"
 strum_macros = "0.17.1"
 ui_button_model = { path = "../ui_button_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

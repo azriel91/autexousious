@@ -20,6 +20,3 @@ object_type = { path = "../object_type" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
 strum = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

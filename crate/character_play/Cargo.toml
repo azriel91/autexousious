@@ -23,6 +23,3 @@ log = "0.4.8"
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

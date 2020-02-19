@@ -24,6 +24,3 @@ log = "0.4.8"
 map_selection = { path = "../map_selection" }
 network_mode_selection = { path = "../network_mode_selection" }
 state_registry = { path = "../state_registry" }
-
-[features]
-nightly = ["amethyst/nightly"]

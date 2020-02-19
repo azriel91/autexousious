@@ -19,6 +19,3 @@ network_join = { path = "../network_join" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 log = "0.4.8"
 state_registry = { path = "../state_registry" }
-
-[features]
-nightly = ["amethyst/nightly"]
