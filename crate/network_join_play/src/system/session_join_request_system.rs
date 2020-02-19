@@ -10,6 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use network_join_model::{config::SessionServerConfig, NetworkJoinEvent};
+use network_session_model::play::SessionStatus;
 
 /// Builds a `SessionJoinRequestSystem`.
 #[derive(Debug, Default, new)]
@@ -45,6 +46,9 @@ pub struct SessionJoinRequestSystemData<'s> {
     /// `NetworkJoinEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_join_ec: Read<'s, EventChannel<NetworkJoinEvent>>,
+    /// `SessionStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_status: Write<'s, SessionStatus>,
     /// `SessionServerConfig` resource.
     #[derivative(Debug = "ignore")]
     pub session_server_config: ReadExpect<'s, SessionServerConfig>,
@@ -60,22 +64,30 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
         &mut self,
         SessionJoinRequestSystemData {
             network_join_ec,
+            mut session_status,
             session_server_config,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let mut network_join_events = network_join_ec.read(&mut self.network_join_event_rid);
+
+        // Guard against requesting multiple sessions at the same time.
+        if *session_status != SessionStatus::None {
+            return;
+        }
+
         // Only process one session join event if multiple are received.
-        let session_join_request_params = network_join_ec
-            .read(&mut self.network_join_event_rid)
-            .find_map(|ev| {
-                if let NetworkJoinEvent::SessionJoinRequest(session_join_request_params) = ev {
-                    Some(session_join_request_params)
-                } else {
-                    None
-                }
-            });
+        let session_join_request_params = network_join_events.find_map(|ev| {
+            if let NetworkJoinEvent::SessionJoinRequest(session_join_request_params) = ev {
+                Some(session_join_request_params)
+            } else {
+                None
+            }
+        });
 
         if let Some(session_join_request_params) = session_join_request_params {
+            *session_status = SessionStatus::JoinRequested;
+
             let server_socket_addr =
                 SocketAddr::new(session_server_config.address, session_server_config.port);
 

@@ -32,6 +32,7 @@ audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
 background_loading = { path = "../background_loading" }
 background_model = { path = "../background_model" }
+bytes = "0.4.12"
 camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }

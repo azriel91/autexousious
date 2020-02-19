@@ -52,16 +52,22 @@ impl<'s> System<'s> for SessionJoinAcceptedSystem {
             mut session_status,
         }: Self::SystemData,
     ) {
+        let mut network_join_events = network_join_ec.read(&mut self.network_join_event_rid);
+
+        // Only process session accept event if user has not cancelled existing session join
+        // request.
+        if *session_status != SessionStatus::JoinRequested {
+            return;
+        }
+
         // Only process one session accept event if multiple are received.
-        let session_accept_response = network_join_ec
-            .read(&mut self.network_join_event_rid)
-            .find_map(|ev| {
-                if let NetworkJoinEvent::SessionAccept(session_accept_response) = ev {
-                    Some(session_accept_response)
-                } else {
-                    None
-                }
-            });
+        let session_accept_response = network_join_events.find_map(|ev| {
+            if let NetworkJoinEvent::SessionAccept(session_accept_response) = ev {
+                Some(session_accept_response)
+            } else {
+                None
+            }
+        });
 
         if let Some(session_accept_response) = session_accept_response {
             debug!("Session accepted: {:?}", session_accept_response);

@@ -5,6 +5,8 @@
 pub enum SessionStatus {
     /// No network session is active.
     None,
+    /// Session join request has been sent, response is pending.
+    JoinRequested,
     /// A network session is active.
     Established,
 }

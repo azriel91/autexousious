@@ -40,7 +40,7 @@ mod tests {
                 session_code: SessionCode::new(String::from("abcd")),
                 session_device_id: SessionDeviceId::new(123),
                 session_devices: SessionDevices::new(vec![]),
-                session_status: SessionStatus::None,
+                session_status: SessionStatus::JoinRequested,
                 network_join_event: Some(NetworkJoinEvent::SessionAccept(SessionAcceptResponse {
                     session_code: SessionCode::new(String::from("defg")),
                     session_device_id: SessionDeviceId::new(234),
@@ -58,6 +58,32 @@ mod tests {
                     SessionDeviceName::new(String::from("azriel")),
                 )]),
                 session_status: SessionStatus::Established,
+            },
+        )
+    }
+
+    #[test]
+    fn ignores_session_accept_event_when_no_longer_waiting() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                session_code: SessionCode::new(String::from("abcd")),
+                session_device_id: SessionDeviceId::new(123),
+                session_devices: SessionDevices::new(vec![]),
+                session_status: SessionStatus::None,
+                network_join_event: Some(NetworkJoinEvent::SessionAccept(SessionAcceptResponse {
+                    session_code: SessionCode::new(String::from("defg")),
+                    session_device_id: SessionDeviceId::new(234),
+                    session_devices: SessionDevices::new(vec![SessionDevice::new(
+                        SessionDeviceId::new(234),
+                        SessionDeviceName::new(String::from("azriel")),
+                    )]),
+                })),
+            },
+            ExpectedParams {
+                session_code: SessionCode::new(String::from("abcd")),
+                session_device_id: SessionDeviceId::new(123),
+                session_devices: SessionDevices::new(vec![]),
+                session_status: SessionStatus::None,
             },
         )
     }

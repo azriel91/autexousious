@@ -6071,6 +6071,7 @@ dependencies = [
  "audio_play 0.17.0",
  "background_loading 0.17.0",
  "background_model 0.17.0",
+ "bytes 0.4.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "camera_model 0.17.0",
  "camera_play 0.17.0",
  "character_loading 0.17.0",
