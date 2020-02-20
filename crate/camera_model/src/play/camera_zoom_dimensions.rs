@@ -22,3 +22,10 @@ pub struct CameraZoomDimensions {
     #[derivative(Default(value = "CAMERA_ZOOM_DEPTH_DEFAULT"))]
     pub depth: f32,
 }
+
+impl CameraZoomDimensions {
+    /// Returns the aspect ratio of this camera.
+    pub fn aspect_ratio(&self) -> f32 {
+        self.width / self.height
+    }
+}
