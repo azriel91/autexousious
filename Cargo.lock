@@ -5687,6 +5687,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.17.0",
  "sequence_model 0.17.0",
+ "ui_model 0.17.0",
  "ui_model_spi 0.17.0",
 ]
 

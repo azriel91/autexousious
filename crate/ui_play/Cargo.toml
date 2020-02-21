@@ -15,4 +15,5 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 sequence_model = { path = "../sequence_model" }
+ui_model = { path = "../ui_model" }
 ui_model_spi = { path = "../ui_model_spi" }
