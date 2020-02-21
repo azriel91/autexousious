@@ -81,7 +81,8 @@ use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
 use ui_play::{
     UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, UiTransformForFovSystem,
-    UiTransformForFovSystemDesc, WidgetSequenceUpdateSystem,
+    UiTransformForFovSystemDesc, UiTransformInsertionRectifySystem,
+    UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
 #[derive(StructOpt, Debug)]
@@ -363,6 +364,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 UiTransformForFovSystemDesc::default(),
                 any::type_name::<UiTransformForFovSystem>(),
                 &["camera_ortho"],
+            )
+            .with_system_desc(
+                UiTransformInsertionRectifySystemDesc::default(),
+                any::type_name::<UiTransformInsertionRectifySystem>(),
+                &[any::type_name::<UiTransformForFovSystem>()],
             );
     }
 

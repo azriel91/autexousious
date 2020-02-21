@@ -4,7 +4,8 @@
 
 pub use crate::system::{
     UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, UiTransformForFovSystem,
-    UiTransformForFovSystemDesc, WidgetSequenceUpdateSystem,
+    UiTransformForFovSystemDesc, UiTransformInsertionRectifySystem,
+    UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
 mod system;
