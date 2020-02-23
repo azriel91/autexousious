@@ -11,7 +11,7 @@ use game_input_model::{
 };
 use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
-use ui_model_spi::play::WidgetStatus;
+use ui_model_spi::config::WidgetStatus;
 
 /// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem` item entities.
 #[derive(Debug, Default, new)]

@@ -11,7 +11,7 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_event = { path = "../application_event" }
-application_menu = { path = "../application_menu" }
+menu_model = { path = "../menu_model" }
 application_state = { path = "../application_state" }
 character_selection = { path = "../character_selection" }
 control_settings = { path = "../control_settings" }
@@ -22,6 +22,7 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play = { path = "../game_play" }
 log = "0.4.8"
 map_selection = { path = "../map_selection" }
+network_mode_selection = { path = "../network_mode_selection" }
 state_registry = { path = "../state_registry" }
 
 [features]

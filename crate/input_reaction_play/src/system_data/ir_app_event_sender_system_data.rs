@@ -12,6 +12,7 @@ use derivative::Derivative;
 use game_input_model::play::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
+use network_mode_selection_model::NetworkModeSelectionEvent;
 use state_registry::StateId;
 
 /// `IrAppEventSenderSystemData`.
@@ -61,4 +62,7 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `GamePlayEvent` channel.
     #[derivative(Debug = "ignore")]
     pub game_play_ec: Write<'s, EventChannel<GamePlayEvent>>,
+    /// `NetworkModeSelectionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub network_mode_selection_ec: Write<'s, EventChannel<NetworkModeSelectionEvent>>,
 }

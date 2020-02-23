@@ -1,6 +1,6 @@
 use amethyst::Error;
-use application_menu::MenuEvent;
 use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventArgs};
+use menu_model::MenuEvent;
 use stdio_spi::StdinMapper;
 
 /// Builds a `GameModeSelectionEvent` from stdin tokens.

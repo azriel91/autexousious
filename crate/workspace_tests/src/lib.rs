@@ -12,8 +12,6 @@ extern crate pretty_assertions;
 #[cfg(test)]
 mod application;
 #[cfg(test)]
-mod application_menu;
-#[cfg(test)]
 mod application_robot;
 #[cfg(test)]
 mod application_state;
@@ -124,6 +122,12 @@ mod map_selection;
 #[cfg(test)]
 mod map_selection_ui_model;
 #[cfg(test)]
+mod network_join_play;
+#[cfg(test)]
+mod network_join_stdio;
+#[cfg(test)]
+mod network_mode_selection_stdio;
+#[cfg(test)]
 mod object_loading;
 #[cfg(test)]
 mod object_model;
@@ -167,3 +171,5 @@ mod ui_audio_loading;
 mod ui_loading;
 #[cfg(test)]
 mod ui_model;
+#[cfg(test)]
+mod ui_play;

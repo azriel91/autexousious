@@ -38,4 +38,8 @@ pub enum StateId {
     Loading,
     /// `MapSelectionState` ID.
     MapSelection,
+    /// `NetworkModeSelectionState` ID.
+    NetworkModeSelection,
+    /// `NetworkJoinState` ID.
+    NetworkJoin,
 }

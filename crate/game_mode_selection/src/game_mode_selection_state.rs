@@ -1,11 +1,11 @@
 use amethyst::{GameData, State, StateData, Trans};
 use application_event::AppEvent;
-use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
 use game_mode_selection_model::GameModeSelectionEntity;
 use log::debug;
+use menu_model::MenuEvent;
 use state_registry::StateId;
 
 use crate::GameModeSelectionTrans;

@@ -2,13 +2,6 @@
 
 //! UI to allow the user to select the game mode.
 
-pub use crate::{
-    game_mode_selection_ui_bundle::GameModeSelectionUiBundle,
-    system::{
-        GameModeSelectionSfxSystem, GameModeSelectionWidgetUiSystem, FONT_COLOUR_ACTIVE,
-        FONT_COLOUR_IDLE,
-    },
-};
+pub use crate::system::GameModeSelectionSfxSystem;
 
-mod game_mode_selection_ui_bundle;
 mod system;

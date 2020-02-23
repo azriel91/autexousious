@@ -1,12 +1,18 @@
 #![windows_subsystem = "windows"]
 
-use std::{any, convert::TryFrom, process};
+use std::{
+    any,
+    convert::TryFrom,
+    net::{IpAddr, UdpSocket},
+    process,
+};
 
 use amethyst::{
     assets::HotReloadBundle,
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
+    network::simulation::laminar::{LaminarConfig, LaminarNetworkBundle, LaminarSocket},
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
@@ -42,29 +48,38 @@ use game_input_model::config::{ControlBindings, InputConfig};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
-use game_mode_selection_ui::GameModeSelectionUiBundle;
+use game_mode_selection_ui::GameModeSelectionSfxSystem;
 use game_play::GamePlayBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
+use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
+use network_join_model::config::SessionServerConfig;
+use network_join_play::{
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
+    SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
+    SessionJoinServerListenerSystemDesc,
+};
+use network_join_stdio::NetworkJoinStdioBundle;
+use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
-    StateItemUiInputAugmentSystem, StateItemUiRectifySystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
 };
 use state_registry::StateId;
-use stdio_command_stdio::StdioCommandStdioBundle;
+use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle};
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
+use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -75,6 +90,70 @@ struct Opt {
     /// Frame rate to run the game at.
     #[structopt(long)]
     frame_rate: Option<u32>,
+    /// Address of the session server.
+    ///
+    /// Currently must be an `IpAddr`, in the future we may accept hostnames.
+    #[structopt(long, default_value = "127.0.0.1")]
+    session_server_address: IpAddr,
+    /// Port that the session server is listening on.
+    #[structopt(long, default_value = "1234")]
+    session_server_port: u16,
+}
+
+fn session_server_config(opt: &Opt) -> SessionServerConfig {
+    SessionServerConfig {
+        address: opt.session_server_address,
+        port: opt.session_server_port,
+    }
+}
+
+fn local_socket(session_server_config: &SessionServerConfig) -> Option<LaminarSocket> {
+    let local_socket_config = LaminarConfig {
+        blocking_mode: false,
+        ..Default::default()
+    };
+
+    // By binding to 0.0.0.0, then connecting to the server address, the OS will give us an address
+    // and port that we can use for our socket.
+    let local_socket = UdpSocket::bind("0.0.0.0:0");
+    let local_addr = if let Ok(local_socket) = local_socket {
+        if local_socket
+            .connect((session_server_config.address, session_server_config.port))
+            .is_ok()
+        {
+            local_socket.local_addr().ok()
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    if let Some(local_addr) = local_addr {
+        let local_socket = LaminarSocket::bind_with_config(local_addr, local_socket_config);
+        match local_socket {
+            Ok(local_socket) => {
+                // When we connect to an external interface, our local socket must also use
+                // the same interface. Otherwise we get an OS error 22 when sending a
+                // packet.
+                debug!(
+                    "Local socket: {:?}",
+                    local_socket
+                        .local_addr()
+                        .expect("Failed to read `local_addr()`")
+                );
+                Some(local_socket)
+            }
+            Err(e) => {
+                warn!("Unable to bind to local socket. Network play will be unavailable.");
+                debug!("Local socket bind error: {}", e);
+                None
+            }
+        }
+    } else {
+        error!("Failed to get local address. Network play will be unavailable.");
+        None
+    }
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
@@ -85,6 +164,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .level_for("rendy_graph", LogLevelFilter::Warn)
         .level_for("rendy_wsi", LogLevelFilter::Warn)
         .start();
+
+    let session_server_config = session_server_config(&opt);
 
     let assets_dir = AppDir::assets()?;
 
@@ -112,13 +193,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
+            .with_bundle(LaminarNetworkBundle::new(local_socket(
+                &session_server_config,
+            )))?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
-            .with_bundle(GameModeSelectionUiBundle::new())?
             .with(
                 InputToControlInputSystem::new(input_config),
                 any::type_name::<InputToControlInputSystem>(),
@@ -145,6 +228,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AssetSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
+            .with_bundle(NetworkModeSelectionStdioBundle::new())?
+            .with_bundle(NetworkJoinStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?
@@ -157,9 +242,24 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
             .with(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with(
+                UiActiveWidgetUpdateSystem::new(),
+                any::type_name::<UiActiveWidgetUpdateSystem>(),
+                &[any::type_name::<StdioCommandProcessingSystem>()],
+            )
+            .with(
+                UiTextColourUpdateSystem::new(),
+                any::type_name::<UiTextColourUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with(
+                WidgetSequenceUpdateSystem::new(),
+                any::type_name::<WidgetSequenceUpdateSystem>(),
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
+            )
+            .with(
                 StateIdEventSystem::new(),
                 any::type_name::<StateIdEventSystem>(),
-                &[],
+                &[any::type_name::<UiActiveWidgetUpdateSystem>()],
             )
             .with(
                 StateCameraResetSystem::new(),
@@ -177,10 +277,20 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[any::type_name::<StateItemSpawnSystem>()],
             )
             .with_bundle(AssetPlayBundle::new())?
-            .with(
-                StateItemUiRectifySystem::new(),
-                any::type_name::<StateItemUiRectifySystem>(),
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::new(session_server_config),
+                any::type_name::<SessionJoinRequestSystem>(),
                 &[],
+            )
+            .with_system_desc(
+                SessionJoinServerListenerSystemDesc::default(),
+                any::type_name::<SessionJoinServerListenerSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionJoinAcceptedSystemDesc::default(),
+                any::type_name::<SessionJoinAcceptedSystem>(),
+                &[any::type_name::<SessionJoinServerListenerSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),
@@ -194,6 +304,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_barrier()
             .with_bundle(GamePlayBundle::new())?
+            .with(
+                GameModeSelectionSfxSystem::new(),
+                any::type_name::<GameModeSelectionSfxSystem>(),
+                &[],
+            )
             .with(
                 AssetSelectionSfxSystem::new(),
                 any::type_name::<AssetSelectionSfxSystem>(),

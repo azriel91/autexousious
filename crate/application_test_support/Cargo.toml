@@ -37,6 +37,7 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
+network_join_play = { path = "../network_join_play" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
@@ -50,6 +51,7 @@ state_registry = { path = "../state_registry" }
 tracker = { path = "../tracker" }
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_loading = { path = "../ui_loading" }
+ui_play = { path = "../ui_play" }
 
 [features]
 nightly = ["amethyst/nightly"]
