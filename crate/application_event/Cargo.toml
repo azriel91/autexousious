@@ -16,6 +16,8 @@ derive_more = "0.99.2"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
+network_join_model = { path = "../network_join_model" }
+network_mode_selection_model = { path = "../network_mode_selection_model" }
 stdio_command_model = { path = "../stdio_command_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"

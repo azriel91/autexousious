@@ -10,18 +10,20 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-application_menu = { path = "../application_menu" }
+menu_model = { path = "../menu_model" }
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 kinematic_model = { path = "../kinematic_model" }
+parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
 ui_label_model = { path = "../ui_label_model" }
 ui_model_spi = { path = "../ui_model_spi" }
+ui_model_spi_play = { path = "../ui_model_spi_play" }
 
 [features]
 nightly = ["amethyst/nightly"]

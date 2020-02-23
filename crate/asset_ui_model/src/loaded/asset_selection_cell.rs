@@ -6,7 +6,7 @@ use asset_model::{loaded::AssetId, ItemComponent};
 use asset_selection_model::play::AssetSelection;
 use derivative::Derivative;
 use derive_new::new;
-use ui_model_spi::play::WidgetStatus;
+use ui_model_spi::config::WidgetStatus;
 
 /// `AssetSelection` cell for a particular asset.
 ///

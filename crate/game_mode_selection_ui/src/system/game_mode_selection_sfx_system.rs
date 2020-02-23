@@ -4,9 +4,9 @@ use amethyst::{
     ecs::{Read, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
-use application_menu::MenuEvent;
 use derive_new::new;
 use game_mode_selection_model::GameModeSelectionEvent;
+use menu_model::MenuEvent;
 use ui_audio_model::{config::UiSfxId, loaded::UiSfxMap};
 
 /// Default volume to play sounds at.

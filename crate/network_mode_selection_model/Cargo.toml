@@ -1,0 +1,21 @@
+[package]
+name = "network_mode_selection_model"
+version = "0.18.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+menu_model = { path = "../menu_model" }
+serde = { version = "1.0.104", features = ["derive"] }
+structopt = "0.3.9"
+structopt-derive = "0.4.2"
+strum = "0.17.1"
+strum_macros = "0.17.1"
+
+[features]
+nightly = ["amethyst/nightly"]

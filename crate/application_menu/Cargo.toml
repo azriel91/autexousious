@@ -1,6 +1,6 @@
 [package]
 name = "application_menu"
-version = "0.17.0"
+version = "0.1.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -9,14 +9,6 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-derivative = "1.0.3"
-derive-new = "0.5.8"
-game_input_model = { path = "../game_input_model" }
-log = "0.4.8"
-strum = "0.17.1"
-strum_macros = "0.17.1"
-ui_model_spi = { path = "../ui_model_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]
+game_mode_selection_model = { path = "../game_mode_selection_model" }
+network_mode_selection_model = { path = "../network_mode_selection_model" }
+serde = { version = "1.0.104", features = ["derive"] }

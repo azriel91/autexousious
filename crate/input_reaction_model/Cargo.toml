@@ -19,11 +19,11 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.99.2"
-game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path ="../game_mode_selection_model" }
 game_play_model = { path ="../game_play_model" }
 mirrored_model = { path ="../mirrored_model" }
+network_mode_selection_model = { path ="../network_mode_selection_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }

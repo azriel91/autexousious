@@ -5,6 +5,8 @@ use derive_more::From;
 use game_input_model::play::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
+use network_join_model::NetworkJoinEvent;
+use network_mode_selection_model::NetworkModeSelectionEvent;
 use stdio_command_model::StdioCommandEvent;
 use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 
@@ -29,6 +31,10 @@ pub enum AppEvent {
     GameModeSelection(GameModeSelectionEvent),
     /// `game_play` events.
     GamePlay(GamePlayEvent),
+    /// `network_mode_selection` events.
+    NetworkModeSelection(NetworkModeSelectionEvent),
+    /// `network_join` events.
+    NetworkJoin(NetworkJoinEvent),
     /// `stdio_command` events.
     StdioCommand(StdioCommandEvent),
     /// Events sent by the winit window.

@@ -2,6 +2,7 @@
 mod test {
     use std::str::FromStr;
 
+    use application_menu::MenuIndex;
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
     use input_reaction_model::config::{InputReaction, InputReactions};
@@ -12,9 +13,9 @@ mod test {
     use ui_button_model::config::{UiButton, UiButtons};
     use ui_label_model::config::{UiLabel, UiSpriteLabel};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
-    use ui_model::config::UiFrame;
+    use ui_model_spi::config::{WidgetStatus, WidgetStatusSequences};
 
-    use ui_model::config::{UiDefinition, UiSequence, UiSequences, UiType};
+    use ui_model::config::{UiDefinition, UiFrame, UiSequence, UiSequences, UiType};
 
     const UI_MENU_YAML: &str = r#"
 menu:
@@ -23,11 +24,17 @@ menu:
     label: { text: "Start Game" }
     position: { x: -1, y: -2, z: -3 }
     sprite: { sequence: "active" }
+    widget_status_sequences:
+      idle: "start_game_inactive"
+      active: "active"
 
   - index: "exit"
     label: { position: { x: 1, y: 2, z: 3 }, text: "Exit" }
     position: { x: -1, y: -2, z: -3 }
     sprite: { sequence: "exit_inactive" }
+    widget_status_sequences:
+      idle: "start_game_inactive"
+      active: "active"
 
 buttons:
   - position: { x: -4, y: -5, z: -6 }
@@ -84,6 +91,18 @@ sequences:
             .expect("Failed to deserialize `UiDefinition`.");
 
         let position_init = PositionInit::new(-1, -2, -3);
+        let widget_status_sequences = {
+            let mut widget_status_sequences = IndexMap::new();
+            widget_status_sequences.insert(
+                WidgetStatus::Idle,
+                SequenceNameString::String(String::from("start_game_inactive")),
+            );
+            widget_status_sequences.insert(
+                WidgetStatus::Active,
+                SequenceNameString::String(String::from("active")),
+            );
+            WidgetStatusSequences::new(widget_status_sequences)
+        };
         let ui_type = UiType::Menu(UiMenuItems::new(vec![
             UiMenuItem::new(
                 position_init,
@@ -92,7 +111,8 @@ sequences:
                     PositionInit::new(0, 0, 0),
                     SequenceNameString::String(String::from("active")),
                 ),
-                GameModeIndex::StartGame,
+                MenuIndex::GameMode(GameModeIndex::StartGame),
+                widget_status_sequences.clone(),
             ),
             UiMenuItem::new(
                 position_init,
@@ -103,7 +123,8 @@ sequences:
                         "Expected `SequenceNameString::from_str(\"exit_inactive\")` to succeed.",
                     ),
                 ),
-                GameModeIndex::Exit,
+                MenuIndex::GameMode(GameModeIndex::Exit),
+                widget_status_sequences,
             ),
         ]));
         let buttons = UiButtons::new(vec![UiButton::new(

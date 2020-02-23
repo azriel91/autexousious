@@ -1,0 +1,20 @@
+[package]
+name = "network_mode_selection_stdio"
+version = "0.18.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+application_event = { path = "../application_event" }
+menu_model = { path = "../menu_model" }
+network_mode_selection_model = { path = "../network_mode_selection_model" }
+derive-new = "0.5.8"
+stdio_spi = { path = "../stdio_spi" }
+
+[features]
+nightly = ["amethyst/nightly"]

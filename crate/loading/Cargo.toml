@@ -12,6 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 application_event = { path = "../application_event" }
+application_menu = { path = "../application_menu" }
 application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
@@ -32,9 +33,7 @@ control_settings_model = { path = "../control_settings_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }
-game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
-game_mode_selection_model = { path = "../game_mode_selection_model" }
 humantime = "2.0.0"
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
@@ -64,6 +63,7 @@ ui_audio_model = { path = "../ui_audio_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
+ui_model_spi = { path = "../ui_model_spi" }
 
 [features]
 nightly = ["amethyst/nightly"]

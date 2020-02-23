@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+* Support to join session based network games. ([#198])
+
+[#198]: https://gitlab.com/azriel91/autexousious/issues/198
+
 ## 0.17.0 (2020-01-31)
 
 ### Added

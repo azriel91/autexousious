@@ -5,9 +5,9 @@ mod tests {
         shrev::EventChannel,
         Error,
     };
-    use application_menu::MenuEvent;
     use application_test_support::AutexousiousApplication;
     use game_mode_selection_model::{GameModeIndex, GameModeSelectionEvent};
+    use menu_model::MenuEvent;
 
     use game_mode_selection_ui::GameModeSelectionSfxSystem;
 

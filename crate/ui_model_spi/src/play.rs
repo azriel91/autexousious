@@ -2,10 +2,9 @@
 
 pub use self::{
     siblings::Siblings, siblings_boundary_action::SiblingsBoundaryAction,
-    siblings_vertical::SiblingsVertical, widget_status::WidgetStatus,
+    siblings_vertical::SiblingsVertical,
 };
 
 mod siblings;
 mod siblings_boundary_action;
 mod siblings_vertical;
-mod widget_status;

@@ -1,15 +1,7 @@
 #![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
-//! Provides types to support building an application menu.
+//! Collective types over all menu crates.
 
-pub use self::{
-    component::MenuItem,
-    event::MenuEvent,
-    system::{
-        MenuItemWidgetInputResources, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
-    },
-};
+pub use crate::menu_index::MenuIndex;
 
-mod component;
-mod event;
-mod system;
+mod menu_index;

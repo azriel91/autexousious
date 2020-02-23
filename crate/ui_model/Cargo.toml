@@ -12,11 +12,11 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
+application_menu = { path = "../application_menu" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 control_settings_model = { path = "../control_settings_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-game_mode_selection_model = { path = "../game_mode_selection_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }

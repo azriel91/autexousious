@@ -11,7 +11,7 @@ use derive_new::new;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
 
-const FONT_COLOUR: [f32; 4] = [0.65, 0.65, 0.65, 1.];
+const FONT_COLOUR: [f32; 4] = [0.55, 0.55, 0.55, 1.];
 const FONT_SIZE: f32 = 30.;
 const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT: f32 = 75.;

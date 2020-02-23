@@ -8,6 +8,7 @@ use game_mode_selection_model::{GameModeSelectionEvent, GameModeSelectionEventAr
 use game_play_model::{GamePlayEvent, GamePlayEventArgs};
 use input_reaction_model::config::InputReactionAppEvent;
 use log::{debug, error};
+use network_mode_selection_model::{NetworkModeSelectionEvent, NetworkModeSelectionEventArgs};
 
 use crate::IrAppEventSenderSystemData;
 
@@ -62,6 +63,12 @@ impl IrAppEventSender {
             InputReactionAppEvent::GamePlay(game_play_event_args) => {
                 Self::handle_game_play_event(ir_app_event_sender_system_data, game_play_event_args);
             }
+            InputReactionAppEvent::NetworkModeSelection(network_mode_selection_event_args) => {
+                Self::handle_network_mode_selection_event(
+                    ir_app_event_sender_system_data,
+                    network_mode_selection_event_args,
+                );
+            }
         }
     }
 
@@ -104,6 +111,22 @@ impl IrAppEventSender {
         ir_app_event_sender_system_data
             .game_play_ec
             .single_write(game_play_event);
+    }
+
+    fn handle_network_mode_selection_event(
+        ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
+        network_mode_selection_event_args: NetworkModeSelectionEventArgs,
+    ) {
+        let network_mode_selection_event = match network_mode_selection_event_args {
+            NetworkModeSelectionEventArgs::Select { index } => {
+                NetworkModeSelectionEvent::Select(index)
+            }
+            NetworkModeSelectionEventArgs::Close => NetworkModeSelectionEvent::Close,
+        };
+
+        ir_app_event_sender_system_data
+            .network_mode_selection_ec
+            .single_write(network_mode_selection_event);
     }
 
     pub(crate) fn log_component_missing_error(

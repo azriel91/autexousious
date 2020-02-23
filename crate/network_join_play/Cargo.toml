@@ -1,0 +1,22 @@
+[package]
+name = "network_join_play"
+version = "0.18.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+derivative = "1.0.3"
+derive-new = "0.5.8"
+log = "0.4.8"
+network_join_model = { path = "../network_join_model" }
+network_session_model = { path = "../network_session_model" }
+shell-words = "0.1.0"
+structopt = "0.3.9"
+
+[features]
+nightly = ["amethyst/nightly"]
