@@ -9,7 +9,6 @@ use application_menu::MenuIndex;
 use asset_model::{config::asset_type::Map, play::AssetWorld};
 use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
-    config::Dimensions,
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
         AssetSelectionHighlight, AssetSelector, AswPortraits,
@@ -36,9 +35,10 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
+use ui_form_model::config::UiTextInput;
 use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::{UiMenu, UiMenuItem};
-use ui_model_spi::loaded::WidgetStatusSequences;
+use ui_model_spi::{config::Dimensions, loaded::WidgetStatusSequences};
 
 use crate::ItemComponentComponentAugmentSystem;
 
@@ -79,6 +79,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<WidgetStatusSequences>();
         asset_world.register::<UiLabel>();
+        asset_world.register::<UiTextInput>();
         asset_world.register::<UiMenu>();
         asset_world.register::<UiMenuItem<MenuIndex>>();
 
@@ -225,6 +226,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             ItemComponentComponentAugmentSystem::<UiLabel>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
             &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<UiTextInput>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
+            &[any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiMenu>::new(),

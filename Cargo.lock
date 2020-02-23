@@ -659,6 +659,7 @@ dependencies = [
  "sequence_model 0.17.0",
  "spawn_model 0.17.0",
  "sprite_model 0.17.0",
+ "ui_form_model 0.18.0",
  "ui_label_model 0.17.0",
  "ui_menu_item_model 0.17.0",
  "ui_model_spi 0.17.0",
@@ -737,6 +738,7 @@ dependencies = [
  "spawn_model 0.17.0",
  "spawn_play 0.17.0",
  "ui_audio_model 0.17.0",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]
@@ -3137,6 +3139,7 @@ dependencies = [
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_model 0.17.0",
  "ui_label_model 0.17.0",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]
@@ -5582,6 +5585,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "ui_form_model"
+version = "0.18.0"
+dependencies = [
+ "amethyst 0.14.0 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.17.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "kinematic_model 0.17.0",
+ "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_label_model 0.17.0",
+ "ui_model_spi 0.17.0",
+]
+
+[[package]]
 name = "ui_label_model"
 version = "0.17.0"
 dependencies = [
@@ -5597,6 +5615,7 @@ dependencies = [
  "sprite_model 0.17.0",
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
+ "ui_model_spi 0.17.0",
 ]
 
 [[package]]
@@ -5650,6 +5669,7 @@ dependencies = [
  "strum 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.17.1 (git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy)",
  "ui_button_model 0.17.0",
+ "ui_form_model 0.18.0",
  "ui_menu_item_model 0.17.0",
 ]
 
@@ -6121,6 +6141,7 @@ dependencies = [
  "ui_audio_loading 0.17.0",
  "ui_audio_model 0.17.0",
  "ui_button_model 0.17.0",
+ "ui_form_model 0.18.0",
  "ui_label_model 0.17.0",
  "ui_loading 0.17.0",
  "ui_menu_item_model 0.17.0",

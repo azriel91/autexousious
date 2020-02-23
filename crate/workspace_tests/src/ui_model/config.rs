@@ -13,7 +13,7 @@ mod test {
     use ui_button_model::config::{UiButton, UiButtons};
     use ui_label_model::config::{UiLabel, UiSpriteLabel};
     use ui_menu_item_model::config::{UiMenuItem, UiMenuItems};
-    use ui_model_spi::config::{WidgetStatus, WidgetStatusSequences};
+    use ui_model_spi::config::{Dimensions, WidgetStatus, WidgetStatusSequences};
 
     use ui_model::config::{UiDefinition, UiFrame, UiSequence, UiSequences, UiType};
 
@@ -21,7 +21,7 @@ mod test {
 menu:
   # First item is active by default. The sequence here should correspond to the active status.
   - index: "start_game"
-    label: { text: "Start Game" }
+    label: { text: "Start Game", dimensions: { w: 200, h: 50 }, font_colour: [0.1, 0.1, 0.1, 0.1], font_size: 20 }
     position: { x: -1, y: -2, z: -3 }
     sprite: { sequence: "active" }
     widget_status_sequences:
@@ -106,7 +106,13 @@ sequences:
         let ui_type = UiType::Menu(UiMenuItems::new(vec![
             UiMenuItem::new(
                 position_init,
-                UiLabel::new(PositionInit::new(0, 0, 0), String::from("Start Game")),
+                UiLabel {
+                    position: PositionInit::new(0, 0, 0),
+                    text: String::from("Start Game"),
+                    dimensions: Dimensions { w: 200, h: 50 },
+                    font_colour: [0.1; 4],
+                    font_size: 20,
+                },
                 UiSpriteLabel::new(
                     PositionInit::new(0, 0, 0),
                     SequenceNameString::String(String::from("active")),
@@ -116,7 +122,11 @@ sequences:
             ),
             UiMenuItem::new(
                 position_init,
-                UiLabel::new(PositionInit::new(1, 2, 3), String::from("Exit")),
+                UiLabel {
+                    position: PositionInit::new(1, 2, 3),
+                    text: String::from("Exit"),
+                    ..Default::default()
+                },
                 UiSpriteLabel::new(
                     PositionInit::new(0, 0, 0),
                     SequenceNameString::from_str("exit_inactive").expect(
@@ -129,7 +139,11 @@ sequences:
         ]));
         let buttons = UiButtons::new(vec![UiButton::new(
             PositionInit::new(-4, -5, -6),
-            UiLabel::new(PositionInit::new(-7, -8, -9), String::from("Button Zero")),
+            UiLabel {
+                position: PositionInit::new(-7, -8, -9),
+                text: String::from("Button Zero"),
+                ..Default::default()
+            },
             UiSpriteLabel::new(
                 PositionInit::new(-10, -11, -12),
                 SequenceNameString::String(String::from("button_inactive")),

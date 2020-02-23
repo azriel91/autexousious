@@ -22,3 +22,4 @@ sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
+ui_model_spi = { path = "../ui_model_spi" }

@@ -1,8 +1,9 @@
-use asset_ui_model::config::{AswPortraits, Dimensions};
+use asset_ui_model::config::AswPortraits;
 use indexmap::IndexMap;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
 use ui_label_model::config::UiSpriteLabel;
+use ui_model_spi::config::Dimensions;
 
 use crate::config::MswLayer;
 

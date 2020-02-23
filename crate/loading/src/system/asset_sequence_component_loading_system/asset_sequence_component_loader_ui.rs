@@ -334,6 +334,9 @@ impl AssetSequenceComponentLoaderUi {
                 };
 
             match ui_type {
+                UiType::Form(_ui_form_items) => {
+                    unimplemented!();
+                }
                 UiType::Menu(ui_menu_items_cfg) => {
                     AssetSequenceComponentLoaderUiMenu::load(
                         &mut sequence_component_loading_resources.asset_world,

@@ -1,6 +1,6 @@
 [package]
-name = "ui_label_model"
-version = "0.17.0"
+name = "ui_form_model"
+version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -10,15 +10,11 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-application_ui = { path = "../application_ui" }
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 kinematic_model = { path = "../kinematic_model" }
-sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
-sprite_model = { path = "../sprite_model" }
-strum = "0.17.1"
-strum_macros = "0.17.1"
+ui_label_model = { path = "../ui_label_model" }
 ui_model_spi = { path = "../ui_model_spi" }

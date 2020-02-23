@@ -142,6 +142,7 @@ tracker = { path = "../tracker" }
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_audio_model = { path = "../ui_audio_model" }
 ui_button_model = { path = "../ui_button_model" }
+ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }

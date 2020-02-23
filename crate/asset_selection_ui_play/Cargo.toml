@@ -29,3 +29,4 @@ sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 spawn_play = { path = "../spawn_play" }
 ui_audio_model = { path = "../ui_audio_model" }
+ui_model_spi = { path = "../ui_model_spi" }

@@ -4,9 +4,10 @@ mod test {
     use sequence_model::config::SequenceNameString;
     use serde_yaml;
     use ui_label_model::config::UiSpriteLabel;
+    use ui_model_spi::config::Dimensions;
 
     use asset_ui_model::config::{
-        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector, Dimensions,
+        AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector,
     };
 
     const ASSET_DISPLAY_YAML: &str = r#"---
