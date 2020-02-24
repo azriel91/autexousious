@@ -35,7 +35,7 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
-use ui_form_model::config::UiTextInput;
+use ui_form_model::{config::UiTextInput, loaded::UiForm};
 use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::{UiMenu, UiMenuItem};
 use ui_model_spi::{config::Dimensions, loaded::WidgetStatusSequences};
@@ -78,8 +78,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<WidgetStatusSequences>();
-        asset_world.register::<UiLabel>();
+        asset_world.register::<UiForm>();
         asset_world.register::<UiTextInput>();
+        asset_world.register::<UiLabel>();
         asset_world.register::<UiMenu>();
         asset_world.register::<UiMenuItem<MenuIndex>>();
 
@@ -223,14 +224,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
-            ItemComponentComponentAugmentSystem::<UiLabel>::new(),
-            any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
+            ItemComponentComponentAugmentSystem::<UiForm>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiForm>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiTextInput>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
-            &[any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>()],
+            &[any::type_name::<ItemComponentComponentAugmentSystem<UiForm>>()],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<UiLabel>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<UiTextInput>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiMenu>::new(),

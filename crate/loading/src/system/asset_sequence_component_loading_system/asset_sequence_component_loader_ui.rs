@@ -35,9 +35,9 @@ use ui_model::config::{UiDefinition, UiType};
 use crate::{
     AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
     AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-    AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
-    DefinitionLoadingResourcesRead, IdMappingResourcesRead, SequenceComponentLoadingResources,
-    TextureLoadingResourcesRead,
+    AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
+    AssetSequenceComponentLoaderUiMenu, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
 };
 
 /// Loads sequence components for UI assets.
@@ -334,10 +334,17 @@ impl AssetSequenceComponentLoaderUi {
                 };
 
             match ui_type {
-                UiType::Form(_ui_form_items) => {
-                    unimplemented!();
+                UiType::Form(ui_form_items) => {
+                    AssetSequenceComponentLoaderUiForm::load(
+                        &mut sequence_component_loading_resources.asset_world,
+                        asset_slug,
+                        sequence_id_mappings,
+                        &asset_sequence_component_loader_ui_components,
+                        &mut item_ids_all,
+                        ui_form_items,
+                    );
                 }
-                UiType::Menu(ui_menu_items_cfg) => {
+                UiType::Menu(ui_menu_items) => {
                     AssetSequenceComponentLoaderUiMenu::load(
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
@@ -345,7 +352,7 @@ impl AssetSequenceComponentLoaderUi {
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
                         &sequence_component_loading_resources.input_config,
-                        ui_menu_items_cfg,
+                        ui_menu_items,
                     );
                 }
                 UiType::CharacterSelection(character_selection_ui) => {

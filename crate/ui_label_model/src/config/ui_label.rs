@@ -2,7 +2,7 @@ use amethyst::{
     core::math::Vector3,
     ecs::{storage::DenseVecStorage, Component, Entity, ReadExpect, World, WriteStorage},
     shred::{ResourceId, SystemData},
-    ui::{Anchor, UiText, UiTransform},
+    ui::{Anchor, LineMode, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::ItemComponent;
@@ -30,6 +30,12 @@ pub struct UiLabel {
     /// Width and height of the text input. Defaults to `400x75`.
     #[derivative(Default(value = "UiLabel::dimensions_default()"))]
     pub dimensions: Dimensions,
+    /// Where to align the text within the text field.
+    #[derivative(Default(value = "Anchor::Middle"))]
+    pub align: Anchor,
+    /// Whether text should be on one line, or wrap.
+    #[derivative(Default(value = "LineMode::Single"))]
+    pub line_mode: LineMode,
     /// Font colour of the text.
     #[derivative(Default(value = "FONT_COLOUR"))]
     pub font_colour: [f32; 4],
@@ -91,12 +97,14 @@ impl<'s> ItemComponent<'s> for UiLabel {
         );
 
         let index_text = self.text.clone();
-        let ui_text = UiText::new(
+        let mut ui_text = UiText::new(
             font.clone(),
             index_text,
             self.font_colour,
             self.font_size as f32,
         );
+        ui_text.align = self.align.clone();
+        ui_text.line_mode = self.line_mode.clone();
 
         ui_transforms
             .insert(entity, ui_transform)

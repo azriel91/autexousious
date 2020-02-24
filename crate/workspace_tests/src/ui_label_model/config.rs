@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod test {
+    use amethyst::ui::{Anchor, LineMode};
     use kinematic_model::config::PositionInit;
     use serde_yaml;
     use ui_model_spi::config::Dimensions;
@@ -10,6 +11,8 @@ mod test {
 position: { x: 1, y: 2, z: 3 }
 text: "Text"
 dimensions: { w: 10, h: 20 }
+align: "MiddleLeft"
+line_mode: "Wrap"
 font_colour: [0.1, 0.2, 0.3, 0.4]
 font_size: 20
 "#;
@@ -25,6 +28,8 @@ font_size: 20
             position: PositionInit { x: 1, y: 2, z: 3 },
             text: String::from("Text"),
             dimensions: Dimensions { w: 10, h: 20 },
+            align: Anchor::MiddleLeft,
+            line_mode: LineMode::Wrap,
             font_colour: [0.1, 0.2, 0.3, 0.4],
             font_size: 20,
         };

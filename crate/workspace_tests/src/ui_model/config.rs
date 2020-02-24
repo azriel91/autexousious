@@ -2,6 +2,7 @@
 mod test {
     use std::str::FromStr;
 
+    use amethyst::ui::{Anchor, LineMode};
     use application_menu::MenuIndex;
     use game_mode_selection_model::GameModeIndex;
     use indexmap::IndexMap;
@@ -110,6 +111,8 @@ sequences:
                     position: PositionInit::new(0, 0, 0),
                     text: String::from("Start Game"),
                     dimensions: Dimensions { w: 200, h: 50 },
+                    align: Anchor::Middle,
+                    line_mode: LineMode::Single,
                     font_colour: [0.1; 4],
                     font_size: 20,
                 },
