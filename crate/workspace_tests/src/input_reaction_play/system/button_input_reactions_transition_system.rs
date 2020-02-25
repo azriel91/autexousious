@@ -30,7 +30,9 @@ mod tests {
     use sprite_model::config::SpriteSequenceName;
     use ui_model::config::UiSequence;
 
-    use input_reaction_play::ButtonInputReactionsTransitionSystem;
+    use input_reaction_play::{
+        ButtonInputReactionsTransitionSystem, ButtonInputReactionsTransitionSystemDesc,
+    };
 
     #[test]
     fn inserts_transition_for_button_press_event() -> Result<(), Error> {
@@ -68,8 +70,8 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(
-                ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
+            .with_system_desc::<_, ButtonInputReactionsTransitionSystem<BasicIrr>, _>(
+                ButtonInputReactionsTransitionSystemDesc::default(),
                 "",
                 &[],
             )
