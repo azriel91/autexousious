@@ -8,7 +8,7 @@ mod tests {
         ecs::{Read, ReadExpect, WorldExt},
         input::Button,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
-        winit::VirtualKeyCode,
+        winit::{MouseButton, VirtualKeyCode},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -109,6 +109,39 @@ mod tests {
         )
     }
 
+    #[test]
+    fn loads_press_button_many_irses() -> Result<(), Error> {
+        run_test(
+            sequence_with_press_button_many(),
+            None,
+            |character_irs, input_reactions_assets| {
+                let expected_character_input_reactions = expected_input_reactions_4();
+                let character_input_reactions_handle = character_irs
+                    .get(0)
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
+                assert_eq!(
+                    &expected_character_input_reactions,
+                    character_input_reactions
+                );
+
+                let expected_character_input_reactions = expected_input_reactions_3();
+                let character_input_reactions_handle = character_irs
+                    .get(1)
+                    .expect("Expected `CharacterInputReactionsHandle` to exist.");
+                let character_input_reactions = input_reactions_assets
+                    .get(character_input_reactions_handle)
+                    .expect("Expected `CharacterInputReactions` to be loaded.");
+                assert_eq!(
+                    &expected_character_input_reactions,
+                    character_input_reactions
+                );
+            },
+        )
+    }
+
     fn run_test(
         sequence: CharacterSequence,
         sequence_default: Option<&'static CharacterSequence>,
@@ -178,6 +211,25 @@ mod tests {
 
     fn sequence_with_press_button() -> CharacterSequence {
         let sequence_with_press_button_yaml = "irs_loader_sequence_with_press_button.yaml";
+        let sequence_with_press_button_path = PathBuf::from_iter(&[
+            env!("CARGO_MANIFEST_DIR"),
+            "src",
+            "input_reaction_loading",
+            sequence_with_press_button_yaml,
+        ]);
+        let contents = IoUtils::read_file(&sequence_with_press_button_path).unwrap_or_else(|e| {
+            panic!(
+                "Failed to read `{}`. Error: {}",
+                sequence_with_press_button_yaml, e
+            )
+        });
+
+        serde_yaml::from_slice::<CharacterSequence>(&contents)
+            .expect("Failed to load `irs_loader_sequence_with_press_button.yaml`.")
+    }
+
+    fn sequence_with_press_button_many() -> CharacterSequence {
+        let sequence_with_press_button_yaml = "irs_loader_sequence_with_press_button_many.yaml";
         let sequence_with_press_button_path = PathBuf::from_iter(&[
             env!("CARGO_MANIFEST_DIR"),
             "src",
@@ -490,6 +542,38 @@ mod tests {
             }),
             requirement: CharacterIrr::default(),
         }])
+    }
+
+    // Should include multiple button input reactions.
+    fn expected_input_reactions_4() -> CharacterInputReactions {
+        let mut events_0 = InputReactionAppEvents::default();
+        events_0.push(InputReactionAppEvent::AssetSelection(
+            AssetSelectionEventCommand::Join,
+        ));
+
+        let mut events_1 = InputReactionAppEvents::default();
+        events_1.push(InputReactionAppEvent::AssetSelection(
+            AssetSelectionEventCommand::Leave,
+        ));
+
+        InputReactions::new(vec![
+            InputReaction {
+                effect: ReactionEffect::ButtonPress(ReactionEffectButton {
+                    button: Button::Key(VirtualKeyCode::LAlt),
+                    sequence_id: SequenceId::new(1),
+                    events: events_0,
+                }),
+                requirement: CharacterIrr::default(),
+            },
+            InputReaction {
+                effect: ReactionEffect::ButtonPress(ReactionEffectButton {
+                    button: Button::Mouse(MouseButton::Left),
+                    sequence_id: SequenceId::new(1),
+                    events: events_1,
+                }),
+                requirement: CharacterIrr::default(),
+            },
+        ])
     }
 
     type TestSystemData<'s> = (
