@@ -7,7 +7,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use control_settings_loading::KeyboardUiGen;
-use game_input_model::play::ButtonInputControlled;
+use game_input_model::play::{ButtonInputControlled, NormalInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -276,7 +276,8 @@ impl AssetSequenceComponentLoaderUi {
             let mut item_ids_button = ui_definition
                 .buttons
                 .iter()
-                .flat_map(|ui_button| {
+                .enumerate()
+                .flat_map(|(index, ui_button)| {
                     let mut ui_label = ui_button.label.clone();
                     ui_label.position += ui_button.position;
                     let position_init = ui_label.position;
@@ -303,7 +304,8 @@ impl AssetSequenceComponentLoaderUi {
                             .with(tint_sequence_handles.clone())
                             .with(scale_sequence_handles.clone())
                             .with(input_reactions_sequence_handles.clone())
-                            .with(ButtonInputControlled);
+                            .with(ButtonInputControlled)
+                            .with(NormalInputControlled::new(index as u32));
 
                         if let Some(sprite_render_sequence_handles) =
                             sprite_render_sequence_handles.clone()

@@ -8,13 +8,15 @@ use amethyst::{
 };
 use asset_model::ItemComponent;
 use derivative::Derivative;
+use derive_new::new;
 
 /// Marks an entity that responds to regular keyboard / mouse input.
 ///
 /// These are typically for UIs that are not designed to be interacted with controller input.
 ///
-/// TODO: Should this and `ButtonInputControlled` be merged?
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+/// This should be separate from `ButtonInputControlled` because there are entities that should
+/// react to device buttons, but not be `Selectable` / `Interactable`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct NormalInputControlled {
     /// Tab order for widgets.
     pub tab_order: u32,
