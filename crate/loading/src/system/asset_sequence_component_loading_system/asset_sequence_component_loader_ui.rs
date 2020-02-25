@@ -7,7 +7,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use control_settings_loading::KeyboardUiGen;
-use game_input_model::play::{ButtonInputControlled, SharedInputControlled};
+use game_input_model::play::ButtonInputControlled;
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -303,7 +303,7 @@ impl AssetSequenceComponentLoaderUi {
                             .with(tint_sequence_handles.clone())
                             .with(scale_sequence_handles.clone())
                             .with(input_reactions_sequence_handles.clone())
-                            .with(SharedInputControlled);
+                            .with(ButtonInputControlled);
 
                         if let Some(sprite_render_sequence_handles) =
                             sprite_render_sequence_handles.clone()
