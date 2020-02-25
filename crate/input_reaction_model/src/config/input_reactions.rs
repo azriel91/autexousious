@@ -3,7 +3,7 @@ use derive_new::new;
 use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{BasicIrr, ButtonInputReaction, InputReaction};
+use crate::config::{BasicIrr, ButtonInputReactionSingle, InputReaction};
 
 /// Sequence to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
@@ -90,6 +90,9 @@ where
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fallback: Option<InputReaction<SeqName, IRR>>,
+
+    // The following fields are not intended to be used in the game model, but rather for UIs that
+    // react to regular device input instead of controller input.
     /// Sequence to transition to when a keyboard `Button` is pressed.
     ///
     /// This is not intended to be used in the game model, but rather for the control settings UI to
@@ -97,5 +100,5 @@ where
     /// controller.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_button: Option<ButtonInputReaction<SeqName, IRR>>,
+    pub press_button: Option<ButtonInputReactionSingle<SeqName, IRR>>,
 }

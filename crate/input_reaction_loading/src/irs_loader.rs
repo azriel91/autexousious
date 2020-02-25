@@ -222,21 +222,24 @@ where
         sequence_id_mappings: &SequenceIdMappings<SeqName>,
         input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
     ) {
-        let button_input_reaction = input_reactions_frame.press_button.as_ref().or_else(|| {
-            // We want to make sure that, if `input_reactions_sequence.is_some()`, but
-            // the transition inside is `None`, we still fallback to `None`. This allows
-            // a sequence transition `None` value to override the default transition.
-            input_reactions_sequence
-                .or(input_reactions_default)
-                .and_then(|input_reactions_fallback| input_reactions_fallback.press_button.as_ref())
-        });
-        if let Some(button_input_reaction) = button_input_reaction {
-            let button = button_input_reaction.button;
+        let button_input_reaction_single =
+            input_reactions_frame.press_button.as_ref().or_else(|| {
+                // We want to make sure that, if `input_reactions_sequence.is_some()`, but
+                // the transition inside is `None`, we still fallback to `None`. This allows
+                // a sequence transition `None` value to override the default transition.
+                input_reactions_sequence
+                    .or(input_reactions_default)
+                    .and_then(|input_reactions_fallback| {
+                        input_reactions_fallback.press_button.as_ref()
+                    })
+            });
+        if let Some(button_input_reaction_single) = button_input_reaction_single {
+            let button = button_input_reaction_single.button;
 
             Self::load_input_reactions(
                 sequence_id_mappings,
                 input_reactions_loaded,
-                Some(button_input_reaction),
+                Some(button_input_reaction_single),
                 |sequence_id, events, requirement| {
                     InputReaction::<IRR>::new(
                         ReactionEffect::ButtonPress(ReactionEffectButton {

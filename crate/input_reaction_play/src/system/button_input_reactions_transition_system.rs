@@ -55,7 +55,8 @@ where
     #[derivative(Debug = "ignore")]
     pub button_input_controlleds: ReadStorage<'s, ButtonInputControlled>,
     /// `ButtonInputReactionsTransitionResources`.
-    pub input_reactions_transition_resources: ButtonInputReactionsTransitionResources<'s, IRR>,
+    pub button_input_reactions_transition_resources:
+        ButtonInputReactionsTransitionResources<'s, IRR>,
     /// `InputReactionRequirement` system data.
     pub requirement_system_data: IRR::SystemData,
 }
@@ -176,7 +177,7 @@ where
             input_ec,
             entities,
             button_input_controlleds,
-            mut input_reactions_transition_resources,
+            mut button_input_reactions_transition_resources,
             mut requirement_system_data,
         }: Self::SystemData,
     ) {
@@ -201,7 +202,7 @@ where
                     .copied()
                     .for_each(|entity| {
                         self.handle_button_event(
-                            &mut input_reactions_transition_resources,
+                            &mut button_input_reactions_transition_resources,
                             &mut requirement_system_data,
                             entity,
                             button,
