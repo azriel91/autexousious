@@ -5,7 +5,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
-        input::{Button, InputEvent},
+        input::InputEvent,
         shred::{ResourceId, SystemData},
         shrev::EventChannel,
         winit::VirtualKeyCode,
@@ -39,7 +39,10 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: SequenceId::new(0),
-                input_event: Some(InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::A))),
+                input_event: Some(InputEvent::KeyPressed {
+                    key_code: VirtualKeyCode::A,
+                    scancode: 0,
+                }),
             },
             ExpectedParams {
                 sequence_id: SequenceId::new(1),
@@ -52,7 +55,10 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: SequenceId::new(0),
-                input_event: Some(InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::B))),
+                input_event: Some(InputEvent::KeyPressed {
+                    key_code: VirtualKeyCode::B,
+                    scancode: 0,
+                }),
             },
             ExpectedParams {
                 sequence_id: SequenceId::new(0),

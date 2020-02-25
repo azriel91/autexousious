@@ -6,7 +6,7 @@ pub use crate::{
     ir_app_event_sender::IrAppEventSender,
     system::{
         ButtonInputReactionsTransitionSystem, ButtonInputReactionsTransitionSystemDesc,
-        InputReactionsTransitionSystem,
+        InputReactionsTransitionSystem, InteractableObjectSyncSystem,
     },
     system_data::IrAppEventSenderSystemData,
 };

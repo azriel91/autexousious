@@ -34,7 +34,7 @@ use input_reaction_model::{
 };
 use input_reaction_play::{
     ButtonInputReactionsTransitionSystem, ButtonInputReactionsTransitionSystemDesc,
-    InputReactionsTransitionSystem,
+    InputReactionsTransitionSystem, InteractableObjectSyncSystem,
 };
 use kinematic_model::{
     config::Position,
@@ -277,6 +277,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                 any::type_name::<ObjectKinematicsUpdateSystem>(),
                 any::type_name::<KeepWithinMapBoundsSystem>(),
             ],
+        ); // kcov-ignore
+        builder.add(
+            InteractableObjectSyncSystem::new(),
+            any::type_name::<InteractableObjectSyncSystem>(),
+            &[any::type_name::<ObjectTransformUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             ObjectMirroringSystem::new(),

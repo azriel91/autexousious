@@ -85,7 +85,7 @@ impl<'s> ItemComponent<'s> for UiLabel {
 
         let position = Into::<Vector3<f32>>::into(self.position);
 
-        let ui_transform = UiTransform::new(
+        let mut ui_transform = UiTransform::new(
             self.text.clone(),
             Anchor::BottomLeft,
             Anchor::BottomLeft,
@@ -95,6 +95,8 @@ impl<'s> ItemComponent<'s> for UiLabel {
             self.dimensions.w as f32,
             self.dimensions.h as f32,
         );
+        ui_transform.opaque = false;
+        ui_transform.transparent_target = true;
 
         let index_text = self.text.clone();
         let mut ui_text = UiText::new(
