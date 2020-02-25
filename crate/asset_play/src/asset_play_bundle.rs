@@ -20,7 +20,9 @@ use character_model::loaded::CharacterIrsHandles;
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
-use game_input_model::play::{ButtonInputControlled, InputControlled, SharedInputControlled};
+use game_input_model::play::{
+    ButtonInputControlled, InputControlled, NormalInputControlled, SharedInputControlled,
+};
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
     config::{PositionInit, ScaleInit, VelocityInit},
@@ -57,6 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         let mut asset_world = AssetWorld::default();
         asset_world.register::<InputControlled>();
         asset_world.register::<SharedInputControlled>();
+        asset_world.register::<NormalInputControlled>();
         asset_world.register::<ButtonInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
@@ -113,6 +116,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<SharedInputControlled>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<NormalInputControlled>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<NormalInputControlled>>(),
             &[],
         );
         builder.add(
