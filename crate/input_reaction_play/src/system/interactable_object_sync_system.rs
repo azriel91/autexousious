@@ -4,7 +4,7 @@ use amethyst::{
     ecs::{Entities, Join, Read, ReadStorage, System, World, WriteStorage},
     renderer::{SpriteRender, SpriteSheet},
     shred::{ResourceId, SystemData},
-    ui::{Anchor, Interactable, UiImage, UiTransform},
+    ui::{Anchor, Interactable, UiTransform},
 };
 use asset_model::loaded::{AssetId, AssetIdMappings};
 use derivative::Derivative;
@@ -49,9 +49,6 @@ pub struct InteractableObjectSyncSystemData<'s> {
     /// `UiTransform` components.
     #[derivative(Debug = "ignore")]
     pub ui_transforms: WriteStorage<'s, UiTransform>,
-    /// `UiImage` components.
-    #[derivative(Debug = "ignore")]
-    pub ui_images: WriteStorage<'s, UiImage>,
 }
 
 impl<'s> System<'s> for InteractableObjectSyncSystem {
@@ -69,7 +66,6 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
             transforms,
             ui_fov_scale_transform,
             mut ui_transforms,
-            mut ui_images,
         }: Self::SystemData,
     ) {
         (
@@ -137,9 +133,6 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
                             ui_transforms
                                 .insert(entity, ui_transform)
                                 .expect("Failed to insert `Transform` component.");
-
-                            let ui_image = UiImage::SolidColor([1., 0.3, 0.3, 0.5]);
-                            ui_images.insert(entity, ui_image).unwrap();
                         }
                     }
                 },
