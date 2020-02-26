@@ -89,23 +89,13 @@ impl<'s> System<'s> for UiTransformForFovSystem {
             let y_offset =
                 (screen_dimensions.height() - camera_zoom_dimensions.height * scale) / 2.;
 
+            let ui_fov_scale_transform_next = UiFovScaleTransform::new(scale, x_offset, y_offset);
+
             (&entities, &mut ui_transforms)
                 .join()
-                .for_each(|(entity, mut ui_transform)| {
-                    ui_transform.local_x -= ui_fov_scale_transform.x_offset;
-                    ui_transform.local_x /= ui_fov_scale_transform.scale;
-                    ui_transform.local_x *= scale;
-                    ui_transform.local_x += x_offset;
-
-                    ui_transform.local_y -= ui_fov_scale_transform.y_offset;
-                    ui_transform.local_y /= ui_fov_scale_transform.scale;
-                    ui_transform.local_y *= scale;
-                    ui_transform.local_y += y_offset;
-
-                    ui_transform.width /= ui_fov_scale_transform.scale;
-                    ui_transform.width *= scale;
-                    ui_transform.height /= ui_fov_scale_transform.scale;
-                    ui_transform.height *= scale;
+                .for_each(|(entity, ui_transform)| {
+                    ui_fov_scale_transform.unapply(ui_transform);
+                    ui_fov_scale_transform_next.apply(ui_transform);
 
                     if let Some(ui_text) = ui_texts.get_mut(entity) {
                         ui_text.font_size /= ui_fov_scale_transform.scale;
@@ -113,9 +103,7 @@ impl<'s> System<'s> for UiTransformForFovSystem {
                     }
                 });
 
-            ui_fov_scale_transform.scale = scale;
-            ui_fov_scale_transform.x_offset = x_offset;
-            ui_fov_scale_transform.y_offset = y_offset;
+            *ui_fov_scale_transform = ui_fov_scale_transform_next;
             self.screen_dimensions_last = screen_dimensions.clone();
         }
     }

@@ -65,14 +65,7 @@ impl<'s> System<'s> for UiTransformInsertionRectifySystem {
         )
             .join()
             .for_each(|(ui_transform, ui_text, _)| {
-                ui_transform.local_x *= ui_fov_scale_transform.scale;
-                ui_transform.local_x += ui_fov_scale_transform.x_offset;
-
-                ui_transform.local_y *= ui_fov_scale_transform.scale;
-                ui_transform.local_y += ui_fov_scale_transform.y_offset;
-
-                ui_transform.width *= ui_fov_scale_transform.scale;
-                ui_transform.height *= ui_fov_scale_transform.scale;
+                ui_fov_scale_transform.apply(ui_transform);
 
                 if let Some(ui_text) = ui_text {
                     ui_text.font_size *= ui_fov_scale_transform.scale;

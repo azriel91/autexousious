@@ -10,6 +10,7 @@ use asset_model::loaded::{AssetId, AssetIdMappings};
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
+use ui_model::play::UiFovScaleTransform;
 
 /// Creates / updates the `UiTransform` of an object based on its `Transform` and current sprite.
 ///
@@ -42,6 +43,9 @@ pub struct InteractableObjectSyncSystemData<'s> {
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: ReadStorage<'s, Transform>,
+    /// `UiFovScaleTransform` resource.
+    #[derivative(Debug = "ignore")]
+    pub ui_fov_scale_transform: Read<'s, UiFovScaleTransform>,
     /// `UiTransform` components.
     #[derivative(Debug = "ignore")]
     pub ui_transforms: WriteStorage<'s, UiTransform>,
@@ -63,6 +67,7 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
             sprite_renders,
             sprite_sheet_assets,
             transforms,
+            ui_fov_scale_transform,
             mut ui_transforms,
             mut ui_images,
         }: Self::SystemData,
@@ -119,12 +124,16 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
                             ui_transform.local_z = z;
                             ui_transform.width = width;
                             ui_transform.height = height;
+
+                            ui_fov_scale_transform.apply(ui_transform);
                         } else {
                             let id = format!("{:?}", entity);
                             let anchor = Anchor::BottomLeft;
                             let pivot = Anchor::BottomLeft;
-                            let ui_transform =
+                            let mut ui_transform =
                                 UiTransform::new(id, anchor, pivot, x, y, z, width, height);
+                            ui_fov_scale_transform.apply(&mut ui_transform);
+
                             ui_transforms
                                 .insert(entity, ui_transform)
                                 .expect("Failed to insert `Transform` component.");

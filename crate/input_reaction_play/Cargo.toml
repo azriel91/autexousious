@@ -27,3 +27,4 @@ network_mode_selection_model = { path = "../network_mode_selection_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 state_registry = { path = "../state_registry" }
+ui_model = { path = "../ui_model" }
