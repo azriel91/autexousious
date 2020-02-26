@@ -15,6 +15,3 @@ menu_model = { path = "../menu_model" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 derive-new = "0.5.8"
 stdio_spi = { path = "../stdio_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

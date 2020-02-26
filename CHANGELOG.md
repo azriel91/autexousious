@@ -5,8 +5,10 @@
 ### Added
 
 * Support to join session based network games. ([#198])
+* Rudimentary network join UI. ([#200])
 
 [#198]: https://gitlab.com/azriel91/autexousious/issues/198
+[#200]: https://gitlab.com/azriel91/autexousious/issues/200
 
 ## 0.17.0 (2020-01-31)
 

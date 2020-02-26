@@ -32,7 +32,7 @@ audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
 background_loading = { path = "../background_loading" }
 background_model = { path = "../background_model" }
-bytes = "0.4.12"
+bytes = "0.5.4"
 camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }
@@ -75,7 +75,7 @@ game_play_model = { path = "../game_play_model" }
 game_play_stdio = { path = "../game_play_stdio" }
 game_stats_model = { path = "../game_stats_model" }
 hamcrest = "0.1.5"
-indexmap = { version = "1.3.1", features = ["serde-1"] }
+indexmap = { version = "1.3.2", features = ["serde-1"] }
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 input_reaction_play = { path = "../input_reaction_play" }
@@ -142,12 +142,10 @@ tracker = { path = "../tracker" }
 ui_audio_loading = { path = "../ui_audio_loading" }
 ui_audio_model = { path = "../ui_audio_model" }
 ui_button_model = { path = "../ui_button_model" }
+ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model= { path = "../ui_model" }
 ui_model_spi = { path = "../ui_model_spi" }
 ui_play = { path = "../ui_play" }
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -31,6 +31,3 @@ application_robot = { path = "../application_robot" }
 assert_cmd = "0.12.0"
 escargot = "0.5.0"
 structopt-derive = "0.4.2"
-
-[features]
-nightly = ["amethyst/nightly"]

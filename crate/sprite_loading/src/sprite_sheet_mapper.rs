@@ -72,25 +72,27 @@ impl SpriteSheetMapper {
                         let sprite_index = (row * definition.column_count + col) as usize;
                         let sprite_offset = &sprite_offsets[sprite_index];
 
-                        [
-                            (sprite_offset.x - offset_x as i32) as f32 - half_sprite_w,
-                            // Negate the Y value because we want to shift the sprite up, whereas
-                            // the offset in Amethyst is to shift it down.
+                        // Negate the Y value because we want to shift the sprite up, whereas the
+                        // offset in Amethyst is to shift it down.
 
-                            // * The Y offset specified by the designer should be the bottom of the
-                            //   sprite in pixel coordinates for the whole image.
-                            // * `offset_y` is the top of the sprite in pixel coordinates.
-                            // * Amethyst renders from bottom up (Y axis increases upwards).
-                            //
-                            // The number of pixels to be below the character's XYZ position is
-                            // calculated by the pixel coordinate of the bottom of the sprite,
-                            // subtracting the offset specified by the designer (which is usually
-                            // within the bounds of the sprite).
-                            //
-                            // Finally, because Amethyst normally shifts the middle of the sprite to
-                            // the XYZ position of the entity, we unshift it.
-                            ((offset_h + offset_y) as i32 - sprite_offset.y) as f32 - half_sprite_h,
-                        ]
+                        // * The Y offset specified by the designer should be the bottom of the
+                        //   sprite in pixel coordinates for the whole image.
+                        // * `offset_y` is the top of the sprite in pixel coordinates.
+                        // * Amethyst renders from bottom up (Y axis increases upwards).
+                        //
+                        // The number of pixels to be below the character's XYZ position is
+                        // calculated by the pixel coordinate of the bottom of the sprite,
+                        // subtracting the offset specified by the designer (which is usually
+                        // within the bounds of the sprite).
+                        //
+                        // Finally, because Amethyst normally shifts the middle of the sprite to the
+                        // XYZ position of the entity, we unshift it.
+                        let pixel_offset_x =
+                            (sprite_offset.x - offset_x as i32) as f32 - half_sprite_w;
+                        let pixel_offset_y =
+                            ((offset_h + offset_y) as i32 - sprite_offset.y) as f32 - half_sprite_h;
+
+                        [pixel_offset_x, pixel_offset_y]
                     },
                 );
 

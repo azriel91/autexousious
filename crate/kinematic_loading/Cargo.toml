@@ -14,6 +14,3 @@ asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
 serde = { version = "1.0.104", features = ["derive"] }
-
-[features]
-nightly = ["amethyst/nightly"]

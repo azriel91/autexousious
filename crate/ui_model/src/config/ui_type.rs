@@ -3,6 +3,7 @@ use character_selection_ui_model::config::CharacterSelectionUi;
 use control_settings_model::config::ControlSettings;
 use map_selection_ui_model::config::MapSelectionUi;
 use serde::{Deserialize, Serialize};
+use ui_form_model::config::UiFormItems;
 use ui_menu_item_model::config::UiMenuItems;
 
 /// UI types -- generic menu, character selection, map selection.
@@ -11,6 +12,8 @@ use ui_menu_item_model::config::UiMenuItems;
 pub enum UiType {
     /// Generic menu UI.
     Menu(UiMenuItems<MenuIndex>),
+    /// Generic form UI.
+    Form(UiFormItems),
     /// Character selection UI.
     CharacterSelection(CharacterSelectionUi),
     /// Map selection UI.

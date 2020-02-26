@@ -16,6 +16,3 @@ log = "0.4.8"
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

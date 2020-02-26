@@ -5,6 +5,7 @@ use amethyst::{
     audio::Source,
     core::TransformBundle,
     renderer::{types::DefaultBackend, RenderEmptyBundle},
+    utils::ortho_camera::CameraOrthoSystem,
     window::ScreenDimensions,
     GameData, LogLevelFilter, LoggerConfig,
 };
@@ -43,7 +44,11 @@ use state_registry::StateId;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
-use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem};
+use ui_play::{
+    UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, UiTransformForFovSystem,
+    UiTransformForFovSystemDesc, UiTransformInsertionRectifySystem,
+    UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
+};
 
 use crate::{AssetQueries, SetupFunction};
 
@@ -84,6 +89,7 @@ impl AutexousiousApplication {
             .with_bundle(TransformBundle::new())
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
+            .with_system(CameraOrthoSystem::default(), "camera_ortho", &[])
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
     }
 
@@ -149,6 +155,16 @@ impl AutexousiousApplication {
                 SessionJoinAcceptedSystemDesc::default(),
                 any::type_name::<SessionJoinAcceptedSystem>(),
                 &[any::type_name::<SessionJoinServerListenerSystem>()],
+            )
+            .with_system_desc(
+                UiTransformForFovSystemDesc::default(),
+                any::type_name::<UiTransformForFovSystem>(),
+                &["camera_ortho"],
+            )
+            .with_system_desc(
+                UiTransformInsertionRectifySystemDesc::default(),
+                any::type_name::<UiTransformInsertionRectifySystem>(),
+                &[any::type_name::<UiTransformForFovSystem>()],
             )
             .with_state(|| LoadingState::new(PopState))
     }
@@ -252,6 +268,16 @@ impl AutexousiousApplication {
                 PrevTrackerSystem::<StateId>::new(stringify!(StateId)),
                 "state_id_prev_tracker_system",
                 &[],
+            )
+            .with_system_desc(
+                UiTransformForFovSystemDesc::default(),
+                any::type_name::<UiTransformForFovSystem>(),
+                &["camera_ortho"],
+            )
+            .with_system_desc(
+                UiTransformInsertionRectifySystemDesc::default(),
+                any::type_name::<UiTransformInsertionRectifySystem>(),
+                &[any::type_name::<UiTransformForFovSystem>()],
             )
             .with_state(|| LoadingState::new(PopState))
     }

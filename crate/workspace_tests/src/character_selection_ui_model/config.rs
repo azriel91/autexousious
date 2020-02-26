@@ -2,13 +2,14 @@
 mod test {
     use asset_ui_model::config::{
         AshTemplate, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout, AssetSelector,
-        AswPortraitName, AswPortraits, Dimensions,
+        AswPortraitName, AswPortraits,
     };
     use indexmap::IndexMap;
     use kinematic_model::config::PositionInit;
     use sequence_model::config::SequenceNameString;
     use serde_yaml;
     use ui_label_model::config::UiSpriteLabel;
+    use ui_model_spi::config::Dimensions;
 
     use character_selection_ui_model::config::{
         CharacterSelectionUi, CswDefinition, CswLayer, CswLayerName, CswTemplate,

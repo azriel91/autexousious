@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-
-use crate::config::Dimensions;
+use ui_model_spi::config::Dimensions;
 
 /// Lays out assets in a grid.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]

@@ -16,6 +16,3 @@ derive-new = "0.5.8"
 log = "0.4.8"
 map_model = { path = "../map_model" }
 sequence_model = { path = "../sequence_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

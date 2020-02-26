@@ -20,6 +20,3 @@ map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 spawn_model = { path = "../spawn_model" }
 tracker = { path = "../tracker" }
-
-[features]
-nightly = ["amethyst/nightly"]

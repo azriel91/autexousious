@@ -16,6 +16,3 @@ derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
 serde = { version = "1.0.104", features = ["derive"] }
-
-[features]
-nightly = ["amethyst/nightly"]

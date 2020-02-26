@@ -17,6 +17,3 @@ control_settings_model = { path = "../control_settings_model" }
 log = "0.4.8"
 state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -23,7 +23,7 @@ impl IrAssetSelectionEventSender {
         ir_app_event_sender_system_data: &mut IrAppEventSenderSystemData,
         controller_id: ControllerId,
         entity: Entity,
-        asset_selection_event_variant: AssetSelectionEventCommand,
+        asset_selection_event_command: AssetSelectionEventCommand,
     ) {
         // For `AssetPreviewWidget` entities, `entity` is the `ApwMain` entity.
         //
@@ -46,7 +46,7 @@ impl IrAssetSelectionEventSender {
             entity
         };
 
-        let asset_selection_event = match asset_selection_event_variant {
+        let asset_selection_event = match asset_selection_event_command {
             AssetSelectionEventCommand::Return => {
                 if Self::asset_selection_return_preconditions_met(ir_app_event_sender_system_data) {
                     Some(AssetSelectionEvent::Return)

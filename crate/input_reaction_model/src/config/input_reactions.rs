@@ -3,7 +3,7 @@ use derive_new::new;
 use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{BasicIrr, ButtonInputReaction, InputReaction};
+use crate::config::{BasicIrr, ButtonInputReactionN, InputReaction};
 
 /// Sequence to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
@@ -97,5 +97,5 @@ where
     /// controller.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_button: Option<ButtonInputReaction<SeqName, IRR>>,
+    pub press_button: Option<ButtonInputReactionN<SeqName, IRR>>,
 }

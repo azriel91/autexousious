@@ -60,10 +60,8 @@ sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 strum = "0.17.1"
 ui_audio_model = { path = "../ui_audio_model" }
+ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
 ui_model_spi = { path = "../ui_model_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

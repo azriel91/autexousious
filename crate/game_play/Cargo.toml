@@ -55,6 +55,3 @@ state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }
 team_model = { path = "../team_model" }
 tracker = { path = "../tracker" }
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -17,6 +17,3 @@ log = "0.4.8"
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

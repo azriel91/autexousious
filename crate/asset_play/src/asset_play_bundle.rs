@@ -9,7 +9,6 @@ use application_menu::MenuIndex;
 use asset_model::{config::asset_type::Map, play::AssetWorld};
 use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
 use asset_ui_model::{
-    config::Dimensions,
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
         AssetSelectionHighlight, AssetSelector, AswPortraits,
@@ -21,7 +20,9 @@ use character_model::loaded::CharacterIrsHandles;
 use chase_model::play::ChaseModeStick;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derive_new::new;
-use game_input_model::play::{ButtonInputControlled, InputControlled, SharedInputControlled};
+use game_input_model::play::{
+    ButtonInputControlled, InputControlled, NormalInputControlled, SharedInputControlled,
+};
 use input_reaction_model::loaded::InputReactionsSequenceHandles;
 use kinematic_model::{
     config::{PositionInit, ScaleInit, VelocityInit},
@@ -36,9 +37,10 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
+use ui_form_model::{config::UiTextInput, loaded::UiForm};
 use ui_label_model::config::UiLabel;
 use ui_menu_item_model::loaded::{UiMenu, UiMenuItem};
-use ui_model_spi::loaded::WidgetStatusSequences;
+use ui_model_spi::{config::Dimensions, loaded::WidgetStatusSequences};
 
 use crate::ItemComponentComponentAugmentSystem;
 
@@ -57,6 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         let mut asset_world = AssetWorld::default();
         asset_world.register::<InputControlled>();
         asset_world.register::<SharedInputControlled>();
+        asset_world.register::<NormalInputControlled>();
         asset_world.register::<ButtonInputControlled>();
         asset_world.register::<PositionInit>();
         asset_world.register::<VelocityInit>();
@@ -78,6 +81,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<CharacterIrsHandles>();
         asset_world.register::<InputReactionsSequenceHandles>();
         asset_world.register::<WidgetStatusSequences>();
+        asset_world.register::<UiForm>();
+        asset_world.register::<UiTextInput>();
         asset_world.register::<UiLabel>();
         asset_world.register::<UiMenu>();
         asset_world.register::<UiMenuItem<MenuIndex>>();
@@ -111,6 +116,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<SharedInputControlled>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<SharedInputControlled>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<NormalInputControlled>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<NormalInputControlled>>(),
             &[],
         );
         builder.add(
@@ -222,9 +232,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[],
         );
         builder.add(
+            ItemComponentComponentAugmentSystem::<UiForm>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiForm>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<UiTextInput>::new(),
+            any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
+            &[any::type_name::<ItemComponentComponentAugmentSystem<UiForm>>()],
+        );
+        builder.add(
             ItemComponentComponentAugmentSystem::<UiLabel>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
-            &[],
+            &[any::type_name::<
+                ItemComponentComponentAugmentSystem<UiTextInput>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiMenu>::new(),

@@ -17,6 +17,3 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 stdio_spi = { path = "../stdio_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

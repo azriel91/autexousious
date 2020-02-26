@@ -16,8 +16,3 @@ network_session_model = { path = "../network_session_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 structopt = "0.3.9"
 structopt-derive = "0.4.2"
-strum = "0.17.1"
-strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

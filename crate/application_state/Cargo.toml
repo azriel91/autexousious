@@ -16,6 +16,3 @@ derive_deref = "1.1.0"
 derive-new = "0.5.8"
 log = "0.4.8"
 state_support = { path = "../state_support" }
-
-[features]
-nightly = ["amethyst/nightly"]

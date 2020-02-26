@@ -11,6 +11,3 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 sequence_model_spi = { path = "../sequence_model_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]
