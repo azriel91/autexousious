@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{storage::DenseVecStorage, Component, Entities, Entity, World, WriteStorage},
+    ecs::{storage::DenseVecStorage, Component, Entities, Entity, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     ui::Selectable,
 };
@@ -7,6 +7,8 @@ use asset_model::{loaded::ItemId, ItemComponent};
 use derivative::Derivative;
 use derive_new::new;
 use parent_model::play::ParentEntity;
+
+use crate::play::UiFormInputEntities;
 
 /// Displays a form that takes in input.
 #[derive(Clone, Component, Debug, PartialEq, new)]
@@ -33,6 +35,9 @@ pub struct UiFormSystemData<'s> {
     /// `Note:` The `UiBundle` defaults the selectable group `G` type parameter to `()`.
     #[derivative(Debug = "ignore")]
     pub selectables: WriteStorage<'s, Selectable<()>>,
+    /// `UiFormInputEntities` resource.
+    #[derivative(Debug = "ignore")]
+    pub ui_form_input_entities: Write<'s, UiFormInputEntities>,
 }
 
 impl<'s> ItemComponent<'s> for UiForm {
@@ -44,15 +49,17 @@ impl<'s> ItemComponent<'s> for UiForm {
             item_ids,
             parent_entities,
             selectables,
+            ui_form_input_entities,
         } = system_data;
 
         let parent_entity = ParentEntity::new(entity);
 
-        self.ui_form_item_item_ids
+        let input_entities = self
+            .ui_form_item_item_ids
             .iter()
             .copied()
             .enumerate()
-            .for_each(
+            .map(
                 |(index, (label_item_id, sprite_item_id, input_field_item_id))| {
                     entities
                         .build_entity()
@@ -72,8 +79,11 @@ impl<'s> ItemComponent<'s> for UiForm {
                         .with(input_field_item_id, item_ids)
                         .with(parent_entity, parent_entities)
                         .with(selectable, selectables)
-                        .build();
+                        .build()
                 },
-            );
+            )
+            .collect::<Vec<Entity>>();
+
+        **ui_form_input_entities = UiFormInputEntities::new(input_entities);
     }
 }

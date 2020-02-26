@@ -2,6 +2,7 @@ use amethyst::{
     ecs::{Read, ReadStorage, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
+    ui::UiText,
 };
 use asset_model::loaded::{AssetId, AssetIdMappings, AssetTypeMappings};
 use asset_selection_model::play::{AssetSelection, AssetSelectionEvent};
@@ -15,6 +16,7 @@ use game_play_model::GamePlayEvent;
 use network_join_model::NetworkJoinEvent;
 use network_mode_selection_model::NetworkModeSelectionEvent;
 use state_registry::StateId;
+use ui_form_model::play::UiFormInputEntities;
 
 /// `IrAppEventSenderSystemData`.
 #[derive(Derivative, SystemData)]
@@ -37,6 +39,13 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+
+    /// `UiFormInputEntities` resource.
+    #[derivative(Debug = "ignore")]
+    pub ui_form_input_entities: Read<'s, UiFormInputEntities>,
+    /// `UiText` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_texts: ReadStorage<'s, UiText>,
 
     /// `AssetSelectionEvent` channel.
     #[derivative(Debug = "ignore")]

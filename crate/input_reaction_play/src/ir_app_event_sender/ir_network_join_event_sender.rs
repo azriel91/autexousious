@@ -2,6 +2,7 @@ use amethyst::ecs::Entity;
 use network_join_model::{
     config::NetworkJoinEventCommand, play::SessionJoinRequestParams, NetworkJoinEvent,
 };
+use network_session_model::play::{SessionCode, SessionDeviceName};
 
 use crate::IrAppEventSenderSystemData;
 
@@ -18,7 +19,7 @@ impl IrNetworkJoinEventSender {
         let network_join_event = match network_join_event_command {
             NetworkJoinEventCommand::SessionJoinRequest => {
                 if let Some(session_join_request_params) =
-                    Self::session_join_request_params_discover()
+                    Self::session_join_request_params_discover(ir_app_event_sender_system_data)
                 {
                     Some(NetworkJoinEvent::SessionJoinRequest(
                         session_join_request_params,
@@ -39,9 +40,26 @@ impl IrNetworkJoinEventSender {
         }
     }
 
-    fn session_join_request_params_discover() -> Option<SessionJoinRequestParams> {
-        let session_device_name = None;
-        let session_code = None;
+    fn session_join_request_params_discover(
+        ir_app_event_sender_system_data: &IrAppEventSenderSystemData,
+    ) -> Option<SessionJoinRequestParams> {
+        let IrAppEventSenderSystemData {
+            ui_form_input_entities,
+            ui_texts,
+            ..
+        } = ir_app_event_sender_system_data;
+
+        let mut ui_form_input_iter = ui_form_input_entities.iter().copied();
+        let session_device_name = ui_form_input_iter
+            .next()
+            .and_then(|entity| ui_texts.get(entity))
+            .map(|ui_text| ui_text.text.clone())
+            .map(SessionDeviceName::new);
+        let session_code = ui_form_input_iter
+            .next()
+            .and_then(|entity| ui_texts.get(entity))
+            .map(|ui_text| ui_text.text.clone())
+            .map(SessionCode::new);
 
         if let (Some(session_device_name), Some(session_code)) = (session_device_name, session_code)
         {
