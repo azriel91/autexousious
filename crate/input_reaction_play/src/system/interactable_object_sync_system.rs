@@ -4,7 +4,7 @@ use amethyst::{
     ecs::{Entities, Join, Read, ReadStorage, System, World, WriteStorage},
     renderer::{SpriteRender, SpriteSheet},
     shred::{ResourceId, SystemData},
-    ui::{Anchor, Interactable, UiTransform},
+    ui::{Anchor, Interactable, UiImage, UiTransform},
 };
 use asset_model::loaded::{AssetId, AssetIdMappings};
 use derivative::Derivative;
@@ -45,6 +45,9 @@ pub struct InteractableObjectSyncSystemData<'s> {
     /// `UiTransform` components.
     #[derivative(Debug = "ignore")]
     pub ui_transforms: WriteStorage<'s, UiTransform>,
+    /// `UiImage` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_images: WriteStorage<'s, UiImage>,
 }
 
 impl<'s> System<'s> for InteractableObjectSyncSystem {
@@ -61,6 +64,7 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
             sprite_sheet_assets,
             transforms,
             mut ui_transforms,
+            mut ui_images,
         }: Self::SystemData,
     ) {
         (
@@ -83,7 +87,7 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
                             let scale = transform.scale();
                             (scale.x, scale.y)
                         };
-                        let (width, height) = sprite_sheet
+                        let (width, height, offsets) = sprite_sheet
                             .sprites
                             .get(sprite_render.sprite_number)
                             .or_else(|| {
@@ -101,15 +105,20 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
 
                                 sprite_sheet.sprites.get(0)
                             })
-                            .map(|sprite| (sprite.width, sprite.height))
-                            .unwrap_or((100., 100.));
+                            .map(|sprite| (sprite.width, sprite.height, sprite.offsets))
+                            .unwrap_or((100., 100., [0.; 2]));
+
+                        let x = x - width / 2. - offsets[0];
+                        let y = y - height / 2. - offsets[1];
+                        let width = width * scale_x;
+                        let height = height * scale_y;
 
                         if let Some(ui_transform) = ui_transforms.get_mut(entity) {
                             ui_transform.local_x = x;
                             ui_transform.local_y = y;
                             ui_transform.local_z = z;
-                            ui_transform.width = width * scale_x;
-                            ui_transform.height = height * scale_y;
+                            ui_transform.width = width;
+                            ui_transform.height = height;
                         } else {
                             let id = format!("{:?}", entity);
                             let anchor = Anchor::BottomLeft;
@@ -119,6 +128,9 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
                             ui_transforms
                                 .insert(entity, ui_transform)
                                 .expect("Failed to insert `Transform` component.");
+
+                            let ui_image = UiImage::SolidColor([1., 0.3, 0.3, 0.5]);
+                            ui_images.insert(entity, ui_image).unwrap();
                         }
                     }
                 },
