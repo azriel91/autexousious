@@ -13,8 +13,7 @@ use parent_model::play::ParentEntity;
 use sequence_model::loaded::SequenceId;
 use spawn_model::loaded::Spawn;
 use spawn_play::{GameObjectSpawner, SpawnGameObjectResources};
-
-use crate::config::Dimensions;
+use ui_model_spi::config::Dimensions;
 
 /// Display cell for a character asset.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]

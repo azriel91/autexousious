@@ -1,7 +1,7 @@
 use std::any;
 
 use amethyst::{
-    core::{bundle::SystemBundle, SystemExt},
+    core::{bundle::SystemBundle, SystemDesc, SystemExt},
     ecs::{DispatcherBuilder, World},
     Error,
 };
@@ -32,7 +32,10 @@ use input_reaction_model::{
     config::BasicIrr,
     loaded::{InputReactionsSequence, InputReactionsSequenceHandles},
 };
-use input_reaction_play::{ButtonInputReactionsTransitionSystem, InputReactionsTransitionSystem};
+use input_reaction_play::{
+    ButtonInputReactionsTransitionSystem, ButtonInputReactionsTransitionSystemDesc,
+    InputReactionsTransitionSystem, InteractableObjectSyncSystem,
+};
 use kinematic_model::{
     config::Position,
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
@@ -74,7 +77,7 @@ pub struct GamePlayBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(
         self,
-        _world: &mut World,
+        world: &mut World,
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         // === Component augmentation === //
@@ -276,6 +279,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ],
         ); // kcov-ignore
         builder.add(
+            InteractableObjectSyncSystem::new(),
+            any::type_name::<InteractableObjectSyncSystem>(),
+            &[any::type_name::<ObjectTransformUpdateSystem>()],
+        ); // kcov-ignore
+        builder.add(
             ObjectMirroringSystem::new(),
             any::type_name::<ObjectMirroringSystem>(),
             &[any::type_name::<ObjectTransformUpdateSystem>()],
@@ -345,7 +353,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
         builder.add(
-            ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
+            <ButtonInputReactionsTransitionSystemDesc as SystemDesc<
+                'a,
+                'b,
+                ButtonInputReactionsTransitionSystem<BasicIrr>,
+            >>::build(ButtonInputReactionsTransitionSystemDesc::default(), world),
             &any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
             &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore

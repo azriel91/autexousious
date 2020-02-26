@@ -5,7 +5,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
-        input::{Button, InputEvent},
+        input::InputEvent,
         shred::{ResourceId, SystemData},
         shrev::EventChannel,
         winit::VirtualKeyCode,
@@ -30,14 +30,19 @@ mod tests {
     use sprite_model::config::SpriteSequenceName;
     use ui_model::config::UiSequence;
 
-    use input_reaction_play::ButtonInputReactionsTransitionSystem;
+    use input_reaction_play::{
+        ButtonInputReactionsTransitionSystem, ButtonInputReactionsTransitionSystemDesc,
+    };
 
     #[test]
     fn inserts_transition_for_button_press_event() -> Result<(), Error> {
         run_test(
             SetupParams {
                 sequence_id: SequenceId::new(0),
-                input_event: Some(InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::A))),
+                input_event: Some(InputEvent::KeyPressed {
+                    key_code: VirtualKeyCode::A,
+                    scancode: 0,
+                }),
             },
             ExpectedParams {
                 sequence_id: SequenceId::new(1),
@@ -50,7 +55,10 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: SequenceId::new(0),
-                input_event: Some(InputEvent::ButtonPressed(Button::Key(VirtualKeyCode::B))),
+                input_event: Some(InputEvent::KeyPressed {
+                    key_code: VirtualKeyCode::B,
+                    scancode: 0,
+                }),
             },
             ExpectedParams {
                 sequence_id: SequenceId::new(0),
@@ -68,8 +76,8 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_system(
-                ButtonInputReactionsTransitionSystem::<BasicIrr>::new(),
+            .with_system_desc::<_, ButtonInputReactionsTransitionSystem<BasicIrr>, _>(
+                ButtonInputReactionsTransitionSystemDesc::default(),
                 "",
                 &[],
             )

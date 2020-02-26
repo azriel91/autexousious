@@ -303,7 +303,7 @@ where
         (
             entities,
             input_reactions_handles,
-            controller_inputs,
+            controller_inputs.maybe(),
             input_controlleds.maybe(),
             !&self.processed_entities,
         )
@@ -321,27 +321,30 @@ where
 
                             match &input_reaction.effect {
                                 ReactionEffect::ActionHold(reaction_effect_data) => {
-                                    Self::hold_transition_action(
-                                        reaction_effect_data,
-                                        *controller_input,
-                                    )
-                                    .map(
-                                        |(transition, events)| {
-                                            (transition, events, input_reaction_requirement)
-                                        },
-                                    )
+                                    controller_input.and_then(|controller_input| {
+                                        Self::hold_transition_action(
+                                            reaction_effect_data,
+                                            *controller_input,
+                                        )
+                                        .map(
+                                            |(transition, events)| {
+                                                (transition, events, input_reaction_requirement)
+                                            },
+                                        )
+                                    })
                                 }
-                                ReactionEffect::AxisHold(reaction_effect_data) => {
-                                    Self::hold_transition_axis(
-                                        reaction_effect_data,
-                                        *controller_input,
-                                    )
-                                    .map(
-                                        |(transition, events)| {
-                                            (transition, events, input_reaction_requirement)
-                                        },
-                                    )
-                                }
+                                ReactionEffect::AxisHold(reaction_effect_data) => controller_input
+                                    .and_then(|controller_input| {
+                                        Self::hold_transition_axis(
+                                            reaction_effect_data,
+                                            *controller_input,
+                                        )
+                                        .map(
+                                            |(transition, events)| {
+                                                (transition, events, input_reaction_requirement)
+                                            },
+                                        )
+                                    }),
                                 ReactionEffect::Fallback(FallbackTransition {
                                     sequence_id,
                                     events,

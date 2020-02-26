@@ -17,6 +17,3 @@ derive-new = "0.5.8"
 log = "0.4.8"
 network_join_model = { path = "../network_join_model" }
 state_registry = { path = "../state_registry" }
-
-[features]
-nightly = ["amethyst/nightly"]

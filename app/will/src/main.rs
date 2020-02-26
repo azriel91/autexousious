@@ -79,7 +79,11 @@ use structopt::StructOpt;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
-use ui_play::{UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, WidgetSequenceUpdateSystem};
+use ui_play::{
+    UiActiveWidgetUpdateSystem, UiTextColourUpdateSystem, UiTransformForFovSystem,
+    UiTransformForFovSystemDesc, UiTransformInsertionRectifySystem,
+    UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
+};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -355,7 +359,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_plugin(RenderFlat2D::default())
                     .with_plugin(RenderUi::default()),
             )?
-            .with_bundle(CameraPlayBundle::new())?;
+            .with_bundle(CameraPlayBundle::new())?
+            .with_system_desc(
+                UiTransformForFovSystemDesc::default(),
+                any::type_name::<UiTransformForFovSystem>(),
+                &["camera_ortho"],
+            )
+            .with_system_desc(
+                UiTransformInsertionRectifySystemDesc::default(),
+                any::type_name::<UiTransformInsertionRectifySystem>(),
+                &[any::type_name::<UiTransformForFovSystem>()],
+            );
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?

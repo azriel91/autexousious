@@ -3,7 +3,7 @@ use application_menu::MenuIndex;
 use asset_model::{config::AssetSlug, loaded::ItemId, play::AssetWorld};
 use game_input_model::{
     config::InputConfig,
-    play::{InputControlled, SharedInputControlled},
+    play::{ButtonInputControlled, InputControlled, NormalInputControlled, SharedInputControlled},
 };
 use sequence_loading::SequenceIdMapper;
 use sequence_model::loaded::SequenceIdMappings;
@@ -31,12 +31,12 @@ impl AssetSequenceComponentLoaderUiMenu {
         input_config: &InputConfig,
         ui_menu_items_cfg: &UiMenuItems<MenuIndex>,
     ) {
-        let (ui_menu_item_item_ids, sprite_item_ids) = ui_menu_items_cfg.iter().fold(
+        let (ui_menu_item_item_ids, sprite_item_ids) = ui_menu_items_cfg.iter().enumerate().fold(
             (
                 Vec::with_capacity(ui_menu_items_cfg.len()),
                 Vec::with_capacity(ui_menu_items_cfg.len()),
             ),
-            |(mut ui_menu_item_item_ids, mut sprite_item_ids), ui_menu_item_cfg| {
+            |(mut ui_menu_item_item_ids, mut sprite_item_ids), (index, ui_menu_item_cfg)| {
                 let AssetSequenceComponentLoaderUiComponents {
                     sequence_end_transitions,
                     wait_sequence_handles,
@@ -45,6 +45,8 @@ impl AssetSequenceComponentLoaderUiMenu {
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
                 } = asset_sequence_component_loader_ui_components.clone();
+
+                let tab_order = (index as u32) << 1;
 
                 let mut ui_label = ui_menu_item_cfg.label.clone();
                 ui_label.position += ui_menu_item_cfg.position;
@@ -56,6 +58,8 @@ impl AssetSequenceComponentLoaderUiMenu {
                     .with(ui_label)
                     .with(ui_menu_item)
                     .with(SharedInputControlled)
+                    .with(ButtonInputControlled)
+                    .with(NormalInputControlled::new(tab_order))
                     .build();
                 let item_entity_text = ItemId::new(item_entity_text);
 
@@ -90,6 +94,8 @@ impl AssetSequenceComponentLoaderUiMenu {
                         .with(scale_sequence_handles)
                         .with(input_reactions_sequence_handles)
                         .with(SharedInputControlled)
+                        .with(ButtonInputControlled)
+                        .with(NormalInputControlled::new(tab_order + 1))
                         .with(widget_status_sequences);
 
                     if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {

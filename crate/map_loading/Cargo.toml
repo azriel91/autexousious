@@ -15,6 +15,3 @@ log = "0.4.8"
 map_model = { path = "../map_model" }
 sequence_model = { path = "../sequence_model" }
 sprite_model = { path = "../sprite_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -24,6 +24,3 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -3,7 +3,10 @@ use std::{convert::AsRef, default::Default, marker::PhantomData};
 use amethyst::assets::{AssetStorage, Loader};
 use game_input_model::config::{Axis, ControlAction};
 use input_reaction_model::{
-    config::{self, InputReactionAppEvents, InputReactionSingle},
+    config::{
+        self, ButtonInputReaction, ButtonInputReactionN, InputReactionAppEvents,
+        InputReactionSingle,
+    },
     loaded::{
         self, AxisTransition, FallbackTransition, InputReaction, InputReactions,
         InputReactionsSequence, InputReactionsSequenceHandle, ReactionEffect, ReactionEffectButton,
@@ -171,7 +174,7 @@ where
         );
 
         // Device button press.
-        Self::push_button_reaction(
+        Self::push_button_reactions(
             input_reactions_default,
             input_reactions_sequence,
             input_reactions_frame,
@@ -215,14 +218,14 @@ where
         );
     }
 
-    fn push_button_reaction(
+    fn push_button_reactions(
         input_reactions_default: Option<&config::InputReactions<SeqName, IRR>>,
         input_reactions_sequence: Option<&config::InputReactions<SeqName, IRR>>,
         input_reactions_frame: &config::InputReactions<SeqName, IRR>,
         sequence_id_mappings: &SequenceIdMappings<SeqName>,
         input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
     ) {
-        let button_input_reaction = input_reactions_frame.press_button.as_ref().or_else(|| {
+        let button_input_reaction_n = input_reactions_frame.press_button.as_ref().or_else(|| {
             // We want to make sure that, if `input_reactions_sequence.is_some()`, but
             // the transition inside is `None`, we still fallback to `None`. This allows
             // a sequence transition `None` value to override the default transition.
@@ -230,25 +233,51 @@ where
                 .or(input_reactions_default)
                 .and_then(|input_reactions_fallback| input_reactions_fallback.press_button.as_ref())
         });
-        if let Some(button_input_reaction) = button_input_reaction {
-            let button = button_input_reaction.button;
-
-            Self::load_input_reactions(
-                sequence_id_mappings,
-                input_reactions_loaded,
-                Some(button_input_reaction),
-                |sequence_id, events, requirement| {
-                    InputReaction::<IRR>::new(
-                        ReactionEffect::ButtonPress(ReactionEffectButton {
-                            button,
-                            sequence_id,
-                            events,
-                        }),
-                        requirement,
-                    )
-                },
-            );
+        if let Some(button_input_reaction_n) = button_input_reaction_n {
+            match button_input_reaction_n {
+                ButtonInputReactionN::One(button_input_reaction) => {
+                    Self::push_button_reaction(
+                        sequence_id_mappings,
+                        input_reactions_loaded,
+                        button_input_reaction,
+                    );
+                }
+                ButtonInputReactionN::Many(button_input_reactions) => {
+                    button_input_reactions
+                        .iter()
+                        .for_each(|button_input_reaction| {
+                            Self::push_button_reaction(
+                                sequence_id_mappings,
+                                input_reactions_loaded,
+                                button_input_reaction,
+                            );
+                        });
+                }
+            };
         }
+    }
+
+    fn push_button_reaction(
+        sequence_id_mappings: &SequenceIdMappings<SeqName>,
+        input_reactions_loaded: &mut Vec<InputReaction<IRR>>,
+        button_input_reaction: &ButtonInputReaction<SeqName, IRR>,
+    ) {
+        let button = button_input_reaction.button;
+        Self::load_input_reactions(
+            sequence_id_mappings,
+            input_reactions_loaded,
+            Some(button_input_reaction),
+            |sequence_id, events, requirement| {
+                InputReaction::<IRR>::new(
+                    ReactionEffect::ButtonPress(ReactionEffectButton {
+                        button,
+                        sequence_id,
+                        events,
+                    }),
+                    requirement,
+                )
+            },
+        );
     }
 
     fn load_input_reactions<IR, F>(

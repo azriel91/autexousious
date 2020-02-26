@@ -17,6 +17,3 @@ game_input_model = { path = "../game_input_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

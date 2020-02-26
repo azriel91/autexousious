@@ -23,12 +23,10 @@ game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path ="../game_mode_selection_model" }
 game_play_model = { path ="../game_play_model" }
 mirrored_model = { path ="../mirrored_model" }
+network_join_model = { path = "../network_join_model" }
 network_mode_selection_model = { path ="../network_mode_selection_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = { version = "1.0.104", features = ["derive"] }
 smallvec = "1.2.0"
-
-[features]
-nightly = ["amethyst/nightly"]

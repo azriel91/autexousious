@@ -15,6 +15,3 @@ menu_model = { path = "../menu_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 derive-new = "0.5.8"
 stdio_spi = { path = "../stdio_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

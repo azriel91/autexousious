@@ -2,7 +2,7 @@ use amethyst::{
     core::math::Vector3,
     ecs::{storage::DenseVecStorage, Component, Entity, ReadExpect, World, WriteStorage},
     shred::{ResourceId, SystemData},
-    ui::{Anchor, UiText, UiTransform},
+    ui::{Anchor, LineMode, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::ItemComponent;
@@ -10,14 +10,16 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};
+use ui_model_spi::config::Dimensions;
 
 const FONT_COLOUR: [f32; 4] = [0.55, 0.55, 0.55, 1.];
-const FONT_SIZE: f32 = 30.;
-const LABEL_WIDTH: f32 = 400.;
-const LABEL_HEIGHT: f32 = 75.;
+const FONT_SIZE: u32 = 30;
+const LABEL_WIDTH: u32 = 400;
+const LABEL_HEIGHT: u32 = 75;
 
 /// Defines text to display.
-#[derive(Clone, Debug, Default, Deserialize, Component, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Derivative, Deserialize, Component, PartialEq, Serialize, new)]
+#[derivative(Default)]
 #[serde(default, deny_unknown_fields)]
 #[storage(DenseVecStorage)]
 pub struct UiLabel {
@@ -25,6 +27,30 @@ pub struct UiLabel {
     pub position: PositionInit,
     /// Text to display.
     pub text: String,
+    /// Width and height of the text input. Defaults to `400x75`.
+    #[derivative(Default(value = "UiLabel::dimensions_default()"))]
+    pub dimensions: Dimensions,
+    /// Where to align the text within the text field.
+    #[derivative(Default(value = "Anchor::Middle"))]
+    pub align: Anchor,
+    /// Whether text should be on one line, or wrap.
+    #[derivative(Default(value = "LineMode::Single"))]
+    pub line_mode: LineMode,
+    /// Font colour of the text.
+    #[derivative(Default(value = "FONT_COLOUR"))]
+    pub font_colour: [f32; 4],
+    /// The height of a line of text in pixels.
+    #[derivative(Default(value = "FONT_SIZE"))]
+    pub font_size: u32,
+}
+
+impl UiLabel {
+    fn dimensions_default() -> Dimensions {
+        Dimensions {
+            w: LABEL_WIDTH,
+            h: LABEL_HEIGHT,
+        }
+    }
 }
 
 /// `UiLabelSystemData`.
@@ -59,19 +85,28 @@ impl<'s> ItemComponent<'s> for UiLabel {
 
         let position = Into::<Vector3<f32>>::into(self.position);
 
-        let ui_transform = UiTransform::new(
+        let mut ui_transform = UiTransform::new(
             self.text.clone(),
             Anchor::BottomLeft,
             Anchor::BottomLeft,
             position.x,
             position.y,
             position.z,
-            LABEL_WIDTH,
-            LABEL_HEIGHT,
+            self.dimensions.w as f32,
+            self.dimensions.h as f32,
         );
+        ui_transform.opaque = false;
+        ui_transform.transparent_target = true;
 
         let index_text = self.text.clone();
-        let ui_text = UiText::new(font.clone(), index_text, FONT_COLOUR, FONT_SIZE);
+        let mut ui_text = UiText::new(
+            font.clone(),
+            index_text,
+            self.font_colour,
+            self.font_size as f32,
+        );
+        ui_text.align = self.align.clone();
+        ui_text.line_mode = self.line_mode.clone();
 
         ui_transforms
             .insert(entity, ui_transform)

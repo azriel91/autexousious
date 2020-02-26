@@ -17,6 +17,3 @@ log = "0.4.8"
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-
-[features]
-nightly = ["amethyst/nightly"]

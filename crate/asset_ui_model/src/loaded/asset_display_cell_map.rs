@@ -12,8 +12,7 @@ use kinematic_model::{config::ScaleInit, play::PositionInitParent};
 use map_model::loaded::AssetMapBounds;
 use map_play::{MapSpawner, MapSpawnerResources};
 use parent_model::play::ParentEntity;
-
-use crate::config::Dimensions;
+use ui_model_spi::config::Dimensions;
 
 /// Display cell for a map asset.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]

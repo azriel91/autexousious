@@ -24,6 +24,3 @@ strum_macros = "0.17.1"
 ui_label_model = { path = "../ui_label_model" }
 ui_model_spi = { path = "../ui_model_spi" }
 ui_model_spi_play = { path = "../ui_model_spi_play" }
-
-[features]
-nightly = ["amethyst/nightly"]

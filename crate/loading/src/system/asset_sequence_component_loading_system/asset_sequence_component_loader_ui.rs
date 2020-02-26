@@ -7,7 +7,7 @@ use asset_model::{
     loaded::{AssetId, ItemId, ItemIds},
 };
 use control_settings_loading::KeyboardUiGen;
-use game_input_model::play::{ButtonInputControlled, SharedInputControlled};
+use game_input_model::play::{ButtonInputControlled, NormalInputControlled};
 use input_reaction_loading::{IrsLoader, IrsLoaderParams};
 use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
@@ -35,9 +35,9 @@ use ui_model::config::{UiDefinition, UiType};
 use crate::{
     AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
     AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-    AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
-    DefinitionLoadingResourcesRead, IdMappingResourcesRead, SequenceComponentLoadingResources,
-    TextureLoadingResourcesRead,
+    AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
+    AssetSequenceComponentLoaderUiMenu, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
 };
 
 /// Loads sequence components for UI assets.
@@ -276,7 +276,8 @@ impl AssetSequenceComponentLoaderUi {
             let mut item_ids_button = ui_definition
                 .buttons
                 .iter()
-                .flat_map(|ui_button| {
+                .enumerate()
+                .flat_map(|(index, ui_button)| {
                     let mut ui_label = ui_button.label.clone();
                     ui_label.position += ui_button.position;
                     let position_init = ui_label.position;
@@ -303,7 +304,8 @@ impl AssetSequenceComponentLoaderUi {
                             .with(tint_sequence_handles.clone())
                             .with(scale_sequence_handles.clone())
                             .with(input_reactions_sequence_handles.clone())
-                            .with(SharedInputControlled);
+                            .with(ButtonInputControlled)
+                            .with(NormalInputControlled::new(index as u32));
 
                         if let Some(sprite_render_sequence_handles) =
                             sprite_render_sequence_handles.clone()
@@ -334,7 +336,17 @@ impl AssetSequenceComponentLoaderUi {
                 };
 
             match ui_type {
-                UiType::Menu(ui_menu_items_cfg) => {
+                UiType::Form(ui_form_items) => {
+                    AssetSequenceComponentLoaderUiForm::load(
+                        &mut sequence_component_loading_resources.asset_world,
+                        asset_slug,
+                        sequence_id_mappings,
+                        &asset_sequence_component_loader_ui_components,
+                        &mut item_ids_all,
+                        ui_form_items,
+                    );
+                }
+                UiType::Menu(ui_menu_items) => {
                     AssetSequenceComponentLoaderUiMenu::load(
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
@@ -342,7 +354,7 @@ impl AssetSequenceComponentLoaderUi {
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
                         &sequence_component_loading_resources.input_config,
-                        ui_menu_items_cfg,
+                        ui_menu_items,
                     );
                 }
                 UiType::CharacterSelection(character_selection_ui) => {

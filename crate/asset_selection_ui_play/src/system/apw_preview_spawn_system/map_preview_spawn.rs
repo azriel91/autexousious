@@ -7,7 +7,7 @@ use amethyst::{
 use asset_model::{config::AssetType, loaded::AssetId};
 use asset_selection_model::play::AssetSelection;
 use asset_selection_ui_model::play::ApwPreview;
-use asset_ui_model::{config::Dimensions, play::AssetSelectionParent};
+use asset_ui_model::play::AssetSelectionParent;
 use camera_model::play::CameraZoomDimensions;
 use derivative::Derivative;
 use derive_new::new;
@@ -19,6 +19,7 @@ use log::warn;
 use map_model::loaded::AssetMapBounds;
 use map_play::{MapSpawner, MapSpawnerResources};
 use parent_model::play::ParentEntity;
+use ui_model_spi::config::Dimensions;
 
 use super::PreviewSpawner;
 

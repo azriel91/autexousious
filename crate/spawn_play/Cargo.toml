@@ -23,6 +23,3 @@ object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

@@ -29,6 +29,3 @@ map_selection_model = { path = "../map_selection_model" }
 object_type = { path = "../object_type" }
 state_registry = { path = "../state_registry" }
 team_model = { path = "../team_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

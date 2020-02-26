@@ -29,6 +29,3 @@ slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
 strum = "0.17.1"
 strum_macros = "0.17.1"
-
-[features]
-nightly = ["amethyst/nightly"]

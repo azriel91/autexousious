@@ -12,6 +12,3 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
 state_registry = { path = "../state_registry" }
-
-[features]
-nightly = ["amethyst/nightly"]

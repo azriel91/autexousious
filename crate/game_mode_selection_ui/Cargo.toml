@@ -15,6 +15,3 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 log = "0.4.8"
 menu_model = { path = "../menu_model" }
 ui_audio_model = { path = "../ui_audio_model" }
-
-[features]
-nightly = ["amethyst/nightly"]

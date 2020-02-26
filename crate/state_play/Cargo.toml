@@ -21,6 +21,3 @@ state_registry = { path = "../state_registry" }
 state_support = { path = "../state_support" }
 tracker = { path = "../tracker" }
 ui_model_spi = { path = "../ui_model_spi" }
-
-[features]
-nightly = ["amethyst/nightly"]

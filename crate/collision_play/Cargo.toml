@@ -21,6 +21,3 @@ shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }
-
-[features]
-nightly = ["amethyst/nightly"]
