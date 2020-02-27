@@ -41,9 +41,9 @@ kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
-network_join_model = { path = "../../crate/network_join_model" }
-network_join_play = { path = "../../crate/network_join_play" }
-network_join_stdio = { path = "../../crate/network_join_stdio" }
+session_join_model = { path = "../../crate/session_join_model" }
+session_join_play = { path = "../../crate/session_join_play" }
+session_join_stdio = { path = "../../crate/session_join_stdio" }
 network_mode_selection_stdio = { path = "../../crate/network_mode_selection_stdio" }
 parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }

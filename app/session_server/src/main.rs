@@ -8,7 +8,7 @@ use amethyst::{
 use frame_rate::strategy::frame_rate_limit_config;
 use structopt::StructOpt;
 
-use network_join_play::{SessionJoinNetListenerSystem, SessionJoinNetListenerSystemDesc};
+use session_join_play::{SessionJoinNetListenerSystem, SessionJoinNetListenerSystemDesc};
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";

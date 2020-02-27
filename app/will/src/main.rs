@@ -56,15 +56,15 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
-use network_join_model::config::SessionServerConfig;
-use network_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinNetListenerSystem,
-    SessionJoinNetListenerSystemDesc, SessionJoinRequestSystem, SessionJoinRequestSystemDesc,
-};
-use network_join_stdio::NetworkJoinStdioBundle;
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
+use session_join_model::config::SessionServerConfig;
+use session_join_play::{
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinNetListenerSystem,
+    SessionJoinNetListenerSystemDesc, SessionJoinRequestSystem, SessionJoinRequestSystemDesc,
+};
+use session_join_stdio::SessionJoinStdioBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
@@ -232,7 +232,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(NetworkModeSelectionStdioBundle::new())?
-            .with_bundle(NetworkJoinStdioBundle::new())?
+            .with_bundle(SessionJoinStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?

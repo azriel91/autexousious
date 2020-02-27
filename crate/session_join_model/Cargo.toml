@@ -1,5 +1,5 @@
 [package]
-name = "network_mode_selection"
+name = "session_join_model"
 version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
@@ -10,12 +10,9 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
-application_event = { path = "../application_event" }
-menu_model = { path = "../menu_model" }
-application_state = { path = "../application_state" }
-derivative = "1.0.3"
 derive-new = "0.5.8"
-session_join = { path = "../session_join" }
-network_mode_selection_model = { path = "../network_mode_selection_model" }
-log = "0.4.8"
-state_registry = { path = "../state_registry" }
+derive_deref = "1.1.0"
+network_session_model = { path = "../network_session_model" }
+serde = { version = "1.0.104", features = ["derive"] }
+structopt = "0.3.9"
+structopt-derive = "0.4.2"
