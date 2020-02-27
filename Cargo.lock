@@ -5102,6 +5102,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_server"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "serde_yaml",
+ "structopt",
+ "structopt-derive",
+]
+
+[[package]]
 name = "shape_model"
 version = "0.17.0"
 dependencies = [
