@@ -1,10 +1,19 @@
-use std::{fs::File, io::BufReader, path::PathBuf};
+use std::{fs::File, io::BufReader, net::IpAddr, path::PathBuf};
 
-use amethyst::{utils::application_root_dir, Error, LoggerConfig};
+use amethyst::{
+    network::simulation::laminar::{LaminarNetworkBundle, LaminarSocket},
+    utils::application_root_dir,
+    Application, Error, GameDataBuilder, LoggerConfig, SimpleState,
+};
+use frame_rate::strategy::frame_rate_limit_config;
 use structopt::StructOpt;
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
+
+/// Default empty state
+pub struct RunState;
+impl SimpleState for RunState {}
 
 /// Options to initialize the session server.
 #[derive(StructOpt, Debug)]
@@ -13,6 +22,16 @@ pub struct Opt {
     /// Logger configuration file.
     #[structopt(long)]
     logger_config: Option<PathBuf>,
+    /// Frame rate to run the server at.
+    #[structopt(long)]
+    frame_rate: Option<u32>,
+
+    /// Address to bind to.
+    #[structopt(long, default_value = "127.0.0.1")]
+    address: IpAddr,
+    /// Port that the session server is listening on.
+    #[structopt(long, default_value = "1234")]
+    port: u16,
 }
 
 fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
@@ -41,7 +60,7 @@ fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
         Ok(logger_config)
     } else if is_user_specified {
         let message = format!(
-            "Warning: Failed to read logger configuration file: `{}`.",
+            "Failed to read logger configuration file: `{}`.",
             logger_config_path.display()
         );
         eprintln!("{}", message);
@@ -60,6 +79,18 @@ fn main() -> Result<(), Error> {
     let opt = Opt::from_args();
 
     logger_setup(opt.logger_config)?;
+
+    let socket = LaminarSocket::bind((opt.address, opt.port))?;
+
+    let assets_dir = application_root_dir()?.join("./");
+
+    let game_data =
+        GameDataBuilder::default().with_bundle(LaminarNetworkBundle::new(Some(socket)))?;
+
+    let mut game = Application::build(assets_dir, RunState)?
+        .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
+        .build(game_data)?;
+    game.run();
 
     Ok(())
 }
