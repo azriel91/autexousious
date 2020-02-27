@@ -29,9 +29,8 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use network_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
-    SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
-    SessionJoinServerListenerSystemDesc,
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinNetListenerSystem,
+    SessionJoinNetListenerSystemDesc, SessionJoinRequestSystem, SessionJoinRequestSystemDesc,
 };
 use object_type::ObjectType;
 use sequence_loading::SequenceLoadingBundle;
@@ -147,14 +146,14 @@ impl AutexousiousApplication {
                 &[],
             )
             .with_system_desc(
-                SessionJoinServerListenerSystemDesc::default(),
-                any::type_name::<SessionJoinServerListenerSystem>(),
+                SessionJoinNetListenerSystemDesc::default(),
+                any::type_name::<SessionJoinNetListenerSystem>(),
                 &[],
             )
             .with_system_desc(
                 SessionJoinAcceptedSystemDesc::default(),
                 any::type_name::<SessionJoinAcceptedSystem>(),
-                &[any::type_name::<SessionJoinServerListenerSystem>()],
+                &[any::type_name::<SessionJoinNetListenerSystem>()],
             )
             .with_system_desc(
                 UiTransformForFovSystemDesc::default(),
@@ -250,14 +249,14 @@ impl AutexousiousApplication {
                 &[],
             )
             .with_system_desc(
-                SessionJoinServerListenerSystemDesc::default(),
-                any::type_name::<SessionJoinServerListenerSystem>(),
+                SessionJoinNetListenerSystemDesc::default(),
+                any::type_name::<SessionJoinNetListenerSystem>(),
                 &[],
             )
             .with_system_desc(
                 SessionJoinAcceptedSystemDesc::default(),
                 any::type_name::<SessionJoinAcceptedSystem>(),
-                &[any::type_name::<SessionJoinServerListenerSystem>()],
+                &[any::type_name::<SessionJoinNetListenerSystem>()],
             )
             .with_system(
                 StateItemUiInputAugmentSystem::new(),

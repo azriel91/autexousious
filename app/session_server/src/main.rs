@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufReader, net::IpAddr, path::PathBuf};
+use std::{any, fs::File, io::BufReader, net::IpAddr, path::PathBuf};
 
 use amethyst::{
     network::simulation::laminar::{LaminarNetworkBundle, LaminarSocket},
@@ -7,6 +7,8 @@ use amethyst::{
 };
 use frame_rate::strategy::frame_rate_limit_config;
 use structopt::StructOpt;
+
+use network_join_play::{SessionJoinNetListenerSystem, SessionJoinNetListenerSystemDesc};
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
@@ -52,11 +54,6 @@ fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
         let mut logger_file_reader = BufReader::new(logger_file);
         let logger_config = serde_yaml::from_reader(&mut logger_file_reader)?;
 
-        eprintln!(
-            "Loaded logger config from `{}`.",
-            logger_config_path.display()
-        );
-
         Ok(logger_config)
     } else if is_user_specified {
         let message = format!(
@@ -84,8 +81,13 @@ fn main() -> Result<(), Error> {
 
     let assets_dir = application_root_dir()?.join("./");
 
-    let game_data =
-        GameDataBuilder::default().with_bundle(LaminarNetworkBundle::new(Some(socket)))?;
+    let game_data = GameDataBuilder::default()
+        .with_bundle(LaminarNetworkBundle::new(Some(socket)))?
+        .with_system_desc(
+            SessionJoinNetListenerSystemDesc::default(),
+            any::type_name::<SessionJoinNetListenerSystem>(),
+            &["network_recv"],
+        );
 
     let mut game = Application::build(assets_dir, RunState)?
         .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))

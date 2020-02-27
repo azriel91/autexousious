@@ -58,9 +58,8 @@ use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
 use network_join_model::config::SessionServerConfig;
 use network_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
-    SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
-    SessionJoinServerListenerSystemDesc,
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinNetListenerSystem,
+    SessionJoinNetListenerSystemDesc, SessionJoinRequestSystem, SessionJoinRequestSystemDesc,
 };
 use network_join_stdio::NetworkJoinStdioBundle;
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
@@ -287,14 +286,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
-                SessionJoinServerListenerSystemDesc::default(),
-                any::type_name::<SessionJoinServerListenerSystem>(),
+                SessionJoinNetListenerSystemDesc::default(),
+                any::type_name::<SessionJoinNetListenerSystem>(),
                 &[],
             )
             .with_system_desc(
                 SessionJoinAcceptedSystemDesc::default(),
                 any::type_name::<SessionJoinAcceptedSystem>(),
-                &[any::type_name::<SessionJoinServerListenerSystem>()],
+                &[any::type_name::<SessionJoinNetListenerSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),

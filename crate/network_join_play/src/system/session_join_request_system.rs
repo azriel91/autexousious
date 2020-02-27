@@ -9,6 +9,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use log::error;
 use network_join_model::{config::SessionServerConfig, NetworkJoinEvent};
 use network_session_model::play::SessionStatus;
 
@@ -77,37 +78,40 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
         }
 
         // Only process one session join event if multiple are received.
-        let session_join_request_params = network_join_events.find_map(|ev| {
-            if let NetworkJoinEvent::SessionJoinRequest(session_join_request_params) = ev {
-                Some(session_join_request_params)
+        let session_join_request_event = network_join_events.find(|ev| {
+            if let NetworkJoinEvent::SessionJoinRequest(..) = ev {
+                true
             } else {
-                None
+                false
             }
         });
 
-        if let Some(session_join_request_params) = session_join_request_params {
-            *session_status = SessionStatus::JoinRequested;
-
+        if let Some(session_join_request_event) = session_join_request_event {
             let server_socket_addr =
                 SocketAddr::new(session_server_config.address, session_server_config.port);
 
-            let message = format!(
-                "Request to join `{}` from `{}`",
-                &session_join_request_params.session_code,
-                &session_join_request_params.session_device_name
-            );
-
-            // Connect to `server_socket_addr` and send request.
-            transport_resource.send_with_requirements(
-                server_socket_addr,
-                message.as_bytes(),
-                // None means it uses a default multiplexed stream.
-                //
-                // Suspect if we give it a value, the value will be a "channel" over the same
-                // socket connection.
-                DeliveryRequirement::ReliableOrdered(None),
-                UrgencyRequirement::OnTick,
-            );
+            match bincode::serialize(session_join_request_event) {
+                Ok(payload) => {
+                    // Connect to `server_socket_addr` and send request.
+                    transport_resource.send_with_requirements(
+                        server_socket_addr,
+                        &payload,
+                        // None means it uses a default multiplexed stream.
+                        //
+                        // Suspect if we give it a value, the value will be a "channel" over the same
+                        // socket connection.
+                        DeliveryRequirement::ReliableOrdered(None),
+                        UrgencyRequirement::OnTick,
+                    );
+                    *session_status = SessionStatus::JoinRequested;
+                }
+                Err(e) => {
+                    error!(
+                        "Failed to serialize `session_join_request_event`. Error: `{}`.",
+                        e
+                    );
+                }
+            }
         }
     }
 }

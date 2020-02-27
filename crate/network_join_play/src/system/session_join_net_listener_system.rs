@@ -9,12 +9,11 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
 use network_join_model::NetworkJoinEvent;
-use structopt::StructOpt;
 
-/// Maps responses from session server into `NetworkJoinEvent`s.
+/// Maps requests from session clients into `NetworkJoinEvent`s.
 #[derive(Debug, SystemDesc, new)]
-#[system_desc(name(SessionJoinServerListenerSystemDesc))]
-pub struct SessionJoinServerListenerSystem {
+#[system_desc(name(SessionJoinNetListenerSystemDesc))]
+pub struct SessionJoinNetListenerSystem {
     /// Reader ID for the `NetworkSimulationEvent` channel.
     #[system_desc(event_channel_reader)]
     network_simulation_event_rid: ReaderId<NetworkSimulationEvent>,
@@ -22,7 +21,7 @@ pub struct SessionJoinServerListenerSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SessionJoinServerListenerSystemData<'s> {
+pub struct SessionJoinNetListenerSystemData<'s> {
     /// `NetworkSimulationEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_simulation_ec: Read<'s, EventChannel<NetworkSimulationEvent>>,
@@ -31,12 +30,12 @@ pub struct SessionJoinServerListenerSystemData<'s> {
     pub network_join_ec: Write<'s, EventChannel<NetworkJoinEvent>>,
 }
 
-impl<'s> System<'s> for SessionJoinServerListenerSystem {
-    type SystemData = SessionJoinServerListenerSystemData<'s>;
+impl<'s> System<'s> for SessionJoinNetListenerSystem {
+    type SystemData = SessionJoinNetListenerSystemData<'s>;
 
     fn run(
         &mut self,
-        SessionJoinServerListenerSystemData {
+        SessionJoinNetListenerSystemData {
             mut network_join_ec,
             network_simulation_ec,
         }: Self::SystemData,
@@ -46,12 +45,7 @@ impl<'s> System<'s> for SessionJoinServerListenerSystem {
             .for_each(|ev| match ev {
                 NetworkSimulationEvent::Message(socket_addr, bytes) => {
                     debug!("Socket: {}, Message: {:?}", socket_addr, bytes);
-                    let network_join_event = String::from_utf8(bytes.to_vec())
-                        .map_err(|e| format!("{}", e))
-                        .and_then(|args| shell_words::split(&args).map_err(|e| format!("{}", e)))
-                        .and_then(|args| {
-                            NetworkJoinEvent::from_iter_safe(args).map_err(|e| format!("{}", e))
-                        });
+                    let network_join_event = bincode::deserialize(bytes);
                     match network_join_event {
                         Ok(network_join_event) => {
                             debug!("{:?}", network_join_event);

@@ -926,6 +926,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5753e2a71534719bf3f4e57006c3a4f0d2c672a4b676eec84161f763eca87dbf"
+dependencies = [
+ "byteorder",
+ "serde",
+]
+
+[[package]]
 name = "bindgen"
 version = "0.51.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3405,12 +3415,12 @@ name = "network_join_play"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "bincode",
  "derivative",
  "derive-new",
  "log",
  "network_join_model",
  "network_session_model",
- "shell-words",
  "structopt",
 ]
 
@@ -5107,6 +5117,7 @@ version = "0.18.0"
 dependencies = [
  "amethyst",
  "frame_rate",
+ "network_join_play",
  "serde_yaml",
  "structopt",
  "structopt-derive",
