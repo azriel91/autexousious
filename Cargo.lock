@@ -6304,6 +6304,7 @@ dependencies = [
  "audio_play",
  "background_loading",
  "background_model",
+ "bincode",
  "bytes",
  "camera_model",
  "camera_play",

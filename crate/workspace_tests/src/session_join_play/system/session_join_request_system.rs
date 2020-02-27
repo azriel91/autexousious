@@ -35,6 +35,16 @@ mod tests {
 
     #[test]
     fn inserts_resources_on_session_accepted() -> Result<(), Error> {
+        let session_join_event = SessionJoinEvent::SessionJoinRequest(SessionJoinRequestParams {
+            session_code: SessionCode::new(String::from("abcd")),
+            session_device_name: SessionDeviceName::new(String::from("azriel")),
+        });
+
+        let payload = Bytes::from(
+            bincode::serialize(&session_join_event)
+                .expect("Failed to serialize `session_join_event`."),
+        );
+
         let messages = {
             let session_server_config = SessionServerConfig::default();
 
@@ -44,7 +54,7 @@ mod tests {
                     session_server_config.address,
                     session_server_config.port,
                 )),
-                payload: Bytes::from("Request to join `abcd` from `azriel`".as_bytes()),
+                payload,
                 delivery: DeliveryRequirement::ReliableOrdered(None),
                 urgency: UrgencyRequirement::OnTick,
             });
@@ -55,12 +65,7 @@ mod tests {
         run_test(
             SetupParams {
                 session_status: SessionStatus::None,
-                session_join_event: Some(SessionJoinEvent::SessionJoinRequest(
-                    SessionJoinRequestParams {
-                        session_code: SessionCode::new(String::from("abcd")),
-                        session_device_name: SessionDeviceName::new(String::from("azriel")),
-                    },
-                )),
+                session_join_event: Some(session_join_event),
             },
             ExpectedParams {
                 session_status: SessionStatus::JoinRequested,
