@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
-use crate::play::{SessionAcceptResponse, SessionJoinRequestParams};
+use crate::play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse};
 
 /// Session join state events.
 ///
@@ -26,6 +26,8 @@ pub enum SessionJoinEvent {
     JoinCancel,
     /// Server accepted the client's request.
     SessionAccept(SessionAcceptResponse),
+    /// Server rejected the client's request.
+    SessionReject(SessionRejectResponse),
     /// Return to the previous menu.
     Back,
 }

@@ -69,7 +69,9 @@ mod tests {
                 session_join_event: Some(session_join_event),
             },
             ExpectedParams {
-                session_status: SessionStatus::JoinRequested,
+                session_status: SessionStatus::JoinRequested {
+                    session_code: SessionCode::new(String::from("abcd")),
+                },
                 messages,
             },
         )
@@ -79,7 +81,9 @@ mod tests {
     fn ignores_session_join_request_when_already_requested() -> Result<(), Error> {
         run_test(
             SetupParams {
-                session_status: SessionStatus::JoinRequested,
+                session_status: SessionStatus::JoinRequested {
+                    session_code: SessionCode::new(String::from("abcd")),
+                },
                 session_join_event: Some(SessionJoinEvent::SessionJoinRequest(
                     SessionJoinRequestParams {
                         session_code: SessionCode::new(String::from("abcd")),
@@ -88,7 +92,9 @@ mod tests {
                 )),
             },
             ExpectedParams {
-                session_status: SessionStatus::JoinRequested,
+                session_status: SessionStatus::JoinRequested {
+                    session_code: SessionCode::new(String::from("abcd")),
+                },
                 messages: VecDeque::default(),
             },
         )

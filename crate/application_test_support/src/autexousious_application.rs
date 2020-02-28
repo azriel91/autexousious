@@ -32,8 +32,8 @@ use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use object_type::ObjectType;
 use sequence_loading::SequenceLoadingBundle;
 use session_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
-    SessionJoinRequestSystemDesc,
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
+    SessionJoinResponseSystemDesc,
 };
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
@@ -152,8 +152,8 @@ impl AutexousiousApplication {
                 &[],
             )
             .with_system_desc(
-                SessionJoinAcceptedSystemDesc::default(),
-                any::type_name::<SessionJoinAcceptedSystem>(),
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with_system_desc(
@@ -255,8 +255,8 @@ impl AutexousiousApplication {
                 &[],
             )
             .with_system_desc(
-                SessionJoinAcceptedSystemDesc::default(),
-                any::type_name::<SessionJoinAcceptedSystem>(),
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with_system(

@@ -62,8 +62,8 @@ use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use session_join_model::config::SessionServerConfig;
 use session_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
-    SessionJoinRequestSystemDesc,
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
+    SessionJoinResponseSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
 use spawn_loading::SpawnLoadingBundle;
@@ -292,8 +292,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
-                SessionJoinAcceptedSystemDesc::default(),
-                any::type_name::<SessionJoinAcceptedSystem>(),
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with(

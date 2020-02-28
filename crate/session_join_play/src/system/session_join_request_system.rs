@@ -79,20 +79,20 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
         }
 
         // Only process one session join event if multiple are received.
-        let session_join_request_event = session_join_events.find(|ev| {
-            if let SessionJoinEvent::SessionJoinRequest(..) = ev {
-                true
+        let session_join_request_params = session_join_events.find_map(|ev| {
+            if let SessionJoinEvent::SessionJoinRequest(session_join_request_params) = ev {
+                Some(session_join_request_params)
             } else {
-                false
+                None
             }
         });
 
-        if let Some(session_join_request_event) = session_join_request_event {
+        if let Some(session_join_request_params) = session_join_request_params {
             let server_socket_addr =
                 SocketAddr::new(session_server_config.address, session_server_config.port);
 
             match bincode::serialize(&NetMessage::SessionJoinEvent(
-                session_join_request_event.clone(),
+                SessionJoinEvent::SessionJoinRequest(session_join_request_params.clone()),
             )) {
                 Ok(payload) => {
                     // Connect to `server_socket_addr` and send request.
@@ -106,11 +106,13 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );
-                    *session_status = SessionStatus::JoinRequested;
+                    *session_status = SessionStatus::JoinRequested {
+                        session_code: session_join_request_params.session_code.clone(),
+                    };
                 }
                 Err(e) => {
                     error!(
-                        "Failed to serialize `session_join_request_event`. Error: `{}`.",
+                        "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
                         e
                     );
                 }

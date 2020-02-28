@@ -12,7 +12,7 @@ mod tests {
     };
     use session_join_model::{play::SessionAcceptResponse, SessionJoinEvent};
 
-    use session_join_play::SessionJoinAcceptedSystemDesc;
+    use session_join_play::SessionJoinResponseSystemDesc;
 
     #[test]
     fn does_nothing_when_no_session_join_event() -> Result<(), Error> {
@@ -40,7 +40,9 @@ mod tests {
                 session_code: SessionCode::new(String::from("abcd")),
                 session_device_id: SessionDeviceId::new(123),
                 session_devices: SessionDevices::new(vec![]),
-                session_status: SessionStatus::JoinRequested,
+                session_status: SessionStatus::JoinRequested {
+                    session_code: SessionCode::new(String::from("defg")),
+                },
                 session_join_event: Some(SessionJoinEvent::SessionAccept(SessionAcceptResponse {
                     session_code: SessionCode::new(String::from("defg")),
                     session_device_id: SessionDeviceId::new(234),
@@ -104,7 +106,7 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system_desc(SessionJoinAcceptedSystemDesc::default(), "", &[])
+            .with_system_desc(SessionJoinResponseSystemDesc::default(), "", &[])
             .with_setup(move |world| {
                 world.insert(session_code_setup);
                 world.insert(session_device_id_setup);
