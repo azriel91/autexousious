@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use network_session_model::play::{
-        SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
+        Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
     };
     use session_join_model::{
         play::{SessionAcceptResponse, SessionJoinRequestParams},
@@ -55,9 +55,11 @@ mod tests {
             },
         ]);
         let args = SessionJoinEvent::SessionAccept(SessionAcceptResponse {
-            session_code,
             session_device_id,
-            session_devices,
+            session: Session {
+                session_code,
+                session_devices,
+            },
         });
 
         let result = SessionJoinEventStdinMapper::map(&(), args.clone());

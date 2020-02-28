@@ -6,9 +6,10 @@ use amethyst::{
     Application, Error, GameDataBuilder, LoggerConfig, SimpleState,
 };
 use frame_rate::strategy::frame_rate_limit_config;
+use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use structopt::StructOpt;
 
-use net_play::{NetListenerSystem, NetListenerSystemDesc};
+mod system;
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";

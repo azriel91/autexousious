@@ -7,7 +7,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use network_session_model::play::{
-        SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
+        Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
         SessionStatus,
     };
     use session_join_model::{play::SessionAcceptResponse, SessionJoinEvent};
@@ -44,12 +44,14 @@ mod tests {
                     session_code: SessionCode::new(String::from("defg")),
                 },
                 session_join_event: Some(SessionJoinEvent::SessionAccept(SessionAcceptResponse {
-                    session_code: SessionCode::new(String::from("defg")),
                     session_device_id: SessionDeviceId::new(234),
-                    session_devices: SessionDevices::new(vec![SessionDevice::new(
-                        SessionDeviceId::new(234),
-                        SessionDeviceName::new(String::from("azriel")),
-                    )]),
+                    session: Session {
+                        session_code: SessionCode::new(String::from("defg")),
+                        session_devices: SessionDevices::new(vec![SessionDevice::new(
+                            SessionDeviceId::new(234),
+                            SessionDeviceName::new(String::from("azriel")),
+                        )]),
+                    },
                 })),
             },
             ExpectedParams {
@@ -73,12 +75,14 @@ mod tests {
                 session_devices: SessionDevices::new(vec![]),
                 session_status: SessionStatus::None,
                 session_join_event: Some(SessionJoinEvent::SessionAccept(SessionAcceptResponse {
-                    session_code: SessionCode::new(String::from("defg")),
                     session_device_id: SessionDeviceId::new(234),
-                    session_devices: SessionDevices::new(vec![SessionDevice::new(
-                        SessionDeviceId::new(234),
-                        SessionDeviceName::new(String::from("azriel")),
-                    )]),
+                    session: Session {
+                        session_code: SessionCode::new(String::from("defg")),
+                        session_devices: SessionDevices::new(vec![SessionDevice::new(
+                            SessionDeviceId::new(234),
+                            SessionDeviceName::new(String::from("azriel")),
+                        )]),
+                    },
                 })),
             },
             ExpectedParams {

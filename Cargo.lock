@@ -3391,6 +3391,7 @@ dependencies = [
  "amethyst",
  "derivative",
  "derive-new",
+ "derive_more",
  "log",
  "serde",
  "session_join_model",
@@ -3457,6 +3458,7 @@ dependencies = [
  "derive-new",
  "derive_deref",
  "serde",
+ "structopt",
 ]
 
 [[package]]
@@ -5143,9 +5145,15 @@ name = "session_server"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "derivative",
+ "derive-new",
  "frame_rate",
+ "log",
+ "net_model",
  "net_play",
+ "network_session_model",
  "serde_yaml",
+ "session_join_model",
  "structopt",
  "structopt-derive",
 ]

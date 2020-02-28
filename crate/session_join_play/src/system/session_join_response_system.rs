@@ -63,14 +63,16 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                 session_join_events.fold(None, |mut session_status_new, ev| {
                     match ev {
                         SessionJoinEvent::SessionAccept(session_accept_response)
-                            if &session_accept_response.session_code == session_code_requested =>
+                            if &session_accept_response.session.session_code
+                                == session_code_requested =>
                         {
                             debug!("Session accepted: {:?}", session_accept_response);
 
                             // Write to resources.
-                            *session_code = session_accept_response.session_code.clone();
+                            *session_code = session_accept_response.session.session_code.clone();
                             *session_device_id = session_accept_response.session_device_id;
-                            *session_devices = session_accept_response.session_devices.clone();
+                            *session_devices =
+                                session_accept_response.session.session_devices.clone();
                             session_status_new = Some(SessionStatus::Established);
                         }
                         SessionJoinEvent::SessionReject(session_reject_response)
