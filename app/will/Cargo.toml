@@ -41,6 +41,7 @@ kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
+net_play = { path = "../../crate/net_play" }
 session_join_model = { path = "../../crate/session_join_model" }
 session_join_play = { path = "../../crate/session_join_play" }
 session_join_stdio = { path = "../../crate/session_join_stdio" }

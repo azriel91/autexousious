@@ -475,6 +475,7 @@ dependencies = [
  "map_model",
  "map_selection",
  "map_selection_model",
+ "net_play",
  "object_model",
  "object_type",
  "sequence_loading",
@@ -3384,6 +3385,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "net_model"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derivative",
+ "derive-new",
+ "log",
+ "serde",
+ "session_join_model",
+]
+
+[[package]]
+name = "net_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "bincode",
+ "derivative",
+ "derive-new",
+ "log",
+ "net_model",
+ "session_join_model",
+]
+
+[[package]]
 name = "network_mode_selection"
 version = "0.18.0"
 dependencies = [
@@ -5095,6 +5121,7 @@ dependencies = [
  "derivative",
  "derive-new",
  "log",
+ "net_model",
  "network_session_model",
  "session_join_model",
  "structopt",
@@ -5117,8 +5144,8 @@ version = "0.18.0"
 dependencies = [
  "amethyst",
  "frame_rate",
+ "net_play",
  "serde_yaml",
- "session_join_play",
  "structopt",
  "structopt-derive",
 ]
@@ -6194,6 +6221,7 @@ dependencies = [
  "loading",
  "log",
  "map_loading",
+ "net_play",
  "network_mode_selection_stdio",
  "parent_play",
  "sequence_loading",
@@ -6367,6 +6395,7 @@ dependencies = [
  "map_selection_ui_model",
  "menu_model",
  "mirrored_model",
+ "net_model",
  "network_mode_selection_model",
  "network_mode_selection_stdio",
  "network_session_model",

@@ -8,7 +8,7 @@ use amethyst::{
 use frame_rate::strategy::frame_rate_limit_config;
 use structopt::StructOpt;
 
-use session_join_play::{SessionJoinNetListenerSystem, SessionJoinNetListenerSystemDesc};
+use net_play::{NetListenerSystem, NetListenerSystemDesc};
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
@@ -84,8 +84,8 @@ fn main() -> Result<(), Error> {
     let game_data = GameDataBuilder::default()
         .with_bundle(LaminarNetworkBundle::new(Some(socket)))?
         .with_system_desc(
-            SessionJoinNetListenerSystemDesc::default(),
-            any::type_name::<SessionJoinNetListenerSystem>(),
+            NetListenerSystemDesc::default(),
+            any::type_name::<NetListenerSystem>(),
             &["network_recv"],
         );
 

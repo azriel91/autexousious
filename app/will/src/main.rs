@@ -56,13 +56,14 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
+use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use session_join_model::config::SessionServerConfig;
 use session_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinNetListenerSystem,
-    SessionJoinNetListenerSystemDesc, SessionJoinRequestSystem, SessionJoinRequestSystemDesc,
+    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
+    SessionJoinRequestSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
 use spawn_loading::SpawnLoadingBundle;
@@ -286,14 +287,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
-                SessionJoinNetListenerSystemDesc::default(),
-                any::type_name::<SessionJoinNetListenerSystem>(),
+                NetListenerSystemDesc::default(),
+                any::type_name::<NetListenerSystem>(),
                 &[],
             )
             .with_system_desc(
                 SessionJoinAcceptedSystemDesc::default(),
                 any::type_name::<SessionJoinAcceptedSystem>(),
-                &[any::type_name::<SessionJoinNetListenerSystem>()],
+                &[any::type_name::<NetListenerSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),

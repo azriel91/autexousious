@@ -12,6 +12,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use bytes::Bytes;
+    use net_model::play::NetMessage;
     use network_session_model::play::{SessionCode, SessionDeviceName, SessionStatus};
     use session_join_model::{
         config::SessionServerConfig, play::SessionJoinRequestParams, SessionJoinEvent,
@@ -41,7 +42,7 @@ mod tests {
         });
 
         let payload = Bytes::from(
-            bincode::serialize(&session_join_event)
+            bincode::serialize(&NetMessage::SessionJoinEvent(session_join_event.clone()))
                 .expect("Failed to serialize `session_join_event`."),
         );
 

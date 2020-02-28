@@ -37,6 +37,7 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
+net_play = { path = "../../crate/net_play" }
 session_join_play = { path = "../session_join_play" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }

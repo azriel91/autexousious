@@ -95,9 +95,7 @@ map_selection_model = { path = "../map_selection_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 menu_model = { path = "../menu_model" }
 mirrored_model = { path = "../mirrored_model" }
-session_join_model = { path = "../session_join_model" }
-session_join_play = { path = "../session_join_play" }
-session_join_stdio = { path = "../session_join_stdio" }
+net_model = { path = "../net_model" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 network_mode_selection_stdio = { path = "../network_mode_selection_stdio" }
 network_session_model = { path = "../network_session_model" }
@@ -117,6 +115,9 @@ sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
+session_join_model = { path = "../session_join_model" }
+session_join_play = { path = "../session_join_play" }
+session_join_stdio = { path = "../session_join_stdio" }
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_loading = { path = "../spawn_loading" }
