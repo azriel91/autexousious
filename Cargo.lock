@@ -5145,6 +5145,7 @@ name = "session_server"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "bincode",
  "derivative",
  "derive-new",
  "frame_rate",

@@ -1,11 +1,13 @@
 #[cfg(test)]
 mod tests {
+    use std::net::{Ipv4Addr, SocketAddr};
+
     use amethyst::{
         ecs::{Read, WorldExt},
-        shrev::EventChannel,
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use net_model::play::{NetEvent, NetEventChannel};
     use network_session_model::play::{
         Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
         SessionStatus,
@@ -119,9 +121,13 @@ mod tests {
             })
             .with_effect(move |world| {
                 if let Some(session_join_event) = session_join_event {
+                    let socket_addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 1234));
                     world
-                        .write_resource::<EventChannel<SessionJoinEvent>>()
-                        .single_write(session_join_event);
+                        .write_resource::<NetEventChannel<SessionJoinEvent>>()
+                        .single_write(NetEvent {
+                            socket_addr,
+                            event: session_join_event,
+                        });
                 }
             })
             .with_assertion(move |world| {

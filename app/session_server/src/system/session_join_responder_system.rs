@@ -1,13 +1,14 @@
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
+    network::simulation::{DeliveryRequirement, TransportResource, UrgencyRequirement},
     shred::{ResourceId, SystemData},
-    shrev::{EventChannel, ReaderId},
+    shrev::ReaderId,
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::debug;
-use net_model::play::NetMessage;
+use log::{debug, error};
+use net_model::play::{NetEvent, NetEventChannel, NetMessage};
 use network_session_model::play::{SessionDevice, SessionDeviceId, Sessions};
 use session_join_model::{
     play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse},
@@ -20,7 +21,7 @@ use session_join_model::{
 pub struct SessionJoinResponderSystem {
     /// Reader ID for the `SessionJoinEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_join_event_rid: ReaderId<SessionJoinEvent>,
+    session_join_event_rid: ReaderId<NetEvent<SessionJoinEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -28,10 +29,13 @@ pub struct SessionJoinResponderSystem {
 pub struct SessionJoinResponderSystemData<'s> {
     /// `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub session_join_ec: Read<'s, EventChannel<SessionJoinEvent>>,
+    pub session_join_nec: Read<'s, NetEventChannel<SessionJoinEvent>>,
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
+    /// `TransportResource` resource.
+    #[derivative(Debug = "ignore")]
+    pub transport_resource: Write<'s, TransportResource>,
 }
 
 impl SessionJoinResponderSystem {
@@ -84,24 +88,51 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
     fn run(
         &mut self,
         SessionJoinResponderSystemData {
-            session_join_ec,
+            session_join_nec,
             mut sessions,
+            mut transport_resource,
         }: Self::SystemData,
     ) {
-        let _net_messages = session_join_ec
+        session_join_nec
             .read(&mut self.session_join_event_rid)
             .filter_map(|session_join_event| {
-                if let SessionJoinEvent::SessionJoinRequest(session_join_request_params) =
-                    session_join_event
+                if let NetEvent {
+                    socket_addr,
+                    event: SessionJoinEvent::SessionJoinRequest(session_join_request_params),
+                } = session_join_event
                 {
-                    Some(session_join_request_params)
+                    Some((*socket_addr, session_join_request_params))
                 } else {
                     None
                 }
             })
-            .map(|session_join_request_params| {
-                Self::handle_session_request(&mut sessions, session_join_request_params)
+            .map(|(socket_addr, session_join_request_params)| {
+                let session_join_event =
+                    Self::handle_session_request(&mut sessions, session_join_request_params);
+
+                (socket_addr, NetMessage::from(session_join_event))
             })
-            .map(NetMessage::from);
+            .for_each(|(socket_addr, net_message)| {
+                match bincode::serialize(&net_message) {
+                    Ok(payload) => {
+                        transport_resource.send_with_requirements(
+                            socket_addr,
+                            &payload,
+                            // None means it uses a default multiplexed stream.
+                            //
+                            // Suspect if we give it a value, the value will be a "channel" over the same
+                            // socket connection.
+                            DeliveryRequirement::ReliableOrdered(None),
+                            UrgencyRequirement::OnTick,
+                        );
+                    }
+                    Err(e) => {
+                        error!(
+                            "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                            e
+                        );
+                    }
+                }
+            });
     }
 }

@@ -9,6 +9,8 @@ use frame_rate::strategy::frame_rate_limit_config;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use structopt::StructOpt;
 
+use crate::system::{SessionJoinResponderSystem, SessionJoinResponderSystemDesc};
+
 mod system;
 
 /// Default file for logger configuration.
@@ -88,6 +90,11 @@ fn main() -> Result<(), Error> {
             NetListenerSystemDesc::default(),
             any::type_name::<NetListenerSystem>(),
             &["network_recv"],
+        )
+        .with_system_desc(
+            SessionJoinResponderSystemDesc::default(),
+            any::type_name::<SessionJoinResponderSystem>(),
+            &[any::type_name::<NetListenerSystem>()],
         );
 
     let mut game = Application::build(assets_dir, RunState)?

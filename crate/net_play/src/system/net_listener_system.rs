@@ -8,7 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::NetMessage;
+use net_model::play::{NetEvent, NetEventChannel, NetMessage};
 use session_join_model::SessionJoinEvent;
 
 /// Receives `NetMessage`s and sends each variant's data to the corresponding event channel.
@@ -26,9 +26,9 @@ pub struct NetListenerSystemData<'s> {
     /// `NetworkSimulationEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_simulation_ec: Read<'s, EventChannel<NetworkSimulationEvent>>,
-    /// `SessionJoinEvent` channel.
+    /// Net `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub session_join_ec: Write<'s, EventChannel<SessionJoinEvent>>,
+    pub session_join_nec: Write<'s, NetEventChannel<SessionJoinEvent>>,
 }
 
 impl<'s> System<'s> for NetListenerSystem {
@@ -37,7 +37,7 @@ impl<'s> System<'s> for NetListenerSystem {
     fn run(
         &mut self,
         NetListenerSystemData {
-            mut session_join_ec,
+            mut session_join_nec,
             network_simulation_ec,
         }: Self::SystemData,
     ) {
@@ -52,7 +52,10 @@ impl<'s> System<'s> for NetListenerSystem {
                             debug!("{:?}", net_message);
                             match net_message {
                                 NetMessage::SessionJoinEvent(session_join_event) => {
-                                    session_join_ec.single_write(session_join_event);
+                                    session_join_nec.single_write(NetEvent::new(
+                                        *socket_addr,
+                                        session_join_event,
+                                    ));
                                 }
                             }
                         }

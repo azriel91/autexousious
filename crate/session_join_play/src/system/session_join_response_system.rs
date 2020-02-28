@@ -2,11 +2,12 @@ use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
-    shrev::{EventChannel, ReaderId},
+    shrev::ReaderId,
 };
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
+use net_model::play::{NetEvent, NetEventChannel};
 use network_session_model::play::{SessionCode, SessionDeviceId, SessionDevices, SessionStatus};
 use session_join_model::SessionJoinEvent;
 
@@ -16,7 +17,7 @@ use session_join_model::SessionJoinEvent;
 pub struct SessionJoinResponseSystem {
     /// Reader ID for the `SessionJoinEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_join_event_rid: ReaderId<SessionJoinEvent>,
+    session_join_event_rid: ReaderId<NetEvent<SessionJoinEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -24,7 +25,7 @@ pub struct SessionJoinResponseSystem {
 pub struct SessionJoinResponseSystemData<'s> {
     /// `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub session_join_ec: Read<'s, EventChannel<SessionJoinEvent>>,
+    pub session_join_nec: Read<'s, NetEventChannel<SessionJoinEvent>>,
     /// `SessionCode` resource.
     #[derivative(Debug = "ignore")]
     pub session_code: Write<'s, SessionCode>,
@@ -45,14 +46,14 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
     fn run(
         &mut self,
         SessionJoinResponseSystemData {
-            session_join_ec,
+            session_join_nec,
             mut session_code,
             mut session_device_id,
             mut session_devices,
             mut session_status,
         }: Self::SystemData,
     ) {
-        let session_join_events = session_join_ec.read(&mut self.session_join_event_rid);
+        let session_join_events = session_join_nec.read(&mut self.session_join_event_rid);
 
         if let SessionStatus::JoinRequested {
             session_code: session_code_requested,
@@ -62,9 +63,11 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
             let session_status_new =
                 session_join_events.fold(None, |mut session_status_new, ev| {
                     match ev {
-                        SessionJoinEvent::SessionAccept(session_accept_response)
-                            if &session_accept_response.session.session_code
-                                == session_code_requested =>
+                        NetEvent {
+                            event: SessionJoinEvent::SessionAccept(session_accept_response),
+                            ..
+                        } if &session_accept_response.session.session_code
+                            == session_code_requested =>
                         {
                             debug!("Session accepted: {:?}", session_accept_response);
 
@@ -75,9 +78,10 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                                 session_accept_response.session.session_devices.clone();
                             session_status_new = Some(SessionStatus::Established);
                         }
-                        SessionJoinEvent::SessionReject(session_reject_response)
-                            if &session_reject_response.session_code == session_code_requested =>
-                        {
+                        NetEvent {
+                            event: SessionJoinEvent::SessionReject(session_reject_response),
+                            ..
+                        } if &session_reject_response.session_code == session_code_requested => {
                             debug!("Session rejected: {:?}", session_reject_response);
 
                             session_status_new = Some(SessionStatus::None);
