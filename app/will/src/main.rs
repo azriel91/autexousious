@@ -60,6 +60,11 @@ use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
+use session_host_model::config::SessionServerConfig as SessionServerConfigHost;
+use session_host_play::{
+    SessionHostRequestSystem, SessionHostRequestSystemDesc, SessionHostResponseSystem,
+    SessionHostResponseSystemDesc,
+};
 use session_host_stdio::SessionHostStdioBundle;
 use session_join_model::config::SessionServerConfig;
 use session_join_play::{
@@ -171,6 +176,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .start();
 
     let session_server_config = session_server_config(&opt);
+    let session_server_config_host = SessionServerConfigHost {
+        address: session_server_config.address,
+        port: session_server_config.port,
+    };
 
     let assets_dir = AppDir::assets()?;
 
@@ -284,6 +293,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
+                SessionHostRequestSystemDesc::new(session_server_config_host),
+                any::type_name::<SessionHostRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
                 SessionJoinRequestSystemDesc::new(session_server_config),
                 any::type_name::<SessionJoinRequestSystem>(),
                 &[],
@@ -292,6 +306,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 NetListenerSystemDesc::default(),
                 any::type_name::<NetListenerSystem>(),
                 &[],
+            )
+            .with_system_desc(
+                SessionHostResponseSystemDesc::default(),
+                any::type_name::<SessionHostResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
             )
             .with_system_desc(
                 SessionJoinResponseSystemDesc::default(),
