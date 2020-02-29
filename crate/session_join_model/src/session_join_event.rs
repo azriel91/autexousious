@@ -11,7 +11,7 @@ use crate::play::{SessionAcceptResponse, SessionJoinRequestParams, SessionReject
 ///
 /// * `session_join session_join_request --device-name azriel --session-code abcd`
 /// * `session_join join_cancel`
-/// * `session_join session_accept --session-code abcd --session-devices "1:azriel 2:byron 3:carlo"`
+/// * `session_join session_accept --session-code abcd --session-devices "1:azriel 2:byron 3:carlo" --session-device-id 1`
 /// * `session_join back`
 ///
 /// **Note:** The `session_accept` subcommand is designed to be received from the server, so sending
