@@ -1,6 +1,7 @@
 use amethyst::{GameData, Trans};
 use application_event::AppEvent;
 use network_mode_selection_model::NetworkModeIndex;
+use session_host::{SessionHostStateBuilder, SessionHostStateDelegate};
 use session_join::{SessionJoinStateBuilder, SessionJoinStateDelegate};
 
 /// Returns the `Trans` for a given `NetworkModeIndex`.
@@ -17,7 +18,11 @@ impl NetworkModeSelectionTrans {
         network_mode_index: NetworkModeIndex,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
         match network_mode_index {
-            NetworkModeIndex::Host => Trans::None,
+            NetworkModeIndex::Host => {
+                let state = SessionHostStateBuilder::new(SessionHostStateDelegate::new()).build();
+
+                Trans::Push(Box::new(state))
+            }
             NetworkModeIndex::Join => {
                 let state = SessionJoinStateBuilder::new(SessionJoinStateDelegate::new()).build();
 

@@ -1,5 +1,5 @@
 [package]
-name = "network_mode_selection"
+name = "session_host"
 version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
@@ -15,8 +15,5 @@ application_state = { path = "../application_state" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
-menu_model = { path = "../menu_model" }
-network_mode_selection_model = { path = "../network_mode_selection_model" }
-session_host = { path = "../session_host" }
-session_join = { path = "../session_join" }
+session_host_model = { path = "../session_host_model" }
 state_registry = { path = "../state_registry" }

@@ -402,6 +402,7 @@ dependencies = [
  "game_mode_selection_model",
  "game_play_model",
  "network_mode_selection_model",
+ "session_host_model",
  "session_join_model",
  "stdio_command_model",
  "strum",
@@ -3422,6 +3423,7 @@ dependencies = [
  "log",
  "menu_model",
  "network_mode_selection_model",
+ "session_host",
  "session_join",
  "state_registry",
 ]
@@ -5085,6 +5087,20 @@ checksum = "2c4ccb6d0d32d277d3ef7dea86203d8210945eb7a45fba89dd445b3595dd0dfc"
 dependencies = [
  "cmake",
  "pkg-config",
+]
+
+[[package]]
+name = "session_host"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "application_event",
+ "application_state",
+ "derivative",
+ "derive-new",
+ "log",
+ "session_host_model",
+ "state_registry",
 ]
 
 [[package]]

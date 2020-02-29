@@ -7,7 +7,7 @@ use log::debug;
 use session_join_model::{SessionJoinEntity, SessionJoinEvent};
 use state_registry::StateId;
 
-/// `State` where game mode selection takes place.
+/// `State` where session joining takes place.
 ///
 /// This state is not intended to be constructed directly, but through the
 /// [`SessionJoinStateBuilder`][state_builder].
@@ -17,12 +17,11 @@ pub type SessionJoinState = AppState<'static, 'static, SessionJoinStateDelegate,
 
 /// Builder for a `SessionJoinState`.
 ///
-/// `SystemBundle`s to run in the `SessionJoinState`'s dispatcher are registered on this
-/// builder.
+/// `SystemBundle`s to run in the `SessionJoinState`'s dispatcher are registered on this builder.
 pub type SessionJoinStateBuilder =
     AppStateBuilder<'static, 'static, SessionJoinStateDelegate, SessionJoinEntity>;
 
-/// Delegate `State` for game mode selection.
+/// Delegate `State` for session joining.
 ///
 /// This state is not intended to be used directly, but wrapped in an `AppState`. The
 /// `SessionJoinState` is an alias with this as a delegate state.
