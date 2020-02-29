@@ -60,6 +60,7 @@ use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
+use session_host_stdio::SessionHostStdioBundle;
 use session_join_model::config::SessionServerConfig;
 use session_join_play::{
     SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
@@ -233,6 +234,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(NetworkModeSelectionStdioBundle::new())?
+            .with_bundle(SessionHostStdioBundle::new())?
             .with_bundle(SessionJoinStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?

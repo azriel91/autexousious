@@ -138,6 +138,8 @@ mod sequence_loading;
 #[cfg(test)]
 mod sequence_play;
 #[cfg(test)]
+mod session_host_stdio;
+#[cfg(test)]
 mod session_join_play;
 #[cfg(test)]
 mod session_join_stdio;

@@ -5117,6 +5117,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_host_stdio"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "application_event",
+ "derive-new",
+ "session_host_model",
+ "stdio_spi",
+]
+
+[[package]]
 name = "session_join"
 version = "0.18.0"
 dependencies = [
@@ -6263,6 +6274,7 @@ dependencies = [
  "network_mode_selection_stdio",
  "parent_play",
  "sequence_loading",
+ "session_host_stdio",
  "session_join_model",
  "session_join_play",
  "session_join_stdio",
@@ -6453,6 +6465,8 @@ dependencies = [
  "sequence_play",
  "serde",
  "serde_yaml",
+ "session_host_model",
+ "session_host_stdio",
  "session_join_model",
  "session_join_play",
  "session_join_stdio",
