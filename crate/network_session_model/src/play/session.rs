@@ -8,7 +8,7 @@ use crate::play::{SessionCode, SessionDevices};
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt, new)]
 pub struct Session {
     /// Code of the session.
-    #[structopt(short, long)]
+    #[structopt(long)]
     pub session_code: SessionCode,
     /// Devices in the session.
     #[structopt(long)]

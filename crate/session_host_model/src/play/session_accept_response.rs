@@ -15,6 +15,6 @@ pub struct SessionAcceptResponse {
     #[structopt(flatten)]
     pub session: Session,
     /// ID that the server generated for the session hoster.
-    #[structopt(short, long)]
+    #[structopt(long)]
     pub session_device_id: SessionDeviceId,
 }

@@ -10,6 +10,6 @@ pub struct SessionJoinRequestParams {
     #[structopt(long = "device-name")]
     pub session_device_name: SessionDeviceName,
     /// Code of the session to join.
-    #[structopt(short, long)]
+    #[structopt(long)]
     pub session_code: SessionCode,
 }

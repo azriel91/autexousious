@@ -9,6 +9,6 @@ use structopt_derive::StructOpt;
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt, new)]
 pub struct SessionRejectResponse {
     /// Code of the session.
-    #[structopt(short, long)]
+    #[structopt(long)]
     pub session_code: SessionCode,
 }
