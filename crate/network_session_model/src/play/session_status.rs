@@ -12,8 +12,8 @@ pub enum SessionStatus {
         /// The session code that the request was made with.
         session_code: SessionCode,
     },
-    /// A network session is active.
-    Established,
+    /// A network session is active, and this client is the joiner.
+    JoinEstablished,
 }
 
 impl Default for SessionStatus {

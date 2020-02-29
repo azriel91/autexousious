@@ -63,7 +63,7 @@ mod tests {
                     SessionDeviceId::new(234),
                     SessionDeviceName::new(String::from("azriel")),
                 )]),
-                session_status: SessionStatus::Established,
+                session_status: SessionStatus::JoinEstablished,
             },
         )
     }

@@ -76,7 +76,7 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                             *session_device_id = session_accept_response.session_device_id;
                             *session_devices =
                                 session_accept_response.session.session_devices.clone();
-                            session_status_new = Some(SessionStatus::Established);
+                            session_status_new = Some(SessionStatus::JoinEstablished);
                         }
                         NetEvent {
                             event: SessionJoinEvent::SessionReject(session_reject_response),
