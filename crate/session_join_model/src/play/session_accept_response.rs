@@ -6,9 +6,6 @@ use structopt_derive::StructOpt;
 /// Response when a session join request is accepted.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt, new)]
 pub struct SessionAcceptResponse {
-    /// ID that the server generated for the session joiner.
-    #[structopt(short, long)]
-    pub session_device_id: SessionDeviceId,
     // Structopt actually disallows us to have docs on this. `._.`
     //
     // Session information.
@@ -17,4 +14,7 @@ pub struct SessionAcceptResponse {
     #[allow(missing_docs)]
     #[structopt(flatten)]
     pub session: Session,
+    /// ID that the server generated for the session joiner.
+    #[structopt(short, long)]
+    pub session_device_id: SessionDeviceId,
 }

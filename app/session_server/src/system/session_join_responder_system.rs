@@ -69,7 +69,7 @@ impl SessionJoinResponderSystem {
             );
 
             let session_accept_response =
-                SessionAcceptResponse::new(session_device_id, session.clone());
+                SessionAcceptResponse::new(session.clone(), session_device_id);
             SessionJoinEvent::SessionAccept(session_accept_response)
         } else {
             debug!(
