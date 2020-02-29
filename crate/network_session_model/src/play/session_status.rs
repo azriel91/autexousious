@@ -14,6 +14,10 @@ pub enum SessionStatus {
     },
     /// A network session is active, and this client is the joiner.
     JoinEstablished,
+    /// Session hosting request has been sent, response is pending.
+    HostRequested,
+    /// A network session is active, and this client is the host.
+    HostEstablished,
 }
 
 impl Default for SessionStatus {

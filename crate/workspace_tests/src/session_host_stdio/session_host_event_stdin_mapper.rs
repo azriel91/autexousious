@@ -14,10 +14,8 @@ mod tests {
     #[test]
     fn maps_session_host_request_event() {
         let session_device_name = SessionDeviceName::from(String::from("エイズリエル"));
-        let session_code = SessionCode::from(String::from("abcd"));
         let args = SessionHostEvent::SessionHostRequest(SessionHostRequestParams {
             session_device_name,
-            session_code,
         });
 
         let result = SessionHostEventStdinMapper::map(&(), args.clone());

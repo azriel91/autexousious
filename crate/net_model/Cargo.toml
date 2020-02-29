@@ -15,4 +15,5 @@ derive-new = "0.5.8"
 derive_more = "0.99.2"
 log = "0.4.8"
 serde = { version = "1.0.104", features = ["derive"] }
+session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }

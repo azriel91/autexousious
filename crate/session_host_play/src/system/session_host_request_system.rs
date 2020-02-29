@@ -12,42 +12,42 @@ use derive_new::new;
 use log::error;
 use net_model::play::NetMessage;
 use network_session_model::play::SessionStatus;
-use session_join_model::{config::SessionServerConfig, SessionJoinEvent};
+use session_host_model::{config::SessionServerConfig, SessionHostEvent};
 
-/// Builds a `SessionJoinRequestSystem`.
+/// Builds a `SessionHostRequestSystem`.
 #[derive(Debug, Default, new)]
-pub struct SessionJoinRequestSystemDesc {
+pub struct SessionHostRequestSystemDesc {
     /// Configuration needed to connect to the session server.
     pub session_server_config: SessionServerConfig,
 }
 
-impl<'a, 'b> SystemDesc<'a, 'b, SessionJoinRequestSystem> for SessionJoinRequestSystemDesc {
-    fn build(self, world: &mut World) -> SessionJoinRequestSystem {
-        <SessionJoinRequestSystem as System<'_>>::SystemData::setup(world);
+impl<'a, 'b> SystemDesc<'a, 'b, SessionHostRequestSystem> for SessionHostRequestSystemDesc {
+    fn build(self, world: &mut World) -> SessionHostRequestSystem {
+        <SessionHostRequestSystem as System<'_>>::SystemData::setup(world);
 
-        let session_join_event_rid = world
-            .fetch_mut::<EventChannel<SessionJoinEvent>>()
+        let session_host_event_rid = world
+            .fetch_mut::<EventChannel<SessionHostEvent>>()
             .register_reader();
 
         world.insert(self.session_server_config);
 
-        SessionJoinRequestSystem::new(session_join_event_rid)
+        SessionHostRequestSystem::new(session_host_event_rid)
     }
 }
 
-/// Sends requests to a game server to join a session.
+/// Sends requests to a game server to host a session.
 #[derive(Debug, new)]
-pub struct SessionJoinRequestSystem {
-    /// Reader ID for the `SessionJoinEvent` channel.
-    session_join_event_rid: ReaderId<SessionJoinEvent>,
+pub struct SessionHostRequestSystem {
+    /// Reader ID for the `SessionHostEvent` channel.
+    session_host_event_rid: ReaderId<SessionHostEvent>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SessionJoinRequestSystemData<'s> {
-    /// `SessionJoinEvent` channel.
+pub struct SessionHostRequestSystemData<'s> {
+    /// `SessionHostEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub session_join_ec: Read<'s, EventChannel<SessionJoinEvent>>,
+    pub session_host_ec: Read<'s, EventChannel<SessionHostEvent>>,
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Write<'s, SessionStatus>,
@@ -59,40 +59,40 @@ pub struct SessionJoinRequestSystemData<'s> {
     pub transport_resource: Write<'s, TransportResource>,
 }
 
-impl<'s> System<'s> for SessionJoinRequestSystem {
-    type SystemData = SessionJoinRequestSystemData<'s>;
+impl<'s> System<'s> for SessionHostRequestSystem {
+    type SystemData = SessionHostRequestSystemData<'s>;
 
     fn run(
         &mut self,
-        SessionJoinRequestSystemData {
-            session_join_ec,
+        SessionHostRequestSystemData {
+            session_host_ec,
             mut session_status,
             session_server_config,
             mut transport_resource,
         }: Self::SystemData,
     ) {
-        let mut session_join_events = session_join_ec.read(&mut self.session_join_event_rid);
+        let mut session_host_events = session_host_ec.read(&mut self.session_host_event_rid);
 
         // Guard against requesting multiple sessions at the same time.
         if *session_status != SessionStatus::None {
             return;
         }
 
-        // Only process one session join event if multiple are received.
-        let session_join_request_params = session_join_events.find_map(|ev| {
-            if let SessionJoinEvent::SessionJoinRequest(session_join_request_params) = ev {
-                Some(session_join_request_params)
+        // Only process one session host event if multiple are received.
+        let session_host_request_params = session_host_events.find_map(|ev| {
+            if let SessionHostEvent::SessionHostRequest(session_host_request_params) = ev {
+                Some(session_host_request_params)
             } else {
                 None
             }
         });
 
-        if let Some(session_join_request_params) = session_join_request_params {
+        if let Some(session_host_request_params) = session_host_request_params {
             let server_socket_addr =
                 SocketAddr::new(session_server_config.address, session_server_config.port);
 
-            match bincode::serialize(&NetMessage::SessionJoinEvent(
-                SessionJoinEvent::SessionJoinRequest(session_join_request_params.clone()),
+            match bincode::serialize(&NetMessage::SessionHostEvent(
+                SessionHostEvent::SessionHostRequest(session_host_request_params.clone()),
             )) {
                 Ok(payload) => {
                     // Connect to `server_socket_addr` and send request.
@@ -106,13 +106,11 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );
-                    *session_status = SessionStatus::JoinRequested {
-                        session_code: session_join_request_params.session_code.clone(),
-                    };
+                    *session_status = SessionStatus::HostRequested;
                 }
                 Err(e) => {
                     error!(
-                        "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                        "Failed to serialize `NetMessage::SessionHostEvent`. Error: `{}`.",
                         e
                     );
                 }

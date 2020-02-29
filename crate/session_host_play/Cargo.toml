@@ -1,5 +1,5 @@
 [package]
-name = "net_play"
+name = "session_host_play"
 version = "0.18.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
@@ -15,5 +15,6 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
 net_model = { path = "../net_model" }
+network_session_model = { path = "../network_session_model" }
 session_host_model = { path = "../session_host_model" }
-session_join_model = { path = "../session_join_model" }
+structopt = "0.3.9"
