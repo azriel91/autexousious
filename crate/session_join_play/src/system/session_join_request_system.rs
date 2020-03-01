@@ -11,8 +11,8 @@ use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use net_model::play::NetMessage;
-use network_session_model::play::SessionStatus;
-use session_join_model::{config::SessionServerConfig, SessionJoinEvent};
+use network_session_model::{config::SessionServerConfig, play::SessionStatus};
+use session_join_model::SessionJoinEvent;
 
 /// Builds a `SessionJoinRequestSystem`.
 #[derive(Debug, Default, new)]

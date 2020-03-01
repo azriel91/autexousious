@@ -11,8 +11,8 @@ use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use net_model::play::NetMessage;
-use network_session_model::play::SessionStatus;
-use session_host_model::{config::SessionServerConfig, SessionHostEvent};
+use network_session_model::{config::SessionServerConfig, play::SessionStatus};
+use session_host_model::SessionHostEvent;
 
 /// Builds a `SessionHostRequestSystem`.
 #[derive(Debug, Default, new)]

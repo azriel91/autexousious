@@ -58,15 +58,14 @@ use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
+use network_session_model::config::SessionServerConfig;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
-use session_host_model::config::SessionServerConfig as SessionServerConfigHost;
 use session_host_play::{
     SessionHostRequestSystem, SessionHostRequestSystemDesc, SessionHostResponseSystem,
     SessionHostResponseSystemDesc,
 };
 use session_host_stdio::SessionHostStdioBundle;
-use session_join_model::config::SessionServerConfig;
 use session_join_play::{
     SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
     SessionJoinResponseSystemDesc,
@@ -176,10 +175,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .start();
 
     let session_server_config = session_server_config(&opt);
-    let session_server_config_host = SessionServerConfigHost {
-        address: session_server_config.address,
-        port: session_server_config.port,
-    };
 
     let assets_dir = AppDir::assets()?;
 
@@ -293,7 +288,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
-                SessionHostRequestSystemDesc::new(session_server_config_host),
+                SessionHostRequestSystemDesc::new(session_server_config.clone()),
                 any::type_name::<SessionHostRequestSystem>(),
                 &[],
             )

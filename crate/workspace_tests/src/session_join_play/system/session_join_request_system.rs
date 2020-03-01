@@ -13,10 +13,11 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use bytes::Bytes;
     use net_model::play::NetMessage;
-    use network_session_model::play::{SessionCode, SessionDeviceName, SessionStatus};
-    use session_join_model::{
-        config::SessionServerConfig, play::SessionJoinRequestParams, SessionJoinEvent,
+    use network_session_model::{
+        config::SessionServerConfig,
+        play::{SessionCode, SessionDeviceName, SessionStatus},
     };
+    use session_join_model::{play::SessionJoinRequestParams, SessionJoinEvent};
 
     use session_join_play::SessionJoinRequestSystemDesc;
 
