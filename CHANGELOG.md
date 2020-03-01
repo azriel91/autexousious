@@ -6,9 +6,11 @@
 
 * Support to join session based network games. ([#198])
 * Rudimentary network join UI. ([#200])
+* Session server generates session codes for session hosters. ([#201])
 
 [#198]: https://gitlab.com/azriel91/autexousious/issues/198
 [#200]: https://gitlab.com/azriel91/autexousious/issues/200
+[#201]: https://gitlab.com/azriel91/autexousious/issues/201
 
 ## 0.17.0 (2020-01-31)
 
