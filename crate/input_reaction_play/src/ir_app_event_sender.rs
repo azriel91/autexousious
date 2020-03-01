@@ -1,5 +1,5 @@
 mod ir_asset_selection_event_sender;
-mod ir_network_join_event_sender;
+mod ir_session_join_event_sender;
 
 use amethyst::ecs::{Entity, ReadStorage};
 use asset_model::loaded::{AssetId, AssetIdMappings};
@@ -15,7 +15,7 @@ use crate::IrAppEventSenderSystemData;
 
 use self::{
     ir_asset_selection_event_sender::IrAssetSelectionEventSender,
-    ir_network_join_event_sender::IrNetworkJoinEventSender,
+    ir_session_join_event_sender::IrSessionJoinEventSender,
 };
 
 /// Maps `InputReactionAppEvent`s to the actual event and sends it to its event channel.
@@ -67,11 +67,11 @@ impl IrAppEventSender {
             InputReactionAppEvent::GamePlay(game_play_event_args) => {
                 Self::handle_game_play_event(ir_app_event_sender_system_data, game_play_event_args);
             }
-            InputReactionAppEvent::NetworkJoin(network_join_event_command) => {
-                IrNetworkJoinEventSender::handle_event(
+            InputReactionAppEvent::SessionJoin(session_join_event_command) => {
+                IrSessionJoinEventSender::handle_event(
                     ir_app_event_sender_system_data,
                     entity,
-                    network_join_event_command,
+                    session_join_event_command,
                 );
             }
             InputReactionAppEvent::NetworkModeSelection(network_mode_selection_event_args) => {

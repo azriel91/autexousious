@@ -3,9 +3,9 @@ use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_mode_selection_model::GameModeSelectionEventArgs;
 use game_play_model::GamePlayEventArgs;
-use network_join_model::config::NetworkJoinEventCommand;
 use network_mode_selection_model::NetworkModeSelectionEventArgs;
 use serde::{Deserialize, Serialize};
+use session_join_model::config::SessionJoinEventCommand;
 
 /// Configuration type to indicate what `AppEvent` to send as part of an `InputReaction`.
 ///
@@ -24,8 +24,8 @@ pub enum InputReactionAppEvent {
     GameModeSelection(GameModeSelectionEventArgs),
     /// `game_play` events.
     GamePlay(GamePlayEventArgs),
-    /// `network_join` events.
-    NetworkJoin(NetworkJoinEventCommand),
+    /// `session_join` events.
+    SessionJoin(SessionJoinEventCommand),
     /// `network_mode_selection` events.
     NetworkModeSelection(NetworkModeSelectionEventArgs),
 }

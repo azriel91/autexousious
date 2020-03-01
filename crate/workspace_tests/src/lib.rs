@@ -122,10 +122,6 @@ mod map_selection;
 #[cfg(test)]
 mod map_selection_ui_model;
 #[cfg(test)]
-mod network_join_play;
-#[cfg(test)]
-mod network_join_stdio;
-#[cfg(test)]
 mod network_mode_selection_stdio;
 #[cfg(test)]
 mod object_loading;
@@ -141,6 +137,14 @@ mod parent_play;
 mod sequence_loading;
 #[cfg(test)]
 mod sequence_play;
+#[cfg(test)]
+mod session_host_play;
+#[cfg(test)]
+mod session_host_stdio;
+#[cfg(test)]
+mod session_join_play;
+#[cfg(test)]
+mod session_join_stdio;
 #[cfg(test)]
 mod spawn_loading;
 #[cfg(test)]

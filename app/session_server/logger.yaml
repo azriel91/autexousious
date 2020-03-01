@@ -1,0 +1,6 @@
+stdout: "Colored" # "Off", "Plain", "Colored"
+level_filter: "debug"
+log_gfx_backend_level: "warn"
+log_gfx_rendy_level: "warn"
+module_levels:
+  - ["amethyst", "warn"]

@@ -1,0 +1,14 @@
+[package]
+name = "network_session_play"
+version = "0.18.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+derive-new = "0.5.8"
+network_session_model = { path = "../network_session_model" }
+rand = "0.7.3"

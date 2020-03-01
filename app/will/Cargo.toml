@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application = { path = "../../crate/application" }
 application_event = { path = "../../crate/application_event" }
 application_input = { path = "../../crate/application_input" }
@@ -41,12 +41,15 @@ kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }
-network_join_model = { path = "../../crate/network_join_model" }
-network_join_play = { path = "../../crate/network_join_play" }
-network_join_stdio = { path = "../../crate/network_join_stdio" }
+net_play = { path = "../../crate/net_play" }
 network_mode_selection_stdio = { path = "../../crate/network_mode_selection_stdio" }
+network_session_model = { path = "../../crate/network_session_model" }
 parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }
+session_host_play = { path = "../../crate/session_host_play" }
+session_host_stdio = { path = "../../crate/session_host_stdio" }
+session_join_play = { path = "../../crate/session_join_play" }
+session_join_stdio = { path = "../../crate/session_join_stdio" }
 spawn_loading = { path = "../../crate/spawn_loading" }
 sprite_loading = { path = "../../crate/sprite_loading" }
 state_play = { path = "../../crate/state_play" }
