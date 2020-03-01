@@ -9,7 +9,10 @@ use frame_rate::strategy::frame_rate_limit_config;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use structopt::StructOpt;
 
-use crate::system::{SessionJoinResponderSystem, SessionJoinResponderSystemDesc};
+use crate::system::{
+    SessionHostResponderSystem, SessionHostResponderSystemDesc, SessionJoinResponderSystem,
+    SessionJoinResponderSystemDesc,
+};
 
 mod system;
 
@@ -90,6 +93,11 @@ fn main() -> Result<(), Error> {
             NetListenerSystemDesc::default(),
             any::type_name::<NetListenerSystem>(),
             &["network_recv"],
+        )
+        .with_system_desc(
+            SessionHostResponderSystemDesc::default(),
+            any::type_name::<SessionHostResponderSystem>(),
+            &[any::type_name::<NetListenerSystem>()],
         )
         .with_system_desc(
             SessionJoinResponderSystemDesc::default(),

@@ -15,6 +15,7 @@ net_model = { path = "../../crate/net_model" }
 net_play = { path = "../../crate/net_play" }
 network_session_model = { path = "../../crate/network_session_model" }
 serde_yaml = "0.8.11"
+session_host_model = { path = "../../crate/session_host_model" }
 session_join_model = { path = "../../crate/session_join_model" }
 structopt = "0.3.9"
 structopt-derive = "0.4.2"
