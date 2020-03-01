@@ -10,8 +10,9 @@ use derive_new::new;
 use log::{debug, error};
 use net_model::play::{NetEvent, NetEventChannel, NetMessage};
 use network_session_model::play::{
-    Session, SessionCode, SessionDevice, SessionDeviceId, SessionDevices, Sessions,
+    Session, SessionDevice, SessionDeviceId, SessionDevices, Sessions,
 };
+use network_session_play::SessionCodeGenerator;
 use session_host_model::{
     play::{SessionAcceptResponse, SessionHostRequestParams, SessionRejectResponse},
     SessionHostEvent,
@@ -35,6 +36,9 @@ pub struct SessionHostResponderSystemData<'s> {
     /// `SessionHostEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_host_nec: Read<'s, NetEventChannel<SessionHostEvent>>,
+    /// `SessionCodeGenerator` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_code_generator: Write<'s, SessionCodeGenerator>,
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
@@ -45,6 +49,7 @@ pub struct SessionHostResponderSystemData<'s> {
 
 impl SessionHostResponderSystem {
     fn handle_session_request(
+        session_code_generator: &mut SessionCodeGenerator,
         sessions: &mut Sessions,
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
@@ -54,7 +59,7 @@ impl SessionHostResponderSystem {
 
         if sessions.len() < SESSION_COUNT_LIMIT {
             let session_code = loop {
-                let session_code = SessionCode::new(String::from("TODO: generate"));
+                let session_code = session_code_generator.generate();
                 if !sessions.contains_key(&session_code) {
                     break session_code;
                 }
@@ -93,6 +98,7 @@ impl<'s> System<'s> for SessionHostResponderSystem {
         &mut self,
         SessionHostResponderSystemData {
             session_host_nec,
+            mut session_code_generator,
             mut sessions,
             mut transport_resource,
         }: Self::SystemData,
@@ -111,8 +117,11 @@ impl<'s> System<'s> for SessionHostResponderSystem {
                 }
             })
             .map(|(socket_addr, session_host_request_params)| {
-                let session_host_event =
-                    Self::handle_session_request(&mut sessions, session_host_request_params);
+                let session_host_event = Self::handle_session_request(
+                    &mut session_code_generator,
+                    &mut sessions,
+                    session_host_request_params,
+                );
 
                 (socket_addr, NetMessage::from(session_host_event))
             })

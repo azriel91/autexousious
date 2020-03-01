@@ -3466,6 +3466,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "network_session_play"
+version = "0.18.0"
+dependencies = [
+ "derive-new",
+ "network_session_model",
+ "rand 0.7.3",
+]
+
+[[package]]
 name = "nix"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5210,6 +5219,7 @@ dependencies = [
  "net_model",
  "net_play",
  "network_session_model",
+ "network_session_play",
  "serde_yaml",
  "session_host_model",
  "session_join_model",

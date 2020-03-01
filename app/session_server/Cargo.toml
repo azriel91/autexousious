@@ -14,6 +14,7 @@ log = "0.4.8"
 net_model = { path = "../../crate/net_model" }
 net_play = { path = "../../crate/net_play" }
 network_session_model = { path = "../../crate/network_session_model" }
+network_session_play = { path = "../../crate/network_session_play" }
 serde_yaml = "0.8.11"
 session_host_model = { path = "../../crate/session_host_model" }
 session_join_model = { path = "../../crate/session_join_model" }
