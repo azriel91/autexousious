@@ -54,11 +54,11 @@ impl UiFovScaleTransform {
     ///
     /// * `ui_transform`: The `UiTransform` to revert.
     pub fn unapply(self, ui_transform: &mut UiTransform) {
-        ui_transform.local_x /= self.scale;
         ui_transform.local_x -= self.x_offset;
+        ui_transform.local_x /= self.scale;
 
-        ui_transform.local_y /= self.scale;
         ui_transform.local_y -= self.y_offset;
+        ui_transform.local_y /= self.scale;
 
         ui_transform.width /= self.scale;
         ui_transform.height /= self.scale;
