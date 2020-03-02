@@ -6303,6 +6303,7 @@ dependencies = [
  "network_session_model",
  "parent_play",
  "sequence_loading",
+ "serde_yaml",
  "session_host_play",
  "session_host_stdio",
  "session_join_play",
