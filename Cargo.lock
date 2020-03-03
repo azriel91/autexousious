@@ -2785,6 +2785,7 @@ dependencies = [
  "sequence_model_derive",
  "sequence_model_spi",
  "serde",
+ "session_host_model",
  "session_join_model",
  "smallvec 1.2.0",
 ]
@@ -2811,6 +2812,7 @@ dependencies = [
  "network_session_model",
  "object_type",
  "sequence_model",
+ "session_host_model",
  "session_join_model",
  "state_registry",
  "ui_form_model",
@@ -5154,6 +5156,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_host_ui_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derivative",
+ "derive-new",
+ "log",
+ "network_session_model",
+ "session_host_model",
+]
+
+[[package]]
 name = "session_join"
 version = "0.18.0"
 dependencies = [
@@ -6303,6 +6317,7 @@ dependencies = [
  "network_session_model",
  "parent_play",
  "sequence_loading",
+ "serde_yaml",
  "session_host_play",
  "session_host_stdio",
  "session_join_play",

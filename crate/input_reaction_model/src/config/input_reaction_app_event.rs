@@ -5,6 +5,7 @@ use game_mode_selection_model::GameModeSelectionEventArgs;
 use game_play_model::GamePlayEventArgs;
 use network_mode_selection_model::NetworkModeSelectionEventArgs;
 use serde::{Deserialize, Serialize};
+use session_host_model::config::SessionHostEventCommand;
 use session_join_model::config::SessionJoinEventCommand;
 
 /// Configuration type to indicate what `AppEvent` to send as part of an `InputReaction`.
@@ -24,6 +25,8 @@ pub enum InputReactionAppEvent {
     GameModeSelection(GameModeSelectionEventArgs),
     /// `game_play` events.
     GamePlay(GamePlayEventArgs),
+    /// `session_host` events.
+    SessionHost(SessionHostEventCommand),
     /// `session_join` events.
     SessionJoin(SessionJoinEventCommand),
     /// `network_mode_selection` events.
