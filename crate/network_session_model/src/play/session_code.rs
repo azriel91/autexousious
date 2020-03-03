@@ -8,7 +8,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Session code (`String` newtype).
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 pub struct SessionCode(pub String);
 
 impl Display for SessionCode {

@@ -56,16 +56,21 @@ use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
-use network_join_model::config::SessionServerConfig;
-use network_join_play::{
-    SessionJoinAcceptedSystem, SessionJoinAcceptedSystemDesc, SessionJoinRequestSystem,
-    SessionJoinRequestSystemDesc, SessionJoinServerListenerSystem,
-    SessionJoinServerListenerSystemDesc,
-};
-use network_join_stdio::NetworkJoinStdioBundle;
+use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
+use network_session_model::config::SessionServerConfig;
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
+use session_host_play::{
+    SessionHostRequestSystem, SessionHostRequestSystemDesc, SessionHostResponseSystem,
+    SessionHostResponseSystemDesc,
+};
+use session_host_stdio::SessionHostStdioBundle;
+use session_join_play::{
+    SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
+    SessionJoinResponseSystemDesc,
+};
+use session_join_stdio::SessionJoinStdioBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
@@ -233,7 +238,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(NetworkModeSelectionStdioBundle::new())?
-            .with_bundle(NetworkJoinStdioBundle::new())?
+            .with_bundle(SessionHostStdioBundle::new())?
+            .with_bundle(SessionJoinStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?
@@ -282,19 +288,29 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
+                SessionHostRequestSystemDesc::new(session_server_config.clone()),
+                any::type_name::<SessionHostRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
                 SessionJoinRequestSystemDesc::new(session_server_config),
                 any::type_name::<SessionJoinRequestSystem>(),
                 &[],
             )
             .with_system_desc(
-                SessionJoinServerListenerSystemDesc::default(),
-                any::type_name::<SessionJoinServerListenerSystem>(),
+                NetListenerSystemDesc::default(),
+                any::type_name::<NetListenerSystem>(),
                 &[],
             )
             .with_system_desc(
-                SessionJoinAcceptedSystemDesc::default(),
-                any::type_name::<SessionJoinAcceptedSystem>(),
-                &[any::type_name::<SessionJoinServerListenerSystem>()],
+                SessionHostResponseSystemDesc::default(),
+                any::type_name::<SessionHostResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),

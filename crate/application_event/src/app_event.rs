@@ -1,12 +1,20 @@
-use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel, winit::Event};
+use amethyst::{
+    core::EventReader,
+    derive::EventReader,
+    ecs::{Read, World},
+    shred::SystemData,
+    shrev::{EventChannel, ReaderId},
+    winit::Event,
+};
 use asset_selection_model::play::AssetSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
 use derive_more::From;
 use game_input_model::play::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
-use network_join_model::NetworkJoinEvent;
 use network_mode_selection_model::NetworkModeSelectionEvent;
+use session_host_model::SessionHostEvent;
+use session_join_model::SessionJoinEvent;
 use stdio_command_model::StdioCommandEvent;
 use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 
@@ -33,8 +41,10 @@ pub enum AppEvent {
     GamePlay(GamePlayEvent),
     /// `network_mode_selection` events.
     NetworkModeSelection(NetworkModeSelectionEvent),
-    /// `network_join` events.
-    NetworkJoin(NetworkJoinEvent),
+    /// `session_host` events.
+    SessionHost(SessionHostEvent),
+    /// `session_join` events.
+    SessionJoin(SessionJoinEvent),
     /// `stdio_command` events.
     StdioCommand(StdioCommandEvent),
     /// Events sent by the winit window.

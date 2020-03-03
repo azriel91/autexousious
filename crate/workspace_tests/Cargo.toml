@@ -5,8 +5,8 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
-amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
@@ -32,6 +32,7 @@ audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
 background_loading = { path = "../background_loading" }
 background_model = { path = "../background_model" }
+bincode = "1.2.1"
 bytes = "0.5.4"
 camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
@@ -94,9 +95,7 @@ map_selection_model = { path = "../map_selection_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 menu_model = { path = "../menu_model" }
 mirrored_model = { path = "../mirrored_model" }
-network_join_model = { path = "../network_join_model" }
-network_join_play = { path = "../network_join_play" }
-network_join_stdio = { path = "../network_join_stdio" }
+net_model = { path = "../net_model" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 network_mode_selection_stdio = { path = "../network_mode_selection_stdio" }
 network_session_model = { path = "../network_session_model" }
@@ -116,6 +115,12 @@ sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
+session_host_model = { path = "../session_host_model" }
+session_host_play = { path = "../session_host_play" }
+session_host_stdio = { path = "../session_host_stdio" }
+session_join_model = { path = "../session_join_model" }
+session_join_play = { path = "../session_join_play" }
+session_join_stdio = { path = "../session_join_stdio" }
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_loading = { path = "../spawn_loading" }

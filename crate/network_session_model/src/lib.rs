@@ -2,4 +2,5 @@
 
 //! Types used during network sessions.
 
+pub mod config;
 pub mod play;
