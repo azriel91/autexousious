@@ -182,9 +182,9 @@ where
             &mut input_reactions_loaded,
         );
 
-        let character_input_reactions = InputReactions::new(input_reactions_loaded);
+        let input_reactions = InputReactions::new(input_reactions_loaded);
 
-        loader.load_from_data(character_input_reactions, (), input_reactions_assets)
+        loader.load_from_data(input_reactions, (), input_reactions_assets)
     }
 
     fn push_fallback_reaction(
