@@ -1,0 +1,33 @@
+stdout: "Colored" # "Off", "Plain", "Colored"
+level_filter: "debug"
+log_gfx_backend_level: "warn"
+log_gfx_rendy_level: "warn"
+module_levels:
+  - ["amethyst", "warn"]
+  - ["amethyst_assets", "info"]
+  - ["amethyst_rendy", "info"]
+  - ["application_state", "info"]
+  - ["character_selection", "info"]
+  - ["collision_audio_loading", "info"]
+  - ["collision_play", "info"]
+  - ["control_settings", "info"]
+  - ["game_mode_selection", "info"]
+  - ["gfx_backend_vulkan", "info"]
+  - ["input_reaction_play", "info"]
+  - ["loading", "info"]
+  - ["map_selection", "info"]
+  - ["net_play", "info"]
+  - ["network_mode_selection", "info"]
+  - ["rendy_chain", "info"]
+  - ["rendy_factory", "info"]
+  - ["rendy_graph", "info"]
+  - ["rendy_memory", "info"]
+  - ["rendy_wsi", "info"]
+  - ["session_host", "info"]
+  - ["session_join", "info"]
+  - ["spawn_play", "info"]
+  - ["state_play", "info"]
+  - ["stdio_input", "info"]
+  - ["ui_audio_loading", "info"]
+  - ["will", "info"]
+  - ["winit", "warn"]

@@ -45,6 +45,7 @@ net_play = { path = "../../crate/net_play" }
 network_mode_selection_stdio = { path = "../../crate/network_mode_selection_stdio" }
 network_session_model = { path = "../../crate/network_session_model" }
 parent_play = { path = "../../crate/parent_play" }
+serde_yaml = "0.8.11"
 sequence_loading = { path = "../../crate/sequence_loading" }
 session_host_play = { path = "../../crate/session_host_play" }
 session_host_stdio = { path = "../../crate/session_host_stdio" }

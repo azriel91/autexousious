@@ -3,7 +3,10 @@
 use std::{
     any,
     convert::TryFrom,
+    fs::File,
+    io::BufReader,
     net::{IpAddr, UdpSocket},
+    path::PathBuf,
     process,
 };
 
@@ -19,9 +22,9 @@ use amethyst::{
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
-    utils::ortho_camera::CameraOrthoSystem,
+    utils::{application_root_dir, ortho_camera::CameraOrthoSystem},
     window::DisplayConfig,
-    CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
+    CoreApplication, Error, GameDataBuilder, LoggerConfig,
 };
 use application::{AppDir, AppFile, Format};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
@@ -90,15 +93,21 @@ use ui_play::{
     UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
+/// Default file for logger configuration.
+const LOGGER_CONFIG: &str = "logger.yaml";
+
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
 struct Opt {
-    /// Run headlessly (no GUI).
-    #[structopt(long)]
-    headless: bool,
     /// Frame rate to run the game at.
     #[structopt(long)]
     frame_rate: Option<u32>,
+    /// Run headlessly (no GUI).
+    #[structopt(long)]
+    headless: bool,
+    /// Logger configuration file.
+    #[structopt(long)]
+    logger_config: Option<PathBuf>,
     /// Address of the session server.
     ///
     /// Currently must be an `IpAddr`, in the future we may accept hostnames.
@@ -107,6 +116,42 @@ struct Opt {
     /// Port that the session server is listening on.
     #[structopt(long, default_value = "1234")]
     session_server_port: u16,
+}
+
+fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
+    let is_user_specified = logger_config_path.is_some();
+
+    // If the user specified a logger configuration path, use that.
+    // Otherwise fallback to a default.
+    let logger_config_path = logger_config_path.unwrap_or_else(|| PathBuf::from(LOGGER_CONFIG));
+    let logger_config_path = if logger_config_path.is_relative() {
+        let app_dir = application_root_dir()?;
+        app_dir.join(logger_config_path)
+    } else {
+        logger_config_path
+    };
+
+    let logger_config: LoggerConfig = if logger_config_path.exists() {
+        let logger_file = File::open(&logger_config_path)?;
+        let mut logger_file_reader = BufReader::new(logger_file);
+        let logger_config = serde_yaml::from_reader(&mut logger_file_reader)?;
+
+        Ok(logger_config)
+    } else if is_user_specified {
+        let message = format!(
+            "Failed to read logger configuration file: `{}`.",
+            logger_config_path.display()
+        );
+        eprintln!("{}", message);
+
+        Err(Error::from_string(message))
+    } else {
+        Ok(LoggerConfig::default())
+    }?;
+
+    amethyst::Logger::from_config(logger_config).start();
+
+    Ok(())
 }
 
 fn session_server_config(opt: &Opt) -> SessionServerConfig {
@@ -165,16 +210,10 @@ fn local_socket(session_server_config: &SessionServerConfig) -> Option<LaminarSo
     }
 }
 
-fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    amethyst::Logger::from_config(LoggerConfig::default())
-        .level_for("gfx_backend_vulkan", LogLevelFilter::Warn)
-        .level_for("rendy_factory", LogLevelFilter::Warn)
-        .level_for("rendy_memory", LogLevelFilter::Warn)
-        .level_for("rendy_graph", LogLevelFilter::Warn)
-        .level_for("rendy_wsi", LogLevelFilter::Warn)
-        .start();
-
+fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let session_server_config = session_server_config(&opt);
+
+    logger_setup(opt.logger_config)?;
 
     let assets_dir = AppDir::assets()?;
 
@@ -400,7 +439,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 fn main() {
     let opt = Opt::from_args();
 
-    if let Err(e) = run(&opt) {
+    if let Err(e) = run(opt) {
         println!("Failed to execute example: {}", e);
         process::exit(1);
     }
