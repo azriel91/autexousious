@@ -5156,6 +5156,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_host_ui_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derivative",
+ "derive-new",
+ "log",
+ "network_session_model",
+ "session_host_model",
+]
+
+[[package]]
 name = "session_join"
 version = "0.18.0"
 dependencies = [
