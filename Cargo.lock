@@ -5224,6 +5224,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_lobby"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "application_event",
+ "application_state",
+ "derivative",
+ "derive-new",
+ "log",
+ "session_lobby_model",
+ "state_registry",
+]
+
+[[package]]
 name = "session_lobby_model"
 version = "0.18.0"
 dependencies = [

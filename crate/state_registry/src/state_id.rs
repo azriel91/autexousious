@@ -44,4 +44,6 @@ pub enum StateId {
     SessionHost,
     /// `SessionJoinState` ID.
     SessionJoin,
+    /// `SessionLobbyState` ID.
+    SessionLobby,
 }
