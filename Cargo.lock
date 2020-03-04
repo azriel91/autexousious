@@ -2788,6 +2788,7 @@ dependencies = [
  "serde",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
  "smallvec 1.2.0",
 ]
 
@@ -2815,6 +2816,7 @@ dependencies = [
  "sequence_model",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
  "state_registry",
  "ui_form_model",
  "ui_model",

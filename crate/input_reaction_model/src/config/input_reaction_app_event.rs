@@ -7,6 +7,7 @@ use network_mode_selection_model::NetworkModeSelectionEventArgs;
 use serde::{Deserialize, Serialize};
 use session_host_model::config::SessionHostEventCommand;
 use session_join_model::config::SessionJoinEventCommand;
+use session_lobby_model::config::SessionLobbyEventCommand;
 
 /// Configuration type to indicate what `AppEvent` to send as part of an `InputReaction`.
 ///
@@ -29,6 +30,8 @@ pub enum InputReactionAppEvent {
     SessionHost(SessionHostEventCommand),
     /// `session_join` events.
     SessionJoin(SessionJoinEventCommand),
+    /// `session_lobby` events.
+    SessionLobby(SessionLobbyEventCommand),
     /// `network_mode_selection` events.
     NetworkModeSelection(NetworkModeSelectionEventArgs),
 }

@@ -14,11 +14,13 @@ use self::{
     ir_asset_selection_event_sender::IrAssetSelectionEventSender,
     ir_session_host_event_sender::IrSessionHostEventSender,
     ir_session_join_event_sender::IrSessionJoinEventSender,
+    ir_session_lobby_event_sender::IrSessionLobbyEventSender,
 };
 
 mod ir_asset_selection_event_sender;
 mod ir_session_host_event_sender;
 mod ir_session_join_event_sender;
+mod ir_session_lobby_event_sender;
 
 /// Maps `InputReactionAppEvent`s to the actual event and sends it to its event channel.
 #[derive(Debug)]
@@ -81,6 +83,12 @@ impl IrAppEventSender {
                     ir_app_event_sender_system_data,
                     entity,
                     session_join_event_command,
+                );
+            }
+            InputReactionAppEvent::SessionLobby(session_lobby_event_command) => {
+                IrSessionLobbyEventSender::handle_event(
+                    ir_app_event_sender_system_data,
+                    session_lobby_event_command,
                 );
             }
             InputReactionAppEvent::NetworkModeSelection(network_mode_selection_event_args) => {
