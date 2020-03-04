@@ -381,6 +381,9 @@ impl AssetSequenceComponentLoaderUi {
                         map_selection_ui,
                     );
                 }
+                UiType::SessionLobby(_session_lobby_ui) => {
+                    unimplemented!();
+                }
                 UiType::ControlSettings(control_settings) => {
                     let keyboard_button_labels = keyboard_button_labels
                         .as_ref()

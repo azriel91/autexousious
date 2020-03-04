@@ -10,9 +10,9 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+application_menu = { path = "../application_menu" }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
-application_menu = { path = "../application_menu" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 control_settings_model = { path = "../control_settings_model" }
 derivative = "1.0.3"
@@ -21,6 +21,7 @@ input_reaction_model = { path = "../input_reaction_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
+session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
 strum = "0.17.1"
