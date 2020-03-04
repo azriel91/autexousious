@@ -404,6 +404,7 @@ dependencies = [
  "network_mode_selection_model",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
  "stdio_command_model",
  "strum",
  "strum_macros",
