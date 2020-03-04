@@ -5221,6 +5221,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_lobby_model"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derive-new",
+ "derive_deref",
+ "network_session_model",
+ "serde",
+ "structopt",
+ "structopt-derive",
+]
+
+[[package]]
 name = "session_lobby_ui_model"
 version = "0.18.0"
 dependencies = [
