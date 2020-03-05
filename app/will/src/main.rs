@@ -74,6 +74,7 @@ use session_join_play::{
     SessionJoinResponseSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
+use session_lobby_ui_play::SessionCodeLabelUpdateSystem;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
@@ -350,6 +351,14 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 SessionJoinResponseSystemDesc::default(),
                 any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
+            )
+            .with(
+                SessionCodeLabelUpdateSystem::new(),
+                any::type_name::<SessionCodeLabelUpdateSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                ],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),
