@@ -1,6 +1,9 @@
 use amethyst::ecs::{Builder, WorldExt};
 use asset_model::{loaded::ItemId, play::AssetWorld};
-use session_lobby_ui_model::{config::SessionLobbyUi, loaded::SessionDevicesWidget};
+use session_lobby_ui_model::{
+    config::SessionLobbyUi,
+    loaded::{SessionCodeLabel, SessionDevicesWidget},
+};
 
 /// Loads asset items for a `SessionLobbyUi`.
 #[derive(Debug)]
@@ -27,7 +30,11 @@ impl AssetSequenceComponentLoaderUiSessionLobby {
         session_lobby_ui: &SessionLobbyUi,
     ) -> ItemId {
         let ui_label = session_lobby_ui.session_code.clone();
-        let item_entity_label = asset_world.create_entity().with(ui_label).build();
+        let item_entity_label = asset_world
+            .create_entity()
+            .with(SessionCodeLabel)
+            .with(ui_label)
+            .build();
         ItemId::new(item_entity_label)
     }
 

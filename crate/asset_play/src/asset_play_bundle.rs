@@ -33,7 +33,7 @@ use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
 use object_type::Character;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
-use session_lobby_ui_model::loaded::SessionDevicesWidget;
+use session_lobby_ui_model::loaded::{SessionCodeLabel, SessionDevicesWidget};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
@@ -106,6 +106,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<Dimensions>();
         asset_world.register::<ChaseModeStick>();
 
+        asset_world.register::<SessionCodeLabel>();
         asset_world.register::<SessionDevicesWidget>();
 
         world.insert(asset_world);
@@ -363,6 +364,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
 
         // Session Lobby UI
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SessionCodeLabel>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<SessionCodeLabel>>(),
+            &[],
+        );
         builder.add(
             ItemComponentComponentAugmentSystem::<SessionDevicesWidget>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<SessionDevicesWidget>>(),
