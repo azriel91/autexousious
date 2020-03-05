@@ -4,6 +4,7 @@ use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
+use network_session_model::play::SessionStatus;
 use session_host_model::{SessionHostEntity, SessionHostEvent};
 use session_lobby::{SessionLobbyStateBuilder, SessionLobbyStateDelegate};
 use state_registry::StateId;
@@ -33,6 +34,7 @@ pub struct SessionHostStateDelegate;
 impl SessionHostStateDelegate {
     fn initialize_state(data: StateData<'_, GameData<'static, 'static>>) {
         data.world.insert(StateId::SessionHost);
+        data.world.insert(SessionStatus::None);
     }
 }
 
