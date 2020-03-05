@@ -27,6 +27,7 @@ mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
+session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 ui_form_model = { path = "../ui_form_model" }

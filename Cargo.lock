@@ -642,6 +642,7 @@ dependencies = [
  "object_model",
  "object_type",
  "sequence_model",
+ "session_lobby_ui_model",
  "spawn_model",
  "sprite_model",
  "ui_form_model",
