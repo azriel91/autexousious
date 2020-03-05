@@ -8,7 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetEvent, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessage};
 use network_session_model::play::{SessionDevice, SessionDeviceId, Sessions};
 use session_join_model::{
     play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse},
@@ -21,7 +21,7 @@ use session_join_model::{
 pub struct SessionJoinResponderSystem {
     /// Reader ID for the `SessionJoinEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_join_event_rid: ReaderId<NetEvent<SessionJoinEvent>>,
+    session_join_event_rid: ReaderId<NetData<SessionJoinEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -96,9 +96,9 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
         session_join_nec
             .read(&mut self.session_join_event_rid)
             .filter_map(|session_join_event| {
-                if let NetEvent {
+                if let NetData {
                     socket_addr,
-                    event: SessionJoinEvent::SessionJoinRequest(session_join_request_params),
+                    data: SessionJoinEvent::SessionJoinRequest(session_join_request_params),
                 } = session_join_event
                 {
                     Some((*socket_addr, session_join_request_params))

@@ -8,7 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetEvent, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessage};
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
 
@@ -57,13 +57,13 @@ impl<'s> System<'s> for NetListenerSystem {
                             debug!("{:?}", net_message);
                             match net_message {
                                 NetMessage::SessionHostEvent(session_host_event) => {
-                                    session_host_nec.single_write(NetEvent::new(
+                                    session_host_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_host_event,
                                     ));
                                 }
                                 NetMessage::SessionJoinEvent(session_join_event) => {
-                                    session_join_nec.single_write(NetEvent::new(
+                                    session_join_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_join_event,
                                     ));

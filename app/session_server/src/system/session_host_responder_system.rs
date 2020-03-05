@@ -8,7 +8,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetEvent, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessage};
 use network_session_model::play::{
     Session, SessionDevice, SessionDeviceId, SessionDevices, Sessions,
 };
@@ -27,7 +27,7 @@ const SESSION_COUNT_LIMIT: usize = 100;
 pub struct SessionHostResponderSystem {
     /// Reader ID for the `SessionHostEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_host_event_rid: ReaderId<NetEvent<SessionHostEvent>>,
+    session_host_event_rid: ReaderId<NetData<SessionHostEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -106,9 +106,9 @@ impl<'s> System<'s> for SessionHostResponderSystem {
         session_host_nec
             .read(&mut self.session_host_event_rid)
             .filter_map(|session_host_event| {
-                if let NetEvent {
+                if let NetData {
                     socket_addr,
-                    event: SessionHostEvent::SessionHostRequest(session_host_request_params),
+                    data: SessionHostEvent::SessionHostRequest(session_host_request_params),
                 } = session_host_event
                 {
                     Some((*socket_addr, session_host_request_params))

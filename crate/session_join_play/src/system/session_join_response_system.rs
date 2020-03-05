@@ -7,7 +7,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use net_model::play::{NetEvent, NetEventChannel};
+use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::{SessionCode, SessionDeviceId, SessionDevices, SessionStatus};
 use session_join_model::SessionJoinEvent;
 
@@ -17,7 +17,7 @@ use session_join_model::SessionJoinEvent;
 pub struct SessionJoinResponseSystem {
     /// Reader ID for the `SessionJoinEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_join_event_rid: ReaderId<NetEvent<SessionJoinEvent>>,
+    session_join_event_rid: ReaderId<NetData<SessionJoinEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -67,8 +67,8 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
             let session_status_new =
                 session_join_events.fold(None, |mut session_status_new, ev| {
                     match ev {
-                        NetEvent {
-                            event: SessionJoinEvent::SessionAccept(session_accept_response),
+                        NetData {
+                            data: SessionJoinEvent::SessionAccept(session_accept_response),
                             ..
                         } if &session_accept_response.session.session_code
                             == session_code_requested =>
@@ -86,8 +86,8 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                                 session_accept_response.clone(),
                             ));
                         }
-                        NetEvent {
-                            event: SessionJoinEvent::SessionReject(session_reject_response),
+                        NetData {
+                            data: SessionJoinEvent::SessionReject(session_reject_response),
                             ..
                         } if &session_reject_response.session_code == session_code_requested => {
                             debug!("Session rejected: {:?}", session_reject_response);

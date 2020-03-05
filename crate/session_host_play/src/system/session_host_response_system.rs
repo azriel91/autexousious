@@ -7,7 +7,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use net_model::play::{NetEvent, NetEventChannel};
+use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::{SessionCode, SessionDeviceId, SessionDevices, SessionStatus};
 use session_host_model::SessionHostEvent;
 
@@ -17,7 +17,7 @@ use session_host_model::SessionHostEvent;
 pub struct SessionHostResponseSystem {
     /// Reader ID for the `SessionHostEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_host_event_rid: ReaderId<NetEvent<SessionHostEvent>>,
+    session_host_event_rid: ReaderId<NetData<SessionHostEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -64,8 +64,8 @@ impl<'s> System<'s> for SessionHostResponseSystem {
             let session_status_new =
                 session_host_events.fold(None, |mut session_status_new, ev| {
                     match ev {
-                        NetEvent {
-                            event: SessionHostEvent::SessionAccept(session_accept_response),
+                        NetData {
+                            data: SessionHostEvent::SessionAccept(session_accept_response),
                             ..
                         } => {
                             debug!("Session accepted: {:?}", session_accept_response);
@@ -81,8 +81,8 @@ impl<'s> System<'s> for SessionHostResponseSystem {
                                 session_accept_response.clone(),
                             ));
                         }
-                        NetEvent {
-                            event: SessionHostEvent::SessionReject(session_reject_response),
+                        NetData {
+                            data: SessionHostEvent::SessionReject(session_reject_response),
                             ..
                         } => {
                             debug!("Session rejected: {:?}", session_reject_response);
