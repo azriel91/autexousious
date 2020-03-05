@@ -3055,6 +3055,7 @@ dependencies = [
  "sequence_model",
  "serde",
  "serde_yaml",
+ "session_lobby_ui_model",
  "slotmap",
  "smallvec 1.2.0",
  "spawn_model",
@@ -5255,6 +5256,7 @@ name = "session_lobby_ui_model"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "asset_model",
  "derivative",
  "derive-new",
  "derive_deref",

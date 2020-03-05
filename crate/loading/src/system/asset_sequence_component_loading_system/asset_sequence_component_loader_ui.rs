@@ -36,8 +36,9 @@ use crate::{
     AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
     AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
     AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
-    AssetSequenceComponentLoaderUiMenu, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
-    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+    AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoaderUiSessionLobby,
+    DefinitionLoadingResourcesRead, IdMappingResourcesRead, SequenceComponentLoadingResources,
+    TextureLoadingResourcesRead,
 };
 
 /// Loads sequence components for UI assets.
@@ -381,8 +382,12 @@ impl AssetSequenceComponentLoaderUi {
                         map_selection_ui,
                     );
                 }
-                UiType::SessionLobby(_session_lobby_ui) => {
-                    unimplemented!();
+                UiType::SessionLobby(session_lobby_ui) => {
+                    AssetSequenceComponentLoaderUiSessionLobby::load(
+                        &mut sequence_component_loading_resources.asset_world,
+                        &mut item_ids_all,
+                        session_lobby_ui,
+                    );
                 }
                 UiType::ControlSettings(control_settings) => {
                     let keyboard_button_labels = keyboard_button_labels
