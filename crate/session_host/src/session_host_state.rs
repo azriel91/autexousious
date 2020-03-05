@@ -5,6 +5,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::debug;
 use session_host_model::{SessionHostEntity, SessionHostEvent};
+use session_lobby::{SessionLobbyStateBuilder, SessionLobbyStateDelegate};
 use state_registry::StateId;
 
 /// `State` where session hosting takes place.
@@ -52,6 +53,11 @@ impl State<GameData<'static, 'static>, AppEvent> for SessionHostStateDelegate {
         if let AppEvent::SessionHost(session_host_event) = event {
             debug!("Received session_host_event: {:?}", session_host_event);
             match session_host_event {
+                SessionHostEvent::SessionAccept(_) => {
+                    let session_lobby_state =
+                        SessionLobbyStateBuilder::new(SessionLobbyStateDelegate::new()).build();
+                    Trans::Push(Box::new(session_lobby_state))
+                }
                 SessionHostEvent::Back => Trans::Pop,
                 _ => Trans::None,
             }

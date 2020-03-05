@@ -25,6 +25,7 @@ module_levels:
   - ["rendy_wsi", "info"]
   - ["session_host", "info"]
   - ["session_join", "info"]
+  - ["session_lobby", "info"]
   - ["spawn_play", "info"]
   - ["state_play", "info"]
   - ["stdio_input", "info"]

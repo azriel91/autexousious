@@ -5118,6 +5118,7 @@ dependencies = [
  "derive-new",
  "log",
  "session_host_model",
+ "session_lobby",
  "state_registry",
 ]
 
@@ -5183,6 +5184,7 @@ dependencies = [
  "derive-new",
  "log",
  "session_join_model",
+ "session_lobby",
  "state_registry",
 ]
 

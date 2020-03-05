@@ -2,7 +2,7 @@ use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
-    shrev::ReaderId,
+    shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -26,6 +26,9 @@ pub struct SessionJoinResponseSystemData<'s> {
     /// `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_join_nec: Read<'s, NetEventChannel<SessionJoinEvent>>,
+    /// `SessionJoinEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_join_ec: Write<'s, EventChannel<SessionJoinEvent>>,
     /// `SessionCode` resource.
     #[derivative(Debug = "ignore")]
     pub session_code: Write<'s, SessionCode>,
@@ -47,6 +50,7 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
         &mut self,
         SessionJoinResponseSystemData {
             session_join_nec,
+            mut session_join_ec,
             mut session_code,
             mut session_device_id,
             mut session_devices,
@@ -77,6 +81,10 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                             *session_devices =
                                 session_accept_response.session.session_devices.clone();
                             session_status_new = Some(SessionStatus::JoinEstablished);
+
+                            session_join_ec.single_write(SessionJoinEvent::SessionAccept(
+                                session_accept_response.clone(),
+                            ));
                         }
                         NetEvent {
                             event: SessionJoinEvent::SessionReject(session_reject_response),
@@ -85,6 +93,10 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                             debug!("Session rejected: {:?}", session_reject_response);
 
                             session_status_new = Some(SessionStatus::None);
+
+                            session_join_ec.single_write(SessionJoinEvent::SessionReject(
+                                session_reject_response.clone(),
+                            ));
                         }
                         _ => {}
                     }

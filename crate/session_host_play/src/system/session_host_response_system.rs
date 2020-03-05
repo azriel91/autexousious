@@ -2,7 +2,7 @@ use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
-    shrev::ReaderId,
+    shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -23,9 +23,12 @@ pub struct SessionHostResponseSystem {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct SessionHostResponseSystemData<'s> {
-    /// `SessionHostEvent` channel.
+    /// `SessionHostEvent` net channel.
     #[derivative(Debug = "ignore")]
     pub session_host_nec: Read<'s, NetEventChannel<SessionHostEvent>>,
+    /// `SessionHostEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_host_ec: Write<'s, EventChannel<SessionHostEvent>>,
     /// `SessionCode` resource.
     #[derivative(Debug = "ignore")]
     pub session_code: Write<'s, SessionCode>,
@@ -47,6 +50,7 @@ impl<'s> System<'s> for SessionHostResponseSystem {
         &mut self,
         SessionHostResponseSystemData {
             session_host_nec,
+            mut session_host_ec,
             mut session_code,
             mut session_device_id,
             mut session_devices,
@@ -72,6 +76,10 @@ impl<'s> System<'s> for SessionHostResponseSystem {
                             *session_devices =
                                 session_accept_response.session.session_devices.clone();
                             session_status_new = Some(SessionStatus::HostEstablished);
+
+                            session_host_ec.single_write(SessionHostEvent::SessionAccept(
+                                session_accept_response.clone(),
+                            ));
                         }
                         NetEvent {
                             event: SessionHostEvent::SessionReject(session_reject_response),
@@ -80,6 +88,10 @@ impl<'s> System<'s> for SessionHostResponseSystem {
                             debug!("Session rejected: {:?}", session_reject_response);
 
                             session_status_new = Some(SessionStatus::None);
+
+                            session_host_ec.single_write(SessionHostEvent::SessionReject(
+                                session_reject_response.clone(),
+                            ));
                         }
                         _ => {}
                     }
