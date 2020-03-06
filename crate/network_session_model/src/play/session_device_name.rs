@@ -8,7 +8,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Session device name (`String` newtype).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 pub struct SessionDeviceName(pub String);
 
 impl Display for SessionDeviceName {

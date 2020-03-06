@@ -6,9 +6,11 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["network"] }
+bimap = "0.4.0"
 bincode = "1.2.1"
 derivative = "1.0.3"
 derive-new = "0.5.8"
+derive_deref = "1.1.0"
 frame_rate = { path = "../../crate/frame_rate" }
 log = "0.4.8"
 net_model = { path = "../../crate/net_model" }

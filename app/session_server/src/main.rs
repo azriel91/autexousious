@@ -14,6 +14,7 @@ use crate::system::{
     SessionJoinResponderSystemDesc,
 };
 
+pub mod model;
 mod system;
 
 /// Default file for logger configuration.

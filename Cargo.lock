@@ -3399,6 +3399,7 @@ dependencies = [
  "amethyst",
  "derivative",
  "derive-new",
+ "derive_deref",
  "derive_more",
  "log",
  "network_session_model",
@@ -5293,9 +5294,11 @@ name = "session_server"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "bimap",
  "bincode",
  "derivative",
  "derive-new",
+ "derive_deref",
  "frame_rate",
  "log",
  "net_model",
