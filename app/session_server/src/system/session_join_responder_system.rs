@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
@@ -14,6 +16,8 @@ use session_join_model::{
     play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse},
     SessionJoinEvent,
 };
+
+use crate::{model::SessionDeviceMappings, play::SessionTracker};
 
 /// Accepts or rejects session requests, and sends the response to the requester.
 #[derive(Debug, SystemDesc, new)]
@@ -33,6 +37,9 @@ pub struct SessionJoinResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
+    /// `SessionDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -40,7 +47,8 @@ pub struct SessionJoinResponderSystemData<'s> {
 
 impl SessionJoinResponderSystem {
     fn handle_session_request(
-        sessions: &mut Sessions,
+        session_tracker: &mut SessionTracker,
+        _socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
     ) -> SessionJoinEvent {
         let SessionJoinRequestParams {
@@ -48,7 +56,7 @@ impl SessionJoinResponderSystem {
             session_code,
         } = session_join_request_params;
 
-        if let Some(session) = sessions.get_mut(session_code) {
+        if let Some(session) = session_tracker.sessions.get_mut(session_code) {
             let session_device_id = session
                 .session_devices
                 .iter()
@@ -90,9 +98,15 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
         SessionJoinResponderSystemData {
             session_join_nec,
             mut sessions,
+            mut session_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let mut session_tracker = SessionTracker {
+            sessions: &mut sessions,
+            session_device_mappings: &mut session_device_mappings,
+        };
+
         session_join_nec
             .read(&mut self.session_join_event_rid)
             .filter_map(|session_join_event| {
@@ -107,8 +121,11 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
                 }
             })
             .map(|(socket_addr, session_join_request_params)| {
-                let session_join_event =
-                    Self::handle_session_request(&mut sessions, session_join_request_params);
+                let session_join_event = Self::handle_session_request(
+                    &mut session_tracker,
+                    socket_addr,
+                    session_join_request_params,
+                );
 
                 (socket_addr, NetMessage::from(session_join_event))
             })
