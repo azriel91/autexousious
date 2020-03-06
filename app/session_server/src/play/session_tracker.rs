@@ -62,7 +62,7 @@ impl<'s> SessionTracker<'s> {
         &mut self,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> Result<(Session, SessionDeviceId), SessionJoinError> {
+    ) -> Result<(Session, SessionDevice), SessionJoinError> {
         let SessionJoinRequestParams {
             session_device_name,
             session_code,
@@ -81,16 +81,16 @@ impl<'s> SessionTracker<'s> {
             let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
             session.session_devices.push(session_device.clone());
 
-            let net_session_device = NetSessionDevice::new(socket_addr, session_device);
+            let net_session_device = NetSessionDevice::new(socket_addr, session_device.clone());
             self.session_device_mappings
                 .append(session_code, net_session_device);
 
             debug!(
                 "Session `{}` joined by `{}` with id: `{}`.",
-                session_code, session_device_name, session_device_id
+                session_code, session_device.name, session_device.id
             );
 
-            Ok((session.clone(), session_device_id))
+            Ok((session.clone(), session_device))
         } else {
             Err(SessionJoinError::SessionCodeNotFound)
         }

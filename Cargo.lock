@@ -3418,6 +3418,7 @@ dependencies = [
  "derive-new",
  "log",
  "net_model",
+ "network_session_model",
  "session_host_model",
  "session_join_model",
 ]

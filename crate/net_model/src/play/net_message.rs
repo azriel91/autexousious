@@ -1,4 +1,5 @@
 use derive_more::From;
+use network_session_model::SessionMessageEvent;
 use serde::{Deserialize, Serialize};
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
@@ -10,4 +11,6 @@ pub enum NetMessage {
     SessionHostEvent(SessionHostEvent),
     /// `SessionJoinEvent` messages.
     SessionJoinEvent(SessionJoinEvent),
+    /// `SessionMessageEvent` messages.
+    SessionMessageEvent(SessionMessageEvent),
 }

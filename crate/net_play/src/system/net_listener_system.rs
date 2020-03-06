@@ -9,6 +9,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessage};
+use network_session_model::SessionMessageEvent;
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
 
@@ -33,6 +34,9 @@ pub struct NetListenerSystemData<'s> {
     /// Net `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_join_nec: Write<'s, NetEventChannel<SessionJoinEvent>>,
+    /// Net `SessionMessageEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_message_nec: Write<'s, NetEventChannel<SessionMessageEvent>>,
 }
 
 impl<'s> System<'s> for NetListenerSystem {
@@ -44,6 +48,7 @@ impl<'s> System<'s> for NetListenerSystem {
             network_simulation_ec,
             mut session_host_nec,
             mut session_join_nec,
+            mut session_message_nec,
         }: Self::SystemData,
     ) {
         network_simulation_ec
@@ -66,6 +71,12 @@ impl<'s> System<'s> for NetListenerSystem {
                                     session_join_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_join_event,
+                                    ));
+                                }
+                                NetMessage::SessionMessageEvent(session_message_event) => {
+                                    session_message_nec.single_write(NetData::new(
+                                        *socket_addr,
+                                        session_message_event,
                                     ));
                                 }
                             }
