@@ -62,6 +62,7 @@ use map_loading::MapLoadingBundle;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
+use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use session_host_play::{
@@ -350,6 +351,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_system_desc(
                 SessionJoinResponseSystemDesc::default(),
                 any::type_name::<SessionJoinResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionMessageResponseSystemDesc::default(),
+                any::type_name::<SessionMessageResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with(
