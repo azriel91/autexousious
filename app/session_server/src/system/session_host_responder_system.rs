@@ -55,12 +55,16 @@ pub struct SessionHostResponderSystemData<'s> {
 impl SessionHostResponderSystem {
     fn handle_session_request(
         session_tracker: &mut SessionTracker<'_>,
+        session_code_generator: &mut SessionCodeGenerator,
         socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
         if session_tracker.sessions.len() < SESSION_COUNT_LIMIT {
-            let (session, session_device_id) =
-                session_tracker.track_new(socket_addr, session_host_request_params);
+            let (session, session_device_id) = session_tracker.track_new(
+                session_code_generator,
+                socket_addr,
+                session_host_request_params,
+            );
 
             let session_accept_response = SessionAcceptResponse::new(session, session_device_id);
 
@@ -90,7 +94,6 @@ impl<'s> System<'s> for SessionHostResponderSystem {
         }: Self::SystemData,
     ) {
         let mut session_tracker = SessionTracker {
-            session_code_generator: &mut session_code_generator,
             sessions: &mut sessions,
             session_device_mappings: &mut session_device_mappings,
         };
@@ -111,6 +114,7 @@ impl<'s> System<'s> for SessionHostResponderSystem {
             .map(|(socket_addr, session_host_request_params)| {
                 let session_host_event = Self::handle_session_request(
                     &mut session_tracker,
+                    &mut session_code_generator,
                     socket_addr,
                     session_host_request_params,
                 );

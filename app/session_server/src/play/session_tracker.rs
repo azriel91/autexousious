@@ -13,8 +13,6 @@ use crate::model::SessionDeviceMappings;
 /// Updates tracking data for sessions.
 #[derive(Debug)]
 pub struct SessionTracker<'s> {
-    /// Generates session codes for sessions.
-    pub session_code_generator: &'s mut SessionCodeGenerator,
     /// Sessions (`HashMap<SessionCode, Session>` newtype).
     pub sessions: &'s mut Sessions,
     /// Mappings from `SessionCode` to `NetSessionDevices`, and `SocketAddr` to `SessionCode`.
@@ -26,10 +24,12 @@ impl<'s> SessionTracker<'s> {
     ///
     /// # Parameters
     ///
+    /// * `session_code_generator`: Generates session codes for sessions.
     /// * `socket_addr`: `SocketAddr` of the session host.
     /// * `session_host_request_params`: Parameters from the session hosting request.
     pub fn track_new(
         &mut self,
+        session_code_generator: &mut SessionCodeGenerator,
         socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
     ) -> (Session, SessionDeviceId) {
@@ -37,7 +37,7 @@ impl<'s> SessionTracker<'s> {
             session_device_name,
         } = session_host_request_params;
 
-        let session_code = self.generate_session_code();
+        let session_code = self.generate_session_code(session_code_generator);
         let session_device_id = SessionDeviceId::new(0); // ID for host
         let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
         let session_devices = SessionDevices::new(vec![session_device.clone()]);
@@ -57,9 +57,12 @@ impl<'s> SessionTracker<'s> {
         (session, session_device_id)
     }
 
-    fn generate_session_code(&mut self) -> SessionCode {
+    fn generate_session_code(
+        &mut self,
+        session_code_generator: &mut SessionCodeGenerator,
+    ) -> SessionCode {
         loop {
-            let session_code = self.session_code_generator.generate();
+            let session_code = session_code_generator.generate();
             if !self.sessions.contains_key(&session_code) {
                 break session_code;
             }
