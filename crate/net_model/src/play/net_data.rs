@@ -7,7 +7,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 /// Data that came through a network connection.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, Serialize, new)]
 pub struct NetData<D> {
     /// `SocketAddr` of the sender of the data.
     ///
@@ -25,6 +25,15 @@ where
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.socket_addr.hash(state);
         self.data.hash(state);
+    }
+}
+
+impl<D> PartialEq for NetData<D>
+where
+    D: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.socket_addr == other.socket_addr && self.data == other.data
     }
 }
 
