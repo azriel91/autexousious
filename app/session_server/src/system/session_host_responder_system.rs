@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
@@ -9,14 +11,14 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessage};
-use network_session_model::play::{
-    Session, SessionDevice, SessionDeviceId, SessionDevices, Sessions,
-};
+use network_session_model::play::Sessions;
 use network_session_play::SessionCodeGenerator;
 use session_host_model::{
     play::{SessionAcceptResponse, SessionHostRequestParams, SessionRejectResponse},
     SessionHostEvent,
 };
+
+use crate::{model::SessionDeviceMappings, play::SessionTracker};
 
 /// Limit for number of sessions the server may host;
 const SESSION_COUNT_LIMIT: usize = 100;
@@ -42,6 +44,9 @@ pub struct SessionHostResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
+    /// `SessionDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -49,41 +54,21 @@ pub struct SessionHostResponderSystemData<'s> {
 
 impl SessionHostResponderSystem {
     fn handle_session_request(
-        session_code_generator: &mut SessionCodeGenerator,
-        sessions: &mut Sessions,
+        session_tracker: &mut SessionTracker<'_>,
+        socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
-        let SessionHostRequestParams {
-            session_device_name,
-        } = session_host_request_params;
-
-        if sessions.len() < SESSION_COUNT_LIMIT {
-            let session_code = loop {
-                let session_code = session_code_generator.generate();
-                if !sessions.contains_key(&session_code) {
-                    break session_code;
-                }
-            };
-
-            let session_device_id = SessionDeviceId::new(0); // ID for host
-            let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
-            let session_devices = SessionDevices::new(vec![session_device]);
-
-            debug!(
-                "Hosting new session `{}` by `{}` with id: `{}`.",
-                session_code, session_device_name, session_device_id
-            );
-
-            let session = Session::new(session_code.clone(), session_devices);
-
-            sessions.insert(session_code, session.clone());
+        if session_tracker.sessions.len() < SESSION_COUNT_LIMIT {
+            let (session, session_device_id) =
+                session_tracker.track_new(socket_addr, session_host_request_params);
 
             let session_accept_response = SessionAcceptResponse::new(session, session_device_id);
+
             SessionHostEvent::SessionAccept(session_accept_response)
         } else {
             debug!(
                 "Rejecting request to host new session from `{}`.",
-                session_device_name
+                session_host_request_params.session_device_name
             );
 
             SessionHostEvent::SessionReject(SessionRejectResponse::new())
@@ -100,9 +85,16 @@ impl<'s> System<'s> for SessionHostResponderSystem {
             session_host_nec,
             mut session_code_generator,
             mut sessions,
+            mut session_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let mut session_tracker = SessionTracker {
+            session_code_generator: &mut session_code_generator,
+            sessions: &mut sessions,
+            session_device_mappings: &mut session_device_mappings,
+        };
+
         session_host_nec
             .read(&mut self.session_host_event_rid)
             .filter_map(|session_host_event| {
@@ -118,8 +110,8 @@ impl<'s> System<'s> for SessionHostResponderSystem {
             })
             .map(|(socket_addr, session_host_request_params)| {
                 let session_host_event = Self::handle_session_request(
-                    &mut session_code_generator,
-                    &mut sessions,
+                    &mut session_tracker,
+                    socket_addr,
                     session_host_request_params,
                 );
 

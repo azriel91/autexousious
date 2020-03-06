@@ -15,6 +15,8 @@ use crate::system::{
 };
 
 pub mod model;
+pub mod play;
+
 mod system;
 
 /// Default file for logger configuration.
