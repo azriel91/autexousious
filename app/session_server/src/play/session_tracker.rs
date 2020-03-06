@@ -7,6 +7,7 @@ use network_session_model::play::{
 };
 use network_session_play::SessionCodeGenerator;
 use session_host_model::play::SessionHostRequestParams;
+use session_join_model::play::{SessionJoinError, SessionJoinRequestParams};
 
 use crate::model::SessionDeviceMappings;
 
@@ -55,6 +56,42 @@ impl<'s> SessionTracker<'s> {
         self.update_session_tracking(session.clone(), net_session_devices);
 
         (session, session_device_id)
+    }
+
+    pub fn append_device(
+        &mut self,
+        _socket_addr: SocketAddr,
+        session_join_request_params: &SessionJoinRequestParams,
+    ) -> Result<(Session, SessionDeviceId), SessionJoinError> {
+        let SessionJoinRequestParams {
+            session_device_name,
+            session_code,
+        } = session_join_request_params;
+
+        if let Some(session) = self.sessions.get_mut(session_code) {
+            let session_device_id = session
+                .session_devices
+                .iter()
+                .map(|session_device| session_device.id)
+                .max()
+                .map(|session_device_id| SessionDeviceId::new(*session_device_id + 1))
+                .unwrap_or_else(|| SessionDeviceId::new(0));
+
+            // Add the new device to the session before adding it to the response.
+            session.session_devices.push(SessionDevice::new(
+                session_device_id,
+                session_device_name.clone(),
+            ));
+
+            debug!(
+                "Session `{}` joined by `{}` with id: `{}`.",
+                session_code, session_device_name, session_device_id
+            );
+
+            Ok((session.clone(), session_device_id))
+        } else {
+            Err(SessionJoinError::SessionCodeNotFound)
+        }
     }
 
     fn generate_session_code(

@@ -11,7 +11,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessage};
-use network_session_model::play::{SessionDevice, SessionDeviceId, Sessions};
+use network_session_model::play::Sessions;
 use session_join_model::{
     play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse},
     SessionJoinEvent,
@@ -48,7 +48,7 @@ pub struct SessionJoinResponderSystemData<'s> {
 impl SessionJoinResponderSystem {
     fn handle_session_request(
         session_tracker: &mut SessionTracker,
-        _socket_addr: SocketAddr,
+        socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
     ) -> SessionJoinEvent {
         let SessionJoinRequestParams {
@@ -56,36 +56,21 @@ impl SessionJoinResponderSystem {
             session_code,
         } = session_join_request_params;
 
-        if let Some(session) = session_tracker.sessions.get_mut(session_code) {
-            let session_device_id = session
-                .session_devices
-                .iter()
-                .map(|session_device| session_device.id)
-                .max()
-                .map(|session_device_id| SessionDeviceId::new(*session_device_id + 1))
-                .unwrap_or_else(|| SessionDeviceId::new(0));
+        match session_tracker.append_device(socket_addr, session_join_request_params) {
+            Ok((session, session_device_id)) => {
+                let session_accept_response =
+                    SessionAcceptResponse::new(session, session_device_id);
 
-            // Add the new device to the session before adding it to the response.
-            session.session_devices.push(SessionDevice::new(
-                session_device_id,
-                session_device_name.clone(),
-            ));
+                SessionJoinEvent::SessionAccept(session_accept_response)
+            }
+            Err(e) => {
+                debug!(
+                    "Rejecting request to join session `{}` joined from `{}`.",
+                    session_code, session_device_name
+                );
 
-            debug!(
-                "Session `{}` joined by `{}` with id: `{}`.",
-                session_code, session_device_name, session_device_id
-            );
-
-            let session_accept_response =
-                SessionAcceptResponse::new(session.clone(), session_device_id);
-            SessionJoinEvent::SessionAccept(session_accept_response)
-        } else {
-            debug!(
-                "Rejecting request to join session `{}` joined from `{}`.",
-                session_code, session_device_name
-            );
-
-            SessionJoinEvent::SessionReject(SessionRejectResponse::new(session_code.clone()))
+                SessionJoinEvent::SessionReject(SessionRejectResponse::new(session_code.clone(), e))
+            }
         }
     }
 }
