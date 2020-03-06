@@ -60,7 +60,7 @@ impl<'s> SessionTracker<'s> {
 
     pub fn append_device(
         &mut self,
-        _socket_addr: SocketAddr,
+        socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
     ) -> Result<(Session, SessionDeviceId), SessionJoinError> {
         let SessionJoinRequestParams {
@@ -78,10 +78,12 @@ impl<'s> SessionTracker<'s> {
                 .unwrap_or_else(|| SessionDeviceId::new(0));
 
             // Add the new device to the session before adding it to the response.
-            session.session_devices.push(SessionDevice::new(
-                session_device_id,
-                session_device_name.clone(),
-            ));
+            let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
+            session.session_devices.push(session_device.clone());
+
+            let net_session_device = NetSessionDevice::new(socket_addr, session_device);
+            self.session_device_mappings
+                .append(session_code, net_session_device);
 
             debug!(
                 "Session `{}` joined by `{}` with id: `{}`.",
