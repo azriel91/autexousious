@@ -8,11 +8,13 @@
 * Rudimentary session joining UI. ([#200])
 * Session server generates session codes for session hosters. ([#201])
 * Rudimentary session hosting UI. ([#202])
+* Rudimentary session lobby UI. ([#204])
 
 [#198]: https://gitlab.com/azriel91/autexousious/issues/198
 [#200]: https://gitlab.com/azriel91/autexousious/issues/200
 [#201]: https://gitlab.com/azriel91/autexousious/issues/201
 [#202]: https://gitlab.com/azriel91/autexousious/issues/202
+[#204]: https://gitlab.com/azriel91/autexousious/issues/204
 
 ## 0.17.0 (2020-01-31)
 
