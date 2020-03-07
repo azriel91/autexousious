@@ -3406,6 +3406,7 @@ dependencies = [
  "serde",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
 ]
 
 [[package]]
@@ -3421,6 +3422,7 @@ dependencies = [
  "network_session_model",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
 ]
 
 [[package]]

@@ -12,6 +12,7 @@ use net_model::play::{NetData, NetEventChannel, NetMessage};
 use network_session_model::SessionMessageEvent;
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
+use session_lobby_model::SessionLobbyEvent;
 
 /// Receives `NetMessage`s and sends each variant's data to the corresponding event channel.
 #[derive(Debug, SystemDesc, new)]
@@ -34,6 +35,9 @@ pub struct NetListenerSystemData<'s> {
     /// Net `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_join_nec: Write<'s, NetEventChannel<SessionJoinEvent>>,
+    /// Net `SessionLobbyEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_lobby_nec: Write<'s, NetEventChannel<SessionLobbyEvent>>,
     /// Net `SessionMessageEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_message_nec: Write<'s, NetEventChannel<SessionMessageEvent>>,
@@ -48,6 +52,7 @@ impl<'s> System<'s> for NetListenerSystem {
             network_simulation_ec,
             mut session_host_nec,
             mut session_join_nec,
+            mut session_lobby_nec,
             mut session_message_nec,
         }: Self::SystemData,
     ) {
@@ -71,6 +76,12 @@ impl<'s> System<'s> for NetListenerSystem {
                                     session_join_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_join_event,
+                                    ));
+                                }
+                                NetMessage::SessionLobbyEvent(session_lobby_event) => {
+                                    session_lobby_nec.single_write(NetData::new(
+                                        *socket_addr,
+                                        session_lobby_event,
                                     ));
                                 }
                                 NetMessage::SessionMessageEvent(session_message_event) => {

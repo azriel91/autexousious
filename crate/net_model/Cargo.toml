@@ -19,3 +19,4 @@ network_session_model = { path = "../network_session_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }
+session_lobby_model = { path = "../session_lobby_model" }
