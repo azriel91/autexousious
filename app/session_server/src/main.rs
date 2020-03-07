@@ -11,7 +11,7 @@ use structopt::StructOpt;
 
 use crate::system::{
     SessionHostResponderSystem, SessionHostResponderSystemDesc, SessionJoinResponderSystem,
-    SessionJoinResponderSystemDesc,
+    SessionJoinResponderSystemDesc, SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
 };
 
 pub mod model;
@@ -105,6 +105,11 @@ fn main() -> Result<(), Error> {
         .with_system_desc(
             SessionJoinResponderSystemDesc::default(),
             any::type_name::<SessionJoinResponderSystem>(),
+            &[any::type_name::<NetListenerSystem>()],
+        )
+        .with_system_desc(
+            SessionLobbyResponderSystemDesc::default(),
+            any::type_name::<SessionLobbyResponderSystem>(),
             &[any::type_name::<NetListenerSystem>()],
         );
 

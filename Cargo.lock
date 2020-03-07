@@ -5321,6 +5321,7 @@ dependencies = [
  "serde_yaml",
  "session_host_model",
  "session_join_model",
+ "session_lobby_model",
  "structopt",
  "structopt-derive",
 ]
