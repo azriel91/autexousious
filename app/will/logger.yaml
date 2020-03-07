@@ -12,7 +12,7 @@ module_levels:
   - ["collision_play", "info"]
   - ["control_settings", "info"]
   - ["game_mode_selection", "info"]
-  - ["gfx_backend_vulkan", "info"]
+  - ["gfx_backend_vulkan", "warn"]
   - ["input_reaction_play", "info"]
   - ["loading", "info"]
   - ["map_selection", "info"]
