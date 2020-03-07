@@ -138,7 +138,7 @@ impl<'s> System<'s> for SessionDeviceEntityCreateDeleteSystem {
                             let parent_entity = ParentEntity::new(session_devices_entity);
                             let position_init_parent =
                                 PositionInitParent::new(session_devices_entity);
-                            let y_offset = (n * dimensions.h as usize) as f32;
+                            let y_offset = -((n * dimensions.h as usize) as f32);
                             let position_init_offset =
                                 PositionInitOffset::new(Position::new(0., y_offset, 0.));
 
