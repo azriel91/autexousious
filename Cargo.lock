@@ -5289,11 +5289,15 @@ name = "session_lobby_ui_play"
 version = "0.18.0"
 dependencies = [
  "amethyst",
+ "asset_model",
  "derivative",
  "derive-new",
+ "kinematic_model",
  "log",
  "network_session_model",
+ "parent_model",
  "session_lobby_ui_model",
+ "ui_model_spi",
 ]
 
 [[package]]

@@ -75,7 +75,10 @@ use session_join_play::{
     SessionJoinResponseSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
-use session_lobby_ui_play::SessionCodeLabelUpdateSystem;
+use session_lobby_ui_play::{
+    SessionCodeLabelUpdateSystem, SessionDeviceEntityCreateDeleteSystem,
+    SessionDeviceWidgetUpdateSystem,
+};
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
@@ -364,7 +367,22 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 &[
                     any::type_name::<SessionHostResponseSystem>(),
                     any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
                 ],
+            )
+            .with(
+                SessionDeviceEntityCreateDeleteSystem::new(),
+                any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
+            )
+            .with(
+                SessionDeviceWidgetUpdateSystem::new(),
+                any::type_name::<SessionDeviceWidgetUpdateSystem>(),
+                &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),

@@ -2,6 +2,9 @@
 
 //! Provides logic to update the session lobby UI.
 
-pub use crate::system::SessionCodeLabelUpdateSystem;
+pub use crate::system::{
+    SessionCodeLabelUpdateSystem, SessionDeviceEntityCreateDeleteSystem,
+    SessionDeviceWidgetUpdateSystem,
+};
 
 mod system;

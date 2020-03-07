@@ -1,7 +1,7 @@
 use amethyst::ecs::{Builder, WorldExt};
 use asset_model::{loaded::ItemId, play::AssetWorld};
 use session_lobby_ui_model::{
-    config::SessionLobbyUi,
+    config::{SessionDeviceWidgetTemplate, SessionLobbyUi},
     loaded::{SessionCodeLabel, SessionDevicesWidget},
 };
 
@@ -42,11 +42,39 @@ impl AssetSequenceComponentLoaderUiSessionLobby {
         asset_world: &mut AssetWorld,
         session_lobby_ui: &SessionLobbyUi,
     ) -> ItemId {
-        let position_init = session_lobby_ui.session_devices.position;
+        let session_lobby_ui_model::config::SessionDevicesWidget {
+            position: position_init,
+            session_device_widget_template:
+                SessionDeviceWidgetTemplate {
+                    dimensions,
+                    device_id,
+                    device_name,
+                },
+        } = session_lobby_ui.session_devices.clone();
+
+        let item_id_session_device_id = ItemId::new(
+            asset_world
+                .create_entity()
+                .with(device_id.position)
+                .with(device_id)
+                .build(),
+        );
+        let item_id_session_device_name = ItemId::new(
+            asset_world
+                .create_entity()
+                .with(device_name.position)
+                .with(device_name)
+                .build(),
+        );
+
         let item_entity_session_devices_widget = asset_world
             .create_entity()
             .with(position_init)
-            .with(SessionDevicesWidget)
+            .with(dimensions)
+            .with(SessionDevicesWidget::new(
+                item_id_session_device_id,
+                item_id_session_device_name,
+            ))
             .build();
         ItemId::new(item_entity_session_devices_widget)
     }
