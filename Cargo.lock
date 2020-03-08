@@ -5247,9 +5247,13 @@ dependencies = [
  "amethyst",
  "application_event",
  "application_state",
+ "character_selection",
  "derivative",
  "derive-new",
+ "game_loading",
+ "game_play",
  "log",
+ "map_selection",
  "session_lobby_model",
  "state_registry",
 ]
