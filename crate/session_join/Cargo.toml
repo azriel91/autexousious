@@ -15,5 +15,7 @@ application_state = { path = "../application_state" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 log = "0.4.8"
+network_session_model = { path = "../network_session_model" }
 session_join_model = { path = "../session_join_model" }
+session_lobby = { path = "../session_lobby" }
 state_registry = { path = "../state_registry" }

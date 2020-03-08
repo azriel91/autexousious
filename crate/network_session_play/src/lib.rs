@@ -2,6 +2,10 @@
 
 //! Provides logic for network sessions at runtime.
 
-pub use crate::session_code_generator::SessionCodeGenerator;
+pub use crate::{
+    session_code_generator::SessionCodeGenerator,
+    system::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc},
+};
 
 mod session_code_generator;
+mod system;

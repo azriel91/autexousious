@@ -7,6 +7,7 @@ mod asset_sequence_component_loader_ui_control_settings;
 mod asset_sequence_component_loader_ui_form;
 mod asset_sequence_component_loader_ui_map_selection;
 mod asset_sequence_component_loader_ui_menu;
+mod asset_sequence_component_loader_ui_session_lobby;
 
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -37,6 +38,7 @@ pub use self::{
     asset_sequence_component_loader_ui_form::AssetSequenceComponentLoaderUiForm,
     asset_sequence_component_loader_ui_map_selection::AssetSequenceComponentLoaderUiMapSelection,
     asset_sequence_component_loader_ui_menu::AssetSequenceComponentLoaderUiMenu,
+    asset_sequence_component_loader_ui_session_lobby::AssetSequenceComponentLoaderUiSessionLobby,
 };
 
 /// Loads asset sequence components.

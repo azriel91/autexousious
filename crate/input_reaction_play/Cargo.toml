@@ -29,6 +29,7 @@ object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }
+session_lobby_model = { path = "../session_lobby_model" }
 state_registry = { path = "../state_registry" }
 ui_form_model = { path = "../ui_form_model" }
 ui_model = { path = "../ui_model" }

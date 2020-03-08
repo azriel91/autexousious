@@ -52,6 +52,7 @@ sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
+session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 smallvec = "1.2.0"
 spawn_model = { path = "../spawn_model" }

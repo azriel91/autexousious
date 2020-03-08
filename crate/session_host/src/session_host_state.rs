@@ -4,7 +4,9 @@ use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
+use network_session_model::play::SessionStatus;
 use session_host_model::{SessionHostEntity, SessionHostEvent};
+use session_lobby::{SessionLobbyStateBuilder, SessionLobbyStateDelegate};
 use state_registry::StateId;
 
 /// `State` where session hosting takes place.
@@ -32,6 +34,7 @@ pub struct SessionHostStateDelegate;
 impl SessionHostStateDelegate {
     fn initialize_state(data: StateData<'_, GameData<'static, 'static>>) {
         data.world.insert(StateId::SessionHost);
+        data.world.insert(SessionStatus::None);
     }
 }
 
@@ -52,6 +55,11 @@ impl State<GameData<'static, 'static>, AppEvent> for SessionHostStateDelegate {
         if let AppEvent::SessionHost(session_host_event) = event {
             debug!("Received session_host_event: {:?}", session_host_event);
             match session_host_event {
+                SessionHostEvent::SessionAccept(_) => {
+                    let session_lobby_state =
+                        SessionLobbyStateBuilder::new(SessionLobbyStateDelegate::new()).build();
+                    Trans::Push(Box::new(session_lobby_state))
+                }
                 SessionHostEvent::Back => Trans::Pop,
                 _ => Trans::None,
             }

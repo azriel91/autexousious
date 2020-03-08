@@ -1,21 +1,13 @@
 #![windows_subsystem = "windows"]
 
-use std::{
-    any,
-    convert::TryFrom,
-    fs::File,
-    io::BufReader,
-    net::{IpAddr, UdpSocket},
-    path::PathBuf,
-    process,
-};
+use std::{any, convert::TryFrom, fs::File, io::BufReader, net::IpAddr, path::PathBuf, process};
 
 use amethyst::{
     assets::HotReloadBundle,
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
-    network::simulation::laminar::{LaminarConfig, LaminarNetworkBundle, LaminarSocket},
+    network::simulation::tcp::TcpNetworkBundle,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
@@ -57,11 +49,11 @@ use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
-use log::{debug, error, warn};
 use map_loading::MapLoadingBundle;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
+use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use session_host_play::{
@@ -74,6 +66,14 @@ use session_join_play::{
     SessionJoinResponseSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
+use session_lobby_play::{
+    SessionLobbyRequestSystem, SessionLobbyRequestSystemDesc, SessionLobbyResponseSystem,
+    SessionLobbyResponseSystemDesc,
+};
+use session_lobby_ui_play::{
+    SessionCodeLabelUpdateSystem, SessionDeviceEntityCreateDeleteSystem,
+    SessionDeviceWidgetUpdateSystem,
+};
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
@@ -95,6 +95,9 @@ use ui_play::{
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
+
+/// `TcpListener` buffer size.
+const TCP_RECV_BUFFER_SIZE: usize = 2048;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -161,55 +164,6 @@ fn session_server_config(opt: &Opt) -> SessionServerConfig {
     }
 }
 
-fn local_socket(session_server_config: &SessionServerConfig) -> Option<LaminarSocket> {
-    let local_socket_config = LaminarConfig {
-        blocking_mode: false,
-        ..Default::default()
-    };
-
-    // By binding to 0.0.0.0, then connecting to the server address, the OS will give us an address
-    // and port that we can use for our socket.
-    let local_socket = UdpSocket::bind("0.0.0.0:0");
-    let local_addr = if let Ok(local_socket) = local_socket {
-        if local_socket
-            .connect((session_server_config.address, session_server_config.port))
-            .is_ok()
-        {
-            local_socket.local_addr().ok()
-        } else {
-            None
-        }
-    } else {
-        None
-    };
-
-    if let Some(local_addr) = local_addr {
-        let local_socket = LaminarSocket::bind_with_config(local_addr, local_socket_config);
-        match local_socket {
-            Ok(local_socket) => {
-                // When we connect to an external interface, our local socket must also use
-                // the same interface. Otherwise we get an OS error 22 when sending a
-                // packet.
-                debug!(
-                    "Local socket: {:?}",
-                    local_socket
-                        .local_addr()
-                        .expect("Failed to read `local_addr()`")
-                );
-                Some(local_socket)
-            }
-            Err(e) => {
-                warn!("Unable to bind to local socket. Network play will be unavailable.");
-                debug!("Local socket bind error: {}", e);
-                None
-            }
-        }
-    } else {
-        error!("Failed to get local address. Network play will be unavailable.");
-        None
-    }
-}
-
 fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let session_server_config = session_server_config(&opt);
 
@@ -241,9 +195,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
-            .with_bundle(LaminarNetworkBundle::new(local_socket(
-                &session_server_config,
-            )))?
+            .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
@@ -337,6 +289,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
+                SessionLobbyRequestSystemDesc::default(),
+                any::type_name::<SessionLobbyRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
                 NetListenerSystemDesc::default(),
                 any::type_name::<NetListenerSystem>(),
                 &[],
@@ -350,6 +307,39 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 SessionJoinResponseSystemDesc::default(),
                 any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionLobbyResponseSystemDesc::default(),
+                any::type_name::<SessionLobbyResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionMessageResponseSystemDesc::default(),
+                any::type_name::<SessionMessageResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with(
+                SessionCodeLabelUpdateSystem::new(),
+                any::type_name::<SessionCodeLabelUpdateSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
+            )
+            .with(
+                SessionDeviceEntityCreateDeleteSystem::new(),
+                any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
+            )
+            .with(
+                SessionDeviceWidgetUpdateSystem::new(),
+                any::type_name::<SessionDeviceWidgetUpdateSystem>(),
+                &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
             )
             .with(
                 StateItemUiInputAugmentSystem::new(),

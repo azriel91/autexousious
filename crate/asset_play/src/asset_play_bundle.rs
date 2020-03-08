@@ -33,6 +33,7 @@ use mirrored_model::play::Mirrored;
 use object_model::play::Grounding;
 use object_type::Character;
 use sequence_model::loaded::{SequenceEndTransitions, SequenceId, WaitSequenceHandles};
+use session_lobby_ui_model::loaded::{SessionCodeLabel, SessionDevicesWidget};
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
@@ -104,6 +105,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<AssetSelectionHighlightMain>();
         asset_world.register::<Dimensions>();
         asset_world.register::<ChaseModeStick>();
+
+        asset_world.register::<SessionCodeLabel>();
+        asset_world.register::<SessionDevicesWidget>();
 
         world.insert(asset_world);
 
@@ -244,9 +248,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add(
             ItemComponentComponentAugmentSystem::<UiLabel>::new(),
             any::type_name::<ItemComponentComponentAugmentSystem<UiLabel>>(),
-            &[any::type_name::<
-                ItemComponentComponentAugmentSystem<UiTextInput>,
-            >()],
+            &[
+                // Needed for `Position<f32>` value to be used for `UiTransform`.
+                //
+                // `PositionInit` has special logic to offset the position by parent and offset, and
+                // we want to take advantage of that logic.
+                any::type_name::<ItemComponentComponentAugmentSystem<PositionInit>>(),
+                any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
+            ],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<UiMenu>::new(),
@@ -357,6 +366,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelectionHighlight>,
             >()],
+        );
+
+        // Session Lobby UI
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SessionCodeLabel>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<SessionCodeLabel>>(),
+            &[],
+        );
+        builder.add(
+            ItemComponentComponentAugmentSystem::<SessionDevicesWidget>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<SessionDevicesWidget>>(),
+            &[],
         );
         builder.add_barrier();
         Ok(())

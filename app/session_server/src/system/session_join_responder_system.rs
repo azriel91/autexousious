@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
@@ -8,12 +10,17 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetEvent, NetEventChannel, NetMessage};
-use network_session_model::play::{SessionDevice, SessionDeviceId, Sessions};
+use net_model::play::{NetData, NetEventChannel, NetMessage};
+use network_session_model::{
+    play::{SessionDeviceJoin, Sessions},
+    SessionMessageEvent,
+};
 use session_join_model::{
     play::{SessionAcceptResponse, SessionJoinRequestParams, SessionRejectResponse},
     SessionJoinEvent,
 };
+
+use crate::{model::SessionDeviceMappings, play::SessionTracker};
 
 /// Accepts or rejects session requests, and sends the response to the requester.
 #[derive(Debug, SystemDesc, new)]
@@ -21,7 +28,7 @@ use session_join_model::{
 pub struct SessionJoinResponderSystem {
     /// Reader ID for the `SessionJoinEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_join_event_rid: ReaderId<NetEvent<SessionJoinEvent>>,
+    session_join_event_rid: ReaderId<NetData<SessionJoinEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -33,6 +40,9 @@ pub struct SessionJoinResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
+    /// `SessionDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -40,44 +50,117 @@ pub struct SessionJoinResponderSystemData<'s> {
 
 impl SessionJoinResponderSystem {
     fn handle_session_request(
-        sessions: &mut Sessions,
+        session_tracker: &mut SessionTracker,
+        socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> SessionJoinEvent {
+    ) -> (SessionJoinEvent, Option<SessionMessageEvent>) {
         let SessionJoinRequestParams {
             session_device_name,
             session_code,
         } = session_join_request_params;
 
-        if let Some(session) = sessions.get_mut(session_code) {
-            let session_device_id = session
-                .session_devices
-                .iter()
-                .map(|session_device| session_device.id)
-                .max()
-                .map(|session_device_id| SessionDeviceId::new(*session_device_id + 1))
-                .unwrap_or_else(|| SessionDeviceId::new(0));
+        match session_tracker.append_device(socket_addr, session_join_request_params) {
+            Ok((session, session_device)) => {
+                let session_accept_response =
+                    SessionAcceptResponse::new(session, session_device.id);
 
-            // Add the new device to the session before adding it to the response.
-            session.session_devices.push(SessionDevice::new(
-                session_device_id,
-                session_device_name.clone(),
-            ));
+                let session_join_event = SessionJoinEvent::SessionAccept(session_accept_response);
+                let session_message_event = {
+                    let session_device_join = SessionDeviceJoin::new(session_device);
+                    SessionMessageEvent::SessionDeviceJoin(session_device_join)
+                };
 
-            debug!(
-                "Session `{}` joined by `{}` with id: `{}`.",
-                session_code, session_device_name, session_device_id
-            );
+                (session_join_event, Some(session_message_event))
+            }
+            Err(e) => {
+                debug!(
+                    "Rejecting request to join session `{}` joined from `{}`.",
+                    session_code, session_device_name
+                );
 
-            let session_accept_response =
-                SessionAcceptResponse::new(session.clone(), session_device_id);
-            SessionJoinEvent::SessionAccept(session_accept_response)
-        } else {
-            debug!(
-                "Rejecting request to join session `{}` joined from `{}`.",
-                session_code, session_device_name
-            );
+                let session_join_event = SessionJoinEvent::SessionReject(
+                    SessionRejectResponse::new(session_code.clone(), e),
+                );
 
-            SessionJoinEvent::SessionReject(SessionRejectResponse::new(session_code.clone()))
+                (session_join_event, None)
+            }
+        }
+    }
+
+    fn send_session_join_event(
+        transport_resource: &mut TransportResource,
+        socket_addr: SocketAddr,
+        session_join_event: SessionJoinEvent,
+    ) {
+        let net_message = NetMessage::from(session_join_event);
+
+        match bincode::serialize(&net_message) {
+            Ok(payload) => {
+                transport_resource.send_with_requirements(
+                    socket_addr,
+                    &payload,
+                    // None means it uses a default multiplexed stream.
+                    //
+                    // Suspect if we give it a value, the value will be a "channel" over the same
+                    // socket connection.
+                    DeliveryRequirement::ReliableOrdered(None),
+                    UrgencyRequirement::OnTick,
+                );
+            }
+            Err(e) => {
+                error!(
+                    "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                    e
+                );
+            }
+        }
+    }
+
+    fn send_session_message_event(
+        session_device_mappings: &SessionDeviceMappings,
+        transport_resource: &mut TransportResource,
+        socket_addr_exclude: SocketAddr,
+        session_message_event: SessionMessageEvent,
+    ) {
+        let net_message = NetMessage::from(session_message_event);
+
+        match bincode::serialize(&net_message) {
+            Ok(payload) => {
+                let net_session_devices = session_device_mappings
+                    .session_code(&socket_addr_exclude)
+                    .and_then(|session_code| {
+                        session_device_mappings.net_session_devices(session_code)
+                    });
+                if let Some(net_session_devices) = net_session_devices {
+                    net_session_devices
+                        .iter()
+                        .filter_map(|net_session_device| {
+                            if net_session_device.socket_addr != socket_addr_exclude {
+                                Some(net_session_device.socket_addr)
+                            } else {
+                                None
+                            }
+                        })
+                        .for_each(|socket_addr| {
+                            transport_resource.send_with_requirements(
+                                socket_addr,
+                                &payload,
+                                // None means it uses a default multiplexed stream.
+                                //
+                                // Suspect if we give it a value, the value will be a "channel" over the same
+                                // socket connection.
+                                DeliveryRequirement::ReliableOrdered(None),
+                                UrgencyRequirement::OnTick,
+                            );
+                        });
+                }
+            }
+            Err(e) => {
+                error!(
+                    "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                    e
+                );
+            }
         }
     }
 }
@@ -90,15 +173,21 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
         SessionJoinResponderSystemData {
             session_join_nec,
             mut sessions,
+            mut session_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let mut session_tracker = SessionTracker {
+            sessions: &mut sessions,
+            session_device_mappings: &mut session_device_mappings,
+        };
+
         session_join_nec
             .read(&mut self.session_join_event_rid)
             .filter_map(|session_join_event| {
-                if let NetEvent {
+                if let NetData {
                     socket_addr,
-                    event: SessionJoinEvent::SessionJoinRequest(session_join_request_params),
+                    data: SessionJoinEvent::SessionJoinRequest(session_join_request_params),
                 } = session_join_event
                 {
                     Some((*socket_addr, session_join_request_params))
@@ -107,32 +196,33 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
                 }
             })
             .map(|(socket_addr, session_join_request_params)| {
-                let session_join_event =
-                    Self::handle_session_request(&mut sessions, session_join_request_params);
+                let session_join_and_message_events = Self::handle_session_request(
+                    &mut session_tracker,
+                    socket_addr,
+                    session_join_request_params,
+                );
 
-                (socket_addr, NetMessage::from(session_join_event))
+                (socket_addr, session_join_and_message_events)
             })
-            .for_each(|(socket_addr, net_message)| {
-                match bincode::serialize(&net_message) {
-                    Ok(payload) => {
-                        transport_resource.send_with_requirements(
+            .collect::<Vec<_>>()
+            .into_iter()
+            .for_each(
+                |(socket_addr, (session_join_event, session_message_event))| {
+                    Self::send_session_join_event(
+                        &mut transport_resource,
+                        socket_addr,
+                        session_join_event,
+                    );
+
+                    if let Some(session_message_event) = session_message_event {
+                        Self::send_session_message_event(
+                            &session_tracker.session_device_mappings,
+                            &mut transport_resource,
                             socket_addr,
-                            &payload,
-                            // None means it uses a default multiplexed stream.
-                            //
-                            // Suspect if we give it a value, the value will be a "channel" over the same
-                            // socket connection.
-                            DeliveryRequirement::ReliableOrdered(None),
-                            UrgencyRequirement::OnTick,
+                            session_message_event,
                         );
                     }
-                    Err(e) => {
-                        error!(
-                            "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
-                            e
-                        );
-                    }
-                }
-            });
+                },
+            );
     }
 }

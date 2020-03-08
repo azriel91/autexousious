@@ -132,7 +132,7 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
 
                             ui_transforms
                                 .insert(entity, ui_transform)
-                                .expect("Failed to insert `Transform` component.");
+                                .expect("Failed to insert `UiTransform` component.");
                         }
                     }
                 },

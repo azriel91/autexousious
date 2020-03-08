@@ -4,7 +4,9 @@ use application_state::{AppState, AppStateBuilder};
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
+use network_session_model::play::SessionStatus;
 use session_join_model::{SessionJoinEntity, SessionJoinEvent};
+use session_lobby::{SessionLobbyStateBuilder, SessionLobbyStateDelegate};
 use state_registry::StateId;
 
 /// `State` where session joining takes place.
@@ -32,6 +34,7 @@ pub struct SessionJoinStateDelegate;
 impl SessionJoinStateDelegate {
     fn initialize_state(data: StateData<'_, GameData<'static, 'static>>) {
         data.world.insert(StateId::SessionJoin);
+        data.world.insert(SessionStatus::None);
     }
 }
 
@@ -52,6 +55,11 @@ impl State<GameData<'static, 'static>, AppEvent> for SessionJoinStateDelegate {
         if let AppEvent::SessionJoin(session_join_event) = event {
             debug!("Received session_join_event: {:?}", session_join_event);
             match session_join_event {
+                SessionJoinEvent::SessionAccept(_) => {
+                    let session_lobby_state =
+                        SessionLobbyStateBuilder::new(SessionLobbyStateDelegate::new()).build();
+                    Trans::Push(Box::new(session_lobby_state))
+                }
                 SessionJoinEvent::Back => Trans::Pop,
                 _ => Trans::None,
             }

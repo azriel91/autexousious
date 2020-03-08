@@ -1,9 +1,14 @@
-use std::{any, fs::File, io::BufReader, net::IpAddr, path::PathBuf};
+use std::{
+    any,
+    fs::File,
+    io::BufReader,
+    net::{IpAddr, TcpListener},
+    path::PathBuf,
+};
 
 use amethyst::{
-    network::simulation::laminar::{LaminarNetworkBundle, LaminarSocket},
-    utils::application_root_dir,
-    Application, Error, GameDataBuilder, LoggerConfig, SimpleState,
+    network::simulation::tcp::TcpNetworkBundle, utils::application_root_dir, Application, Error,
+    GameDataBuilder, LoggerConfig, SimpleState,
 };
 use frame_rate::strategy::frame_rate_limit_config;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
@@ -11,13 +16,19 @@ use structopt::StructOpt;
 
 use crate::system::{
     SessionHostResponderSystem, SessionHostResponderSystemDesc, SessionJoinResponderSystem,
-    SessionJoinResponderSystemDesc,
+    SessionJoinResponderSystemDesc, SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
 };
+
+pub mod model;
+pub mod play;
 
 mod system;
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
+
+/// `TcpListener` buffer size.
+const TCP_RECV_BUFFER_SIZE: usize = 2048;
 
 /// Default empty state
 pub struct RunState;
@@ -83,12 +94,16 @@ fn main() -> Result<(), Error> {
 
     logger_setup(opt.logger_config)?;
 
-    let socket = LaminarSocket::bind((opt.address, opt.port))?;
+    let tcp_listener = TcpListener::bind((opt.address, opt.port))?;
+    tcp_listener.set_nonblocking(true)?;
 
     let assets_dir = application_root_dir()?.join("./");
 
     let game_data = GameDataBuilder::default()
-        .with_bundle(LaminarNetworkBundle::new(Some(socket)))?
+        .with_bundle(TcpNetworkBundle::new(
+            Some(tcp_listener),
+            TCP_RECV_BUFFER_SIZE,
+        ))?
         .with_system_desc(
             NetListenerSystemDesc::default(),
             any::type_name::<NetListenerSystem>(),
@@ -102,6 +117,11 @@ fn main() -> Result<(), Error> {
         .with_system_desc(
             SessionJoinResponderSystemDesc::default(),
             any::type_name::<SessionJoinResponderSystem>(),
+            &[any::type_name::<NetListenerSystem>()],
+        )
+        .with_system_desc(
+            SessionLobbyResponderSystemDesc::default(),
+            any::type_name::<SessionLobbyResponderSystem>(),
             &[any::type_name::<NetListenerSystem>()],
         );
 
