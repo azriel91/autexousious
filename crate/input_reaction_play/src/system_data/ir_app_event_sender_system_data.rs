@@ -14,8 +14,10 @@ use game_input_model::play::InputControlled;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use network_mode_selection_model::NetworkModeSelectionEvent;
+use network_session_model::play::SessionCode;
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
+use session_lobby_model::SessionLobbyEvent;
 use state_registry::StateId;
 use ui_form_model::play::UiFormInputEntities;
 
@@ -40,6 +42,10 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+
+    /// `SessionCode` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_code: Read<'s, SessionCode>,
 
     /// `UiFormInputEntities` resource.
     #[derivative(Debug = "ignore")]
@@ -82,4 +88,7 @@ pub struct IrAppEventSenderSystemData<'s> {
     /// `SessionJoinEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_join_ec: Write<'s, EventChannel<SessionJoinEvent>>,
+    /// `SessionLobbyEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_lobby_ec: Write<'s, EventChannel<SessionLobbyEvent>>,
 }

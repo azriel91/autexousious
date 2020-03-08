@@ -2,12 +2,12 @@ use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
-    shrev::ReaderId,
+    shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use log::debug;
-use net_model::play::{NetEvent, NetEventChannel};
+use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::{SessionCode, SessionDeviceId, SessionDevices, SessionStatus};
 use session_host_model::SessionHostEvent;
 
@@ -17,15 +17,18 @@ use session_host_model::SessionHostEvent;
 pub struct SessionHostResponseSystem {
     /// Reader ID for the `SessionHostEvent` channel.
     #[system_desc(event_channel_reader)]
-    session_host_event_rid: ReaderId<NetEvent<SessionHostEvent>>,
+    session_host_event_rid: ReaderId<NetData<SessionHostEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct SessionHostResponseSystemData<'s> {
-    /// `SessionHostEvent` channel.
+    /// `SessionHostEvent` net channel.
     #[derivative(Debug = "ignore")]
     pub session_host_nec: Read<'s, NetEventChannel<SessionHostEvent>>,
+    /// `SessionHostEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub session_host_ec: Write<'s, EventChannel<SessionHostEvent>>,
     /// `SessionCode` resource.
     #[derivative(Debug = "ignore")]
     pub session_code: Write<'s, SessionCode>,
@@ -47,6 +50,7 @@ impl<'s> System<'s> for SessionHostResponseSystem {
         &mut self,
         SessionHostResponseSystemData {
             session_host_nec,
+            mut session_host_ec,
             mut session_code,
             mut session_device_id,
             mut session_devices,
@@ -60,8 +64,8 @@ impl<'s> System<'s> for SessionHostResponseSystem {
             let session_status_new =
                 session_host_events.fold(None, |mut session_status_new, ev| {
                     match ev {
-                        NetEvent {
-                            event: SessionHostEvent::SessionAccept(session_accept_response),
+                        NetData {
+                            data: SessionHostEvent::SessionAccept(session_accept_response),
                             ..
                         } => {
                             debug!("Session accepted: {:?}", session_accept_response);
@@ -72,14 +76,22 @@ impl<'s> System<'s> for SessionHostResponseSystem {
                             *session_devices =
                                 session_accept_response.session.session_devices.clone();
                             session_status_new = Some(SessionStatus::HostEstablished);
+
+                            session_host_ec.single_write(SessionHostEvent::SessionAccept(
+                                session_accept_response.clone(),
+                            ));
                         }
-                        NetEvent {
-                            event: SessionHostEvent::SessionReject(session_reject_response),
+                        NetData {
+                            data: SessionHostEvent::SessionReject(session_reject_response),
                             ..
                         } => {
                             debug!("Session rejected: {:?}", session_reject_response);
 
                             session_status_new = Some(SessionStatus::None);
+
+                            session_host_ec.single_write(SessionHostEvent::SessionReject(
+                                session_reject_response.clone(),
+                            ));
                         }
                         _ => {}
                     }

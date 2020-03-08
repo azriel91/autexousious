@@ -7,7 +7,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use net_model::play::{NetEvent, NetEventChannel};
+    use net_model::play::{NetData, NetEventChannel};
     use network_session_model::play::{
         Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
         SessionStatus,
@@ -122,9 +122,9 @@ mod tests {
                     let socket_addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 1234));
                     world
                         .write_resource::<NetEventChannel<SessionHostEvent>>()
-                        .single_write(NetEvent {
+                        .single_write(NetData {
                             socket_addr,
-                            event: session_host_event,
+                            data: session_host_event,
                         });
                 }
             })

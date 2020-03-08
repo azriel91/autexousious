@@ -13,8 +13,9 @@ pub use crate::{
         AssetSequenceComponentLoaderUiCharacterSelection, AssetSequenceComponentLoaderUiComponents,
         AssetSequenceComponentLoaderUiControlSettings, AssetSequenceComponentLoaderUiForm,
         AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
-        AssetSequenceComponentLoadingSystem, AssetSpritesDefinitionLoader,
-        AssetSpritesDefinitionLoadingSystem, AssetTextureLoader, AssetTextureLoadingSystem,
+        AssetSequenceComponentLoaderUiSessionLobby, AssetSequenceComponentLoadingSystem,
+        AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem, AssetTextureLoader,
+        AssetTextureLoadingSystem,
     },
     system_data::{
         AssetLoadingResources, DefinitionLoadingResources, DefinitionLoadingResourcesRead,

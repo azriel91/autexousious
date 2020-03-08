@@ -48,8 +48,8 @@ impl AssetSequenceComponentLoaderUiForm {
         );
 
         let ui_form_item_id = {
-            let ui_menu = UiForm::new(ui_form_item_item_ids);
-            let item_entity = asset_world.create_entity().with(ui_menu).build();
+            let ui_form = UiForm::new(ui_form_item_item_ids);
+            let item_entity = asset_world.create_entity().with(ui_form).build();
 
             ItemId::new(item_entity)
         };

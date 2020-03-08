@@ -11,7 +11,8 @@ pub use self::{
         AssetSequenceComponentLoader, AssetSequenceComponentLoaderUiCharacterSelection,
         AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
         AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
-        AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoadingSystem,
+        AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoaderUiSessionLobby,
+        AssetSequenceComponentLoadingSystem,
     },
     asset_sprites_definition_loading_system::{
         AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem,

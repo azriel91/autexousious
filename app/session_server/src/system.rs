@@ -8,7 +8,11 @@
 pub use self::{
     session_host_responder_system::{SessionHostResponderSystem, SessionHostResponderSystemDesc},
     session_join_responder_system::{SessionJoinResponderSystem, SessionJoinResponderSystemDesc},
+    session_lobby_responder_system::{
+        SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
+    },
 };
 
 mod session_host_responder_system;
 mod session_join_responder_system;
+mod session_lobby_responder_system;

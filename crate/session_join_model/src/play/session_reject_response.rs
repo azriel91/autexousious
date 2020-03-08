@@ -3,6 +3,8 @@ use network_session_model::play::SessionCode;
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
 
+use crate::play::SessionJoinError;
+
 /// Response when a session join request is rejected.
 ///
 /// We should also include a reason.
@@ -11,4 +13,7 @@ pub struct SessionRejectResponse {
     /// Code of the session.
     #[structopt(long)]
     pub session_code: SessionCode,
+    /// Session join rejection reason.
+    #[structopt(long)]
+    pub session_join_error: SessionJoinError,
 }

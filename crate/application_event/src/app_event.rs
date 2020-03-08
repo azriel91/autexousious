@@ -15,6 +15,7 @@ use game_play_model::GamePlayEvent;
 use network_mode_selection_model::NetworkModeSelectionEvent;
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
+use session_lobby_model::SessionLobbyEvent;
 use stdio_command_model::StdioCommandEvent;
 use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 
@@ -45,6 +46,8 @@ pub enum AppEvent {
     SessionHost(SessionHostEvent),
     /// `session_join` events.
     SessionJoin(SessionJoinEvent),
+    /// `session_lobby` events.
+    SessionLobby(SessionLobbyEvent),
     /// `stdio_command` events.
     StdioCommand(StdioCommandEvent),
     /// Events sent by the winit window.
