@@ -5268,6 +5268,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "session_lobby_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "bincode",
+ "derivative",
+ "derive-new",
+ "log",
+ "net_model",
+ "network_session_model",
+ "session_lobby_model",
+ "structopt",
+]
+
+[[package]]
 name = "session_lobby_ui_model"
 version = "0.18.0"
 dependencies = [
@@ -6409,6 +6424,7 @@ dependencies = [
  "session_host_stdio",
  "session_join_play",
  "session_join_stdio",
+ "session_lobby_play",
  "session_lobby_ui_play",
  "spawn_loading",
  "sprite_loading",

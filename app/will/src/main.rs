@@ -75,6 +75,10 @@ use session_join_play::{
     SessionJoinResponseSystemDesc,
 };
 use session_join_stdio::SessionJoinStdioBundle;
+use session_lobby_play::{
+    SessionLobbyRequestSystem, SessionLobbyRequestSystemDesc, SessionLobbyResponseSystem,
+    SessionLobbyResponseSystemDesc,
+};
 use session_lobby_ui_play::{
     SessionCodeLabelUpdateSystem, SessionDeviceEntityCreateDeleteSystem,
     SessionDeviceWidgetUpdateSystem,
@@ -342,6 +346,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
+                SessionLobbyRequestSystemDesc::default(),
+                any::type_name::<SessionLobbyRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
                 NetListenerSystemDesc::default(),
                 any::type_name::<NetListenerSystem>(),
                 &[],
@@ -354,6 +363,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_system_desc(
                 SessionJoinResponseSystemDesc::default(),
                 any::type_name::<SessionJoinResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionLobbyResponseSystemDesc::default(),
+                any::type_name::<SessionLobbyResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with_system_desc(
