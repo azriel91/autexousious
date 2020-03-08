@@ -1,0 +1,14 @@
+[package]
+name = "network_input_model"
+version = "0.18.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+game_input_model = { path = "../game_input_model" }
+serde = { version = "1.0.104", features = ["derive"] }
