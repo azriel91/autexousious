@@ -9,7 +9,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::error;
+use log::{debug, error};
 use net_model::play::NetMessage;
 use network_session_model::{config::SessionServerConfig, play::SessionStatus};
 use session_lobby_model::SessionLobbyEvent;
@@ -55,46 +55,48 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
         let mut session_lobby_events = session_lobby_ec.read(&mut self.session_lobby_event_rid);
 
         // Guard against requesting session to start if the application is not in a session.
-        if *session_status != SessionStatus::JoinEstablished
-            && *session_status != SessionStatus::HostEstablished
+        if *session_status == SessionStatus::JoinEstablished
+            || *session_status == SessionStatus::HostEstablished
         {
-            return;
-        }
-
-        // Only process one session lobby request event if multiple are received.
-        let session_start_request_params = session_lobby_events.find_map(|ev| {
-            if let SessionLobbyEvent::SessionStartRequest(session_start_request_params) = ev {
-                Some(session_start_request_params)
-            } else {
-                None
-            }
-        });
-
-        if let Some(session_start_request_params) = session_start_request_params {
-            let server_socket_addr =
-                SocketAddr::new(session_server_config.address, session_server_config.port);
-
-            match bincode::serialize(&NetMessage::SessionLobbyEvent(
-                SessionLobbyEvent::SessionStartRequest(session_start_request_params.clone()),
-            )) {
-                Ok(payload) => {
-                    // Connect to `server_socket_addr` and send request.
-                    transport_resource.send_with_requirements(
-                        server_socket_addr,
-                        &payload,
-                        // None means it uses a default multiplexed stream.
-                        //
-                        // Suspect if we give it a value, the value will be a "channel" over the
-                        // same socket connection.
-                        DeliveryRequirement::ReliableOrdered(None),
-                        UrgencyRequirement::OnTick,
-                    );
+            // Only process one session lobby request event if multiple are received.
+            let session_start_request_params = session_lobby_events.find_map(|ev| {
+                if let SessionLobbyEvent::SessionStartRequest(session_start_request_params) = ev {
+                    Some(session_start_request_params)
+                } else {
+                    None
                 }
-                Err(e) => {
-                    error!(
-                        "Failed to serialize `NetMessage::SessionLobbyEvent`. Error: `{}`.",
-                        e
-                    );
+            });
+
+            if let Some(session_start_request_params) = session_start_request_params {
+                let server_socket_addr =
+                    SocketAddr::new(session_server_config.address, session_server_config.port);
+
+                match bincode::serialize(&NetMessage::SessionLobbyEvent(
+                    SessionLobbyEvent::SessionStartRequest(session_start_request_params.clone()),
+                )) {
+                    Ok(payload) => {
+                        debug!(
+                            "Sending `SessionStartRequest`: `{:?}`.",
+                            session_start_request_params
+                        );
+                        // Connect to `server_socket_addr` and send request.
+                        transport_resource.send_with_requirements(
+                            server_socket_addr,
+                            &payload,
+                            // None means it uses a default multiplexed stream.
+                            //
+                            // Suspect if we give it a value, the value will be a "channel" over the
+                            // same socket connection.
+                            DeliveryRequirement::ReliableOrdered(None),
+                            UrgencyRequirement::OnTick,
+                        );
+                    }
+                    Err(e) => {
+                        error!(
+                            "Failed to serialize `NetMessage::SessionLobbyEvent`. Error: `{}`.",
+                            e
+                        );
+                    }
                 }
             }
         }
