@@ -1,7 +1,7 @@
-use std::{any, fs::File, io::BufReader, net::IpAddr, path::PathBuf, time::Duration};
+use std::{any, fs::File, io::BufReader, net::IpAddr, path::PathBuf};
 
 use amethyst::{
-    network::simulation::laminar::{LaminarConfig, LaminarNetworkBundle, LaminarSocket},
+    network::simulation::laminar::{LaminarNetworkBundle, LaminarSocket},
     utils::application_root_dir,
     Application, Error, GameDataBuilder, LoggerConfig, SimpleState,
 };
@@ -86,12 +86,7 @@ fn main() -> Result<(), Error> {
 
     logger_setup(opt.logger_config)?;
 
-    let socket_config = LaminarConfig {
-        blocking_mode: false,
-        heartbeat_interval: Some(Duration::from_millis(100)),
-        ..Default::default()
-    };
-    let socket = LaminarSocket::bind_with_config((opt.address, opt.port), socket_config)?;
+    let socket = LaminarSocket::bind((opt.address, opt.port))?;
 
     let assets_dir = application_root_dir()?.join("./");
 
