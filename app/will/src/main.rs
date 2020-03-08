@@ -8,6 +8,7 @@ use std::{
     net::{IpAddr, UdpSocket},
     path::PathBuf,
     process,
+    time::Duration,
 };
 
 use amethyst::{
@@ -173,6 +174,7 @@ fn session_server_config(opt: &Opt) -> SessionServerConfig {
 fn local_socket(session_server_config: &SessionServerConfig) -> Option<LaminarSocket> {
     let local_socket_config = LaminarConfig {
         blocking_mode: false,
+        heartbeat_interval: Some(Duration::from_millis(100)),
         ..Default::default()
     };
 
