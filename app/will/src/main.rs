@@ -186,8 +186,8 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
 
         let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
             AppDir::RESOURCES,
-            "player_input_configs.ron",
-            Format::Ron,
+            "player_input_configs.yaml",
+            Format::Yaml,
         )?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
