@@ -13,7 +13,7 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
-use game_input_model::config::PlayerInputConfigs;
+use game_input_model::{config::PlayerInputConfigs, loaded::PlayerControllers};
 use input_reaction_model::loaded::{InputReaction, InputReactions, InputReactionsSequence};
 use kinematic_model::loaded::ObjectAccelerationSequence;
 use map_model::loaded::{AssetMapBounds, AssetMargins};
@@ -43,6 +43,9 @@ pub struct SequenceComponentLoadingResources<'s> {
     /// `PlayerInputConfigs` resource.
     #[derivative(Debug = "ignore")]
     pub player_input_configs: Read<'s, PlayerInputConfigs>,
+    /// `PlayerControllers` resource.
+    #[derivative(Debug = "ignore")]
+    pub player_controllers: Read<'s, PlayerControllers>,
     /// `CameraZoomDimensions` resource.
     #[derivative(Debug = "ignore")]
     pub camera_zoom_dimensions: Read<'s, CameraZoomDimensions>,
