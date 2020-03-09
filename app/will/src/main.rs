@@ -39,7 +39,7 @@ use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
     ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
 };
-use game_input_model::config::{ControlBindings, InputConfig};
+use game_input_model::config::{ControlBindings, PlayerInputConfigs};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
@@ -184,8 +184,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             Format::Ron,
         )?;
 
-        let input_config =
-            AppFile::load_in::<InputConfig, _>(AppDir::RESOURCES, "input_config.ron", Format::Ron)?;
+        let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
+            AppDir::RESOURCES,
+            "player_input_configs.ron",
+            Format::Ron,
+        )?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
@@ -193,7 +196,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioBundle::default())?
             .with_bundle(
                 InputBundle::<ControlBindings>::new()
-                    .with_bindings(Bindings::try_from(&input_config)?),
+                    .with_bindings(Bindings::try_from(&player_input_configs)?),
             )?
             .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
             .with_bundle(HotReloadBundle::default())?
@@ -203,7 +206,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with(
-                InputToControlInputSystem::new(input_config),
+                InputToControlInputSystem::new(player_input_configs),
                 any::type_name::<InputToControlInputSystem>(),
                 &["input_system"],
             )

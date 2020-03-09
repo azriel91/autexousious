@@ -1,3 +1,3 @@
 mod config;
-mod input_config;
 mod play;
+mod player_input_configs;

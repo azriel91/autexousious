@@ -14,7 +14,7 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input_model::{
-        config::{Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig},
+        config::{Axis, ControlAction, ControlBindings, ControllerConfig, PlayerInputConfigs},
         play::{
             AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
             SharedInputControlled,
@@ -126,12 +126,12 @@ mod tests {
     where
         F: Send + Sync + Fn(Entity, Entity) -> Vec<ControlInputEvent> + 'static,
     {
-        let input_config = input_config();
-        let bindings = Bindings::<ControlBindings>::try_from(&input_config)?;
+        let player_input_configs = player_input_configs();
+        let bindings = Bindings::<ControlBindings>::try_from(&player_input_configs)?;
 
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
-                InputToControlInputSystem::new(input_config),
+                InputToControlInputSystem::new(player_input_configs),
                 any::type_name::<InputToControlInputSystem>(),
                 &[],
             ) // kcov-ignore
@@ -193,7 +193,7 @@ mod tests {
             .run()
     }
 
-    fn input_config() -> InputConfig {
+    fn player_input_configs() -> PlayerInputConfigs {
         let controller_config_0 = controller_config([AXIS_NEGATIVE, AXIS_POSITIVE, ACTION_JUMP]);
         let controller_config_1 = controller_config([
             VirtualKeyCode::Left,
@@ -204,7 +204,7 @@ mod tests {
         let mut controller_configs = IndexMap::new();
         controller_configs.insert(String::from("zero1"), controller_config_0);
         controller_configs.insert(String::from("one"), controller_config_1);
-        InputConfig::new(controller_configs)
+        PlayerInputConfigs::new(controller_configs)
     }
 
     fn controller_config(keys: [VirtualKeyCode; 3]) -> ControllerConfig {

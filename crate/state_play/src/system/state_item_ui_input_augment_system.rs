@@ -6,7 +6,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    config::{ControllerId, InputConfig},
+    config::{ControllerId, PlayerInputConfigs},
     play::{ControllerInput, InputControlled},
 };
 use shrev_support::EventChannelExt;
@@ -37,9 +37,9 @@ pub struct StateItemUiInputAugmentSystemData<'s> {
     /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
     pub widget_statuses: ReadStorage<'s, WidgetStatus>,
-    /// `InputConfig` resource.
+    /// `PlayerInputConfigs` resource.
     #[derivative(Debug = "ignore")]
-    pub input_config: ReadExpect<'s, InputConfig>,
+    pub player_input_configs: ReadExpect<'s, PlayerInputConfigs>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
@@ -58,7 +58,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             state_id_update_ec,
             mut state_item_entities,
             widget_statuses,
-            input_config,
+            player_input_configs,
             mut input_controlleds,
             mut controller_inputs,
         }: Self::SystemData,
@@ -84,7 +84,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             // * Change the `MenuItemWidgetInputSystem` to get the menu item entity based off the
             //   `ControlInputEvent` instead of joining and filtering.
             if menu_items_exist {
-                let mut controller_entities = (0..input_config.controller_configs.len())
+                let mut controller_entities = (0..player_input_configs.controller_configs.len())
                     .map(|index| {
                         let controller_id = index as ControllerId;
                         entities

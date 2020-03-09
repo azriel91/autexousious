@@ -4,7 +4,7 @@ use control_settings_model::{
     loaded::PlayerControlButtonsLabels,
 };
 use game_input_model::{
-    config::{Axis, ControlAction, InputConfig},
+    config::{Axis, ControlAction, PlayerInputConfigs},
     loaded::ControlButton,
 };
 use indexmap::IndexMap;
@@ -23,7 +23,7 @@ impl KeyboardUiGen {
     /// Returns `UiSpriteLabel`s for the keyboard's keys, and tints player keys' sprite sequences.
     pub fn generate_full(
         keyboard_settings: &KeyboardSettings,
-        input_config: &InputConfig,
+        player_input_configs: &PlayerInputConfigs,
         sequences: &mut UiSequences,
     ) -> ControlButtonLabels {
         let layout_positions = keyboard_settings
@@ -31,7 +31,8 @@ impl KeyboardUiGen {
             .get(&keyboard_settings.layout);
 
         if let Some(layout_positions) = layout_positions {
-            let control_button_to_player_index = ButtonToPlayerIndexMapper::map(input_config);
+            let control_button_to_player_index =
+                ButtonToPlayerIndexMapper::map(player_input_configs);
 
             let ui_sprite_labels = keyboard_settings
                 .layout
@@ -87,7 +88,7 @@ impl KeyboardUiGen {
     /// Returns `UiSpriteLabel`s for only control button keys, including tints.
     pub fn generate_mini(
         keyboard_settings: &KeyboardSettings,
-        input_config: &InputConfig,
+        player_input_configs: &PlayerInputConfigs,
         camera_zoom_dimensions: CameraZoomDimensions,
         sequences: &mut UiSequences,
     ) -> Vec<PlayerControlButtonsLabels> {
@@ -97,7 +98,7 @@ impl KeyboardUiGen {
 
         if let Some(layout_positions) = layout_positions {
             let mut player_control_buttons_labelses =
-                ControlButtonToButtonMapper::map(input_config)
+                ControlButtonToButtonMapper::map(player_input_configs)
                     .enumerate()
                     .map(|(controller_id, control_buttons_to_buttons)| {
                         let (axes, actions) = control_buttons_to_buttons.into_iter().fold(
@@ -168,7 +169,10 @@ impl KeyboardUiGen {
                 layout = keyboard_settings.layout
             );
 
-            vec![PlayerControlButtonsLabels::default(); input_config.controller_configs.len()]
+            vec![
+                PlayerControlButtonsLabels::default();
+                player_input_configs.controller_configs.len()
+            ]
         }
     }
 }

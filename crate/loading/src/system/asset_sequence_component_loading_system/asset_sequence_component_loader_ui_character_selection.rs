@@ -19,7 +19,7 @@ use character_selection_ui_model::config::{
     CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
 };
 use chase_model::play::ChaseModeStick;
-use game_input_model::{config::InputConfig, play::InputControlled};
+use game_input_model::{config::PlayerInputConfigs, play::InputControlled};
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use object_type::ObjectType;
@@ -42,7 +42,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         item_ids_all: &mut Vec<ItemId>,
-        input_config: &InputConfig,
+        player_input_configs: &PlayerInputConfigs,
         character_selection_ui: &CharacterSelectionUi,
     ) {
         let CharacterSelectionUi {
@@ -56,7 +56,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         } = character_selection_ui;
 
         let input_controlleds = {
-            let controller_count = input_config.controller_configs.len();
+            let controller_count = player_input_configs.controller_configs.len();
             (0..controller_count)
                 .map(InputControlled::new)
                 .collect::<Vec<InputControlled>>()

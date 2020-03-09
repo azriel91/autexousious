@@ -14,19 +14,21 @@ use crate::config::{ControlBindings, ControllerConfig, PlayerActionControl, Play
 
 /// Structure for holding the input configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
-pub struct InputConfig {
+pub struct PlayerInputConfigs {
     /// Axis control configuration.
     pub controller_configs: IndexMap<String, ControllerConfig>,
 }
 
-impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
+impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings> {
     type Error = Error;
 
-    fn try_from(input_config: &'config InputConfig) -> Result<Bindings<ControlBindings>, Error> {
+    fn try_from(
+        player_input_configs: &'config PlayerInputConfigs,
+    ) -> Result<Bindings<ControlBindings>, Error> {
         let mut bindings = Bindings::new();
 
         // Axis controls
-        let axis_result = input_config
+        let axis_result = player_input_configs
             .controller_configs
             .values()
             .enumerate()
@@ -60,7 +62,7 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
             );
 
         // Action controls
-        let action_result = input_config
+        let action_result = player_input_configs
             .controller_configs
             .values()
             .enumerate()

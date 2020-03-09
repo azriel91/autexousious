@@ -1,5 +1,5 @@
 // For a list of key codes, see <https://docs.rs/winit/0.18.1/winit/enum.VirtualKeyCode.html>
-InputConfig(
+PlayerInputConfigs(
     // Controllers are numbered using zero based indices, so player "one" is 0
     controller_configs: {
         "Player One": ControllerConfig(

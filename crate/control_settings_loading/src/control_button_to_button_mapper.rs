@@ -3,27 +3,27 @@ use amethyst::{
     winit::VirtualKeyCode,
 };
 use game_input_model::{
-    config::{Axis, InputConfig},
+    config::{Axis, PlayerInputConfigs},
     loaded::{ControlAxis, ControlButton},
 };
 use smallvec::SmallVec;
 
-/// Creates a map of `InputConfig` buttons to the logical control button.
+/// Creates a map of `PlayerInputConfigs` buttons to the logical control button.
 #[derive(Debug)]
 pub struct ControlButtonToButtonMapper;
 
 impl ControlButtonToButtonMapper {
-    /// Returns a map of `InputConfig` buttons to the logical control button.
+    /// Returns a map of `PlayerInputConfigs` buttons to the logical control button.
     ///
     /// # Parameters
     ///
-    /// * `input_config`: Player input configuration.
+    /// * `player_input_configs`: Player input configuration.
     pub fn map<'f>(
-        input_config: &'f InputConfig,
+        player_input_configs: &'f PlayerInputConfigs,
     ) -> impl Iterator<Item = SmallVec<[(ControlButton, VirtualKeyCode); 8]>> + 'f {
         // TODO: Support all kinds of `amethyst::input::Button`s
         // Pending <https://github.com/amethyst/amethyst/pull/2041>.
-        input_config
+        player_input_configs
             .controller_configs
             .values()
             .map(|controller_config| {

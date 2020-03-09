@@ -17,7 +17,7 @@ use asset_ui_model::{
 };
 use chase_model::play::ChaseModeStick;
 use game_input_model::{
-    config::InputConfig,
+    config::PlayerInputConfigs,
     play::{InputControlled, SharedInputControlled},
 };
 use kinematic_loading::PositionInitsLoader;
@@ -42,7 +42,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         item_ids_all: &mut Vec<ItemId>,
-        input_config: &InputConfig,
+        player_input_configs: &PlayerInputConfigs,
         map_selection_ui: &MapSelectionUi,
     ) {
         let MapSelectionUi {
@@ -159,7 +159,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // entities with `InputControlled` to that the individual `ControllerInput`s are stored
         // against.
         let input_controlled_items = {
-            let controller_count = input_config.controller_configs.len();
+            let controller_count = player_input_configs.controller_configs.len();
             (0..controller_count)
                 .map(InputControlled::new)
                 .map(|input_controlled| asset_world.create_entity().with(input_controlled).build())

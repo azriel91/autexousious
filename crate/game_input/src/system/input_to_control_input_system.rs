@@ -7,7 +7,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    config::{ControlBindings, InputConfig, PlayerActionControl, PlayerAxisControl},
+    config::{ControlBindings, PlayerActionControl, PlayerAxisControl, PlayerInputConfigs},
     play::{
         AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
         SharedInputControlled,
@@ -18,7 +18,7 @@ use game_input_model::{
 #[derive(Debug, Default, new)]
 pub struct InputToControlInputSystem {
     /// All controller input configuration.
-    input_config: InputConfig,
+    player_input_configs: PlayerInputConfigs,
     /// Reader ID for the `InputEvent` channel.
     #[new(default)]
     input_event_rid: Option<ReaderId<InputEvent<ControlBindings>>>,
@@ -161,7 +161,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
 
         // TODO: figure out how to implement controller configuration updates, because we need to
         // update the resource and what this system stores.
-        world.insert(self.input_config.clone());
+        world.insert(self.player_input_configs.clone());
 
         self.input_event_rid = Some(
             world

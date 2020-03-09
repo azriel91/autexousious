@@ -9,7 +9,7 @@ use amethyst::{
 use application_ui::{FontVariant, Theme};
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::{config::InputConfig, play::InputControlled};
+use game_input_model::{config::PlayerInputConfigs, play::InputControlled};
 use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use team_model::play::Team;
@@ -54,9 +54,9 @@ pub struct GamePlayStatusDisplaySystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `InputConfig` resource.
+    /// `PlayerInputConfigs` resource.
     #[derivative(Debug = "ignore")]
-    pub input_config: Read<'s, InputConfig>,
+    pub player_input_configs: Read<'s, PlayerInputConfigs>,
 
     // Resources needed to display text.
     /// `Theme` resource.
@@ -89,7 +89,7 @@ impl GamePlayStatusDisplaySystem {
         win_status: WinStatus,
         teams: &ReadStorage<'_, Team>,
         input_controlleds: &ReadStorage<'_, InputControlled>,
-        input_config: &InputConfig,
+        player_input_configs: &PlayerInputConfigs,
     ) -> String {
         match win_status.outcome {
             WinOutcome::None => String::from("Ongoing Match"),
@@ -100,7 +100,7 @@ impl GamePlayStatusDisplaySystem {
                     .map(|(team, input_controlled)| match team {
                         Team::Independent(..) => {
                             let controller_id = input_controlled.controller_id;
-                            input_config
+                            player_input_configs
                                 .controller_configs
                                 .get_index(
                                     controller_id
@@ -110,7 +110,7 @@ impl GamePlayStatusDisplaySystem {
                                 .map(|(name, _)| name.clone())
                                 .unwrap_or_else(|| {
                                     panic!(
-                                        "Expected `InputConfig` to have at least \
+                                        "Expected `PlayerInputConfigs` to have at least \
                                          {} controllers.",
                                         controller_id + 1
                                     )
@@ -137,7 +137,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
             win_status,
             teams,
             input_controlleds,
-            input_config,
+            player_input_configs,
             mut game_play_status_entities,
             mut game_play_entities,
             theme,
@@ -181,7 +181,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
                         *win_status,
                         &teams,
                         &input_controlleds,
-                        &input_config,
+                        &player_input_configs,
                     );
 
                     let ui_text = UiText::new(
