@@ -1,12 +1,14 @@
 use amethyst::{
-    ecs::{Entities, Entity, Read, ReadExpect, ReadStorage, System, World, Write, WriteStorage},
+    derive::SystemDesc,
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    config::{ControllerId, PlayerInputConfigs},
+    config::ControllerId,
+    loaded::PlayerControllers,
     play::{ControllerInput, InputControlled},
 };
 use shrev_support::EventChannelExt;
@@ -14,11 +16,12 @@ use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use ui_model_spi::config::WidgetStatus;
 
 /// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem` item entities.
-#[derive(Debug, Default, new)]
+#[derive(Debug, SystemDesc, new)]
+#[system_desc(name(StateItemUiInputAugmentSystemDesc))]
 pub struct StateItemUiInputAugmentSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.
-    #[new(default)]
-    state_id_update_event_rid: Option<ReaderId<StateIdUpdateEvent>>,
+    #[system_desc(event_channel_reader)]
+    state_id_update_event_rid: ReaderId<StateIdUpdateEvent>,
 }
 
 /// `StateItemUiInputAugmentSystemData`.
@@ -37,9 +40,9 @@ pub struct StateItemUiInputAugmentSystemData<'s> {
     /// `WidgetStatus` components.
     #[derivative(Debug = "ignore")]
     pub widget_statuses: ReadStorage<'s, WidgetStatus>,
-    /// `PlayerInputConfigs` resource.
+    /// `PlayerControllers` resource.
     #[derivative(Debug = "ignore")]
-    pub player_input_configs: ReadExpect<'s, PlayerInputConfigs>,
+    pub player_controllers: Read<'s, PlayerControllers>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
@@ -58,17 +61,15 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             state_id_update_ec,
             mut state_item_entities,
             widget_statuses,
-            player_input_configs,
+            player_controllers,
             mut input_controlleds,
             mut controller_inputs,
         }: Self::SystemData,
     ) {
-        let state_id_update_event_rid = self
-            .state_id_update_event_rid
-            .as_mut()
-            .expect("Expected `state_id_update_event_rid` field to be set.");
-
-        if let Some(_ev) = state_id_update_ec.last_event(state_id_update_event_rid) {
+        if state_id_update_ec
+            .last_event(&mut self.state_id_update_event_rid)
+            .is_some()
+        {
             let menu_items_exist = state_item_entities
                 .entities
                 .iter()
@@ -84,7 +85,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             // * Change the `MenuItemWidgetInputSystem` to get the menu item entity based off the
             //   `ControlInputEvent` instead of joining and filtering.
             if menu_items_exist {
-                let mut controller_entities = (0..player_input_configs.len())
+                let mut controller_entities = (0..player_controllers.len())
                     .map(|index| {
                         let controller_id = index as ControllerId;
                         entities
@@ -100,15 +101,5 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
                     .append(&mut controller_entities);
             }
         }
-    }
-
-    fn setup(&mut self, world: &mut World) {
-        Self::SystemData::setup(world);
-
-        self.state_id_update_event_rid = Some(
-            world
-                .fetch_mut::<EventChannel<StateIdUpdateEvent>>()
-                .register_reader(),
-        );
     }
 }

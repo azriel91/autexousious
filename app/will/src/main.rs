@@ -81,7 +81,8 @@ use session_lobby_ui_play::{
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiInputAugmentSystemDesc,
 };
 use state_registry::StateId;
 use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle};
@@ -349,8 +350,8 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 any::type_name::<SessionDeviceWidgetUpdateSystem>(),
                 &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
             )
-            .with(
-                StateItemUiInputAugmentSystem::new(),
+            .with_system_desc(
+                StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
                 &[],
             )

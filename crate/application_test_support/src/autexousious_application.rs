@@ -38,7 +38,8 @@ use session_join_play::{
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiInputAugmentSystemDesc,
 };
 use state_registry::StateId;
 use tracker::PrevTrackerSystem;
@@ -259,8 +260,8 @@ impl AutexousiousApplication {
                 any::type_name::<SessionJoinResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
-            .with_system(
-                StateItemUiInputAugmentSystem::new(),
+            .with_system_desc(
+                StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
                 &[],
             )
