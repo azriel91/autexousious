@@ -3,7 +3,8 @@
 //! Provides types to link control input into Amethyst.
 
 pub use crate::system::{
-    ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+    ControllerInputUpdateSystem, InputToControlInputSystem, InputToControlInputSystemDesc,
+    SharedControllerInputUpdateSystem,
 };
 
 mod system;

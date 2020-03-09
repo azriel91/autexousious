@@ -37,7 +37,8 @@ use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
-    ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+    ControllerInputUpdateSystem, InputToControlInputSystem, InputToControlInputSystemDesc,
+    SharedControllerInputUpdateSystem,
 };
 use game_input_model::config::{ControlBindings, PlayerInputConfigs};
 use game_input_stdio::ControlInputEventStdinMapper;
@@ -205,8 +206,8 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
-            .with(
-                InputToControlInputSystem::new(player_input_configs),
+            .with_system_desc(
+                InputToControlInputSystemDesc::new(player_input_configs),
                 any::type_name::<InputToControlInputSystem>(),
                 &["input_system"],
             )

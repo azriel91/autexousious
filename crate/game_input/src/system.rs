@@ -1,6 +1,6 @@
 pub use self::{
     controller_input_update_system::ControllerInputUpdateSystem,
-    input_to_control_input_system::InputToControlInputSystem,
+    input_to_control_input_system::{InputToControlInputSystem, InputToControlInputSystemDesc},
     shared_controller_input_update_system::SharedControllerInputUpdateSystem,
 };
 
