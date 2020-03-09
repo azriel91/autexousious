@@ -40,7 +40,10 @@ use game_input::{
     ControllerInputUpdateSystem, InputToControlInputSystem, InputToControlInputSystemDesc,
     SharedControllerInputUpdateSystem,
 };
-use game_input_model::config::{ControlBindings, PlayerInputConfigs};
+use game_input_model::{
+    config::{ControlBindings, PlayerInputConfigs},
+    loaded::PlayerControllers,
+};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
@@ -182,6 +185,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
         "player_input_configs.yaml",
         Format::Yaml,
     )?;
+    let player_controllers = PlayerControllers::from(&player_input_configs);
 
     let mut game_data = GameDataBuilder::default();
     if !opt.headless {
@@ -422,6 +426,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+        .with_resource(player_controllers)
         .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
         .build(game_data)?;

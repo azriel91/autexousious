@@ -10,11 +10,12 @@ use application_ui::{FontVariant, Theme};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    config::{PlayerInputConfig, PlayerInputConfigs},
+    loaded::{PlayerController, PlayerControllers},
     play::InputControlled,
 };
 use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
+use log::error;
 use team_model::play::Team;
 
 const FONT_COLOUR_NEUTRAL: [f32; 4] = [0.8, 0.9, 1., 1.];
@@ -57,9 +58,9 @@ pub struct GamePlayStatusDisplaySystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `PlayerInputConfigs` resource.
+    /// `PlayerControllers` resource.
     #[derivative(Debug = "ignore")]
-    pub player_input_configs: Read<'s, PlayerInputConfigs>,
+    pub player_controllers: Read<'s, PlayerControllers>,
 
     // Resources needed to display text.
     /// `Theme` resource.
@@ -92,7 +93,7 @@ impl GamePlayStatusDisplaySystem {
         win_status: WinStatus,
         teams: &ReadStorage<'_, Team>,
         input_controlleds: &ReadStorage<'_, InputControlled>,
-        player_input_configs: &PlayerInputConfigs,
+        player_controllers: &PlayerControllers,
     ) -> String {
         match win_status.outcome {
             WinOutcome::None => String::from("Ongoing Match"),
@@ -103,20 +104,22 @@ impl GamePlayStatusDisplaySystem {
                     .map(|(team, input_controlled)| match team {
                         Team::Independent(..) => {
                             let controller_id = input_controlled.controller_id;
-                            player_input_configs
+                            player_controllers
                                 .get(
                                     TryInto::<usize>::try_into(controller_id)
                                         .expect("Failed to convert `u32` into `usize`"),
                                 )
-                                .map(|player_input_config: &PlayerInputConfig| {
-                                    player_input_config.name.clone()
+                                .map(|player_controller: &PlayerController| {
+                                    player_controller.name.clone()
                                 })
                                 .unwrap_or_else(|| {
-                                    panic!(
-                                        "Expected `PlayerInputConfigs` to have at least \
+                                    error!(
+                                        "Expected `PlayerControllers` to have at least \
                                          {} controllers.",
                                         controller_id + 1
-                                    )
+                                    );
+
+                                    String::from("")
                                 })
                         }
                         Team::Number(team_counter) => format!("Team {}", team_counter),
@@ -140,7 +143,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
             win_status,
             teams,
             input_controlleds,
-            player_input_configs,
+            player_controllers,
             mut game_play_status_entities,
             mut game_play_entities,
             theme,
@@ -184,7 +187,7 @@ impl<'s> System<'s> for GamePlayStatusDisplaySystem {
                         *win_status,
                         &teams,
                         &input_controlleds,
-                        &player_input_configs,
+                        &player_controllers,
                     );
 
                     let ui_text = UiText::new(
