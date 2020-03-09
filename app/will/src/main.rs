@@ -177,18 +177,18 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
+    let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
+        AppDir::RESOURCES,
+        "player_input_configs.yaml",
+        Format::Yaml,
+    )?;
+
     let mut game_data = GameDataBuilder::default();
     if !opt.headless {
         let display_config = AppFile::load_in::<DisplayConfig, _>(
             AppDir::RESOURCES,
             "display_config.ron",
             Format::Ron,
-        )?;
-
-        let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
-            AppDir::RESOURCES,
-            "player_input_configs.yaml",
-            Format::Yaml,
         )?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
@@ -207,7 +207,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_system_desc(
-                InputToControlInputSystemDesc::new(player_input_configs),
+                InputToControlInputSystemDesc::default(),
                 any::type_name::<InputToControlInputSystem>(),
                 &["input_system"],
             )
@@ -422,6 +422,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+        .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
         .build(game_data)?;
 

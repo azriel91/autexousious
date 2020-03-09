@@ -132,8 +132,9 @@ mod tests {
         let bindings = Bindings::<ControlBindings>::try_from(&player_input_configs)?;
 
         AmethystApplication::ui_base::<ControlBindings>()
+            .with_resource(player_input_configs)
             .with_system_desc(
-                InputToControlInputSystemDesc::new(player_input_configs),
+                InputToControlInputSystemDesc::default(),
                 any::type_name::<InputToControlInputSystem>(),
                 &[],
             ) // kcov-ignore

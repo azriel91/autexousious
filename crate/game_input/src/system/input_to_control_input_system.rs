@@ -1,5 +1,5 @@
 use amethyst::{
-    core::SystemDesc,
+    derive::SystemDesc,
     ecs::{Entities, Join, Read, ReadStorage, System, World, Write},
     input::InputEvent,
     shred::{ResourceId, SystemData},
@@ -8,43 +8,23 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    config::{ControlBindings, PlayerActionControl, PlayerAxisControl, PlayerInputConfigs},
+    config::{ControlBindings, PlayerActionControl, PlayerAxisControl},
     play::{
         AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
         SharedInputControlled,
     },
 };
 
-/// Builds a `InputToControlInputSystem`.
-#[derive(Debug, new)]
-pub struct InputToControlInputSystemDesc {
-    /// All controller input configuration.
-    player_input_configs: PlayerInputConfigs,
-}
-
-impl<'a, 'b> SystemDesc<'a, 'b, InputToControlInputSystem> for InputToControlInputSystemDesc {
-    fn build(self, world: &mut World) -> InputToControlInputSystem {
-        <InputToControlInputSystem as System<'_>>::SystemData::setup(world);
-
-        // TODO: figure out how to implement controller configuration updates, because we need to
-        // update the resource and what this system stores.
-        world.insert(self.player_input_configs);
-
-        let input_event_rid = world
-            .fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
-            .register_reader();
-
-        InputToControlInputSystem::new(input_event_rid)
-    }
-}
-
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
-#[derive(Debug, new)]
+#[derive(Debug, SystemDesc, new)]
+#[system_desc(name(InputToControlInputSystemDesc))]
 pub struct InputToControlInputSystem {
     /// Reader ID for the `InputEvent` channel.
+    #[system_desc(event_channel_reader)]
     input_event_rid: ReaderId<InputEvent<ControlBindings>>,
     /// Pre-allocated vector
     #[new(value = "Vec::with_capacity(64)")]
+    #[system_desc(skip)]
     control_input_events: Vec<ControlInputEvent>,
 }
 
