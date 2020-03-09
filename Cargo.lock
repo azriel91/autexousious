@@ -2271,6 +2271,7 @@ dependencies = [
  "asset_model",
  "derivative",
  "derive-new",
+ "derive_deref",
  "indexmap",
  "log",
  "serde",
