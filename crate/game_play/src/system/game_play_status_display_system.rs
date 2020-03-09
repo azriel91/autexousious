@@ -9,7 +9,10 @@ use amethyst::{
 use application_ui::{FontVariant, Theme};
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::{config::PlayerInputConfigs, play::InputControlled};
+use game_input_model::{
+    config::{PlayerInputConfig, PlayerInputConfigs},
+    play::InputControlled,
+};
 use game_play_model::{play::GamePlayStatusEntity, GamePlayEntity, GamePlayEvent};
 use game_stats_model::play::{WinOutcome, WinStatus};
 use team_model::play::Team;
@@ -101,13 +104,13 @@ impl GamePlayStatusDisplaySystem {
                         Team::Independent(..) => {
                             let controller_id = input_controlled.controller_id;
                             player_input_configs
-                                .controller_configs
-                                .get_index(
-                                    controller_id
-                                        .try_into()
+                                .get(
+                                    TryInto::<usize>::try_into(controller_id)
                                         .expect("Failed to convert `u32` into `usize`"),
                                 )
-                                .map(|(name, _)| name.clone())
+                                .map(|player_input_config: &PlayerInputConfig| {
+                                    player_input_config.name.clone()
+                                })
                                 .unwrap_or_else(|| {
                                     panic!(
                                         "Expected `PlayerInputConfigs` to have at least \

@@ -21,27 +21,34 @@ impl ButtonToPlayerIndexMapper {
         // TODO: Support all kinds of `amethyst::input::Button`s
         // Pending <https://github.com/amethyst/amethyst/pull/2041>.
         player_input_configs
-            .controller_configs
-            .values()
+            .iter()
             .enumerate()
-            .flat_map(|(index, controller_config)| {
+            .flat_map(|(index, player_input_config)| {
                 let mut buttons = SmallVec::<[VirtualKeyCode; 8]>::new();
 
-                controller_config.axes.values().for_each(|axis| {
-                    if let Axis::Emulated { pos, neg } = axis {
-                        if let Button::Key(virtual_key_code) = pos {
+                player_input_config
+                    .controller_config
+                    .axes
+                    .values()
+                    .for_each(|axis| {
+                        if let Axis::Emulated { pos, neg } = axis {
+                            if let Button::Key(virtual_key_code) = pos {
+                                buttons.push(*virtual_key_code);
+                            }
+                            if let Button::Key(virtual_key_code) = neg {
+                                buttons.push(*virtual_key_code);
+                            }
+                        }
+                    });
+                player_input_config
+                    .controller_config
+                    .actions
+                    .values()
+                    .for_each(|button| {
+                        if let Button::Key(virtual_key_code) = button {
                             buttons.push(*virtual_key_code);
                         }
-                        if let Button::Key(virtual_key_code) = neg {
-                            buttons.push(*virtual_key_code);
-                        }
-                    }
-                });
-                controller_config.actions.values().for_each(|button| {
-                    if let Button::Key(virtual_key_code) = button {
-                        buttons.push(*virtual_key_code);
-                    }
-                });
+                    });
 
                 buttons.into_iter().map(move |button| (button, index))
             })

@@ -14,14 +14,16 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input_model::{
-        config::{Axis, ControlAction, ControlBindings, ControllerConfig, PlayerInputConfigs},
+        config::{
+            Axis, ControlAction, ControlBindings, ControllerConfig, PlayerInputConfig,
+            PlayerInputConfigs,
+        },
         play::{
             AxisMoveEventData, ControlActionEventData, ControlInputEvent, InputControlled,
             SharedInputControlled,
         },
     };
     use hamcrest::prelude::*;
-    use indexmap::IndexMap;
 
     use game_input::InputToControlInputSystem;
 
@@ -201,10 +203,12 @@ mod tests {
             VirtualKeyCode::O,
         ]);
 
-        let mut controller_configs = IndexMap::new();
-        controller_configs.insert(String::from("zero1"), controller_config_0);
-        controller_configs.insert(String::from("one"), controller_config_1);
-        PlayerInputConfigs::new(controller_configs)
+        let player_input_config_0 =
+            PlayerInputConfig::new(String::from("zero1"), controller_config_0);
+        let player_input_config_1 =
+            PlayerInputConfig::new(String::from("one"), controller_config_1);
+
+        PlayerInputConfigs::new(vec![player_input_config_0, player_input_config_1])
     }
 
     fn controller_config(keys: [VirtualKeyCode; 3]) -> ControllerConfig {

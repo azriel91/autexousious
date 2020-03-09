@@ -169,10 +169,7 @@ impl KeyboardUiGen {
                 layout = keyboard_settings.layout
             );
 
-            vec![
-                PlayerControlButtonsLabels::default();
-                player_input_configs.controller_configs.len()
-            ]
+            vec![PlayerControlButtonsLabels::default(); player_input_configs.len()]
         }
     }
 }

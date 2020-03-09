@@ -6,7 +6,7 @@ pub use self::{
     controller_config::ControllerConfig, controller_id::ControllerId,
     input_direction::InputDirection, input_direction_z::InputDirectionZ,
     player_action_control::PlayerActionControl, player_axis_control::PlayerAxisControl,
-    player_input_configs::PlayerInputConfigs,
+    player_input_config::PlayerInputConfig, player_input_configs::PlayerInputConfigs,
 };
 
 mod axis;
@@ -20,4 +20,5 @@ mod input_direction;
 mod input_direction_z;
 mod player_action_control;
 mod player_axis_control;
+mod player_input_config;
 mod player_input_configs;

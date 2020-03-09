@@ -126,7 +126,7 @@ impl AssetSequenceComponentLoaderUiMenu {
         // Since the `UiLabel` entities use a `SharedInputControlled`, we still need entities with
         // `InputControlled` to that the individual `ControllerInput`s are stored against.
         let input_controlled_items = {
-            let controller_count = player_input_configs.controller_configs.len();
+            let controller_count = player_input_configs.len();
             (0..controller_count)
                 .map(InputControlled::new)
                 .map(|input_controlled| asset_world.create_entity().with(input_controlled).build())

@@ -1,8 +1,9 @@
 // For a list of key codes, see <https://docs.rs/winit/0.18.1/winit/enum.VirtualKeyCode.html>
-PlayerInputConfigs(
+PlayerInputConfigs([
     // Controllers are numbered using zero based indices, so player "one" is 0
-    controller_configs: {
-        "Player One": ControllerConfig(
+    PlayerInputConfig(
+        name: "Player One",
+        controller_config: ControllerConfig(
             axes: {
                 X: Emulated(pos: Key(Right), neg: Key(Left)),
                 Z: Emulated(pos: Key(Down), neg: Key(Up)),
@@ -14,8 +15,11 @@ PlayerInputConfigs(
                 Special: Key(RBracket),
             },
         ),
+    ),
 
-        "Player Two": ControllerConfig(
+    PlayerInputConfig(
+        name: "Player Two",
+        controller_config: ControllerConfig(
             axes: {
                 X: Emulated(pos: Key(D), neg: Key(A)),
                 Z: Emulated(pos: Key(S), neg: Key(W)),
@@ -27,8 +31,11 @@ PlayerInputConfigs(
                 Special: Key(Key4),
             },
         ),
+    ),
 
-        "Player Three": ControllerConfig(
+    PlayerInputConfig(
+        name: "Player Three",
+        controller_config: ControllerConfig(
             axes: {
                 X: Emulated(pos: Key(J), neg: Key(G)),
                 Z: Emulated(pos: Key(H), neg: Key(Y)),
@@ -40,8 +47,11 @@ PlayerInputConfigs(
                 Special: Key(Key8),
             },
         ),
+    ),
 
-        "Player Four": ControllerConfig(
+    PlayerInputConfig(
+        name: "Player Four",
+        controller_config: ControllerConfig(
             axes: {
                 X: Emulated(pos: Key(Numpad3), neg: Key(Numpad1)),
                 Z: Emulated(pos: Key(Numpad2), neg: Key(Numpad5)),
@@ -53,5 +63,5 @@ PlayerInputConfigs(
                 Special: Key(Numpad4),
             },
         ),
-    },
-)
+    ),
+])

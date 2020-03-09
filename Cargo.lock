@@ -2272,7 +2272,6 @@ dependencies = [
  "derivative",
  "derive-new",
  "derive_deref",
- "indexmap",
  "log",
  "serde",
  "structopt",

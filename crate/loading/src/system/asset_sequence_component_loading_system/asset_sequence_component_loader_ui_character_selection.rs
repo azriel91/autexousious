@@ -56,7 +56,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         } = character_selection_ui;
 
         let input_controlleds = {
-            let controller_count = player_input_configs.controller_configs.len();
+            let controller_count = player_input_configs.len();
             (0..controller_count)
                 .map(InputControlled::new)
                 .collect::<Vec<InputControlled>>()

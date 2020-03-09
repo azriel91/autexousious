@@ -84,7 +84,7 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
             // * Change the `MenuItemWidgetInputSystem` to get the menu item entity based off the
             //   `ControlInputEvent` instead of joining and filtering.
             if menu_items_exist {
-                let mut controller_entities = (0..player_input_configs.controller_configs.len())
+                let mut controller_entities = (0..player_input_configs.len())
                     .map(|index| {
                         let controller_id = index as ControllerId;
                         entities

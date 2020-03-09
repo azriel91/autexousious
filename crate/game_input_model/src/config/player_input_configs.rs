@@ -5,19 +5,16 @@ use amethyst::{
     input::{Axis as InputAxis, Bindings, Button},
     Error,
 };
+use derive_deref::{Deref, DerefMut};
 use derive_new::new;
-use indexmap::IndexMap;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisControl};
+use crate::config::{ControlBindings, PlayerActionControl, PlayerAxisControl, PlayerInputConfig};
 
 /// Structure for holding the input configuration.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
-pub struct PlayerInputConfigs {
-    /// Axis control configuration.
-    pub controller_configs: IndexMap<String, ControllerConfig>,
-}
+#[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, new)]
+pub struct PlayerInputConfigs(pub Vec<PlayerInputConfig>);
 
 impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings> {
     type Error = Error;
@@ -29,13 +26,13 @@ impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings>
 
         // Axis controls
         let axis_result = player_input_configs
-            .controller_configs
-            .values()
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
-            .flat_map(|(index, controller_config)| {
+            .flat_map(|(index, player_input_config)| {
                 let controller_id = index;
-                controller_config
+                player_input_config
+                    .controller_config
                     .axes
                     .iter()
                     .map(|(&axis, input_axis)| {
@@ -63,13 +60,13 @@ impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings>
 
         // Action controls
         let action_result = player_input_configs
-            .controller_configs
-            .values()
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
-            .flat_map(|(index, controller_config)| {
+            .flat_map(|(index, player_input_config)| {
                 let controller_id = index;
-                controller_config
+                player_input_config
+                    .controller_config
                     .actions
                     .iter()
                     .map(|(&axis, input_button)| {
