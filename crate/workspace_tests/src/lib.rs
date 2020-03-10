@@ -146,6 +146,8 @@ mod session_join_play;
 #[cfg(test)]
 mod session_join_stdio;
 #[cfg(test)]
+mod session_lobby_play;
+#[cfg(test)]
 mod session_lobby_ui_model;
 #[cfg(test)]
 mod spawn_loading;

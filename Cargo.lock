@@ -6639,6 +6639,8 @@ dependencies = [
  "session_join_model",
  "session_join_play",
  "session_join_stdio",
+ "session_lobby_model",
+ "session_lobby_play",
  "session_lobby_ui_model",
  "shape_model",
  "slotmap",
