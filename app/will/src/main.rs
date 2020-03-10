@@ -54,7 +54,9 @@ use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
-use net_play::{NetListenerSystem, NetListenerSystemDesc};
+use net_play::{
+    NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
+};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
 use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
@@ -288,12 +290,12 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
-                SessionHostRequestSystemDesc::new(session_server_config.clone()),
+                SessionHostRequestSystemDesc::default(),
                 any::type_name::<SessionHostRequestSystem>(),
                 &[],
             )
             .with_system_desc(
-                SessionJoinRequestSystemDesc::new(session_server_config),
+                SessionJoinRequestSystemDesc::default(),
                 any::type_name::<SessionJoinRequestSystem>(),
                 &[],
             )
@@ -301,6 +303,15 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 SessionLobbyRequestSystemDesc::default(),
                 any::type_name::<SessionLobbyRequestSystem>(),
                 &[],
+            )
+            .with_system_desc(
+                NetMessageRequestSystemDesc::default(),
+                any::type_name::<NetMessageRequestSystem>(),
+                &[
+                    any::type_name::<SessionHostRequestSystem>(),
+                    any::type_name::<SessionJoinRequestSystem>(),
+                    any::type_name::<SessionLobbyRequestSystem>(),
+                ],
             )
             .with_system_desc(
                 NetListenerSystemDesc::default(),
@@ -427,6 +438,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+        .with_resource(session_server_config)
         .with_resource(player_controllers)
         .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))

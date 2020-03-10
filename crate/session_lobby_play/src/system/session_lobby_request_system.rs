@@ -1,17 +1,13 @@
-use std::net::SocketAddr;
-
 use amethyst::{
     derive::SystemDesc,
-    ecs::{Read, ReadExpect, System, World, Write},
-    network::simulation::{DeliveryRequirement, TransportResource, UrgencyRequirement},
+    ecs::{Read, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::{debug, error};
 use net_model::play::NetMessageEvent;
-use network_session_model::{config::SessionServerConfig, play::SessionStatus};
+use network_session_model::play::SessionStatus;
 use session_lobby_model::SessionLobbyEvent;
 
 /// Sends requests to a game server to lobby a session.
@@ -32,12 +28,9 @@ pub struct SessionLobbyRequestSystemData<'s> {
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Read<'s, SessionStatus>,
-    /// `SessionServerConfig` resource.
+    /// `NetworkMessageEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub session_server_config: ReadExpect<'s, SessionServerConfig>,
-    /// `TransportResource` resource.
-    #[derivative(Debug = "ignore")]
-    pub transport_resource: Write<'s, TransportResource>,
+    pub net_message_ec: Write<'s, EventChannel<NetMessageEvent>>,
 }
 
 impl<'s> System<'s> for SessionLobbyRequestSystem {
@@ -48,8 +41,7 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
         SessionLobbyRequestSystemData {
             session_lobby_ec,
             session_status,
-            session_server_config,
-            mut transport_resource,
+            mut net_message_ec,
         }: Self::SystemData,
     ) {
         let mut session_lobby_events = session_lobby_ec.read(&mut self.session_lobby_event_rid);
@@ -68,36 +60,9 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
             });
 
             if let Some(session_start_request_params) = session_start_request_params {
-                let server_socket_addr =
-                    SocketAddr::new(session_server_config.address, session_server_config.port);
-
-                match bincode::serialize(&NetMessageEvent::SessionLobbyEvent(
+                net_message_ec.single_write(NetMessageEvent::SessionLobbyEvent(
                     SessionLobbyEvent::SessionStartRequest(session_start_request_params.clone()),
-                )) {
-                    Ok(payload) => {
-                        debug!(
-                            "Sending `SessionStartRequest`: `{:?}`.",
-                            session_start_request_params
-                        );
-                        // Connect to `server_socket_addr` and send request.
-                        transport_resource.send_with_requirements(
-                            server_socket_addr,
-                            &payload,
-                            // None means it uses a default multiplexed stream.
-                            //
-                            // Suspect if we give it a value, the value will be a "channel" over the
-                            // same socket connection.
-                            DeliveryRequirement::ReliableOrdered(None),
-                            UrgencyRequirement::OnTick,
-                        );
-                    }
-                    Err(e) => {
-                        error!(
-                            "Failed to serialize `NetMessageEvent::SessionLobbyEvent`. Error: `{}`.",
-                            e
-                        );
-                    }
-                }
+                ));
             }
         }
     }
