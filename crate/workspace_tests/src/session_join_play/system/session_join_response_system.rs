@@ -7,6 +7,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use game_input_model::loaded::{PlayerController, PlayerControllers};
     use net_model::play::{NetData, NetEventChannel};
     use network_session_model::play::{
         Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
@@ -52,6 +53,10 @@ mod tests {
                         session_devices: SessionDevices::new(vec![SessionDevice::new(
                             SessionDeviceId::new(234),
                             SessionDeviceName::new(String::from("azriel")),
+                            PlayerControllers::new(vec![PlayerController::new(
+                                0,
+                                String::from("p0"),
+                            )]),
                         )]),
                     },
                 })),
@@ -62,6 +67,7 @@ mod tests {
                 session_devices: SessionDevices::new(vec![SessionDevice::new(
                     SessionDeviceId::new(234),
                     SessionDeviceName::new(String::from("azriel")),
+                    PlayerControllers::new(vec![PlayerController::new(0, String::from("p0"))]),
                 )]),
                 session_status: SessionStatus::JoinEstablished,
             },
@@ -83,6 +89,10 @@ mod tests {
                         session_devices: SessionDevices::new(vec![SessionDevice::new(
                             SessionDeviceId::new(234),
                             SessionDeviceName::new(String::from("azriel")),
+                            PlayerControllers::new(vec![PlayerController::new(
+                                0,
+                                String::from("p0"),
+                            )]),
                         )]),
                     },
                 })),

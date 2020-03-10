@@ -44,6 +44,7 @@ impl IrSessionJoinEventSender {
         ir_app_event_sender_system_data: &IrAppEventSenderSystemData,
     ) -> Option<SessionJoinRequestParams> {
         let IrAppEventSenderSystemData {
+            player_controllers,
             ui_form_input_entities,
             ui_texts,
             ..
@@ -61,11 +62,14 @@ impl IrSessionJoinEventSender {
             .map(|ui_text| ui_text.text.clone())
             .map(SessionCode::new);
 
+        let player_controllers = (*player_controllers).clone();
+
         if let (Some(session_device_name), Some(session_code)) = (session_device_name, session_code)
         {
             Some(SessionJoinRequestParams::new(
-                session_device_name,
                 session_code,
+                session_device_name,
+                player_controllers,
             ))
         } else {
             None

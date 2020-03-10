@@ -57,6 +57,7 @@ impl SessionJoinResponderSystem {
         let SessionJoinRequestParams {
             session_device_name,
             session_code,
+            ..
         } = session_join_request_params;
 
         match session_tracker.append_device(socket_addr, session_join_request_params) {

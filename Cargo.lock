@@ -3482,6 +3482,7 @@ version = "0.18.0"
 dependencies = [
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "serde",
  "structopt",
 ]
@@ -5148,6 +5149,7 @@ dependencies = [
  "amethyst",
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "network_session_model",
  "serde",
  "structopt",
@@ -5215,6 +5217,7 @@ dependencies = [
  "amethyst",
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "network_session_model",
  "serde",
  "structopt",
@@ -5341,6 +5344,7 @@ dependencies = [
  "derive-new",
  "derive_deref",
  "frame_rate",
+ "game_input_model",
  "log",
  "net_model",
  "net_play",

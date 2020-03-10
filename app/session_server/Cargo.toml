@@ -12,6 +12,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 frame_rate = { path = "../../crate/frame_rate" }
+game_input_model = { path = "../../crate/game_input_model" }
 log = "0.4.8"
 net_model = { path = "../../crate/net_model" }
 net_play = { path = "../../crate/net_play" }

@@ -12,6 +12,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use bytes::Bytes;
+    use game_input_model::loaded::{PlayerController, PlayerControllers};
     use net_model::play::NetMessage;
     use network_session_model::{
         config::SessionServerConfig,
@@ -39,6 +40,10 @@ mod tests {
     fn inserts_resources_on_session_accepted() -> Result<(), Error> {
         let session_host_event = SessionHostEvent::SessionHostRequest(SessionHostRequestParams {
             session_device_name: SessionDeviceName::new(String::from("azriel")),
+            player_controllers: PlayerControllers::new(vec![PlayerController::new(
+                0,
+                String::from("p0"),
+            )]),
         });
 
         let payload = Bytes::from(
@@ -83,6 +88,10 @@ mod tests {
                 session_host_event: Some(SessionHostEvent::SessionHostRequest(
                     SessionHostRequestParams {
                         session_device_name: SessionDeviceName::new(String::from("azriel")),
+                        player_controllers: PlayerControllers::new(vec![PlayerController::new(
+                            0,
+                            String::from("p0"),
+                        )]),
                     },
                 )),
             },

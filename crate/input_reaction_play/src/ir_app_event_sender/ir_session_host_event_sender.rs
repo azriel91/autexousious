@@ -42,6 +42,7 @@ impl IrSessionHostEventSender {
         ir_app_event_sender_system_data: &IrAppEventSenderSystemData,
     ) -> Option<SessionHostRequestParams> {
         let IrAppEventSenderSystemData {
+            player_controllers,
             ui_form_input_entities,
             ui_texts,
             ..
@@ -54,8 +55,13 @@ impl IrSessionHostEventSender {
             .map(|ui_text| ui_text.text.clone())
             .map(SessionDeviceName::new);
 
+        let player_controllers = (*player_controllers).clone();
+
         if let Some(session_device_name) = session_device_name {
-            Some(SessionHostRequestParams::new(session_device_name))
+            Some(SessionHostRequestParams::new(
+                session_device_name,
+                player_controllers,
+            ))
         } else {
             None
         }

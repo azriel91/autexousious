@@ -12,6 +12,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use bytes::Bytes;
+    use game_input_model::loaded::{PlayerController, PlayerControllers};
     use net_model::play::NetMessage;
     use network_session_model::{
         config::SessionServerConfig,
@@ -40,6 +41,10 @@ mod tests {
         let session_join_event = SessionJoinEvent::SessionJoinRequest(SessionJoinRequestParams {
             session_code: SessionCode::new(String::from("abcd")),
             session_device_name: SessionDeviceName::new(String::from("azriel")),
+            player_controllers: PlayerControllers::new(vec![PlayerController::new(
+                0,
+                String::from("p0"),
+            )]),
         });
 
         let payload = Bytes::from(
@@ -89,6 +94,10 @@ mod tests {
                     SessionJoinRequestParams {
                         session_code: SessionCode::new(String::from("abcd")),
                         session_device_name: SessionDeviceName::new(String::from("azriel")),
+                        player_controllers: PlayerControllers::new(vec![PlayerController::new(
+                            0,
+                            String::from("p0"),
+                        )]),
                     },
                 )),
             },
