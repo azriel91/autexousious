@@ -57,6 +57,10 @@ use map_loading::MapLoadingBundle;
 use net_play::{
     NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
 };
+use network_input_play::{
+    NetworkInputRequestSystem, NetworkInputRequestSystemDesc, NetworkInputResponseSystem,
+    NetworkInputResponseSystemDesc,
+};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
 use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
@@ -305,12 +309,18 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 &[],
             )
             .with_system_desc(
+                NetworkInputRequestSystemDesc::default(),
+                any::type_name::<NetworkInputRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
                 NetMessageRequestSystemDesc::default(),
                 any::type_name::<NetMessageRequestSystem>(),
                 &[
                     any::type_name::<SessionHostRequestSystem>(),
                     any::type_name::<SessionJoinRequestSystem>(),
                     any::type_name::<SessionLobbyRequestSystem>(),
+                    any::type_name::<NetworkInputRequestSystem>(),
                 ],
             )
             .with_system_desc(
@@ -336,6 +346,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_system_desc(
                 SessionMessageResponseSystemDesc::default(),
                 any::type_name::<SessionMessageResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                NetworkInputResponseSystemDesc::default(),
+                any::type_name::<NetworkInputResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
             .with(

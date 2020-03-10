@@ -3401,6 +3401,7 @@ dependencies = [
  "derive-new",
  "derive_deref",
  "derive_more",
+ "game_input_model",
  "log",
  "network_session_model",
  "serde",
@@ -3417,6 +3418,7 @@ dependencies = [
  "bincode",
  "derivative",
  "derive-new",
+ "game_input_model",
  "log",
  "net_model",
  "network_session_model",
@@ -3432,6 +3434,20 @@ dependencies = [
  "amethyst",
  "game_input_model",
  "serde",
+]
+
+[[package]]
+name = "network_input_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derivative",
+ "derive-new",
+ "game_input_model",
+ "log",
+ "net_model",
+ "network_session_model",
+ "structopt",
 ]
 
 [[package]]
@@ -6434,6 +6450,7 @@ dependencies = [
  "log",
  "map_loading",
  "net_play",
+ "network_input_play",
  "network_mode_selection_stdio",
  "network_session_model",
  "network_session_play",
@@ -6614,6 +6631,7 @@ dependencies = [
  "menu_model",
  "mirrored_model",
  "net_model",
+ "network_input_play",
  "network_mode_selection_model",
  "network_mode_selection_stdio",
  "network_session_model",
