@@ -17,8 +17,8 @@ use game_input_model::{
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
 #[derive(Debug, SystemDesc, new)]
-#[system_desc(name(InputToControlInputSystemDesc))]
-pub struct InputToControlInputSystem {
+#[system_desc(name(GameInputToControlInputSystemDesc))]
+pub struct GameInputToControlInputSystem {
     /// Reader ID for the `InputEvent` channel.
     #[system_desc(event_channel_reader)]
     input_event_rid: ReaderId<InputEvent<ControlBindings>>,
@@ -30,7 +30,7 @@ pub struct InputToControlInputSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct InputToControlInputSystemData<'s> {
+pub struct GameInputToControlInputSystemData<'s> {
     /// `InputEvent<ControlBindings>` channel.
     #[derivative(Debug = "ignore")]
     pub input_ec: Read<'s, EventChannel<InputEvent<ControlBindings>>>,
@@ -48,12 +48,12 @@ pub struct InputToControlInputSystemData<'s> {
     pub control_input_ec: Write<'s, EventChannel<ControlInputEvent>>,
 }
 
-impl<'s> System<'s> for InputToControlInputSystem {
-    type SystemData = InputToControlInputSystemData<'s>;
+impl<'s> System<'s> for GameInputToControlInputSystem {
+    type SystemData = GameInputToControlInputSystemData<'s>;
 
     fn run(
         &mut self,
-        InputToControlInputSystemData {
+        GameInputToControlInputSystemData {
             input_ec,
             entities,
             input_controlleds,

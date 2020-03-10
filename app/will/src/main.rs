@@ -37,7 +37,7 @@ use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
-    ControllerInputUpdateSystem, InputToControlInputSystem, InputToControlInputSystemDesc,
+    ControllerInputUpdateSystem, GameInputToControlInputSystem, GameInputToControlInputSystemDesc,
     SharedControllerInputUpdateSystem,
 };
 use game_input_model::{
@@ -218,15 +218,15 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_system_desc(
-                InputToControlInputSystemDesc::default(),
-                any::type_name::<InputToControlInputSystem>(),
+                GameInputToControlInputSystemDesc::default(),
+                any::type_name::<GameInputToControlInputSystem>(),
                 &["input_system"],
             )
             .with(
                 MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
                 any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
                 // Depend on the input handler updated system, so that stdin input takes priority.
-                &[any::type_name::<InputToControlInputSystem>()],
+                &[any::type_name::<GameInputToControlInputSystem>()],
             )
             .with(
                 ControllerInputUpdateSystem::new(),

@@ -25,7 +25,7 @@ mod tests {
     };
     use hamcrest::prelude::*;
 
-    use game_input::{InputToControlInputSystem, InputToControlInputSystemDesc};
+    use game_input::{GameInputToControlInputSystem, GameInputToControlInputSystemDesc};
 
     const ACTION_JUMP: VirtualKeyCode = VirtualKeyCode::Key1;
     const AXIS_POSITIVE: VirtualKeyCode = VirtualKeyCode::D;
@@ -134,8 +134,8 @@ mod tests {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_resource(player_input_configs)
             .with_system_desc(
-                InputToControlInputSystemDesc::default(),
-                any::type_name::<InputToControlInputSystem>(),
+                GameInputToControlInputSystemDesc::default(),
+                any::type_name::<GameInputToControlInputSystem>(),
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {
