@@ -13,7 +13,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use bytes::Bytes;
     use game_input_model::loaded::{PlayerController, PlayerControllers};
-    use net_model::play::NetMessage;
+    use net_model::play::NetMessageEvent;
     use network_session_model::{
         config::SessionServerConfig,
         play::{SessionDeviceName, SessionStatus},
@@ -47,8 +47,10 @@ mod tests {
         });
 
         let payload = Bytes::from(
-            bincode::serialize(&NetMessage::SessionHostEvent(session_host_event.clone()))
-                .expect("Failed to serialize `session_host_event`."),
+            bincode::serialize(&NetMessageEvent::SessionHostEvent(
+                session_host_event.clone(),
+            ))
+            .expect("Failed to serialize `session_host_event`."),
         );
 
         let messages = {

@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::NetMessage;
+use net_model::play::NetMessageEvent;
 use network_session_model::{config::SessionServerConfig, play::SessionStatus};
 use session_lobby_model::SessionLobbyEvent;
 
@@ -71,7 +71,7 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
                 let server_socket_addr =
                     SocketAddr::new(session_server_config.address, session_server_config.port);
 
-                match bincode::serialize(&NetMessage::SessionLobbyEvent(
+                match bincode::serialize(&NetMessageEvent::SessionLobbyEvent(
                     SessionLobbyEvent::SessionStartRequest(session_start_request_params.clone()),
                 )) {
                     Ok(payload) => {
@@ -93,7 +93,7 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
                     }
                     Err(e) => {
                         error!(
-                            "Failed to serialize `NetMessage::SessionLobbyEvent`. Error: `{}`.",
+                            "Failed to serialize `NetMessageEvent::SessionLobbyEvent`. Error: `{}`.",
                             e
                         );
                     }

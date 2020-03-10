@@ -7,7 +7,7 @@ use session_lobby_model::SessionLobbyEvent;
 
 /// All variants of messages that can be sent over the network.
 #[derive(Clone, Debug, Deserialize, From, PartialEq, Serialize)]
-pub enum NetMessage {
+pub enum NetMessageEvent {
     /// `SessionHostEvent` messages.
     SessionHostEvent(SessionHostEvent),
     /// `SessionJoinEvent` messages.

@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
-use net_model::play::NetMessage;
+use net_model::play::NetMessageEvent;
 use network_session_model::{config::SessionServerConfig, play::SessionStatus};
 use session_join_model::SessionJoinEvent;
 
@@ -91,7 +91,7 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
             let server_socket_addr =
                 SocketAddr::new(session_server_config.address, session_server_config.port);
 
-            match bincode::serialize(&NetMessage::SessionJoinEvent(
+            match bincode::serialize(&NetMessageEvent::SessionJoinEvent(
                 SessionJoinEvent::SessionJoinRequest(session_join_request_params.clone()),
             )) {
                 Ok(payload) => {
@@ -112,7 +112,7 @@ impl<'s> System<'s> for SessionJoinRequestSystem {
                 }
                 Err(e) => {
                     error!(
-                        "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                        "Failed to serialize `NetMessageEvent::SessionJoinEvent`. Error: `{}`.",
                         e
                     );
                 }
