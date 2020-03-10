@@ -57,7 +57,10 @@ impl<'s> System<'s> for NetworkInputResponseSystem {
                     ..
                 } = ev;
 
-                debug!("`NetData<GameInputEvent>` received.");
+                debug!(
+                    "`NetData<GameInputEvent>` received: {:?}.",
+                    game_input_event
+                );
 
                 game_input_ec.single_write(*game_input_event);
             });

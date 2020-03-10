@@ -75,6 +75,7 @@ mod tests {
             PlayerController::new(1, String::from("p1")),
             PlayerController::new(2, String::from("p2")),
         ]);
+        let controller_id_offset = 0;
         let args = SessionJoinEvent::SessionAccept(SessionAcceptResponse {
             session_device_id,
             session: Session {
@@ -82,6 +83,7 @@ mod tests {
                 session_devices,
             },
             player_controllers,
+            controller_id_offset,
         });
 
         let result = SessionJoinEventStdinMapper::map(&(), args.clone());

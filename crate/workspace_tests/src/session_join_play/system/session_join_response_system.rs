@@ -67,6 +67,7 @@ mod tests {
                         )]),
                     },
                     player_controllers: player_controllers.clone(),
+                    controller_id_offset: 3,
                 })),
             },
             ExpectedParams {
@@ -111,6 +112,7 @@ mod tests {
                         )]),
                     },
                     player_controllers,
+                    controller_id_offset: 3,
                 })),
             },
             ExpectedParams {

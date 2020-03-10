@@ -61,11 +61,12 @@ impl SessionJoinResponderSystem {
         } = session_join_request_params;
 
         match session_tracker.append_device(socket_addr, session_join_request_params) {
-            Ok((session, session_device, player_controllers)) => {
+            Ok((session, session_device, player_controllers, controller_id_offset)) => {
                 let session_accept_response = SessionAcceptResponse::new(
                     session,
                     session_device.id,
                     player_controllers.clone(),
+                    controller_id_offset,
                 );
 
                 let session_join_event = SessionJoinEvent::SessionAccept(session_accept_response);

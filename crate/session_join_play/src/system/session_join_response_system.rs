@@ -1,13 +1,17 @@
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
+    input::InputHandler,
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::loaded::PlayerControllers;
-use log::debug;
+use game_input_model::{
+    config::{ControlBindings, PlayerInputConfigs},
+    loaded::PlayerControllers,
+};
+use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::{
     Session, SessionCode, SessionDeviceId, SessionDevices, SessionStatus,
@@ -47,6 +51,12 @@ pub struct SessionJoinResponseSystemData<'s> {
     /// `PlayerControllers` resource.
     #[derivative(Debug = "ignore")]
     pub player_controllers: Write<'s, PlayerControllers>,
+    /// `PlayerInputConfigs` resource.
+    #[derivative(Debug = "ignore")]
+    pub player_input_configs: Read<'s, PlayerInputConfigs>,
+    /// `InputHandler<ControlBindings>` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_handler: Write<'s, InputHandler<ControlBindings>>,
 }
 
 impl<'s> System<'s> for SessionJoinResponseSystem {
@@ -62,6 +72,8 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
             mut session_devices,
             mut session_status,
             mut player_controllers,
+            player_input_configs,
+            mut input_handler,
         }: Self::SystemData,
     ) {
         let session_join_events = session_join_nec.read(&mut self.session_join_event_rid);
@@ -90,6 +102,7 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                                     },
                                 session_device_id: session_device_id_received,
                                 player_controllers: player_controllers_received,
+                                controller_id_offset,
                             } = session_accept_response.clone();
 
                             // Write to resources.
@@ -98,6 +111,18 @@ impl<'s> System<'s> for SessionJoinResponseSystem {
                             *session_devices = session_devices_received;
                             session_status_new = Some(SessionStatus::JoinEstablished);
                             *player_controllers = player_controllers_received;
+
+                            // Update `PlayerAxisControl`s and `PlayerActionControl`s in `Bindings`
+                            match player_input_configs.generate_bindings(controller_id_offset) {
+                                Ok(bindings) => input_handler.bindings = bindings,
+                                Err(e) => {
+                                    error!(
+                                        "Failed to update input `Bindings`. \
+                                        Players may control incorrect characters. Error: {}",
+                                        e
+                                    );
+                                }
+                            }
 
                             session_join_ec.single_write(SessionJoinEvent::SessionAccept(
                                 session_accept_response.clone(),

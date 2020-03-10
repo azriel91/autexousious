@@ -71,7 +71,7 @@ impl<'s> SessionTracker<'s> {
         &mut self,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> Result<(Session, SessionDevice, PlayerControllers), SessionJoinError> {
+    ) -> Result<(Session, SessionDevice, PlayerControllers, ControllerId), SessionJoinError> {
         let SessionJoinRequestParams {
             session_code,
             session_device_name,
@@ -123,7 +123,12 @@ impl<'s> SessionTracker<'s> {
                 .collect::<Vec<PlayerController>>();
             let player_controllers_all = PlayerControllers::new(player_controllers_all);
 
-            Ok((session.clone(), session_device, player_controllers_all))
+            Ok((
+                session.clone(),
+                session_device,
+                player_controllers_all,
+                controller_id_offset,
+            ))
         } else {
             Err(SessionJoinError::SessionCodeNotFound)
         }
