@@ -94,10 +94,7 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
                     if let Some(net_session_devices) =
                         session_device_mappings.net_session_devices(session_code)
                     {
-                        debug!(
-                            "Sending `SessionStartNotify` for session: `{}`.",
-                            session_code
-                        );
+                        debug!("Sending `GameInputEvent` for session: `{}`.", session_code);
 
                         let socket_addrs = net_session_devices
                             .iter()
