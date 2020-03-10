@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
@@ -7,7 +9,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::config::ControlBindings;
+use game_input_model::{config::ControlBindings, GameInputEvent};
 use net_model::play::NetMessageEvent;
 use network_session_model::play::SessionStatus;
 
@@ -52,15 +54,10 @@ impl<'s> System<'s> for NetworkInputRequestSystem {
             || *session_status == SessionStatus::HostEstablished
         {
             input_events
-                .filter(|ev| match ev {
-                    InputEvent::AxisMoved { .. }
-                    | InputEvent::ActionPressed(_)
-                    | InputEvent::ActionReleased(_) => true,
-                    _ => false,
-                })
                 .cloned()
+                .filter_map(|ev| GameInputEvent::try_from(ev).ok())
                 .for_each(|ev| {
-                    net_message_ec.single_write(NetMessageEvent::InputEvent(ev));
+                    net_message_ec.single_write(NetMessageEvent::GameInputEvent(ev));
                 });
         }
     }

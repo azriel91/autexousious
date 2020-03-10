@@ -3428,15 +3428,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "network_input_model"
-version = "0.18.0"
-dependencies = [
- "amethyst",
- "game_input_model",
- "serde",
-]
-
-[[package]]
 name = "network_input_play"
 version = "0.18.0"
 dependencies = [

@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::convert::TryFrom;
+
     use amethyst::{
         ecs::{Read, SystemData, World, WorldExt, WriteExpect},
         input::InputEvent,
@@ -7,7 +9,10 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use game_input_model::config::{ControlAction, ControlBindings, PlayerActionControl};
+    use game_input_model::{
+        config::{ControlAction, ControlBindings, PlayerActionControl},
+        GameInputEvent,
+    };
     use net_model::play::NetMessageEvent;
     use network_session_model::play::SessionStatus;
 
@@ -31,15 +36,17 @@ mod tests {
     fn sends_net_message_event_on_input_event_when_host_established() -> Result<(), Error> {
         let input_event =
             InputEvent::ActionPressed(PlayerActionControl::new(0, ControlAction::Attack));
+        let game_input_event = GameInputEvent::try_from(input_event.clone())
+            .expect("Failed to convert `InputEvent<ControlBindings>` to `GameInputEvent`.");
 
         run_test(
             SetupParams {
                 session_status: SessionStatus::HostEstablished,
-                input_event: Some(input_event.clone()),
+                input_event: Some(input_event),
             },
             ExpectedParams {
                 session_status: SessionStatus::HostEstablished,
-                net_message_event: Some(NetMessageEvent::InputEvent(input_event)),
+                net_message_event: Some(NetMessageEvent::GameInputEvent(game_input_event)),
             },
         )
     }
@@ -48,15 +55,17 @@ mod tests {
     fn sends_net_message_event_on_input_event_when_join_established() -> Result<(), Error> {
         let input_event =
             InputEvent::ActionPressed(PlayerActionControl::new(0, ControlAction::Attack));
+        let game_input_event = GameInputEvent::try_from(input_event.clone())
+            .expect("Failed to convert `InputEvent<ControlBindings>` to `GameInputEvent`.");
 
         run_test(
             SetupParams {
                 session_status: SessionStatus::JoinEstablished,
-                input_event: Some(input_event.clone()),
+                input_event: Some(input_event),
             },
             ExpectedParams {
                 session_status: SessionStatus::JoinEstablished,
-                net_message_event: Some(NetMessageEvent::InputEvent(input_event)),
+                net_message_event: Some(NetMessageEvent::GameInputEvent(game_input_event)),
             },
         )
     }

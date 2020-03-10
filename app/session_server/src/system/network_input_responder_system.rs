@@ -3,14 +3,13 @@ use std::net::SocketAddr;
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
-    input::InputEvent,
     network::simulation::{DeliveryRequirement, TransportResource, UrgencyRequirement},
     shred::{ResourceId, SystemData},
     shrev::ReaderId,
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::config::ControlBindings;
+use game_input_model::GameInputEvent;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 
@@ -20,9 +19,9 @@ use crate::model::SessionDeviceMappings;
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(NetworkInputResponderSystemDesc))]
 pub struct NetworkInputResponderSystem {
-    /// Reader ID for the `InputEvent<ControlBindings>` channel.
+    /// Reader ID for the `GameInputEvent` channel.
     #[system_desc(event_channel_reader)]
-    input_event_rid: ReaderId<NetData<InputEvent<ControlBindings>>>,
+    game_input_event_rid: ReaderId<NetData<GameInputEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -30,7 +29,7 @@ pub struct NetworkInputResponderSystem {
 pub struct NetworkInputResponderSystemData<'s> {
     /// `InputEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub network_input_nec: Read<'s, NetEventChannel<InputEvent<ControlBindings>>>,
+    pub network_input_nec: Read<'s, NetEventChannel<GameInputEvent>>,
     /// `SessionDeviceMappings` resource.
     #[derivative(Debug = "ignore")]
     pub session_device_mappings: Read<'s, SessionDeviceMappings>,
@@ -40,12 +39,12 @@ pub struct NetworkInputResponderSystemData<'s> {
 }
 
 impl NetworkInputResponderSystem {
-    fn send_input_event(
+    fn send_game_input_event(
         transport_resource: &mut TransportResource,
         socket_addrs: impl Iterator<Item = SocketAddr>,
-        input_event: InputEvent<ControlBindings>,
+        game_input_event: GameInputEvent,
     ) {
-        let net_message_event = NetMessageEvent::from(input_event);
+        let net_message_event = NetMessageEvent::from(game_input_event);
 
         match bincode::serialize(&net_message_event) {
             Ok(payload) => {
@@ -84,12 +83,12 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
         }: Self::SystemData,
     ) {
         network_input_nec
-            .read(&mut self.input_event_rid)
-            .for_each(|net_input_event| {
+            .read(&mut self.game_input_event_rid)
+            .for_each(|net_game_input_event| {
                 let NetData {
                     socket_addr,
-                    data: input_event,
-                } = net_input_event;
+                    data: game_input_event,
+                } = net_game_input_event;
 
                 if let Some(session_code) = session_device_mappings.session_code(&socket_addr) {
                     if let Some(net_session_devices) =
@@ -103,16 +102,16 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
                         let socket_addrs = net_session_devices
                             .iter()
                             .map(|net_session_device| net_session_device.socket_addr);
-                        Self::send_input_event(
+                        Self::send_game_input_event(
                             &mut transport_resource,
                             socket_addrs,
-                            input_event.clone(),
+                            game_input_event.clone(),
                         );
                     }
                 } else {
                     debug!(
                         "Received `{:?}` from {:?}, but no session code tracked for that socket.",
-                        input_event, socket_addr
+                        game_input_event, socket_addr
                     );
                     // TODO: reject
                 }

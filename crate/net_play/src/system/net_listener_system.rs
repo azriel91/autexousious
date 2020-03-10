@@ -1,14 +1,13 @@
 use amethyst::{
     derive::SystemDesc,
     ecs::{Read, System, World, Write},
-    input::InputEvent,
     network::simulation::NetworkSimulationEvent,
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
-use game_input_model::config::ControlBindings;
+use game_input_model::GameInputEvent;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use network_session_model::SessionMessageEvent;
@@ -31,9 +30,9 @@ pub struct NetListenerSystemData<'s> {
     /// `NetworkSimulationEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_simulation_ec: Read<'s, EventChannel<NetworkSimulationEvent>>,
-    /// Net `InputEvent` channel.
+    /// Net `GameInputEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub input_nec: Write<'s, NetEventChannel<InputEvent<ControlBindings>>>,
+    pub game_input_nec: Write<'s, NetEventChannel<GameInputEvent>>,
     /// Net `SessionHostEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_host_nec: Write<'s, NetEventChannel<SessionHostEvent>>,
@@ -55,7 +54,7 @@ impl<'s> System<'s> for NetListenerSystem {
         &mut self,
         NetListenerSystemData {
             network_simulation_ec,
-            mut input_nec,
+            mut game_input_nec,
             mut session_host_nec,
             mut session_join_nec,
             mut session_lobby_nec,
@@ -72,8 +71,9 @@ impl<'s> System<'s> for NetListenerSystem {
                         Ok(net_message_event) => {
                             debug!("{:?}", net_message_event);
                             match net_message_event {
-                                NetMessageEvent::InputEvent(input_event) => {
-                                    input_nec.single_write(NetData::new(*socket_addr, input_event));
+                                NetMessageEvent::GameInputEvent(game_input_event) => {
+                                    game_input_nec
+                                        .single_write(NetData::new(*socket_addr, game_input_event));
                                 }
                                 NetMessageEvent::SessionHostEvent(session_host_event) => {
                                     session_host_nec.single_write(NetData::new(
