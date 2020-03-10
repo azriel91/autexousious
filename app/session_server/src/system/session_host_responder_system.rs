@@ -60,13 +60,14 @@ impl SessionHostResponderSystem {
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
         if session_tracker.sessions.len() < SESSION_COUNT_LIMIT {
-            let (session, session_device_id) = session_tracker.track_new(
+            let (session, session_device_id, player_controllers) = session_tracker.track_new(
                 session_code_generator,
                 socket_addr,
                 session_host_request_params,
             );
 
-            let session_accept_response = SessionAcceptResponse::new(session, session_device_id);
+            let session_accept_response =
+                SessionAcceptResponse::new(session, session_device_id, player_controllers);
 
             SessionHostEvent::SessionAccept(session_accept_response)
         } else {

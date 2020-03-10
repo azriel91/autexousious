@@ -32,12 +32,19 @@ mod tests {
                 session_device_id: SessionDeviceId::new(123),
                 session_devices: SessionDevices::new(vec![]),
                 session_status: SessionStatus::None,
+                player_controllers: PlayerControllers::default(),
             },
         )
     }
 
     #[test]
     fn inserts_resources_on_session_accepted() -> Result<(), Error> {
+        let player_controllers = PlayerControllers::new(vec![
+            PlayerController::new(0, String::from("p0")),
+            PlayerController::new(1, String::from("p1")),
+            PlayerController::new(2, String::from("p2")),
+        ]);
+
         run_test(
             SetupParams {
                 session_code: SessionCode::new(String::from("abcd")),
@@ -59,6 +66,7 @@ mod tests {
                             )]),
                         )]),
                     },
+                    player_controllers: player_controllers.clone(),
                 })),
             },
             ExpectedParams {
@@ -70,12 +78,19 @@ mod tests {
                     PlayerControllers::new(vec![PlayerController::new(0, String::from("p0"))]),
                 )]),
                 session_status: SessionStatus::JoinEstablished,
+                player_controllers,
             },
         )
     }
 
     #[test]
     fn ignores_session_accept_event_when_no_longer_waiting() -> Result<(), Error> {
+        let player_controllers = PlayerControllers::new(vec![
+            PlayerController::new(0, String::from("p0")),
+            PlayerController::new(1, String::from("p1")),
+            PlayerController::new(2, String::from("p2")),
+        ]);
+
         run_test(
             SetupParams {
                 session_code: SessionCode::new(String::from("abcd")),
@@ -95,6 +110,7 @@ mod tests {
                             )]),
                         )]),
                     },
+                    player_controllers,
                 })),
             },
             ExpectedParams {
@@ -102,6 +118,7 @@ mod tests {
                 session_device_id: SessionDeviceId::new(123),
                 session_devices: SessionDevices::new(vec![]),
                 session_status: SessionStatus::None,
+                player_controllers: PlayerControllers::default(),
             },
         )
     }
@@ -119,6 +136,7 @@ mod tests {
             session_device_id: session_device_id_expected,
             session_devices: session_devices_expected,
             session_status: session_status_expected,
+            player_controllers: player_controllers_expected,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
@@ -141,19 +159,32 @@ mod tests {
                 }
             })
             .with_assertion(move |world| {
-                let (session_code, session_device_id, session_devices, session_status) = world
-                    .system_data::<(
-                        Read<'_, SessionCode>,
-                        Read<'_, SessionDeviceId>,
-                        Read<'_, SessionDevices>,
-                        Read<'_, SessionStatus>,
-                    )>();
+                let (
+                    session_code,
+                    session_device_id,
+                    session_devices,
+                    session_status,
+                    player_controllers,
+                ) = world.system_data::<(
+                    Read<'_, SessionCode>,
+                    Read<'_, SessionDeviceId>,
+                    Read<'_, SessionDevices>,
+                    Read<'_, SessionStatus>,
+                    Read<'_, PlayerControllers>,
+                )>();
 
-                let (session_code, session_device_id, session_devices, session_status) = (
+                let (
+                    session_code,
+                    session_device_id,
+                    session_devices,
+                    session_status,
+                    player_controllers,
+                ) = (
                     &*session_code,
                     &*session_device_id,
                     &*session_devices,
                     &*session_status,
+                    &*player_controllers,
                 );
 
                 assert_eq!(
@@ -161,13 +192,15 @@ mod tests {
                         &session_code_expected,
                         &session_device_id_expected,
                         &session_devices_expected,
-                        &session_status_expected
+                        &session_status_expected,
+                        &player_controllers_expected,
                     ),
                     (
                         session_code,
                         session_device_id,
                         session_devices,
-                        session_status
+                        session_status,
+                        player_controllers,
                     )
                 );
             })
@@ -187,5 +220,6 @@ mod tests {
         session_device_id: SessionDeviceId,
         session_devices: SessionDevices,
         session_status: SessionStatus,
+        player_controllers: PlayerControllers,
     }
 }

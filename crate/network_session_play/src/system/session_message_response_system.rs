@@ -6,6 +6,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use game_input_model::loaded::PlayerControllers;
 use log::debug;
 use net_model::play::{NetData, NetEventChannel};
 use network_session_model::{
@@ -28,12 +29,15 @@ pub struct SessionMessageResponseSystemData<'s> {
     /// `SessionMessageEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_message_nec: Read<'s, NetEventChannel<SessionMessageEvent>>,
-    /// `SessionDevices` resource.
-    #[derivative(Debug = "ignore")]
-    pub session_devices: Write<'s, SessionDevices>,
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Read<'s, SessionStatus>,
+    /// `SessionDevices` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_devices: Write<'s, SessionDevices>,
+    /// `PlayerControllers` resource.
+    #[derivative(Debug = "ignore")]
+    pub player_controllers: Write<'s, PlayerControllers>,
 }
 
 impl<'s> System<'s> for SessionMessageResponseSystem {
@@ -43,8 +47,9 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
         &mut self,
         SessionMessageResponseSystemData {
             session_message_nec,
-            mut session_devices,
             session_status,
+            mut session_devices,
+            mut player_controllers,
         }: Self::SystemData,
     ) {
         let session_message_events = session_message_nec.read(&mut self.session_message_event_rid);
@@ -59,11 +64,15 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
                     data: SessionMessageEvent::SessionDeviceJoin(session_device_join),
                     ..
                 } => {
-                    let SessionDeviceJoin { session_device } = session_device_join;
+                    let SessionDeviceJoin {
+                        session_device,
+                        player_controllers: player_controllers_received,
+                    } = session_device_join;
 
                     debug!("Session device joined: {:?}", session_device);
 
                     session_devices.push(session_device.clone());
+                    *player_controllers = player_controllers_received.clone();
                 }
             });
         }

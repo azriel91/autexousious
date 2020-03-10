@@ -1,6 +1,9 @@
 use std::net::SocketAddr;
 
-use game_input_model::config::ControllerId;
+use game_input_model::{
+    config::ControllerId,
+    loaded::{PlayerController, PlayerControllers},
+};
 use log::debug;
 use net_model::play::{NetSessionDevice, NetSessionDevices};
 use network_session_model::play::{
@@ -34,7 +37,7 @@ impl<'s> SessionTracker<'s> {
         session_code_generator: &mut SessionCodeGenerator,
         socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
-    ) -> (Session, SessionDeviceId) {
+    ) -> (Session, SessionDeviceId, PlayerControllers) {
         let SessionHostRequestParams {
             session_device_name,
             player_controllers,
@@ -61,14 +64,14 @@ impl<'s> SessionTracker<'s> {
 
         self.update_session_tracking(session.clone(), net_session_devices);
 
-        (session, session_device_id)
+        (session, session_device_id, player_controllers.clone())
     }
 
     pub fn append_device(
         &mut self,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> Result<(Session, SessionDevice), SessionJoinError> {
+    ) -> Result<(Session, SessionDevice, PlayerControllers), SessionJoinError> {
         let SessionJoinRequestParams {
             session_code,
             session_device_name,
@@ -112,7 +115,15 @@ impl<'s> SessionTracker<'s> {
                 session_code, session_device.name, session_device.id
             );
 
-            Ok((session.clone(), session_device))
+            // Compute combined player controllers
+            let player_controllers_all = session
+                .session_devices
+                .iter()
+                .flat_map(|session_device| session_device.player_controllers.iter().cloned())
+                .collect::<Vec<PlayerController>>();
+            let player_controllers_all = PlayerControllers::new(player_controllers_all);
+
+            Ok((session.clone(), session_device, player_controllers_all))
         } else {
             Err(SessionJoinError::SessionCodeNotFound)
         }

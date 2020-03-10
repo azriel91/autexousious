@@ -68,12 +68,18 @@ mod tests {
                 )]),
             },
         ]);
+        let player_controllers = PlayerControllers::new(vec![
+            PlayerController::new(0, String::from("p0")),
+            PlayerController::new(1, String::from("p1")),
+            PlayerController::new(2, String::from("p2")),
+        ]);
         let args = SessionHostEvent::SessionAccept(SessionAcceptResponse {
             session_device_id,
             session: Session {
                 session_code,
                 session_devices,
             },
+            player_controllers,
         });
 
         let result = SessionHostEventStdinMapper::map(&(), args.clone());
