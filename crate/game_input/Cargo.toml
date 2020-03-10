@@ -15,4 +15,5 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
+network_session_model = { path = "../network_session_model" }
 serde = { version = "1.0.104", features = ["derive"] }

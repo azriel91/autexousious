@@ -2260,6 +2260,7 @@ dependencies = [
  "derive-new",
  "game_input_model",
  "log",
+ "network_session_model",
  "serde",
 ]
 
