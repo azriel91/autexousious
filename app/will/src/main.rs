@@ -38,7 +38,7 @@ use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
     ControllerInputUpdateSystem, GameInputToControlInputSystem, GameInputToControlInputSystemDesc,
-    SharedControllerInputUpdateSystem,
+    InputToGameInputSystem, InputToGameInputSystemDesc, SharedControllerInputUpdateSystem,
 };
 use game_input_model::{
     config::{ControlBindings, PlayerInputConfigs},
@@ -218,9 +218,14 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_system_desc(
+                InputToGameInputSystemDesc::default(),
+                any::type_name::<InputToGameInputSystem>(),
+                &["input_system"],
+            )
+            .with_system_desc(
                 GameInputToControlInputSystemDesc::default(),
                 any::type_name::<GameInputToControlInputSystem>(),
-                &["input_system"],
+                &[any::type_name::<InputToGameInputSystem>()],
             )
             .with(
                 MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
@@ -311,7 +316,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_system_desc(
                 NetworkInputRequestSystemDesc::default(),
                 any::type_name::<NetworkInputRequestSystem>(),
-                &[],
+                &["input_system"],
             )
             .with_system_desc(
                 NetMessageRequestSystemDesc::default(),

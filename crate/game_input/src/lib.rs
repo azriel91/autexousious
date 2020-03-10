@@ -4,7 +4,7 @@
 
 pub use crate::system::{
     ControllerInputUpdateSystem, GameInputToControlInputSystem, GameInputToControlInputSystemDesc,
-    SharedControllerInputUpdateSystem,
+    InputToGameInputSystem, InputToGameInputSystemDesc, SharedControllerInputUpdateSystem,
 };
 
 mod system;

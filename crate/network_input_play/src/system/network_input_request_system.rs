@@ -54,7 +54,6 @@ impl<'s> System<'s> for NetworkInputRequestSystem {
             || *session_status == SessionStatus::HostEstablished
         {
             input_events
-                .cloned()
                 .filter_map(|ev| GameInputEvent::try_from(ev).ok())
                 .for_each(|ev| {
                     net_message_ec.single_write(NetMessageEvent::GameInputEvent(ev));

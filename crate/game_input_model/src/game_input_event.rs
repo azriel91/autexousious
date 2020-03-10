@@ -21,6 +21,26 @@ pub enum GameInputEvent {
     ActionReleased(PlayerActionControl),
 }
 
+impl<'event> TryFrom<&'event InputEvent<ControlBindings>> for GameInputEvent {
+    type Error = &'event InputEvent<ControlBindings>;
+
+    fn try_from(input_event: &'event InputEvent<ControlBindings>) -> Result<Self, Self::Error> {
+        match input_event {
+            InputEvent::AxisMoved { axis, value } => Ok(GameInputEvent::AxisMoved {
+                axis: *axis,
+                value: *value,
+            }),
+            InputEvent::ActionPressed(player_axis_control) => {
+                Ok(GameInputEvent::ActionPressed(*player_axis_control))
+            }
+            InputEvent::ActionReleased(player_axis_control) => {
+                Ok(GameInputEvent::ActionReleased(*player_axis_control))
+            }
+            _ => Err(input_event),
+        }
+    }
+}
+
 impl TryFrom<InputEvent<ControlBindings>> for GameInputEvent {
     type Error = InputEvent<ControlBindings>;
 
