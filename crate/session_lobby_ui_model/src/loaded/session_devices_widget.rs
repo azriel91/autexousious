@@ -40,6 +40,7 @@ impl<'s> ItemComponent<'s> for SessionDevicesWidget {
         } = system_data;
 
         session_devices_entities.session_devices_entity = Some(entity);
+        session_devices_entities.session_device_entities.clear();
 
         if !session_devices_widgets.contains(entity) {
             session_devices_widgets

@@ -11,6 +11,7 @@ use kinematic_model::{
     config::Position,
     play::{PositionInitOffset, PositionInitParent},
 };
+use log::debug;
 use network_session_model::play::SessionDevices;
 use parent_model::play::ParentEntity;
 use session_lobby_ui_model::{
@@ -81,7 +82,14 @@ impl<'s> System<'s> for SessionDeviceEntityCreateDeleteSystem {
             session_device_entities,
         } = &mut *session_devices_entities;
 
-        if let Some(session_devices_entity) = *session_devices_entity {
+        let session_devices_entity = session_devices_entity.and_then(|session_devices_entity| {
+            if entities.is_alive(session_devices_entity) {
+                Some(session_devices_entity)
+            } else {
+                None
+            }
+        });
+        if let Some(session_devices_entity) = session_devices_entity {
             // Find session device entities to:
             //
             // * Modify values.
@@ -91,37 +99,45 @@ impl<'s> System<'s> for SessionDeviceEntityCreateDeleteSystem {
             match session_devices.len().cmp(&session_device_entities.len()) {
                 Ordering::Equal => {}
                 Ordering::Less => {
+                    debug!(
+                        "Removing extra session device entities. Required: {}, Actual: {}",
+                        session_devices.len(),
+                        session_device_entities.len()
+                    );
+
                     // Remove extra entities.
                     session_device_entities
-                        .iter()
-                        .skip(session_device_entities.len() - session_devices.len())
-                        .copied()
-                        .filter_map(|session_device_entity| {
-                            session_device_widgets
-                                .get(session_device_entity)
-                                .copied()
-                                .map(|session_device_widget| {
-                                    (session_device_entity, session_device_widget)
-                                })
-                        })
-                        .for_each(|(session_device_entity, session_device_widget)| {
-                            let SessionDeviceWidget {
-                                entity_id,
-                                entity_name,
-                            } = session_device_widget;
+                        .drain(session_devices.len()..)
+                        .for_each(|session_device_entity| {
+                            let session_device_widget =
+                                session_device_widgets.get(session_device_entity).copied();
+
+                            if let Some(session_device_widget) = session_device_widget {
+                                let SessionDeviceWidget {
+                                    entity_id,
+                                    entity_name,
+                                } = session_device_widget;
+
+                                entities
+                                    .delete(entity_id)
+                                    .expect("Failed to delete `entity_id`.");
+                                entities
+                                    .delete(entity_name)
+                                    .expect("Failed to delete `entity_name`.");
+                            }
 
                             entities
                                 .delete(session_device_entity)
                                 .expect("Failed to delete `session_device_entity`.");
-                            entities
-                                .delete(entity_id)
-                                .expect("Failed to delete `entity_id`.");
-                            entities
-                                .delete(entity_name)
-                                .expect("Failed to delete `entity_name`.");
                         });
                 }
                 Ordering::Greater => {
+                    debug!(
+                        "Creating additional session device entities. Required: {}, Actual: {}",
+                        session_devices.len(),
+                        session_device_entities.len()
+                    );
+
                     // Create additional entities.
                     let session_devices_widget =
                         session_devices_widgets.get(session_devices_entity).expect(
