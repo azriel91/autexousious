@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetData, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use network_session_model::{
     play::{SessionDeviceJoin, Sessions},
     SessionMessageEvent,
@@ -57,16 +57,22 @@ impl SessionJoinResponderSystem {
         let SessionJoinRequestParams {
             session_device_name,
             session_code,
+            ..
         } = session_join_request_params;
 
         match session_tracker.append_device(socket_addr, session_join_request_params) {
-            Ok((session, session_device)) => {
-                let session_accept_response =
-                    SessionAcceptResponse::new(session, session_device.id);
+            Ok((session, session_device, player_controllers, controller_id_offset)) => {
+                let session_accept_response = SessionAcceptResponse::new(
+                    session,
+                    session_device.id,
+                    player_controllers.clone(),
+                    controller_id_offset,
+                );
 
                 let session_join_event = SessionJoinEvent::SessionAccept(session_accept_response);
                 let session_message_event = {
-                    let session_device_join = SessionDeviceJoin::new(session_device);
+                    let session_device_join =
+                        SessionDeviceJoin::new(session_device, player_controllers);
                     SessionMessageEvent::SessionDeviceJoin(session_device_join)
                 };
 
@@ -92,9 +98,9 @@ impl SessionJoinResponderSystem {
         socket_addr: SocketAddr,
         session_join_event: SessionJoinEvent,
     ) {
-        let net_message = NetMessage::from(session_join_event);
+        let net_message_event = NetMessageEvent::from(session_join_event);
 
-        match bincode::serialize(&net_message) {
+        match bincode::serialize(&net_message_event) {
             Ok(payload) => {
                 transport_resource.send_with_requirements(
                     socket_addr,
@@ -109,7 +115,7 @@ impl SessionJoinResponderSystem {
             }
             Err(e) => {
                 error!(
-                    "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                    "Failed to serialize `NetMessageEvent::SessionJoinEvent`. Error: `{}`.",
                     e
                 );
             }
@@ -122,9 +128,9 @@ impl SessionJoinResponderSystem {
         socket_addr_exclude: SocketAddr,
         session_message_event: SessionMessageEvent,
     ) {
-        let net_message = NetMessage::from(session_message_event);
+        let net_message_event = NetMessageEvent::from(session_message_event);
 
-        match bincode::serialize(&net_message) {
+        match bincode::serialize(&net_message_event) {
             Ok(payload) => {
                 let net_session_devices = session_device_mappings
                     .session_code(&socket_addr_exclude)
@@ -157,7 +163,7 @@ impl SessionJoinResponderSystem {
             }
             Err(e) => {
                 error!(
-                    "Failed to serialize `NetMessage::SessionJoinEvent`. Error: `{}`.",
+                    "Failed to serialize `NetMessageEvent::SessionJoinEvent`. Error: `{}`.",
                     e
                 );
             }

@@ -5,35 +5,43 @@ use amethyst::{
     input::{Axis as InputAxis, Bindings, Button},
     Error,
 };
+use derive_deref::{Deref, DerefMut};
 use derive_new::new;
-use indexmap::IndexMap;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisControl};
+use crate::config::{
+    ControlBindings, ControllerId, PlayerActionControl, PlayerAxisControl, PlayerInputConfig,
+};
 
 /// Structure for holding the input configuration.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
-pub struct InputConfig {
-    /// Axis control configuration.
-    pub controller_configs: IndexMap<String, ControllerConfig>,
-}
+#[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Serialize, new)]
+pub struct PlayerInputConfigs(pub Vec<PlayerInputConfig>);
 
-impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
-    type Error = Error;
-
-    fn try_from(input_config: &'config InputConfig) -> Result<Bindings<ControlBindings>, Error> {
+impl PlayerInputConfigs {
+    /// Generates amethyst input `Bindings<ControlBindings>` for each input configuration.
+    ///
+    /// The `ControllerId` offset is used when local controllers should start with a higher index
+    /// as remote controllers may use the lower indices.
+    ///
+    /// # Parameters
+    ///
+    /// * `controller_id_offset`: The offset for controller IDs.
+    pub fn generate_bindings(
+        &self,
+        controller_id_offset: ControllerId,
+    ) -> Result<Bindings<ControlBindings>, Error> {
         let mut bindings = Bindings::new();
 
         // Axis controls
-        let axis_result = input_config
-            .controller_configs
-            .values()
+        let axis_result = self
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
-            .flat_map(|(index, controller_config)| {
-                let controller_id = index;
-                controller_config
+            .flat_map(|(index, player_input_config)| {
+                let controller_id = index + controller_id_offset;
+                player_input_config
+                    .controller_config
                     .axes
                     .iter()
                     .map(|(&axis, input_axis)| {
@@ -60,14 +68,14 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
             );
 
         // Action controls
-        let action_result = input_config
-            .controller_configs
-            .values()
+        let action_result = self
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
-            .flat_map(|(index, controller_config)| {
-                let controller_id = index;
-                controller_config
+            .flat_map(|(index, player_input_config)| {
+                let controller_id = index + controller_id_offset;
+                player_input_config
+                    .controller_config
                     .actions
                     .iter()
                     .map(|(&axis, input_button)| {
@@ -98,5 +106,15 @@ impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
             error!("{}", format_err!("{}", e)); // kcov-ignore
         }
         axis_result.and(action_result).map(|_| bindings)
+    }
+}
+
+impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings> {
+    type Error = Error;
+
+    fn try_from(
+        player_input_configs: &'config PlayerInputConfigs,
+    ) -> Result<Bindings<ControlBindings>, Error> {
+        player_input_configs.generate_bindings(0)
     }
 }

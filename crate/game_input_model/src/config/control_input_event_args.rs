@@ -14,7 +14,7 @@ use crate::config::{ControlArgs, ControllerId};
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]
 pub struct ControlInputEventArgs {
-    /// ID of the controller, as laid out in `input_config.ron`.
+    /// ID of the controller, as laid out in `player_input_configs.ron`.
     pub controller_id: ControllerId,
     /// Axis or Action
     #[structopt(subcommand)]

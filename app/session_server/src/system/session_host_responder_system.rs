@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetData, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use network_session_model::play::Sessions;
 use network_session_play::SessionCodeGenerator;
 use session_host_model::{
@@ -60,13 +60,14 @@ impl SessionHostResponderSystem {
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
         if session_tracker.sessions.len() < SESSION_COUNT_LIMIT {
-            let (session, session_device_id) = session_tracker.track_new(
+            let (session, session_device_id, player_controllers) = session_tracker.track_new(
                 session_code_generator,
                 socket_addr,
                 session_host_request_params,
             );
 
-            let session_accept_response = SessionAcceptResponse::new(session, session_device_id);
+            let session_accept_response =
+                SessionAcceptResponse::new(session, session_device_id, player_controllers);
 
             SessionHostEvent::SessionAccept(session_accept_response)
         } else {
@@ -119,10 +120,10 @@ impl<'s> System<'s> for SessionHostResponderSystem {
                     session_host_request_params,
                 );
 
-                (socket_addr, NetMessage::from(session_host_event))
+                (socket_addr, NetMessageEvent::from(session_host_event))
             })
-            .for_each(|(socket_addr, net_message)| {
-                match bincode::serialize(&net_message) {
+            .for_each(|(socket_addr, net_message_event)| {
+                match bincode::serialize(&net_message_event) {
                     Ok(payload) => {
                         transport_resource.send_with_requirements(
                             socket_addr,
@@ -137,7 +138,7 @@ impl<'s> System<'s> for SessionHostResponderSystem {
                     }
                     Err(e) => {
                         error!(
-                            "Failed to serialize `NetMessage::SessionHostEvent`. Error: `{}`.",
+                            "Failed to serialize `NetMessageEvent::SessionHostEvent`. Error: `{}`.",
                             e
                         );
                     }

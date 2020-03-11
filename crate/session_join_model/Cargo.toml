@@ -12,6 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
+game_input_model = { path = "../game_input_model" }
 network_session_model = { path = "../network_session_model" }
 serde = { version = "1.0.104", features = ["derive"] }
 structopt = "0.3.9"

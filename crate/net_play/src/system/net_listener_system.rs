@@ -7,14 +7,15 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use game_input_model::GameInputEvent;
 use log::{debug, error};
-use net_model::play::{NetData, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use network_session_model::SessionMessageEvent;
 use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
 use session_lobby_model::SessionLobbyEvent;
 
-/// Receives `NetMessage`s and sends each variant's data to the corresponding event channel.
+/// Receives `NetMessageEvent`s and sends each variant's data to the corresponding event channel.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(NetListenerSystemDesc))]
 pub struct NetListenerSystem {
@@ -29,6 +30,9 @@ pub struct NetListenerSystemData<'s> {
     /// `NetworkSimulationEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_simulation_ec: Read<'s, EventChannel<NetworkSimulationEvent>>,
+    /// Net `GameInputEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub game_input_nec: Write<'s, NetEventChannel<GameInputEvent>>,
     /// Net `SessionHostEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_host_nec: Write<'s, NetEventChannel<SessionHostEvent>>,
@@ -50,6 +54,7 @@ impl<'s> System<'s> for NetListenerSystem {
         &mut self,
         NetListenerSystemData {
             network_simulation_ec,
+            mut game_input_nec,
             mut session_host_nec,
             mut session_join_nec,
             mut session_lobby_nec,
@@ -61,30 +66,34 @@ impl<'s> System<'s> for NetListenerSystem {
             .for_each(|ev| match ev {
                 NetworkSimulationEvent::Message(socket_addr, bytes) => {
                     debug!("Socket: {}, Message: {:?}", socket_addr, bytes);
-                    let net_message = bincode::deserialize(bytes);
-                    match net_message {
-                        Ok(net_message) => {
-                            debug!("{:?}", net_message);
-                            match net_message {
-                                NetMessage::SessionHostEvent(session_host_event) => {
+                    let net_message_event = bincode::deserialize(bytes);
+                    match net_message_event {
+                        Ok(net_message_event) => {
+                            debug!("{:?}", net_message_event);
+                            match net_message_event {
+                                NetMessageEvent::GameInputEvent(game_input_event) => {
+                                    game_input_nec
+                                        .single_write(NetData::new(*socket_addr, game_input_event));
+                                }
+                                NetMessageEvent::SessionHostEvent(session_host_event) => {
                                     session_host_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_host_event,
                                     ));
                                 }
-                                NetMessage::SessionJoinEvent(session_join_event) => {
+                                NetMessageEvent::SessionJoinEvent(session_join_event) => {
                                     session_join_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_join_event,
                                     ));
                                 }
-                                NetMessage::SessionLobbyEvent(session_lobby_event) => {
+                                NetMessageEvent::SessionLobbyEvent(session_lobby_event) => {
                                     session_lobby_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_lobby_event,
                                     ));
                                 }
-                                NetMessage::SessionMessageEvent(session_message_event) => {
+                                NetMessageEvent::SessionMessageEvent(session_message_event) => {
                                     session_message_nec.single_write(NetData::new(
                                         *socket_addr,
                                         session_message_event,
@@ -92,7 +101,7 @@ impl<'s> System<'s> for NetListenerSystem {
                                 }
                             }
                         }
-                        Err(e) => error!("Failed to parse `NetMessage`: `{}`", e),
+                        Err(e) => error!("Failed to parse `NetMessageEvent`: `{}`", e),
                     }
                 }
                 NetworkSimulationEvent::SendError(io_error, message) => {

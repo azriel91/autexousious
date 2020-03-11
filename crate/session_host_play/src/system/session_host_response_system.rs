@@ -6,10 +6,13 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use game_input_model::loaded::PlayerControllers;
 use log::debug;
 use net_model::play::{NetData, NetEventChannel};
-use network_session_model::play::{SessionCode, SessionDeviceId, SessionDevices, SessionStatus};
-use session_host_model::SessionHostEvent;
+use network_session_model::play::{
+    Session, SessionCode, SessionDeviceId, SessionDevices, SessionStatus,
+};
+use session_host_model::{play::SessionAcceptResponse, SessionHostEvent};
 
 /// Records the session code and devices in the world when accepted into a session.
 #[derive(Debug, SystemDesc, new)]
@@ -41,6 +44,9 @@ pub struct SessionHostResponseSystemData<'s> {
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Write<'s, SessionStatus>,
+    /// `PlayerControllers` resource.
+    #[derivative(Debug = "ignore")]
+    pub player_controllers: Write<'s, PlayerControllers>,
 }
 
 impl<'s> System<'s> for SessionHostResponseSystem {
@@ -55,6 +61,7 @@ impl<'s> System<'s> for SessionHostResponseSystem {
             mut session_device_id,
             mut session_devices,
             mut session_status,
+            mut player_controllers,
         }: Self::SystemData,
     ) {
         let session_host_events = session_host_nec.read(&mut self.session_host_event_rid);
@@ -70,12 +77,22 @@ impl<'s> System<'s> for SessionHostResponseSystem {
                         } => {
                             debug!("Session accepted: {:?}", session_accept_response);
 
+                            let SessionAcceptResponse {
+                                session:
+                                    Session {
+                                        session_code: session_code_received,
+                                        session_devices: session_devices_received,
+                                    },
+                                session_device_id: session_device_id_received,
+                                player_controllers: player_controllers_received,
+                            } = session_accept_response.clone();
+
                             // Write to resources.
-                            *session_code = session_accept_response.session.session_code.clone();
-                            *session_device_id = session_accept_response.session_device_id;
-                            *session_devices =
-                                session_accept_response.session.session_devices.clone();
+                            *session_code = session_code_received;
+                            *session_device_id = session_device_id_received;
+                            *session_devices = session_devices_received;
                             session_status_new = Some(SessionStatus::HostEstablished);
+                            *player_controllers = player_controllers_received;
 
                             session_host_ec.single_write(SessionHostEvent::SessionAccept(
                                 session_accept_response.clone(),

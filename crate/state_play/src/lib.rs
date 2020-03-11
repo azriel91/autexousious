@@ -5,6 +5,7 @@
 pub use crate::system::{
     StateCameraResetSystem, StateCameraResetSystemData, StateIdEventSystem, StateIdEventSystemData,
     StateItemSpawnSystem, StateItemSpawnSystemData, StateItemUiInputAugmentSystem,
+    StateItemUiInputAugmentSystemDesc,
 };
 
 mod system;

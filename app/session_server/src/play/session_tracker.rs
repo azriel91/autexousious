@@ -1,5 +1,9 @@
 use std::net::SocketAddr;
 
+use game_input_model::{
+    config::ControllerId,
+    loaded::{PlayerController, PlayerControllers},
+};
 use log::debug;
 use net_model::play::{NetSessionDevice, NetSessionDevices};
 use network_session_model::play::{
@@ -33,14 +37,19 @@ impl<'s> SessionTracker<'s> {
         session_code_generator: &mut SessionCodeGenerator,
         socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
-    ) -> (Session, SessionDeviceId) {
+    ) -> (Session, SessionDeviceId, PlayerControllers) {
         let SessionHostRequestParams {
             session_device_name,
+            player_controllers,
         } = session_host_request_params;
 
         let session_code = self.generate_session_code(session_code_generator);
         let session_device_id = SessionDeviceId::new(0); // ID for host
-        let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
+        let session_device = SessionDevice::new(
+            session_device_id,
+            session_device_name.clone(),
+            player_controllers.clone(),
+        );
         let session_devices = SessionDevices::new(vec![session_device.clone()]);
 
         let net_session_device = NetSessionDevice::new(socket_addr, session_device);
@@ -55,17 +64,18 @@ impl<'s> SessionTracker<'s> {
 
         self.update_session_tracking(session.clone(), net_session_devices);
 
-        (session, session_device_id)
+        (session, session_device_id, player_controllers.clone())
     }
 
     pub fn append_device(
         &mut self,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> Result<(Session, SessionDevice), SessionJoinError> {
+    ) -> Result<(Session, SessionDevice, PlayerControllers, ControllerId), SessionJoinError> {
         let SessionJoinRequestParams {
-            session_device_name,
             session_code,
+            session_device_name,
+            player_controllers,
         } = session_join_request_params;
 
         if let Some(session) = self.sessions.get_mut(session_code) {
@@ -77,8 +87,23 @@ impl<'s> SessionTracker<'s> {
                 .map(|session_device_id| SessionDeviceId::new(*session_device_id + 1))
                 .unwrap_or_else(|| SessionDeviceId::new(0));
 
+            // Mutate the `ControllerId`s on the `player_controllers`.
+            let controller_id_offset: ControllerId = session
+                .session_devices
+                .iter()
+                .map(|session_device| session_device.player_controllers.len())
+                .sum();
+            let mut player_controllers = player_controllers.clone();
+            player_controllers.iter_mut().for_each(|player_controller| {
+                player_controller.controller_id += controller_id_offset
+            });
+
             // Add the new device to the session before adding it to the response.
-            let session_device = SessionDevice::new(session_device_id, session_device_name.clone());
+            let session_device = SessionDevice::new(
+                session_device_id,
+                session_device_name.clone(),
+                player_controllers,
+            );
             session.session_devices.push(session_device.clone());
 
             let net_session_device = NetSessionDevice::new(socket_addr, session_device.clone());
@@ -90,7 +115,20 @@ impl<'s> SessionTracker<'s> {
                 session_code, session_device.name, session_device.id
             );
 
-            Ok((session.clone(), session_device))
+            // Compute combined player controllers
+            let player_controllers_all = session
+                .session_devices
+                .iter()
+                .flat_map(|session_device| session_device.player_controllers.iter().cloned())
+                .collect::<Vec<PlayerController>>();
+            let player_controllers_all = PlayerControllers::new(player_controllers_all);
+
+            Ok((
+                session.clone(),
+                session_device,
+                player_controllers_all,
+                controller_id_offset,
+            ))
         } else {
             Err(SessionJoinError::SessionCodeNotFound)
         }

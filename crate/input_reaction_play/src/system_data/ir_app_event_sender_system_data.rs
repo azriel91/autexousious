@@ -10,7 +10,7 @@ use asset_ui_model::play::{AssetSelectionHighlightMain, AssetSelectionStatus};
 use chase_model::play::TargetObject;
 use control_settings_model::ControlSettingsEvent;
 use derivative::Derivative;
-use game_input_model::play::InputControlled;
+use game_input_model::{loaded::PlayerControllers, play::InputControlled};
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use network_mode_selection_model::NetworkModeSelectionEvent;
@@ -39,6 +39,9 @@ pub struct IrAppEventSenderSystemData<'s> {
     #[derivative(Debug = "ignore")]
     pub state_id: Read<'s, StateId>,
 
+    /// `PlayerControllers` resource.
+    #[derivative(Debug = "ignore")]
+    pub player_controllers: Read<'s, PlayerControllers>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
