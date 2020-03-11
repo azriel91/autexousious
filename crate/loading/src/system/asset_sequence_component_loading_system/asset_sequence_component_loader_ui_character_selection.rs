@@ -6,7 +6,10 @@ use asset_model::{
     loaded::{AssetTypeMappings, ItemId},
     play::AssetWorld,
 };
-use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
+use asset_selection_ui_model::{
+    loaded::{ApwContainer, AssetPreviewWidget},
+    play::ApwMain,
+};
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{
@@ -19,7 +22,7 @@ use character_selection_ui_model::config::{
     CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
 };
 use chase_model::play::ChaseModeStick;
-use game_input_model::{loaded::PlayerControllers, play::InputControlled};
+use game_input_model::play::InputControlled;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
 use object_type::ObjectType;
@@ -42,7 +45,6 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
         item_ids_all: &mut Vec<ItemId>,
-        player_controllers: &PlayerControllers,
         character_selection_ui: &CharacterSelectionUi,
     ) {
         let CharacterSelectionUi {
@@ -54,13 +56,6 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                 },
             characters_available_selector,
         } = character_selection_ui;
-
-        let input_controlleds = {
-            let controller_count = player_controllers.len();
-            (0..controller_count)
-                .map(InputControlled::new)
-                .collect::<Vec<InputControlled>>()
-        };
 
         // Store widget item IDs in `item_ids_all` to be spawned during state ID
         // updates, but don't store item IDs for widget template layers as those
@@ -143,31 +138,33 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             .collect::<Vec<Vec<ItemId>>>();
 
         // Widget item IDs
-        let mut item_ids_widgets = item_ids_layers
-            .into_iter()
-            .zip(input_controlleds.iter().copied())
-            .map(|(layer_item_ids, input_controlled)| AssetPreviewWidget {
-                layers: layer_item_ids,
-                input_controlled: Some(input_controlled),
-                shared_input_controlled: None,
-            })
-            .map(|asset_preview_widget| {
-                asset_world
-                    .create_entity()
-                    .with(asset_preview_widget)
-                    .build()
-            })
-            .map(ItemId::new)
-            .collect::<Vec<ItemId>>();
+        let item_ids_apw_container = {
+            let apw_item_ids = item_ids_layers
+                .into_iter()
+                .map(AssetPreviewWidget::new)
+                .map(|asset_preview_widget| {
+                    asset_world
+                        .create_entity()
+                        .with(asset_preview_widget)
+                        .build()
+                })
+                .map(ItemId::new)
+                .collect::<Vec<ItemId>>();
 
-        item_ids_all.append(&mut item_ids_widgets);
+            let apw_container_entity = asset_world
+                .create_entity()
+                .with(ApwContainer::Individual { apw_item_ids })
+                .build();
+            ItemId::new(apw_container_entity)
+        };
+
+        item_ids_all.push(item_ids_apw_container);
         item_ids_all.push(Self::asset_selector_item(
             asset_type_mappings,
             asset_world,
             asset_slug,
             sequence_id_mappings,
             asset_sequence_component_loader_ui_components,
-            &input_controlleds,
             characters_available_selector,
         ));
     }
@@ -178,7 +175,6 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
         asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
-        input_controlleds: &[InputControlled],
         characters_available_selector: &config::AssetSelector<T>,
     ) -> ItemId
     where
@@ -253,8 +249,8 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
         // Create item for each `AssetSelectionHighlight`.
         let asset_selection_highlight_item_ids = selection_highlights
             .iter()
-            .zip(input_controlleds.iter().copied())
-            .map(|(ash_template, input_controlled)| {
+            .enumerate()
+            .map(|(index, ash_template)| {
                 let ui_sprite_label = &ash_template.sprite;
                 let position_init = ui_sprite_label.position;
                 let offset = Position::<f32>::from(position_init);
@@ -280,7 +276,7 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
                     .with(position_init)
                     .with(sequence_id_init)
                     .with(chase_mode_stick)
-                    .with(input_controlled)
+                    .with(InputControlled::new(index))
                     .with(sequence_end_transitions)
                     .with(wait_sequence_handles)
                     .with(tint_sequence_handles)
@@ -297,15 +293,15 @@ impl AssetSequenceComponentLoaderUiCharacterSelection {
             })
             .collect::<Vec<ItemId>>() // Collect to reclaim `asset_world` for next closure.
             .into_iter()
-            .zip(input_controlleds.iter().copied())
-            .map(|(ash_sprite_item_id, input_controlled)| {
+            .enumerate()
+            .map(|(index, ash_sprite_item_id)| {
                 let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
                     // isn't already there.
                     .with(PositionInit::default())
-                    .with(input_controlled)
+                    .with(InputControlled::new(index))
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)

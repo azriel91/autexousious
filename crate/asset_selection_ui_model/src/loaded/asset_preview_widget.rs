@@ -19,10 +19,6 @@ use crate::play::ApwMain;
 pub struct AssetPreviewWidget {
     /// Layers of sprite labels to draw for the asset preview widget.
     pub layers: Vec<ItemId>,
-    /// InputControlled to attach to each layer entity.
-    pub input_controlled: Option<InputControlled>,
-    /// SharedInputControlled to attach to each layer entity.
-    pub shared_input_controlled: Option<SharedInputControlled>,
 }
 
 /// `AssetPreviewWidgetSystemData`.
@@ -74,6 +70,9 @@ impl<'s> ItemComponent<'s> for AssetPreviewWidget {
                 .copied()
         };
 
+        let input_controlled = input_controlleds.get(entity).copied();
+        let shared_input_controlled = shared_input_controlleds.get(entity).is_some();
+
         let (apw_main_entity, layer_entities) = self.layers.iter().copied().fold(
             (None, Vec::with_capacity(self.layers.len())),
             |(mut apw_main_entity, mut layer_entities), item_id| {
@@ -83,13 +82,13 @@ impl<'s> ItemComponent<'s> for AssetPreviewWidget {
                     .with(item_id, item_ids)
                     .with(parent_entity, parent_entities);
 
-                if let Some(input_controlled) = self.input_controlled {
+                if let Some(input_controlled) = input_controlled {
                     layer_entity_builder =
                         layer_entity_builder.with(input_controlled, input_controlleds);
                 }
-                if let Some(shared_input_controlled) = self.shared_input_controlled {
-                    layer_entity_builder = layer_entity_builder
-                        .with(shared_input_controlled, shared_input_controlleds);
+                if shared_input_controlled {
+                    layer_entity_builder =
+                        layer_entity_builder.with(SharedInputControlled, shared_input_controlleds);
                 }
 
                 let layer_entity = layer_entity_builder.build();

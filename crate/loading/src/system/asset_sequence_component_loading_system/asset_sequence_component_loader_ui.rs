@@ -366,7 +366,6 @@ impl AssetSequenceComponentLoaderUi {
                         sequence_id_mappings,
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
-                        &sequence_component_loading_resources.player_controllers,
                         character_selection_ui,
                     );
                 }
@@ -378,7 +377,6 @@ impl AssetSequenceComponentLoaderUi {
                         sequence_id_mappings,
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
-                        &sequence_component_loading_resources.player_controllers,
                         map_selection_ui,
                     );
                 }

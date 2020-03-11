@@ -7,7 +7,10 @@ use amethyst::{
 };
 use application_menu::MenuIndex;
 use asset_model::{config::asset_type::Map, play::AssetWorld};
-use asset_selection_ui_model::{loaded::AssetPreviewWidget, play::ApwMain};
+use asset_selection_ui_model::{
+    loaded::{ApwContainer, AssetPreviewWidget},
+    play::ApwMain,
+};
 use asset_ui_model::{
     loaded::{
         AssetDisplayCellCharacter, AssetDisplayCellMap, AssetSelectionCell,
@@ -88,6 +91,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         asset_world.register::<UiMenu>();
         asset_world.register::<UiMenuItem<MenuIndex>>();
 
+        asset_world.register::<ApwContainer>();
         asset_world.register::<AssetPreviewWidget>();
         asset_world.register::<ApwMain>();
         asset_world.register::<AswPortraits>();
@@ -270,9 +274,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
 
         // Asset selection UI common systems.
         builder.add(
+            ItemComponentComponentAugmentSystem::<ApwContainer>::new(),
+            &any::type_name::<ItemComponentComponentAugmentSystem<ApwContainer>>(),
+            &[],
+        );
+        builder.add(
             ItemComponentComponentAugmentSystem::<AssetPreviewWidget>::new(),
             &any::type_name::<ItemComponentComponentAugmentSystem<AssetPreviewWidget>>(),
-            &[],
+            &[&any::type_name::<
+                ItemComponentComponentAugmentSystem<ApwContainer>,
+            >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ApwMain>::new(),
