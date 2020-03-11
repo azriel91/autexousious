@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Component, Path};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
@@ -32,7 +32,35 @@ impl TextureLoader {
         let texture_results = sprite_sheet_definitions
             .iter()
             .map(|sheet_definition| {
-                let sprite_image_path = object_directory.join(&sheet_definition.path);
+                // We need to do this to handle mixed slashes on Windows.
+                let sheet_definition_path = Path::new(&sheet_definition.path);
+                let sprite_image_path = if sheet_definition_path.is_absolute() {
+                    sheet_definition_path.to_path_buf()
+                } else {
+                    sheet_definition_path.components().fold(
+                        object_directory.to_path_buf(),
+                        |mut sprite_image_path, sheet_definition_component| {
+                            match sheet_definition_component {
+                                Component::ParentDir => {
+                                    sprite_image_path.pop();
+                                }
+                                Component::Normal(segment) => {
+                                    sprite_image_path.push(segment);
+                                }
+                                Component::Prefix(_) | Component::RootDir | Component::CurDir => {}
+                            }
+
+                            sprite_image_path
+                        },
+                    )
+                };
+                let sprite_image_path = sprite_image_path.canonicalize().unwrap_or_else(|e| {
+                    panic!(
+                        "Failed to canonicalize texture path: `{}`. Error: {}",
+                        sprite_image_path.display(),
+                        e
+                    )
+                });
 
                 let error_msg = format!(
                     "Failed to transform sprite image path to String: `{}`",
