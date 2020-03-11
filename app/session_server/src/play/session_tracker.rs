@@ -134,6 +134,18 @@ impl<'s> SessionTracker<'s> {
         }
     }
 
+    /// Removes the device from any previous session, returning the session code.
+    ///
+    /// # Parameters
+    ///
+    /// * `socket_addr`: `SocketAddr` of the session device.
+    pub fn remove_device_from_existing_session(
+        &mut self,
+        socket_addr: SocketAddr,
+    ) -> Option<&SessionCode> {
+        self.session_device_mappings.remove_device(&socket_addr)
+    }
+
     fn generate_session_code(
         &mut self,
         session_code_generator: &mut SessionCodeGenerator,
