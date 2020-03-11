@@ -11,12 +11,21 @@
 * Rudimentary session lobby UI. ([#204])
 * Send network input between session devices. ([#199])
 
+### Changed
+
+* Assets are sorted based on their asset slug. ([#205])
+
+### Fixed
+
+* Relative paths to textures now load on Windows. ([#205])
+
 [#198]: https://gitlab.com/azriel91/autexousious/issues/198
 [#199]: https://gitlab.com/azriel91/autexousious/issues/199
 [#200]: https://gitlab.com/azriel91/autexousious/issues/200
 [#201]: https://gitlab.com/azriel91/autexousious/issues/201
 [#202]: https://gitlab.com/azriel91/autexousious/issues/202
 [#204]: https://gitlab.com/azriel91/autexousious/issues/204
+[#205]: https://gitlab.com/azriel91/autexousious/issues/205
 
 ## 0.17.0 (2020-01-31)
 

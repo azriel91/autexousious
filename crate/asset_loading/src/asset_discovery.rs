@@ -18,7 +18,7 @@ impl AssetDiscovery {
     /// * `assets_dir`: Path to the assets directory to index.
     pub fn asset_index(assets_dir: &Path) -> AssetIndex {
         let namespace_directories = NamespaceDiscoverer::discover(assets_dir);
-        namespace_directories.iter().map(AssetIndexer::index).fold(
+        let mut asset_index_combined = namespace_directories.iter().map(AssetIndexer::index).fold(
             AssetIndex::default(),
             |mut asset_index_combined, mut asset_index| {
                 AssetTypeVariant::iter().for_each(|asset_type_variant| {
@@ -43,7 +43,13 @@ impl AssetDiscovery {
 
                 asset_index_combined
             },
-        )
+        );
+
+        asset_index_combined.values_mut().for_each(|asset_records| {
+            asset_records.sort_unstable_by(|r1, r2| r1.asset_slug.cmp(&r2.asset_slug))
+        });
+
+        asset_index_combined
     }
 
     fn asset_index_merge(
