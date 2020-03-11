@@ -4,6 +4,7 @@ pub use self::{
     state_item_spawn_system::{StateItemSpawnSystem, StateItemSpawnSystemData},
     state_item_ui_input_augment_system::{
         StateItemUiInputAugmentSystem, StateItemUiInputAugmentSystemData,
+        StateItemUiInputAugmentSystemDesc,
     },
 };
 

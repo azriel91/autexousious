@@ -143,7 +143,7 @@ impl AssetSequenceComponentLoaderUi {
         {
             Some(KeyboardUiGen::generate_full(
                 &control_settings.keyboard,
-                &sequence_component_loading_resources.input_config,
+                &sequence_component_loading_resources.player_input_configs,
                 sequences,
             ))
         } else {
@@ -354,7 +354,7 @@ impl AssetSequenceComponentLoaderUi {
                         sequence_id_mappings,
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
-                        &sequence_component_loading_resources.input_config,
+                        &sequence_component_loading_resources.player_controllers,
                         ui_menu_items,
                     );
                 }
@@ -366,7 +366,6 @@ impl AssetSequenceComponentLoaderUi {
                         sequence_id_mappings,
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
-                        &sequence_component_loading_resources.input_config,
                         character_selection_ui,
                     );
                 }
@@ -378,7 +377,6 @@ impl AssetSequenceComponentLoaderUi {
                         sequence_id_mappings,
                         &asset_sequence_component_loader_ui_components,
                         &mut item_ids_all,
-                        &sequence_component_loading_resources.input_config,
                         map_selection_ui,
                     );
                 }
@@ -572,7 +570,7 @@ impl AssetSequenceComponentLoaderUi {
                     ref asset_sequence_id_mappings_sprite,
                     ..
                 },
-            ref input_config,
+            ref player_input_configs,
             ref camera_zoom_dimensions,
             ref input_reactions_assets,
             ref input_reactions_sequence_assets,
@@ -615,7 +613,7 @@ impl AssetSequenceComponentLoaderUi {
                 {
                     let control_buttons_display_labels = KeyboardUiGen::generate_mini(
                         &control_settings.keyboard,
-                        input_config,
+                        player_input_configs,
                         **camera_zoom_dimensions,
                         sequences,
                     );

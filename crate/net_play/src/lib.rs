@@ -2,6 +2,8 @@
 
 //! Provides logic for the network.
 
-pub use crate::system::{NetListenerSystem, NetListenerSystemDesc};
+pub use crate::system::{
+    NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
+};
 
 mod system;

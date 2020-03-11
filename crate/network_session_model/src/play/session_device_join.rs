@@ -1,4 +1,5 @@
 use derive_new::new;
+use game_input_model::loaded::PlayerControllers;
 use serde::{Deserialize, Serialize};
 
 use crate::play::SessionDevice;
@@ -8,4 +9,6 @@ use crate::play::SessionDevice;
 pub struct SessionDeviceJoin {
     /// The device that joined the session.
     pub session_device: SessionDevice,
+    /// All player controllers.
+    pub player_controllers: PlayerControllers,
 }

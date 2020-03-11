@@ -18,6 +18,7 @@ use strum_macros::{Display, EnumIter, EnumString};
     Serialize,
 )]
 #[derivative(Default)]
+#[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum ControlAction {
     /// Defend button.

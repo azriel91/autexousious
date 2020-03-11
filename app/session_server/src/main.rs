@@ -15,8 +15,9 @@ use net_play::{NetListenerSystem, NetListenerSystemDesc};
 use structopt::StructOpt;
 
 use crate::system::{
-    SessionHostResponderSystem, SessionHostResponderSystemDesc, SessionJoinResponderSystem,
-    SessionJoinResponderSystemDesc, SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
+    NetworkInputResponderSystem, NetworkInputResponderSystemDesc, SessionHostResponderSystem,
+    SessionHostResponderSystemDesc, SessionJoinResponderSystem, SessionJoinResponderSystemDesc,
+    SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
 };
 
 pub mod model;
@@ -122,6 +123,11 @@ fn main() -> Result<(), Error> {
         .with_system_desc(
             SessionLobbyResponderSystemDesc::default(),
             any::type_name::<SessionLobbyResponderSystem>(),
+            &[any::type_name::<NetListenerSystem>()],
+        )
+        .with_system_desc(
+            NetworkInputResponderSystemDesc::default(),
+            any::type_name::<NetworkInputResponderSystem>(),
             &[any::type_name::<NetListenerSystem>()],
         );
 

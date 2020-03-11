@@ -2260,6 +2260,7 @@ dependencies = [
  "derive-new",
  "game_input_model",
  "log",
+ "network_session_model",
  "serde",
 ]
 
@@ -2271,7 +2272,7 @@ dependencies = [
  "asset_model",
  "derivative",
  "derive-new",
- "indexmap",
+ "derive_deref",
  "log",
  "serde",
  "structopt",
@@ -3401,6 +3402,7 @@ dependencies = [
  "derive-new",
  "derive_deref",
  "derive_more",
+ "game_input_model",
  "log",
  "network_session_model",
  "serde",
@@ -3417,12 +3419,27 @@ dependencies = [
  "bincode",
  "derivative",
  "derive-new",
+ "game_input_model",
  "log",
  "net_model",
  "network_session_model",
  "session_host_model",
  "session_join_model",
  "session_lobby_model",
+]
+
+[[package]]
+name = "network_input_play"
+version = "0.18.0"
+dependencies = [
+ "amethyst",
+ "derivative",
+ "derive-new",
+ "game_input_model",
+ "log",
+ "net_model",
+ "network_session_model",
+ "structopt",
 ]
 
 [[package]]
@@ -3473,6 +3490,7 @@ version = "0.18.0"
 dependencies = [
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "serde",
  "structopt",
 ]
@@ -3484,6 +3502,7 @@ dependencies = [
  "amethyst",
  "derivative",
  "derive-new",
+ "game_input_model",
  "log",
  "net_model",
  "network_session_model",
@@ -5139,6 +5158,7 @@ dependencies = [
  "amethyst",
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "network_session_model",
  "serde",
  "structopt",
@@ -5153,6 +5173,7 @@ dependencies = [
  "bincode",
  "derivative",
  "derive-new",
+ "game_input_model",
  "log",
  "net_model",
  "network_session_model",
@@ -5206,6 +5227,7 @@ dependencies = [
  "amethyst",
  "derive-new",
  "derive_deref",
+ "game_input_model",
  "network_session_model",
  "serde",
  "structopt",
@@ -5222,6 +5244,7 @@ dependencies = [
  "bincode",
  "derivative",
  "derive-new",
+ "game_input_model",
  "log",
  "net_model",
  "network_session_model",
@@ -5332,6 +5355,7 @@ dependencies = [
  "derive-new",
  "derive_deref",
  "frame_rate",
+ "game_input_model",
  "log",
  "net_model",
  "net_play",
@@ -6418,6 +6442,7 @@ dependencies = [
  "log",
  "map_loading",
  "net_play",
+ "network_input_play",
  "network_mode_selection_stdio",
  "network_session_model",
  "network_session_play",
@@ -6598,6 +6623,7 @@ dependencies = [
  "menu_model",
  "mirrored_model",
  "net_model",
+ "network_input_play",
  "network_mode_selection_model",
  "network_mode_selection_stdio",
  "network_session_model",
@@ -6623,6 +6649,8 @@ dependencies = [
  "session_join_model",
  "session_join_play",
  "session_join_stdio",
+ "session_lobby_model",
+ "session_lobby_play",
  "session_lobby_ui_model",
  "shape_model",
  "slotmap",

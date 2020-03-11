@@ -37,9 +37,13 @@ use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::{
-    ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+    ControllerInputUpdateSystem, GameInputToControlInputSystem, GameInputToControlInputSystemDesc,
+    InputToGameInputSystem, InputToGameInputSystemDesc, SharedControllerInputUpdateSystem,
 };
-use game_input_model::config::{ControlBindings, InputConfig};
+use game_input_model::{
+    config::{ControlBindings, PlayerInputConfigs},
+    loaded::PlayerControllers,
+};
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
@@ -50,7 +54,13 @@ use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
-use net_play::{NetListenerSystem, NetListenerSystemDesc};
+use net_play::{
+    NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
+};
+use network_input_play::{
+    NetworkInputRequestSystem, NetworkInputRequestSystemDesc, NetworkInputResponseSystem,
+    NetworkInputResponseSystemDesc,
+};
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
 use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
@@ -77,7 +87,8 @@ use session_lobby_ui_play::{
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use state_play::{
-    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem, StateItemUiInputAugmentSystem,
+    StateCameraResetSystem, StateIdEventSystem, StateItemSpawnSystem,
+    StateItemUiInputAugmentSystem, StateItemUiInputAugmentSystemDesc,
 };
 use state_registry::StateId;
 use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle};
@@ -176,6 +187,13 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
+    let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
+        AppDir::RESOURCES,
+        "player_input_configs.yaml",
+        Format::Yaml,
+    )?;
+    let player_controllers = PlayerControllers::from(&player_input_configs);
+
     let mut game_data = GameDataBuilder::default();
     if !opt.headless {
         let display_config = AppFile::load_in::<DisplayConfig, _>(
@@ -184,16 +202,13 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             Format::Ron,
         )?;
 
-        let input_config =
-            AppFile::load_in::<InputConfig, _>(AppDir::RESOURCES, "input_config.ron", Format::Ron)?;
-
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
             .with_bundle(
                 InputBundle::<ControlBindings>::new()
-                    .with_bindings(Bindings::try_from(&input_config)?),
+                    .with_bindings(Bindings::try_from(&player_input_configs)?),
             )?
             .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
             .with_bundle(HotReloadBundle::default())?
@@ -202,16 +217,21 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
-            .with(
-                InputToControlInputSystem::new(input_config),
-                any::type_name::<InputToControlInputSystem>(),
+            .with_system_desc(
+                InputToGameInputSystemDesc::default(),
+                any::type_name::<InputToGameInputSystem>(),
                 &["input_system"],
+            )
+            .with_system_desc(
+                GameInputToControlInputSystemDesc::default(),
+                any::type_name::<GameInputToControlInputSystem>(),
+                &[any::type_name::<InputToGameInputSystem>()],
             )
             .with(
                 MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
                 any::type_name::<MapperSystem<ControlInputEventStdinMapper>>(),
                 // Depend on the input handler updated system, so that stdin input takes priority.
-                &[any::type_name::<InputToControlInputSystem>()],
+                &[any::type_name::<GameInputToControlInputSystem>()],
             )
             .with(
                 ControllerInputUpdateSystem::new(),
@@ -279,12 +299,12 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
-                SessionHostRequestSystemDesc::new(session_server_config.clone()),
+                SessionHostRequestSystemDesc::default(),
                 any::type_name::<SessionHostRequestSystem>(),
                 &[],
             )
             .with_system_desc(
-                SessionJoinRequestSystemDesc::new(session_server_config),
+                SessionJoinRequestSystemDesc::default(),
                 any::type_name::<SessionJoinRequestSystem>(),
                 &[],
             )
@@ -292,6 +312,21 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 SessionLobbyRequestSystemDesc::default(),
                 any::type_name::<SessionLobbyRequestSystem>(),
                 &[],
+            )
+            .with_system_desc(
+                NetworkInputRequestSystemDesc::default(),
+                any::type_name::<NetworkInputRequestSystem>(),
+                &["input_system"],
+            )
+            .with_system_desc(
+                NetMessageRequestSystemDesc::default(),
+                any::type_name::<NetMessageRequestSystem>(),
+                &[
+                    any::type_name::<SessionHostRequestSystem>(),
+                    any::type_name::<SessionJoinRequestSystem>(),
+                    any::type_name::<SessionLobbyRequestSystem>(),
+                    any::type_name::<NetworkInputRequestSystem>(),
+                ],
             )
             .with_system_desc(
                 NetListenerSystemDesc::default(),
@@ -318,6 +353,11 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 any::type_name::<SessionMessageResponseSystem>(),
                 &[any::type_name::<NetListenerSystem>()],
             )
+            .with_system_desc(
+                NetworkInputResponseSystemDesc::default(),
+                any::type_name::<NetworkInputResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
             .with(
                 SessionCodeLabelUpdateSystem::new(),
                 any::type_name::<SessionCodeLabelUpdateSystem>(),
@@ -341,8 +381,8 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 any::type_name::<SessionDeviceWidgetUpdateSystem>(),
                 &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
             )
-            .with(
-                StateItemUiInputAugmentSystem::new(),
+            .with_system_desc(
+                StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
                 &[],
             )
@@ -418,6 +458,9 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+        .with_resource(session_server_config)
+        .with_resource(player_controllers)
+        .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
         .build(game_data)?;
 

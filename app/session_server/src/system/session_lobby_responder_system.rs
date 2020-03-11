@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use net_model::play::{NetData, NetEventChannel, NetMessage};
+use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use session_lobby_model::{play::SessionStartRequestParams, SessionLobbyEvent};
 
 use crate::model::SessionDeviceMappings;
@@ -44,9 +44,9 @@ impl SessionLobbyResponderSystem {
         socket_addrs: impl Iterator<Item = SocketAddr>,
         session_lobby_event: SessionLobbyEvent,
     ) {
-        let net_message = NetMessage::from(session_lobby_event);
+        let net_message_event = NetMessageEvent::from(session_lobby_event);
 
-        match bincode::serialize(&net_message) {
+        match bincode::serialize(&net_message_event) {
             Ok(payload) => {
                 socket_addrs.for_each(|socket_addr| {
                     transport_resource.send_with_requirements(
@@ -63,7 +63,7 @@ impl SessionLobbyResponderSystem {
             }
             Err(e) => {
                 error!(
-                    "Failed to serialize `NetMessage::SessionLobbyEvent`. Error: `{}`.",
+                    "Failed to serialize `NetMessageEvent::SessionLobbyEvent`. Error: `{}`.",
                     e
                 );
             }

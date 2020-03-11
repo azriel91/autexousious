@@ -1,0 +1,44 @@
+# For a list of key codes, see <https://docs.rs/winit/0.18.1/winit/enum.VirtualKeyCode.html>
+- name: "Player One"
+  controller_config:
+    axes:
+      x: { Emulated: { pos: { Key: D }, neg: { Key: A } } }
+      z: { Emulated: { pos: { Key: S }, neg: { Key: W } } }
+    actions:
+      defend : { Key: Key1 }
+      jump   : { Key: Key2 }
+      attack : { Key: Key3 }
+      special: { Key: Key4 }
+
+- name: "Player Two"
+  controller_config:
+    axes:
+      x: { Emulated: { pos: { Key: J }, neg: { Key: G } } }
+      z: { Emulated: { pos: { Key: H }, neg: { Key: Y } } }
+    actions:
+      defend : { Key: Key5 }
+      jump   : { Key: Key6 }
+      attack : { Key: Key7 }
+      special: { Key: Key8 }
+
+- name: "Player Three"
+  controller_config:
+    axes:
+      x: { Emulated: { pos: { Key: Right }, neg: { Key: Left } } }
+      z: { Emulated: { pos: { Key: Down  }, neg: { Key: Up   } } }
+    actions:
+      defend : { Key: O }
+      jump   : { Key: P }
+      attack : { Key: LBracket }
+      special: { Key: RBracket }
+
+- name: "Player Four"
+  controller_config:
+    axes:
+      x: { Emulated: { pos: { Key: Numpad3 }, neg: { Key: Numpad1 } } }
+      z: { Emulated: { pos: { Key: Numpad2 }, neg: { Key: Numpad5 } } }
+    actions:
+      defend : { Key: Numpad7 }
+      jump   : { Key: Numpad8 }
+      attack : { Key: Numpad9 }
+      special: { Key: Numpad4 }

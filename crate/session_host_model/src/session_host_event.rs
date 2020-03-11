@@ -9,9 +9,9 @@ use crate::play::{SessionAcceptResponse, SessionHostRequestParams, SessionReject
 ///
 /// When read in as a command, the command string should look like the following:
 ///
-/// * `session_host session_host_request --device-name azriel`
+/// * `session_host session_host_request --device-name azriel --player-controllers "0:azriel 1:friend_a"`
 /// * `session_host host_cancel`
-/// * `session_host session_accept --session-code abcd --session-devices "1:azriel" --session-device_id 1`
+/// * `session_host session_accept --session-code abcd --session-devices "1:az_comp::0:azriel::1:friend_a" --session-device_id 1`
 /// * `session_host back`
 ///
 /// **Note:** The `session_accept` subcommand is designed to be received from the server, so sending

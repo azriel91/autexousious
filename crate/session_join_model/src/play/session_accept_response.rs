@@ -1,4 +1,5 @@
 use derive_new::new;
+use game_input_model::{config::ControllerId, loaded::PlayerControllers};
 use network_session_model::play::{Session, SessionDeviceId};
 use serde::{Deserialize, Serialize};
 use structopt_derive::StructOpt;
@@ -17,4 +18,10 @@ pub struct SessionAcceptResponse {
     /// ID that the server generated for the session joiner.
     #[structopt(long)]
     pub session_device_id: SessionDeviceId,
+    /// All player controllers.
+    #[structopt(long)]
+    pub player_controllers: PlayerControllers,
+    /// Offset to use for local `ControllerId`s.
+    #[structopt(long)]
+    pub controller_id_offset: ControllerId,
 }

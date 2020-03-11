@@ -7,11 +7,10 @@ mod tests {
         winit::VirtualKeyCode,
     };
     use hamcrest::prelude::*;
-    use indexmap::IndexMap;
 
     use game_input_model::config::{
-        Axis, ControlAction, ControlBindings, ControllerConfig, InputConfig, PlayerActionControl,
-        PlayerAxisControl,
+        Axis, ControlAction, ControlBindings, ControllerConfig, PlayerActionControl,
+        PlayerAxisControl, PlayerInputConfig, PlayerInputConfigs,
     };
 
     #[test]
@@ -24,13 +23,15 @@ mod tests {
             VirtualKeyCode::O,
         ]);
 
-        let mut controller_configs = IndexMap::new();
-        controller_configs.insert(String::from("zero1"), controller_config_0);
-        controller_configs.insert(String::from("one"), controller_config_1);
-        let input_config = InputConfig::new(controller_configs);
+        let player_input_config_0 =
+            PlayerInputConfig::new(String::from("zero1"), controller_config_0);
+        let player_input_config_1 =
+            PlayerInputConfig::new(String::from("one"), controller_config_1);
+        let player_input_configs =
+            PlayerInputConfigs::new(vec![player_input_config_0, player_input_config_1]);
 
-        let bindings = Bindings::<ControlBindings>::try_from(&input_config)
-            .expect("Failed to map `InputConfig` into `Bindings`.");
+        let bindings = Bindings::<ControlBindings>::try_from(&player_input_configs)
+            .expect("Failed to map `PlayerInputConfigs` into `Bindings`.");
 
         assert_that!(
             &bindings.axes().map(Clone::clone).collect::<Vec<_>>(),
@@ -58,12 +59,14 @@ mod tests {
         let controller_config_1 =
             controller_config([VirtualKeyCode::A, VirtualKeyCode::Right, VirtualKeyCode::O]);
 
-        let mut controller_configs = IndexMap::new();
-        controller_configs.insert(String::from("zero1"), controller_config_0);
-        controller_configs.insert(String::from("one"), controller_config_1);
-        let input_config = InputConfig::new(controller_configs);
+        let player_input_config_0 =
+            PlayerInputConfig::new(String::from("zero1"), controller_config_0);
+        let player_input_config_1 =
+            PlayerInputConfig::new(String::from("one"), controller_config_1);
+        let player_input_configs =
+            PlayerInputConfigs::new(vec![player_input_config_0, player_input_config_1]);
 
-        if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
+        if let Err(error) = Bindings::<ControlBindings>::try_from(&player_input_configs) {
             if let Some(binding_error) = error
                 .source()
                 .expect("Expected `BindingError` source.")
@@ -87,7 +90,7 @@ mod tests {
             }
         } else {
             // kcov-ignore-start
-            panic!("Expected to fail to map `InputConfig` into `Bindings`.");
+            panic!("Expected to fail to map `PlayerInputConfigs` into `Bindings`.");
             // kcov-ignore-end
         }
     }
@@ -103,12 +106,14 @@ mod tests {
             VirtualKeyCode::Key1,
         ]);
 
-        let mut controller_configs = IndexMap::new();
-        controller_configs.insert(String::from("zero1"), controller_config_0);
-        controller_configs.insert(String::from("one"), controller_config_1);
-        let input_config = InputConfig::new(controller_configs);
+        let player_input_config_0 =
+            PlayerInputConfig::new(String::from("zero1"), controller_config_0);
+        let player_input_config_1 =
+            PlayerInputConfig::new(String::from("one"), controller_config_1);
+        let player_input_configs =
+            PlayerInputConfigs::new(vec![player_input_config_0, player_input_config_1]);
 
-        if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
+        if let Err(error) = Bindings::<ControlBindings>::try_from(&player_input_configs) {
             if let Some(binding_error) = error
                 .source()
                 .expect("Expected `BindingError` source.")
@@ -130,7 +135,7 @@ mod tests {
             }
         } else {
             // kcov-ignore-start
-            panic!("Expected to fail to map `InputConfig` into `Bindings`.");
+            panic!("Expected to fail to map `PlayerInputConfigs` into `Bindings`.");
             // kcov-ignore-end
         }
     }
