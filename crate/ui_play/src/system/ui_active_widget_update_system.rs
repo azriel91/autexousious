@@ -54,7 +54,7 @@ impl UiActiveWidgetUpdateSystem {
         UiActiveWidgetInputResources {
             ref mut widget_statuses,
             ref siblingses,
-            ref siblings_verticals,
+            siblings_verticals: _,
         }: &mut UiActiveWidgetInputResources,
         axis_move_event_data: AxisMoveEventData,
     ) {
@@ -68,16 +68,22 @@ impl UiActiveWidgetUpdateSystem {
         let move_direction = MoveDirection::from(axis_move_event_data);
         let ui_entity_sibling = match move_direction {
             MoveDirection::None => None,
-            MoveDirection::Up => siblings_verticals
-                .get(ui_entity)
-                .and_then(|siblings_vertical| siblings_vertical.up),
-            MoveDirection::Down => siblings_verticals
-                .get(ui_entity)
-                .and_then(|siblings_vertical| siblings_vertical.down),
-            MoveDirection::Left => siblingses
+            // TODO: attach `SiblingsVertical` to entities. See:
+            //
+            // * `AssetSelector::augment_siblings`
+            // * `UiMenu::augment_siblings`
+            // MoveDirection::Up => siblings_verticals
+            //     .get(ui_entity)
+            //     .and_then(|siblings_vertical| siblings_vertical.up),
+            // MoveDirection::Down => siblings_verticals
+            //     .get(ui_entity)
+            //     .and_then(|siblings_vertical| siblings_vertical.down),
+            MoveDirection::Down | MoveDirection::Left => siblingses
                 .get(ui_entity)
                 .and_then(|siblings| siblings.previous),
-            MoveDirection::Right => siblingses.get(ui_entity).and_then(|siblings| siblings.next),
+            MoveDirection::Up | MoveDirection::Right => {
+                siblingses.get(ui_entity).and_then(|siblings| siblings.next)
+            }
         };
 
         if let (Some(WidgetStatus::Active), Some(ui_entity_sibling)) =

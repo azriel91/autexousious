@@ -1,6 +1,13 @@
 #![windows_subsystem = "windows"]
 
-use std::{any, convert::TryFrom, fs::File, io::BufReader, net::IpAddr, path::PathBuf, process};
+use std::{
+    any,
+    convert::TryFrom,
+    fs::File,
+    io::BufReader,
+    net::{IpAddr, Ipv4Addr},
+    path::PathBuf,
+};
 
 use amethyst::{
     assets::HotReloadBundle,
@@ -18,7 +25,7 @@ use amethyst::{
     window::DisplayConfig,
     CoreApplication, Error, GameDataBuilder, LoggerConfig,
 };
-use application::{AppDir, AppFile, Format};
+use application::{AppDir, AppFile, Format, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
@@ -53,6 +60,7 @@ use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
+use log::debug;
 use map_loading::MapLoadingBundle;
 use net_play::{
     NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
@@ -69,6 +77,7 @@ use network_session_play::{
 };
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
+use serde::{Deserialize, Serialize};
 use session_host_play::{
     SessionHostRequestSystem, SessionHostRequestSystemDesc, SessionHostResponseSystem,
     SessionHostResponseSystemDesc,
@@ -98,6 +107,7 @@ use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle}
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
+use structopt_toml::StructOptToml;
 use tracker::PrevTrackerSystem;
 use ui_audio_loading::UiAudioLoadingBundle;
 use ui_loading::UiLoadingBundle;
@@ -107,19 +117,24 @@ use ui_play::{
     UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
+/// Default file for application arguments.
+const WILL_CONFIG: &str = "will.toml";
+
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
 
 /// `TcpListener` buffer size.
 const TCP_RECV_BUFFER_SIZE: usize = 2048;
 
-#[derive(StructOpt, Debug)]
+#[derive(Debug, Deserialize, Serialize, StructOpt, StructOptToml)]
+#[serde(default)]
 #[structopt(name = "Will", rename_all = "snake_case")]
-struct Opt {
+pub struct WillConfig {
     /// Frame rate to run the game at.
     #[structopt(long)]
     frame_rate: Option<u32>,
     /// Run headlessly (no GUI).
+    #[serde(default)]
     #[structopt(long)]
     headless: bool,
     /// Logger configuration file.
@@ -128,11 +143,23 @@ struct Opt {
     /// Address of the session server.
     ///
     /// Currently must be an `IpAddr`, in the future we may accept hostnames.
+    #[serde(default = "WillConfig::session_server_address_default")]
     #[structopt(long, default_value = "127.0.0.1")]
     session_server_address: IpAddr,
     /// Port that the session server is listening on.
+    #[serde(default = "WillConfig::session_server_port_default")]
     #[structopt(long, default_value = "1234")]
     session_server_port: u16,
+}
+
+impl WillConfig {
+    fn session_server_address_default() -> IpAddr {
+        IpAddr::V4(Ipv4Addr::LOCALHOST)
+    }
+
+    fn session_server_port_default() -> u16 {
+        1234
+    }
 }
 
 fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
@@ -171,17 +198,29 @@ fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
     Ok(())
 }
 
-fn session_server_config(opt: &Opt) -> SessionServerConfig {
+fn session_server_config(will_config: &WillConfig) -> SessionServerConfig {
     SessionServerConfig {
-        address: opt.session_server_address,
-        port: opt.session_server_port,
+        address: will_config.session_server_address,
+        port: will_config.session_server_port,
     }
 }
 
-fn run(opt: Opt) -> Result<(), amethyst::Error> {
-    let session_server_config = session_server_config(&opt);
+fn main() -> Result<(), Error> {
+    let mut will_config = AppFile::find(WILL_CONFIG)
+        .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
+        .and_then(|bytes| String::from_utf8(bytes).map_err(Error::from))
+        .and_then(|will_config_toml| {
+            WillConfig::from_args_with_toml(&will_config_toml).map_err(|e| Error::from(e.compat()))
+        })
+        .unwrap_or_else(|e| {
+            eprintln!("{}", e);
+            WillConfig::from_args()
+        });
 
-    logger_setup(opt.logger_config)?;
+    let session_server_config = session_server_config(&will_config);
+
+    logger_setup(will_config.logger_config.take())?;
+    debug!("will_config: {:?}", will_config);
 
     let assets_dir = AppDir::assets()?;
 
@@ -198,7 +237,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let player_controllers = PlayerControllers::from(&player_input_configs);
 
     let mut game_data = GameDataBuilder::default();
-    if !opt.headless {
+    if !will_config.headless {
         let display_config = AppFile::load_in::<DisplayConfig, _>(
             AppDir::RESOURCES,
             "display_config.ron",
@@ -474,19 +513,10 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
         .with_resource(session_server_config)
         .with_resource(player_controllers)
         .with_resource(player_input_configs)
-        .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
+        .with_frame_limit_config(frame_rate_limit_config(will_config.frame_rate))
         .build(game_data)?;
 
     app.run();
 
     Ok(())
-}
-
-fn main() {
-    let opt = Opt::from_args();
-
-    if let Err(e) = run(opt) {
-        println!("Failed to execute example: {}", e);
-        process::exit(1);
-    }
 }
