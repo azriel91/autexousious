@@ -31,7 +31,7 @@ if errorlevel 1 (
 )
 
 butler push ^
-  "target\publish\app\%app%" ^
+  "target\publish\app\%app_server%" ^
   "%ITCH_IO_USER%/%app%:%CHANNEL_SERVER%" ^
   --userversion !version! ^
   --if-changed

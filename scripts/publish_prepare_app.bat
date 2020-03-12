@@ -40,12 +40,13 @@ set "app_publish_artifacts[1]=%app_assets_dir%"
 set "app_publish_artifacts[2]=%app_resources_dir%"
 set "app_publish_artifacts[3]=%app_crate_dir%\%app_name%.toml"
 set "app_publish_artifacts[4]=%app_crate_dir%\logger.yaml"
-set "app_publish_artifacts[5]=%target_profile_dir%\%app_name_server%.exe"
-set "app_publish_artifacts[6]=%app_crate_dir_server%\logger.yaml"
+
+set "app_publish_artifacts_server[0]=%target_profile_dir%\%app_name_server%.exe"
+set "app_publish_artifacts_server[1]=%app_crate_dir_server%\logger.yaml"
 
 :: Ensure the source files exist before transferring
 set artifacts_first_index=0
-set artifacts_last_index=6
+set artifacts_last_index=4
 for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   setlocal
   set "f=!app_publish_artifacts[%%i]!"
@@ -55,18 +56,41 @@ for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   )
   endlocal
 )
+set artifacts_first_index_server=0
+set artifacts_last_index_server=1
+for /L %%i in (%artifacts_first_index_server%,1,%artifacts_last_index_server%) do (
+  setlocal
+  set "f=!app_publish_artifacts_server[%%i]!"
+  if not exist !f! (
+    echo ERROR: Publish artifact does not exist: '!f!'
+    exit /b 1
+  )
+  endlocal
+)
 
 :: Publish settings
 set "target_publish_app_dir=%target_publish_dir%\app\%app_name%"
+set "target_publish_app_dir_server=%target_publish_dir%\app\%app_name_server%"
 
 :: Remove the publish directory, then copy desired artifacts across
 2>nul rmdir /s /q "%target_publish_dir%"
+2>nul rmdir /s /q "%target_publish_app_dir_server%"
 
+:: will
 for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   setlocal
   set "f=!app_publish_artifacts[%%i]!"
   for /r %%f in (!f!) do (set "f_basename=%%~nxf")
   echo F | xcopy /S /I /Y /F "!f!" "%target_publish_app_dir%\!f_basename!"
+  if errorlevel 1 exit /b 1
+  endlocal
+)
+:: session_server
+for /L %%i in (%artifacts_first_index_server%,1,%artifacts_last_index_server%) do (
+  setlocal
+  set "f=!app_publish_artifacts_server[%%i]!"
+  for /r %%f in (!f!) do (set "f_basename=%%~nxf")
+  echo F | xcopy /S /I /Y /F "!f!" "%target_publish_app_dir_server%\!f_basename!"
   if errorlevel 1 exit /b 1
   endlocal
 )
