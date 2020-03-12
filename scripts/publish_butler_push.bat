@@ -7,7 +7,7 @@ setlocal enableDelayedExpansion
 set app=will
 set app_server=session_server
 for /f "skip=2 delims== tokens=2" %%i in (
-  'c:\windows\system32\find.exe "version" "app/%app%/Cargo.toml"') do (
+  'c:\windows\system32\find.exe "version" "app/%app_server%/Cargo.toml"') do (
     set version=%%i
     set version=!version:~1!
 )
@@ -17,7 +17,7 @@ if errorlevel 1 (
   exit /b %errorlevel%
 )
 
-echo Parsed version from "app/%app%/Cargo.toml": !version!
+echo Parsed version from "app/%app_server%/Cargo.toml": !version!
 
 butler push ^
   "target\publish\app\%app%" ^

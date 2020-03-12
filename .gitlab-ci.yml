@@ -179,7 +179,7 @@ linux:publish:
     - >
       butler push \
         "target/publish/app/${app_server}" \
-        "${ITCH_IO_USER}/${app_server}:${CHANNEL_SERVER}" \
+        "${ITCH_IO_USER}/${app}:${CHANNEL_SERVER}" \
         --userversion "${version}" \
         --if-changed
   artifacts:
