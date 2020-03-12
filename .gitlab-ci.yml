@@ -91,6 +91,7 @@ nightly:conformance:
 .linux:debug:
   <<: *linux_job_common
   script:
+    - time cargo build --all-targets -j 4
     - time cargo test -j 4 --no-run
     - time cargo test -- --nocapture
   after_script:
@@ -103,6 +104,7 @@ nightly:conformance:
 linux:release:
   <<: *linux_job_common
   script:
+    - time cargo build --all-targets -j 4 --release
     - time cargo test -j 4 --no-run --release
     - time cargo test --release -- --nocapture
     - ./scripts/publish_prepare_app.sh
@@ -131,12 +133,14 @@ linux:release:
 .windows:debug:
   <<: *windows_job_common
   script:
+    - cargo build --all-targets
     - cargo test --no-run
     - cargo test -- --nocapture
 
 windows:release:
   <<: *windows_job_common
   script:
+    - cargo build --all-targets --release
     - cargo test --no-run --release
     - cargo test --release -- --nocapture
     - .\scripts\publish_prepare_app.bat
@@ -157,6 +161,7 @@ linux:publish:
   variables:
     ITCH_IO_USER: azriel91
     CHANNEL: linux-x86_64
+    CHANNEL_SERVER: linux-x86_64-server
   script:
     # Publish `will`
     - app=will
@@ -166,6 +171,15 @@ linux:publish:
       butler push \
         "target/publish/app/${app}" \
         "${ITCH_IO_USER}/${app}:${CHANNEL}" \
+        --userversion "${version}" \
+        --if-changed
+
+    # Publish `session_server`
+    - app_server=session_server
+    - >
+      butler push \
+        "target/publish/app/${app_server}" \
+        "${ITCH_IO_USER}/${app_server}:${CHANNEL_SERVER}" \
         --userversion "${version}" \
         --if-changed
   artifacts:
@@ -187,8 +201,9 @@ windows:publish:
   variables:
     ITCH_IO_USER: azriel91
     CHANNEL: windows-x86_64
+    CHANNEL_SERVER: windows-x86_64-server
   script:
-    # Publish `will`
+    # Publish `will` and `session_server`
     - .\scripts\publish_butler_push.bat
   artifacts:
     name: windows-x86_64
