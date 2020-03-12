@@ -1,8 +1,8 @@
 use std::net::SocketAddr;
 
 use game_input_model::{
-    config::ControllerId,
     loaded::{PlayerController, PlayerControllers},
+    play::ControllerIdOffset,
 };
 use log::debug;
 use net_model::play::{NetSessionDevice, NetSessionDevices};
@@ -71,7 +71,15 @@ impl<'s> SessionTracker<'s> {
         &mut self,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
-    ) -> Result<(Session, SessionDevice, PlayerControllers, ControllerId), SessionJoinError> {
+    ) -> Result<
+        (
+            Session,
+            SessionDevice,
+            PlayerControllers,
+            ControllerIdOffset,
+        ),
+        SessionJoinError,
+    > {
         let SessionJoinRequestParams {
             session_code,
             session_device_name,
@@ -88,14 +96,16 @@ impl<'s> SessionTracker<'s> {
                 .unwrap_or_else(|| SessionDeviceId::new(0));
 
             // Mutate the `ControllerId`s on the `player_controllers`.
-            let controller_id_offset: ControllerId = session
-                .session_devices
-                .iter()
-                .map(|session_device| session_device.player_controllers.len())
-                .sum();
+            let controller_id_offset: ControllerIdOffset = ControllerIdOffset::new(
+                session
+                    .session_devices
+                    .iter()
+                    .map(|session_device| session_device.player_controllers.len())
+                    .sum(),
+            );
             let mut player_controllers = player_controllers.clone();
             player_controllers.iter_mut().for_each(|player_controller| {
-                player_controller.controller_id += controller_id_offset
+                player_controller.controller_id += controller_id_offset.0
             });
 
             // Add the new device to the session before adding it to the response.
@@ -132,6 +142,18 @@ impl<'s> SessionTracker<'s> {
         } else {
             Err(SessionJoinError::SessionCodeNotFound)
         }
+    }
+
+    /// Removes the device from any previous session, returning the session code.
+    ///
+    /// # Parameters
+    ///
+    /// * `socket_addr`: `SocketAddr` of the session device.
+    pub fn remove_device_from_existing_session(
+        &mut self,
+        socket_addr: SocketAddr,
+    ) -> Option<&SessionCode> {
+        self.session_device_mappings.remove_device(&socket_addr)
     }
 
     fn generate_session_code(

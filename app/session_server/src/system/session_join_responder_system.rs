@@ -60,6 +60,15 @@ impl SessionJoinResponderSystem {
             ..
         } = session_join_request_params;
 
+        if let Some(session_code_existing) =
+            session_tracker.remove_device_from_existing_session(socket_addr)
+        {
+            debug!(
+                "Removing `{}` from existing session: `{}`.",
+                session_device_name, session_code_existing
+            );
+        }
+
         match session_tracker.append_device(socket_addr, session_join_request_params) {
             Ok((session, session_device, player_controllers, controller_id_offset)) => {
                 let session_accept_response = SessionAcceptResponse::new(

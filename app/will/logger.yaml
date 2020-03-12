@@ -32,6 +32,7 @@ module_levels:
   - ["session_join_play", "info"]
   - ["session_lobby", "info"]
   - ["session_lobby_play", "info"]
+  - ["session_lobby_ui_play", "info"]
   - ["spawn_play", "info"]
   - ["state_play", "info"]
   - ["stdio_input", "info"]
