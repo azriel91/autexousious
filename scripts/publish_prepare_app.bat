@@ -23,7 +23,9 @@ set "target_publish_dir=%target_dir%\publish"
 
 :: Application to publish
 set app_name=will
+set app_name_server=session_server
 set "app_crate_dir=%repository_dir%\app\%app_name%"
+set "app_crate_dir_server=%repository_dir%\app\%app_name_server%"
 call :readlink app_assets_dir "%app_crate_dir%\assets"
 call :readlink app_resources_dir "%app_crate_dir%\resources"
 
@@ -36,11 +38,14 @@ C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell -NoProfile -ExecutionPolic
 set "app_publish_artifacts[0]=%target_profile_dir%\%app_name%.exe"
 set "app_publish_artifacts[1]=%app_assets_dir%"
 set "app_publish_artifacts[2]=%app_resources_dir%"
-set "app_publish_artifacts[3]=%app_crate_dir%\EULA.md"
+set "app_publish_artifacts[3]=%app_crate_dir%\%app_name%.toml"
+set "app_publish_artifacts[4]=%app_crate_dir%\logger.yaml"
+set "app_publish_artifacts[5]=%target_profile_dir%\%app_name_server%.exe"
+set "app_publish_artifacts[6]=%app_crate_dir_server%\logger.yaml"
 
 :: Ensure the source files exist before transferring
 set artifacts_first_index=0
-set artifacts_last_index=3
+set artifacts_last_index=6
 for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   setlocal
   set "f=!app_publish_artifacts[%%i]!"

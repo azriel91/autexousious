@@ -4,7 +4,8 @@
 
 setlocal enableDelayedExpansion
 
-set "app=will"
+set app=will
+set app_server=session_server
 for /f "skip=2 delims== tokens=2" %%i in (
   'c:\windows\system32\find.exe "version" "app/%app%/Cargo.toml"') do (
     set version=%%i
@@ -25,7 +26,18 @@ butler push ^
   --if-changed
 
 if errorlevel 1 (
-  echo Failed to push to butler
+  echo Failed to push %app% to itch.io
+  exit /b 1
+)
+
+butler push ^
+  "target\publish\app\%app%" ^
+  "%ITCH_IO_USER%/%app%:%CHANNEL_SERVER%" ^
+  --userversion !version! ^
+  --if-changed
+
+if errorlevel 1 (
+  echo Failed to push %app_server% to itch.io
   exit /b 1
 )
 

@@ -13,15 +13,20 @@ target_publish_dir="${target_dir}/publish"
 
 # Application to publish
 app_name=will
+app_name_server=session_server
 app_crate_dir="${repository_dir}/app/${app_name}"
+app_crate_dir_server="${repository_dir}/app/${app_name_server}"
 app_assets_dir="$(readlink -f "${app_crate_dir}/assets")"
 app_resources_dir="$(readlink -f "${app_crate_dir}/resources")"
 
 app_publish_artifacts=(
   "${target_profile_dir}/${app_name}"
-  "${app_crate_dir}/EULA.md"
   "${app_assets_dir}"
   "${app_resources_dir}"
+  "${app_crate_dir}/${app_name}.toml"
+  "${app_crate_dir}/logger.yaml"
+  "${target_profile_dir}/${app_name_server}"
+  "${app_crate_dir_server}/logger.yaml"
 )
 
 # Download "default" assets.
