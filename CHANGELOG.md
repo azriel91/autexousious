@@ -11,10 +11,12 @@
 * Rudimentary session lobby UI. ([#204])
 * Send network input between session devices. ([#199])
 * Will application is able to host / join new sessions without being restarted. ([#206])
+* Application startup parameters are read from `will.toml`. ([#207])
 
 ### Changed
 
 * Assets are sorted based on their asset slug. ([#205])
+* Menu items are navigated with both up/left and down/right controller input. ([#207])
 
 ### Fixed
 
@@ -28,6 +30,7 @@
 [#204]: https://gitlab.com/azriel91/autexousious/issues/204
 [#205]: https://gitlab.com/azriel91/autexousious/issues/205
 [#206]: https://gitlab.com/azriel91/autexousious/issues/206
+[#207]: https://gitlab.com/azriel91/autexousious/issues/207
 
 ## 0.17.0 (2020-01-31)
 

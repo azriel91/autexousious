@@ -95,6 +95,10 @@ impl AssetSelectionHighlightUpdateSystem {
 
                     let asset_display_cell_sibling = match move_direction {
                         MoveDirection::None => None,
+                        // TODO: attach `SiblingsVertical` to entities. See:
+                        //
+                        // * `AssetSelector::augment_siblings`
+                        // * `UiMenu::augment_siblings`
                         MoveDirection::Up => siblings_verticals
                             .get(asset_display_cell_entity)
                             .and_then(|siblings_vertical| siblings_vertical.up),

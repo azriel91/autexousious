@@ -48,6 +48,7 @@ network_session_model = { path = "../../crate/network_session_model" }
 network_session_play = { path = "../../crate/network_session_play" }
 parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }
+serde = { version = "1.0.104", features = ["derive"] }
 serde_yaml = "0.8.11"
 session_host_play = { path = "../../crate/session_host_play" }
 session_host_stdio = { path = "../../crate/session_host_stdio" }
@@ -62,8 +63,9 @@ state_registry = { path = "../../crate/state_registry" }
 stdio_command_stdio = { path = "../../crate/stdio_command_stdio" }
 stdio_input = { path = "../../crate/stdio_input" }
 stdio_spi = { path = "../../crate/stdio_spi" }
-structopt = "0.3.9"
-structopt-derive = "0.4.2"
+structopt = "0.3.11"
+structopt-derive = "0.4.4"
+structopt-toml = { git = "https://github.com/azriel91/structopt-toml.git", branch = "maintenance/update-dependencies" }
 tracker = { path = "../../crate/tracker" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 ui_loading = { path = "../../crate/ui_loading" }
