@@ -240,16 +240,51 @@ impl SessionDeviceMappings {
         let session_code_id = self.socket_addr_to_session_code_id.remove(socket_addr);
 
         if let Some(session_code_id) = session_code_id {
-            Self::remove_session_devices(
+            Self::remove_session_device(
                 &mut self.session_code_id_to_devices,
                 &mut self.socket_addr_to_session_code_id,
                 session_code_id,
+                *socket_addr,
             );
         }
 
         session_code_id
             .as_ref()
             .and_then(move |session_code_id| self.session_code_to_id.get_by_right(session_code_id))
+    }
+
+    /// Removes the `NetSessionDevice` for the given `SocketAddr`, returning it if present.
+    fn remove_session_device(
+        session_code_id_to_devices: &mut HashMap<SessionCodeId, NetSessionDevices>,
+        socket_addr_to_session_code_id: &mut HashMap<SocketAddr, SessionCodeId>,
+        session_code_id: SessionCodeId,
+        socket_addr: SocketAddr,
+    ) -> Option<NetSessionDevice> {
+        let mut net_session_devices = session_code_id_to_devices.get_mut(&session_code_id);
+
+        // === Update `SocketAddr` mappings. === //
+        // Remove existing mappings
+        if let Some(net_session_devices) = net_session_devices.as_mut() {
+            socket_addr_to_session_code_id.remove(&socket_addr);
+
+            let net_session_device_index =
+                net_session_devices
+                    .iter()
+                    .enumerate()
+                    .find_map(|(index, net_session_device)| {
+                        if net_session_device.socket_addr == socket_addr {
+                            Some(index)
+                        } else {
+                            None
+                        }
+                    });
+
+            net_session_device_index.map(|net_session_device_index| {
+                net_session_devices.swap_remove(net_session_device_index)
+            })
+        } else {
+            None
+        }
     }
 
     /// Reserves capacity for at least `additional` more mappings to be inserted.
