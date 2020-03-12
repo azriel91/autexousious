@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use game_input_model::loaded::{PlayerController, PlayerControllers};
+    use game_input_model::{
+        loaded::{PlayerController, PlayerControllers},
+        play::ControllerIdOffset,
+    };
     use network_session_model::play::{
         Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
     };
@@ -75,7 +78,7 @@ mod tests {
             PlayerController::new(1, String::from("p1")),
             PlayerController::new(2, String::from("p2")),
         ]);
-        let controller_id_offset = 0;
+        let controller_id_offset = ControllerIdOffset::new(0);
         let args = SessionJoinEvent::SessionAccept(SessionAcceptResponse {
             session_device_id,
             session: Session {

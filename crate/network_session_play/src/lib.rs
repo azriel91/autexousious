@@ -5,7 +5,9 @@
 pub use crate::{
     session_code_generator::SessionCodeGenerator,
     system::{
-        SessionMessageResponseSystem, SessionMessageResponseSystemDesc, SessionStatusNotifierSystem,
+        SessionInputResourcesSyncSystem, SessionInputResourcesSyncSystemDesc,
+        SessionMessageResponseSystem, SessionMessageResponseSystemDesc,
+        SessionStatusNotifierSystem,
     },
 };
 

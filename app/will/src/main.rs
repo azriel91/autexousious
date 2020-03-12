@@ -63,7 +63,10 @@ use network_input_play::{
 };
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
-use network_session_play::{SessionMessageResponseSystem, SessionMessageResponseSystemDesc};
+use network_session_play::{
+    SessionInputResourcesSyncSystem, SessionInputResourcesSyncSystemDesc,
+    SessionMessageResponseSystem, SessionMessageResponseSystemDesc, SessionStatusNotifierSystem,
+};
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
 use session_host_play::{
@@ -296,6 +299,16 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 ItemIdEventSystem::new(),
                 any::type_name::<ItemIdEventSystem>(),
                 &[any::type_name::<StateItemSpawnSystem>()],
+            )
+            .with(
+                SessionStatusNotifierSystem::new(),
+                any::type_name::<SessionStatusNotifierSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionInputResourcesSyncSystemDesc::default(),
+                any::type_name::<SessionInputResourcesSyncSystem>(),
+                &[],
             )
             .with_bundle(AssetPlayBundle::new())?
             .with_system_desc(
