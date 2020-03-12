@@ -10,8 +10,9 @@ use derive_new::new;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{
-    ControlBindings, ControllerId, PlayerActionControl, PlayerAxisControl, PlayerInputConfig,
+use crate::{
+    config::{ControlBindings, PlayerActionControl, PlayerAxisControl, PlayerInputConfig},
+    play::ControllerIdOffset,
 };
 
 /// Structure for holding the input configuration.
@@ -21,15 +22,15 @@ pub struct PlayerInputConfigs(pub Vec<PlayerInputConfig>);
 impl PlayerInputConfigs {
     /// Generates amethyst input `Bindings<ControlBindings>` for each input configuration.
     ///
-    /// The `ControllerId` offset is used when local controllers should start with a higher index
-    /// as remote controllers may use the lower indices.
+    /// The `ControllerIdOffset` is used when local controllers should start with a higher index as
+    /// remote controllers may use the lower indices.
     ///
     /// # Parameters
     ///
     /// * `controller_id_offset`: The offset for controller IDs.
     pub fn generate_bindings(
         &self,
-        controller_id_offset: ControllerId,
+        controller_id_offset: ControllerIdOffset,
     ) -> Result<Bindings<ControlBindings>, Error> {
         let mut bindings = Bindings::new();
 
@@ -39,7 +40,7 @@ impl PlayerInputConfigs {
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, player_input_config)| {
-                let controller_id = index + controller_id_offset;
+                let controller_id = index + controller_id_offset.0;
                 player_input_config
                     .controller_config
                     .axes
@@ -73,7 +74,7 @@ impl PlayerInputConfigs {
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, player_input_config)| {
-                let controller_id = index + controller_id_offset;
+                let controller_id = index + controller_id_offset.0;
                 player_input_config
                     .controller_config
                     .actions
@@ -115,6 +116,6 @@ impl<'config> TryFrom<&'config PlayerInputConfigs> for Bindings<ControlBindings>
     fn try_from(
         player_input_configs: &'config PlayerInputConfigs,
     ) -> Result<Bindings<ControlBindings>, Error> {
-        player_input_configs.generate_bindings(0)
+        player_input_configs.generate_bindings(ControllerIdOffset::new(0))
     }
 }

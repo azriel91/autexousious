@@ -10,6 +10,7 @@
 * Rudimentary session hosting UI. ([#202])
 * Rudimentary session lobby UI. ([#204])
 * Send network input between session devices. ([#199])
+* Will application is able to host / join new sessions without being restarted. ([#206])
 
 ### Changed
 
@@ -26,6 +27,7 @@
 [#202]: https://gitlab.com/azriel91/autexousious/issues/202
 [#204]: https://gitlab.com/azriel91/autexousious/issues/204
 [#205]: https://gitlab.com/azriel91/autexousious/issues/205
+[#206]: https://gitlab.com/azriel91/autexousious/issues/206
 
 ## 0.17.0 (2020-01-31)
 

@@ -59,6 +59,17 @@ impl SessionHostResponderSystem {
         socket_addr: SocketAddr,
         session_host_request_params: &SessionHostRequestParams,
     ) -> SessionHostEvent {
+        let session_device_name = &session_host_request_params.session_device_name;
+
+        if let Some(session_code_existing) =
+            session_tracker.remove_device_from_existing_session(socket_addr)
+        {
+            debug!(
+                "Removing `{}` from existing session: `{}`.",
+                session_device_name, session_code_existing
+            );
+        }
+
         if session_tracker.sessions.len() < SESSION_COUNT_LIMIT {
             let (session, session_device_id, player_controllers) = session_tracker.track_new(
                 session_code_generator,
@@ -73,7 +84,7 @@ impl SessionHostResponderSystem {
         } else {
             debug!(
                 "Rejecting request to host new session from `{}`.",
-                session_host_request_params.session_device_name
+                session_device_name
             );
 
             SessionHostEvent::SessionReject(SessionRejectResponse::new())

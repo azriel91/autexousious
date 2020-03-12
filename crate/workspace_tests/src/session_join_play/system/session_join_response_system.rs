@@ -7,7 +7,10 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use game_input_model::loaded::{PlayerController, PlayerControllers};
+    use game_input_model::{
+        loaded::{PlayerController, PlayerControllers},
+        play::ControllerIdOffset,
+    };
     use net_model::play::{NetData, NetEventChannel};
     use network_session_model::play::{
         Session, SessionCode, SessionDevice, SessionDeviceId, SessionDeviceName, SessionDevices,
@@ -33,6 +36,7 @@ mod tests {
                 session_devices: SessionDevices::new(vec![]),
                 session_status: SessionStatus::None,
                 player_controllers: PlayerControllers::default(),
+                controller_id_offset: ControllerIdOffset::default(),
             },
         )
     }
@@ -67,7 +71,7 @@ mod tests {
                         )]),
                     },
                     player_controllers: player_controllers.clone(),
-                    controller_id_offset: 3,
+                    controller_id_offset: ControllerIdOffset::new(3),
                 })),
             },
             ExpectedParams {
@@ -80,6 +84,7 @@ mod tests {
                 )]),
                 session_status: SessionStatus::JoinEstablished,
                 player_controllers,
+                controller_id_offset: ControllerIdOffset::new(3),
             },
         )
     }
@@ -112,7 +117,7 @@ mod tests {
                         )]),
                     },
                     player_controllers,
-                    controller_id_offset: 3,
+                    controller_id_offset: ControllerIdOffset::new(3),
                 })),
             },
             ExpectedParams {
@@ -121,6 +126,7 @@ mod tests {
                 session_devices: SessionDevices::new(vec![]),
                 session_status: SessionStatus::None,
                 player_controllers: PlayerControllers::default(),
+                controller_id_offset: ControllerIdOffset::default(),
             },
         )
     }
@@ -139,6 +145,7 @@ mod tests {
             session_devices: session_devices_expected,
             session_status: session_status_expected,
             player_controllers: player_controllers_expected,
+            controller_id_offset: controller_id_offset_expected,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
@@ -167,12 +174,14 @@ mod tests {
                     session_devices,
                     session_status,
                     player_controllers,
+                    controller_id_offset,
                 ) = world.system_data::<(
                     Read<'_, SessionCode>,
                     Read<'_, SessionDeviceId>,
                     Read<'_, SessionDevices>,
                     Read<'_, SessionStatus>,
                     Read<'_, PlayerControllers>,
+                    Read<'_, ControllerIdOffset>,
                 )>();
 
                 let (
@@ -181,12 +190,14 @@ mod tests {
                     session_devices,
                     session_status,
                     player_controllers,
+                    controller_id_offset,
                 ) = (
                     &*session_code,
                     &*session_device_id,
                     &*session_devices,
                     &*session_status,
                     &*player_controllers,
+                    &*controller_id_offset,
                 );
 
                 assert_eq!(
@@ -196,6 +207,7 @@ mod tests {
                         &session_devices_expected,
                         &session_status_expected,
                         &player_controllers_expected,
+                        &controller_id_offset_expected,
                     ),
                     (
                         session_code,
@@ -203,6 +215,7 @@ mod tests {
                         session_devices,
                         session_status,
                         player_controllers,
+                        controller_id_offset,
                     )
                 );
             })
@@ -223,5 +236,6 @@ mod tests {
         session_devices: SessionDevices,
         session_status: SessionStatus,
         player_controllers: PlayerControllers,
+        controller_id_offset: ControllerIdOffset,
     }
 }
