@@ -21,7 +21,7 @@ use session_host_model::{
 use crate::{model::SessionDeviceMappings, play::SessionTracker};
 
 /// Limit for number of sessions the server may host;
-const SESSION_COUNT_LIMIT: usize = 100;
+const SESSION_COUNT_LIMIT: usize = 10000;
 
 /// Accepts or rejects session hosting requests, and sends the response to the requester.
 #[derive(Debug, SystemDesc, new)]
