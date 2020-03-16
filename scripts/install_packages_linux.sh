@@ -5,6 +5,7 @@ pkgs_desired=(
   libasound2-dev
   libfreetype6-dev
   libexpat1-dev
+  libxcb-composite0-dev
 
   # enigo
   libxdo-dev
