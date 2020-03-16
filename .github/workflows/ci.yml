@@ -3,20 +3,6 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
@@ -27,7 +13,10 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: rustup component add rustfmt
+
+      - name: Install Rustfmt
+        run: rustup component add rustfmt
+
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
@@ -43,7 +32,13 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: rustup component add clippy
+
+      - name: Install Clippy
+        run: rustup component add clippy
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux.sh
+
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
@@ -59,6 +54,11 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux.sh
+
       - uses: actions-rs/cargo@v1
         with:
-          command: build --all-targets --release
+          command: build
+          args: --all-targets --release
