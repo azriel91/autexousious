@@ -705,11 +705,9 @@ mod test {
     macro_rules! fn_ {
         ($function:ident, $invocation:expr) => {
             fn $function(&mut self, _: StateData<'_, T>) {
-                self.invocations
-                    .borrow_mut()
-                    .push($invocation); // kcov-ignore
+                self.invocations.borrow_mut().push($invocation); // kcov-ignore
             }
-        }
+        };
     }
 
     /// Declares a function that pushes the specified invocation to the `self.invocations` field.
