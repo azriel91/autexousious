@@ -13,9 +13,7 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
-
-      - name: Install Rustfmt
-        run: rustup component add rustfmt
+          components: rustfmt
 
       - uses: actions-rs/cargo@v1
         with:
@@ -32,6 +30,7 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+          components: clippy
 
       - name: Install Clippy
         run: rustup component add clippy
