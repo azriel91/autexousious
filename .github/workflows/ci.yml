@@ -12,6 +12,13 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  license:
+    name: License Conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: scripts/conformance_license.sh
+
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
