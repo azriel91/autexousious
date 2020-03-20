@@ -60,8 +60,8 @@ jobs:
           # See <https://github.com/azriel91/autexousious/issues/214>
           # args: -- -D warnings
 
-  build:
-    name: Build
+  build_linux:
+    name: Build (Linux)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -73,6 +73,22 @@ jobs:
 
       - name: Install Linux Packages
         run: scripts/install_packages_linux.sh
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all-targets --release
+
+  build_windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
 
       - uses: actions-rs/cargo@v1
         with:
