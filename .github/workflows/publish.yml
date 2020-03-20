@@ -7,6 +7,7 @@ jobs:
   build_linux:
     name: Build (Linux)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -27,6 +28,7 @@ jobs:
     name: Prepare Artifacts (Linux)
     needs: build_linux
     if: success()
+    timeout-minutes: 15
     steps:
       - run: scripts/publish_prepare_app.sh
 
@@ -34,6 +36,7 @@ jobs:
     name: itch.io - Will (Linux)
     needs: publish_prepare_linux
     if: success()
+    timeout-minutes: 15
     steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -48,6 +51,7 @@ jobs:
     name: itch.io - Session Server (Linux)
     needs: publish_prepare_linux
     if: success()
+    timeout-minutes: 15
     steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -61,6 +65,7 @@ jobs:
   build_windows:
     name: Build (windows)
     runs-on: windows-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -79,6 +84,7 @@ jobs:
     needs: build_windows
     runs-on: windows-latest
     if: success()
+    timeout-minutes: 15
     steps:
       - run: scripts/publish_prepare_app.bat
         shell: cmd
@@ -88,6 +94,7 @@ jobs:
     needs: publish_prepare_windows
     runs-on: windows-latest
     if: success()
+    timeout-minutes: 15
     steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -103,6 +110,7 @@ jobs:
     needs: publish_prepare_windows
     runs-on: windows-latest
     if: success()
+    timeout-minutes: 15
     steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
