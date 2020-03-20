@@ -1,0 +1,111 @@
+on:
+  push: { tags: ['[0-9]+.[0-9]+.[0-9]+'] }
+
+name: Publish
+
+jobs:
+  build_linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux.sh
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all-targets --release
+
+  publish_prepare_linux:
+    name: Prepare Artifacts (Linux)
+    needs: build_linux
+    if: success()
+    steps:
+      - run: scripts/publish_prepare_app.sh
+
+  publish_itch_io_linux_will:
+    name: itch.io - Will (Linux)
+    needs: publish_prepare_linux
+    if: success()
+    steps:
+      - uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: linux-x86_64-server
+          ITCH_GAME: will
+          ITCH_USER: azriel91
+          PACKAGE: target/publish/app/will
+          VERSION: ${{ github.ref }}
+
+  publish_itch_io_linux_session_server:
+    name: itch.io - Session Server (Linux)
+    needs: publish_prepare_linux
+    if: success()
+    steps:
+      - uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: linux-x86_64-server
+          ITCH_GAME: will
+          ITCH_USER: azriel91
+          PACKAGE: target/publish/app/session_server
+          VERSION: ${{ github.ref }}
+
+  build_windows:
+    name: Build (windows)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all-targets --release
+
+  publish_prepare_windows:
+    name: Prepare Artifacts (Windows)
+    needs: build_windows
+    if: success()
+    steps:
+      - run: scripts/publish_prepare_app.bat
+        shell: cmd
+
+  publish_itch_io_windows_will:
+    name: itch.io - Will (Windows)
+    needs: publish_prepare_windows
+    if: success()
+    steps:
+      - uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: windows-x86_64-server
+          ITCH_GAME: will
+          ITCH_USER: azriel91
+          PACKAGE: target/publish/app/will
+          VERSION: ${{ github.ref }}
+
+  publish_itch_io_windows_session_server:
+    name: itch.io - Session Server (Windows)
+    needs: publish_prepare_windows
+    if: success()
+    steps:
+      - uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: windows-x86_64-server
+          ITCH_GAME: will
+          ITCH_USER: azriel91
+          PACKAGE: target/publish/app/session_server
+          VERSION: ${{ github.ref }}

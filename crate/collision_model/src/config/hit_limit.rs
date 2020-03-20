@@ -69,7 +69,7 @@ macro_rules! impl_visit_numeric {
                 Err(E::custom(format!("u32 out of range: {}", value)))
             }
         }
-    }
+    };
 }
 
 impl<'de> Visitor<'de> for HitLimitVisitor {

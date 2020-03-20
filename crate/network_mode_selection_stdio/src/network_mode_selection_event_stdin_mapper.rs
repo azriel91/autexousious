@@ -1,6 +1,6 @@
 use amethyst::Error;
-use network_mode_selection_model::{NetworkModeSelectionEvent, NetworkModeSelectionEventArgs};
 use menu_model::MenuEvent;
+use network_mode_selection_model::{NetworkModeSelectionEvent, NetworkModeSelectionEventArgs};
 use stdio_spi::StdinMapper;
 
 /// Builds a `NetworkModeSelectionEvent` from stdin tokens.
