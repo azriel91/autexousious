@@ -24,5 +24,5 @@ pub enum UiType {
     /// Session Lobby UI.
     ///
     /// This is used for both hosts and joiners.
-    SessionLobby(SessionLobbyUi),
+    SessionLobby(Box<SessionLobbyUi>),
 }

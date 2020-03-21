@@ -115,8 +115,8 @@ impl<'s> ItemComponent<'s> for UiLabel {
             self.font_colour,
             self.font_size as f32,
         );
-        ui_text.align = self.align.clone();
-        ui_text.line_mode = self.line_mode.clone();
+        ui_text.align = self.align;
+        ui_text.line_mode = self.line_mode;
 
         ui_transforms
             .insert(entity, ui_transform)

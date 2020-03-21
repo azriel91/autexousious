@@ -102,7 +102,7 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
                         Self::send_game_input_event(
                             &mut transport_resource,
                             socket_addrs,
-                            game_input_event.clone(),
+                            *game_input_event,
                         );
                     }
                 } else {

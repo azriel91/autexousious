@@ -95,10 +95,7 @@ impl<'s> System<'s> for InteractableObjectSyncSystem {
                                 let asset_slug_str = asset_id
                                     .and_then(|asset_id| asset_id_mappings.slug(*asset_id))
                                     .map(ToString::to_string);
-                                let asset_slug_str = asset_slug_str
-                                    .as_ref()
-                                    .map(String::as_str)
-                                    .unwrap_or("Unknown");
+                                let asset_slug_str = asset_slug_str.as_deref().unwrap_or("Unknown");
                                 error!(
                                     "Invalid sprite number: `{}` for entity with asset slug: `{}`",
                                     sprite_render.sprite_number, asset_slug_str

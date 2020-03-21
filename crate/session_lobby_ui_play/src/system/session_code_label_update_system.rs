@@ -39,7 +39,7 @@ impl<'s> System<'s> for SessionCodeLabelUpdateSystem {
     ) {
         (&session_code_labels, &mut ui_texts)
             .join()
-            .filter(|(_, ui_text)| &ui_text.text != &session_code.0)
+            .filter(|(_, ui_text)| ui_text.text != session_code.0)
             .for_each(|(_, ui_text)| ui_text.text = session_code.0.clone());
     }
 }

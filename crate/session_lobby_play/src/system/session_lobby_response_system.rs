@@ -51,16 +51,15 @@ impl<'s> System<'s> for SessionLobbyResponseSystem {
         if session_status == &SessionStatus::JoinEstablished
             || session_status == &SessionStatus::HostEstablished
         {
-            session_lobby_events.for_each(|ev| match ev {
-                NetData {
+            session_lobby_events.for_each(|ev| {
+                if let NetData {
                     data: SessionLobbyEvent::SessionStartNotify,
                     ..
-                } => {
+                } = ev
+                {
                     debug!("Session start notification received.");
-
                     session_lobby_ec.single_write(SessionLobbyEvent::SessionStartNotify);
                 }
-                _ => {}
             });
         }
     }
