@@ -54,7 +54,7 @@ impl UiActiveWidgetUpdateSystem {
         UiActiveWidgetInputResources {
             ref mut widget_statuses,
             ref siblingses,
-            siblings_verticals: _,
+            ..
         }: &mut UiActiveWidgetInputResources,
         axis_move_event_data: AxisMoveEventData,
     ) {

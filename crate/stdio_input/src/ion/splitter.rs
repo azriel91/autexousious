@@ -167,6 +167,219 @@ impl<'a> StatementSplitter<'a> {
     }
 }
 
+impl<'a> StatementSplitter<'a> {
+    fn match_curl_brackets(&mut self, error: &mut Option<StatementError>, character: u8) {
+        match character {
+            b'{' if self.flags.intersects(Flags::COMM_1 | Flags::COMM_2) => {
+                self.flags |= Flags::VBRACE
+            }
+            b'{' if !self.flags.contains(Flags::DQUOTE) => self.brace_level += 1, // done
+            b'}' if self.flags.contains(Flags::VBRACE) => self.flags.toggle(Flags::VBRACE), // done
+            b'}' if !self.flags.contains(Flags::DQUOTE) => {
+                if self.brace_level == 0 {
+                    if error.is_none() {
+                        *error = Some(StatementError::InvalidCharacter(
+                            character as char,
+                            self.read,
+                        ))
+                    }
+                } else {
+                    self.brace_level -= 1;
+                }
+            }
+            _ => (),
+        }
+    }
+
+    fn match_round_brackets(&mut self, error: &mut Option<StatementError>, character: u8) {
+        if character == b'(' {
+            if self.flags.contains(Flags::MATHEXPR) {
+                self.math_paren_level += 1;
+                return;
+            }
+
+            if !self
+                .flags
+                .intersects(Flags::COMM_1 | Flags::VARIAB | Flags::ARRAY)
+                && error.is_none()
+                && !self.flags.contains(Flags::DQUOTE)
+            {
+                *error = Some(StatementError::InvalidCharacter(
+                    character as char,
+                    self.read,
+                ));
+                return;
+            }
+
+            if self.flags.intersects(Flags::COMM_1 | Flags::METHOD) {
+                self.flags -= Flags::VARIAB | Flags::ARRAY;
+                if self.data.as_bytes()[self.read] == b'(' {
+                    self.flags = (self.flags - Flags::COMM_1) | Flags::MATHEXPR;
+                    // The next character will always be a left paren in this branch;
+                    self.math_paren_level = -1;
+                    return;
+                } else {
+                    self.paren_level += 1;
+                    return;
+                }
+            }
+
+            if self.flags.contains(Flags::COMM_2) {
+                self.paren_level += 1;
+                return;
+            }
+
+            if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) {
+                self.flags = (self.flags - (Flags::VARIAB | Flags::ARRAY)) | Flags::METHOD;
+                return;
+            }
+        } else {
+            if self.flags.contains(Flags::MATHEXPR) {
+                if self.math_paren_level == 0 {
+                    if self.data.as_bytes().len() <= self.read && error.is_none() {
+                        *error = Some(StatementError::UnterminatedArithmetic);
+                        return;
+                    } else {
+                        let next_character = self.data.as_bytes()[self.read] as char;
+                        if next_character == ')' {
+                            self.flags = (self.flags - Flags::MATHEXPR) | Flags::POST_MATHEXPR;
+                        } else if error.is_none() {
+                            *error =
+                                Some(StatementError::InvalidCharacter(next_character, self.read));
+                        }
+                        return;
+                    }
+                } else {
+                    self.math_paren_level -= 1;
+                    return;
+                }
+            }
+
+            if self.flags.contains(Flags::METHOD) && self.paren_level == 0 {
+                self.flags ^= Flags::METHOD;
+                return;
+            }
+
+            if self.paren_level == 0 && error.is_none() && !self.flags.contains(Flags::DQUOTE) {
+                *error = Some(StatementError::InvalidCharacter(
+                    character as char,
+                    self.read,
+                ));
+                return;
+            }
+
+            self.paren_level -= 1;
+        };
+    }
+
+    fn match_empty_space(
+        &mut self,
+        else_found: &mut bool,
+        first_arg_found: &mut bool,
+        else_pos: &mut usize,
+    ) -> Option<Result<StatementVariant<'a>, StatementError>> {
+        if *else_found {
+            let output = &self.data[*else_pos..self.read - 1].trim();
+            if !output.is_empty() && "if" != *output {
+                self.read = *else_pos;
+                self.flags.remove(Flags::AND | Flags::OR);
+                return Some(Ok(StatementVariant::Default("else")));
+            }
+            *else_found = false;
+        }
+        if !*first_arg_found {
+            let output = &self.data[self.start..self.read - 1].trim();
+            if !output.is_empty() {
+                match *output {
+                    "else" => {
+                        *else_found = true;
+                        *else_pos = self.read;
+                    }
+                    _ => *first_arg_found = true,
+                }
+            }
+        }
+        None
+    }
+
+    fn match_semicolon(
+        &mut self,
+        error: Option<StatementError>,
+    ) -> Option<Result<StatementVariant<'a>, StatementError>> {
+        let statement = self.get_statement(Flags::empty());
+
+        if let Some(err) = error {
+            return Some(Err(err));
+        }
+
+        Some(Ok(statement))
+    }
+
+    fn match_ampersand(
+        &mut self,
+        error: Option<StatementError>,
+    ) -> Option<Result<StatementVariant<'a>, StatementError>> {
+        let statement = self.get_statement(Flags::AND);
+        self.read += 1; // Have `read` skip the 2nd `&` character after reading
+
+        if let Some(err) = error {
+            return Some(Err(err));
+        }
+
+        Some(Ok(statement))
+    }
+
+    fn match_vertical_bar(
+        &mut self,
+        error: Option<StatementError>,
+    ) -> Option<Result<StatementVariant<'a>, StatementError>> {
+        // Detecting if there is a 2nd `|` character
+        let statement = self.get_statement(Flags::OR);
+        self.read += 1; // Have `read` skip the 2nd `|` character after reading
+
+        if let Some(err) = error {
+            return Some(Err(err));
+        }
+
+        Some(Ok(statement))
+    }
+
+    fn match_number_sign(
+        &mut self,
+        error: Option<StatementError>,
+    ) -> Option<Result<StatementVariant<'a>, StatementError>> {
+        let statement = self.get_statement(Flags::empty());
+        self.read = self.data.len();
+
+        if let Some(err) = error {
+            return Some(Err(err));
+        }
+
+        Some(Ok(statement))
+    }
+
+    fn match_byte(&mut self, byte: u8) {
+        if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) {
+            self.flags -= if is_invalid(byte) {
+                Flags::VARIAB | Flags::ARRAY
+            } else {
+                Flags::empty()
+            };
+        }
+    }
+
+    fn match_regexp(&self, error: Option<StatementError>, character: u8) -> Option<StatementError> {
+        // If we are just ending the braced section continue as normal
+        if error.is_none() {
+            return Some(StatementError::InvalidCharacter(
+                character as char,
+                self.read,
+            ));
+        }
+        None
+    }
+}
+
 impl<'a> Iterator for StatementSplitter<'a> {
     type Item = Result<StatementVariant<'a>, StatementError>;
 
@@ -191,20 +404,17 @@ impl<'a> Iterator for StatementSplitter<'a> {
                 0..=43 | 45..=47 | 59..=64 | 91..=94 | 96 | 123..=124 | 126..=127
                     if self.flags.contains(Flags::VBRACE) =>
                 {
-                    // If we are just ending the braced section continue as normal
-                    if error.is_none() {
-                        error = Some(StatementError::InvalidCharacter(
-                            character as char,
-                            self.read,
-                        ))
-                    }
+                    error = self.match_regexp(error, character)
                 }
+
                 b'\'' if !self.flags.contains(Flags::DQUOTE) => {
                     self.flags -= Flags::VARIAB | Flags::ARRAY;
                     self.read += self.single_quote(&mut bytes);
                 }
+
                 // Toggle Flags::DQUOTE and disable Flags::VARIAB + Flags::ARRAY.
                 b'"' => self.flags = (self.flags ^ Flags::DQUOTE) - (Flags::VARIAB | Flags::ARRAY),
+
                 // Disable Flags::COMM_1 and enable Flags::COMM_2 + Flags::ARRAY.
                 b'@' => {
                     self.flags = (self.flags - Flags::COMM_1) | (Flags::COMM_2 | Flags::ARRAY);
@@ -214,113 +424,23 @@ impl<'a> Iterator for StatementSplitter<'a> {
                     self.flags = (self.flags - Flags::COMM_2) | (Flags::COMM_1 | Flags::VARIAB);
                     continue;
                 }
-                b'{' if self.flags.intersects(Flags::COMM_1 | Flags::COMM_2) => {
-                    self.flags |= Flags::VBRACE
-                }
-                b'{' if !self.flags.contains(Flags::DQUOTE) => self.brace_level += 1,
-                b'}' if self.flags.contains(Flags::VBRACE) => self.flags.toggle(Flags::VBRACE),
-                b'}' if !self.flags.contains(Flags::DQUOTE) => {
-                    if self.brace_level == 0 {
-                        if error.is_none() {
-                            error = Some(StatementError::InvalidCharacter(
-                                character as char,
-                                self.read,
-                            ))
-                        }
-                    } else {
-                        self.brace_level -= 1;
-                    }
-                }
-                b'(' if self.flags.contains(Flags::MATHEXPR) => {
-                    self.math_paren_level += 1;
-                }
-                b'(' if !self
-                    .flags
-                    .intersects(Flags::COMM_1 | Flags::VARIAB | Flags::ARRAY) =>
-                {
-                    if error.is_none() && !self.flags.contains(Flags::DQUOTE) {
-                        error = Some(StatementError::InvalidCharacter(
-                            character as char,
-                            self.read,
-                        ))
-                    }
-                }
-                b'(' if self.flags.intersects(Flags::COMM_1 | Flags::METHOD) => {
-                    self.flags -= Flags::VARIAB | Flags::ARRAY;
-                    if self.data.as_bytes()[self.read] == b'(' {
-                        self.flags = (self.flags - Flags::COMM_1) | Flags::MATHEXPR;
-                        // The next character will always be a left paren in this branch;
-                        self.math_paren_level = -1;
-                    } else {
-                        self.paren_level += 1;
-                    }
-                }
-                b'(' if self.flags.contains(Flags::COMM_2) => {
-                    self.paren_level += 1;
-                }
-                b'(' if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) => {
-                    self.flags = (self.flags - (Flags::VARIAB | Flags::ARRAY)) | Flags::METHOD;
-                }
-                b')' if self.flags.contains(Flags::MATHEXPR) => {
-                    if self.math_paren_level == 0 {
-                        if self.data.as_bytes().len() <= self.read {
-                            if error.is_none() {
-                                error = Some(StatementError::UnterminatedArithmetic)
-                            }
-                        } else {
-                            let next_character = self.data.as_bytes()[self.read] as char;
-                            if next_character == ')' {
-                                self.flags = (self.flags - Flags::MATHEXPR) | Flags::POST_MATHEXPR;
-                            } else if error.is_none() {
-                                error = Some(StatementError::InvalidCharacter(
-                                    next_character,
-                                    self.read,
-                                ));
-                            }
-                        }
-                    } else {
-                        self.math_paren_level -= 1;
-                    }
-                }
-                b')' if self.flags.contains(Flags::METHOD) && self.paren_level == 0 => {
-                    self.flags ^= Flags::METHOD;
-                }
-                b')' if self.paren_level == 0 => {
-                    if error.is_none() && !self.flags.contains(Flags::DQUOTE) {
-                        error = Some(StatementError::InvalidCharacter(
-                            character as char,
-                            self.read,
-                        ))
-                    }
-                }
-                b')' => self.paren_level -= 1,
+
+                b'{' | b'}' => self.match_curl_brackets(&mut error, character),
+                b'(' | b')' => self.match_round_brackets(&mut error, character),
+
                 b';' if !self.flags.contains(Flags::DQUOTE) && self.paren_level == 0 => {
-                    let statement = self.get_statement(Flags::empty());
-                    return match error {
-                        Some(error) => Some(Err(error)),
-                        None => Some(Ok(statement)),
-                    };
+                    return self.match_semicolon(error);
                 }
+
                 b'&' if !self.flags.contains(Flags::DQUOTE) && self.paren_level == 0 => {
                     if bytes.peek() == Some(&b'&') {
-                        // Detecting if there is a 2nd `&` character
-                        let statement = self.get_statement(Flags::AND);
-                        self.read += 1; // Have `read` skip the 2nd `&` character after reading
-                        return match error {
-                            Some(error) => Some(Err(error)),
-                            None => Some(Ok(statement)),
-                        };
+                        return self.match_ampersand(error);
                     }
                 }
+
                 b'|' if !self.flags.contains(Flags::DQUOTE) && self.paren_level == 0 => {
                     if bytes.peek() == Some(&b'|') {
-                        // Detecting if there is a 2nd `|` character
-                        let statement = self.get_statement(Flags::OR);
-                        self.read += 1; // Have `read` skip the 2nd `|` character after reading
-                        return match error {
-                            Some(error) => Some(Err(error)),
-                            None => Some(Ok(statement)),
-                        };
+                        return self.match_vertical_bar(error);
                     }
                 }
 
@@ -332,44 +452,19 @@ impl<'a> Iterator for StatementSplitter<'a> {
                             _ => false,
                         }) =>
                 {
-                    let statement = self.get_statement(Flags::empty());
-                    self.read = self.data.len();
-                    return match error {
-                        Some(error) => Some(Err(error)),
-                        None => Some(Ok(statement)),
-                    };
+                    return self.match_number_sign(error)
                 }
-                b' ' if else_found => {
-                    let output = &self.data[else_pos..self.read - 1].trim();
-                    if !output.is_empty() && "if" != *output {
-                        self.read = else_pos;
-                        self.flags.remove(Flags::AND | Flags::OR);
-                        return Some(Ok(StatementVariant::Default("else")));
-                    }
-                    else_found = false;
-                }
-                b' ' if !first_arg_found => {
-                    let output = &self.data[self.start..self.read - 1].trim();
-                    if !output.is_empty() {
-                        match *output {
-                            "else" => {
-                                else_found = true;
-                                else_pos = self.read;
-                            }
-                            _ => first_arg_found = true,
-                        }
+
+                b' ' => {
+                    if let Some(val) =
+                        self.match_empty_space(&mut else_found, &mut first_arg_found, &mut else_pos)
+                    {
+                        return Some(val);
                     }
                 }
+
                 // [^A-Za-z0-9_]
-                byte => {
-                    if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) {
-                        self.flags -= if is_invalid(byte) {
-                            Flags::VARIAB | Flags::ARRAY
-                        } else {
-                            Flags::empty()
-                        };
-                    }
-                }
+                byte => self.match_byte(byte),
             }
             self.flags -= Flags::COMM_1 | Flags::COMM_2;
         }
