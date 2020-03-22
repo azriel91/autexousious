@@ -60,8 +60,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          # See <https://github.com/azriel91/autexousious/issues/214>
-          # args: -- -D warnings
+          args: -- -D warnings
 
   build_linux:
     name: Build (Linux)

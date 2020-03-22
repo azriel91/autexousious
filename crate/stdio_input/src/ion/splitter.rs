@@ -192,9 +192,10 @@ impl<'a> StatementSplitter<'a> {
     }
 
     fn match_round_brackets(&mut self, error: &mut Option<StatementError>, character: u8) {
-        let is_case_found = if character == b'(' {
+        if character == b'(' {
             if self.flags.contains(Flags::MATHEXPR) {
                 self.math_paren_level += 1;
+                return;
             }
 
             if !self
@@ -206,7 +207,8 @@ impl<'a> StatementSplitter<'a> {
                 *error = Some(StatementError::InvalidCharacter(
                     character as char,
                     self.read,
-                ))
+                ));
+                return;
             }
 
             if self.flags.intersects(Flags::COMM_1 | Flags::METHOD) {
@@ -215,26 +217,28 @@ impl<'a> StatementSplitter<'a> {
                     self.flags = (self.flags - Flags::COMM_1) | Flags::MATHEXPR;
                     // The next character will always be a left paren in this branch;
                     self.math_paren_level = -1;
+                    return;
                 } else {
                     self.paren_level += 1;
+                    return;
                 }
             }
 
             if self.flags.contains(Flags::COMM_2) {
                 self.paren_level += 1;
+                return;
             }
 
             if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) {
                 self.flags = (self.flags - (Flags::VARIAB | Flags::ARRAY)) | Flags::METHOD;
+                return;
             }
-            true
         } else {
             if self.flags.contains(Flags::MATHEXPR) {
                 if self.math_paren_level == 0 {
-                    if self.data.as_bytes().len() <= self.read {
-                        if error.is_none() {
-                            *error = Some(StatementError::UnterminatedArithmetic)
-                        }
+                    if self.data.as_bytes().len() <= self.read && error.is_none() {
+                        *error = Some(StatementError::UnterminatedArithmetic);
+                        return;
                     } else {
                         let next_character = self.data.as_bytes()[self.read] as char;
                         if next_character == ')' {
@@ -243,29 +247,29 @@ impl<'a> StatementSplitter<'a> {
                             *error =
                                 Some(StatementError::InvalidCharacter(next_character, self.read));
                         }
+                        return;
                     }
                 } else {
                     self.math_paren_level -= 1;
+                    return;
                 }
             }
 
             if self.flags.contains(Flags::METHOD) && self.paren_level == 0 {
                 self.flags ^= Flags::METHOD;
+                return;
             }
 
             if self.paren_level == 0 && error.is_none() && !self.flags.contains(Flags::DQUOTE) {
                 *error = Some(StatementError::InvalidCharacter(
                     character as char,
                     self.read,
-                ))
+                ));
+                return;
             }
 
-            true
-        };
-
-        if !is_case_found {
             self.paren_level -= 1;
-        }
+        };
     }
 
     fn match_empty_space(

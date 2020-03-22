@@ -8,6 +8,7 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::SpriteRenderSequenceHandles;
 
 /// Represents an in-game object that has been loaded.
+#[allow(clippy::too_many_arguments)]
 #[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Object {
