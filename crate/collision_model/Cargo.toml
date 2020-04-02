@@ -18,7 +18,6 @@ derive_deref = "1.1.0"
 derive_more = "0.99.5"
 kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
-minterpolate = { version = "0.4.0", features = ["serde"] }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }

@@ -593,7 +593,6 @@ dependencies = [
  "asset_model",
  "derive-new",
  "heck",
- "itertools",
  "log",
  "object_type",
  "serde",
@@ -1433,7 +1432,6 @@ dependencies = [
  "derive_more",
  "kinematic_model",
  "logic_clock",
- "minterpolate",
  "numeric_newtype_derive",
  "object_status_model",
  "sequence_model",
@@ -2676,7 +2674,7 @@ version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a70d66db6fd5a50b704eb55ce979bc5509d3a919d764bddec92f72a3e06ed7f6"
 dependencies = [
- "num 0.1.42",
+ "num",
  "regex 0.2.11",
 ]
 
@@ -3374,17 +3372,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8d80717448454e312cb3148adab19943f1553a8fbc828a39b0e91911f488130"
 
 [[package]]
-name = "minterpolate"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d51167254a2f9cbf683aa415fe275ab4e11350c58b7f0a2d7f6e0f10b3594ee"
-dependencies = [
- "mint",
- "num 0.2.1",
- "serde",
-]
-
-[[package]]
 name = "mirrored_model"
 version = "0.18.0"
 dependencies = [
@@ -3575,25 +3562,11 @@ version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4703ad64153382334aa8db57c637364c322d3372e097840c72000dabdcf6156e"
 dependencies = [
- "num-bigint 0.1.44",
+ "num-bigint",
  "num-complex 0.1.43",
  "num-integer",
  "num-iter",
  "num-rational 0.1.42",
- "num-traits 0.2.11",
-]
-
-[[package]]
-name = "num"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8536030f9fea7127f841b45bb6243b27255787fb4eb83958aa1ef9d2fdc0c36"
-dependencies = [
- "num-bigint 0.2.6",
- "num-complex 0.2.4",
- "num-integer",
- "num-iter",
- "num-rational 0.2.4",
  "num-traits 0.2.11",
 ]
 
@@ -3607,17 +3580,6 @@ dependencies = [
  "num-traits 0.2.11",
  "rand 0.4.6",
  "rustc-serialize",
-]
-
-[[package]]
-name = "num-bigint"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "090c7f9998ee0ff65aa5b723e4009f7b217707f1fb5ea551329cc4d6231fb304"
-dependencies = [
- "autocfg 1.0.0",
- "num-integer",
- "num-traits 0.2.11",
 ]
 
 [[package]]
@@ -3679,7 +3641,7 @@ version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee314c74bd753fc86b4780aa9475da469155f3848473a261d2d18e35245a784e"
 dependencies = [
- "num-bigint 0.1.44",
+ "num-bigint",
  "num-integer",
  "num-traits 0.2.11",
  "rustc-serialize",
@@ -3692,7 +3654,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c000134b5dbf44adc5cb772486d335293351644b801551abe8f75c84cfa4aef"
 dependencies = [
  "autocfg 1.0.0",
- "num-bigint 0.2.6",
  "num-integer",
  "num-traits 0.2.11",
 ]
@@ -5196,7 +5157,6 @@ name = "session_host_play"
 version = "0.18.0"
 dependencies = [
  "amethyst",
- "bincode",
  "derivative 2.1.0",
  "derive-new",
  "game_input_model",
@@ -5267,7 +5227,6 @@ name = "session_join_play"
 version = "0.18.0"
 dependencies = [
  "amethyst",
- "bincode",
  "derivative 2.1.0",
  "derive-new",
  "game_input_model",
@@ -5325,7 +5284,6 @@ name = "session_lobby_play"
 version = "0.18.0"
 dependencies = [
  "amethyst",
- "bincode",
  "derivative 2.1.0",
  "derive-new",
  "log",
