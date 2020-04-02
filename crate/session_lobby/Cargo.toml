@@ -13,7 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "mainten
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
 character_selection = { path = "../character_selection" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }
 game_play = { path = "../game_play" }

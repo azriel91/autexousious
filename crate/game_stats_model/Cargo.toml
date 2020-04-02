@@ -9,6 +9,6 @@ doctest = false
 test = false
 
 [dependencies]
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 team_model = { path = "../team_model" }

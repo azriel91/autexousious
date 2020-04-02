@@ -13,7 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "mainten
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 asset_ui_model = { path = "../asset_ui_model" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 game_input_model = { path = "../game_input_model" }
@@ -23,6 +23,6 @@ log = "0.4.8"
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.104", features = ["derive"] }
+serde = { version = "1.0.105", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }

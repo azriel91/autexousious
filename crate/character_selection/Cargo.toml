@@ -15,7 +15,7 @@ application_state = { path = "../application_state" }
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 character_selection_model = { path = "../character_selection_model" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 log = "0.4.8"
 object_type = { path = "../object_type" }

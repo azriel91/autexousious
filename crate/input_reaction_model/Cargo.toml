@@ -15,10 +15,10 @@ asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 control_settings_model = { path ="../control_settings_model" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-derive_more = "0.99.2"
+derive_more = "0.99.5"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path ="../game_mode_selection_model" }
 game_play_model = { path ="../game_play_model" }
@@ -27,7 +27,7 @@ network_mode_selection_model = { path ="../network_mode_selection_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.104", features = ["derive"] }
+serde = { version = "1.0.105", features = ["derive"] }
 session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }
 session_lobby_model = { path = "../session_lobby_model" }

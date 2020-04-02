@@ -20,4 +20,4 @@ smallvec = "1.2.0"
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_model = { path = "../ui_model" }
-strum = "0.17.1"
+strum = "0.18.0"

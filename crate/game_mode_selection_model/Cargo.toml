@@ -11,8 +11,8 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 menu_model = { path = "../menu_model" }
-serde = { version = "1.0.104", features = ["derive"] }
-structopt = "0.3.9"
-structopt-derive = "0.4.2"
-strum = "0.17.1"
-strum_macros = "0.17.1"
+serde = { version = "1.0.105", features = ["derive"] }
+structopt = "0.3.12"
+structopt-derive = "0.4.5"
+strum = "0.18.0"
+strum_macros = "0.18.0"
