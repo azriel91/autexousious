@@ -6836,8 +6836,3 @@ checksum = "65923dd1784f44da1d2c3dbbc5e822045628c590ba72123e1c73d3c230c4434d"
 dependencies = [
  "linked-hash-map",
 ]
-
-[[patch.unused]]
-name = "strum_macros"
-version = "0.17.1"
-source = "git+https://github.com/azriel91/strum.git?branch=bugfix/73/whitelist-variant-attributes-to-copy#f0319f0ac7cc7c6519a40d688b7de01dfdd1d382"
