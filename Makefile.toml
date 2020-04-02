@@ -29,14 +29,14 @@ description = '''
 Performs the following code maintenance tasks:
 
 * Format code: `cargo fmt --all`
+* Upgrade dependencies: `cargo upgrade`
 * Update dependencies: `cargo update`
-* Update dependencies: `cargo upgrade`
 * Check for outdated dependencies: `cargo outdated`
 '''
 dependencies = [
     "workspace-format",
-    "workspace-dependencies-update",
     "workspace-dependencies-upgrade",
+    "workspace-dependencies-update",
     "workspace-outdated"
 ]
 
