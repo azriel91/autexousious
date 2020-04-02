@@ -1,19 +1,55 @@
 # Autexousious
 
-[![pipeline status](https://gitlab.com/azriel91/autexousious/badges/master/pipeline.svg)](https://gitlab.com/azriel91/autexousious/commits/master) [![coverage report](https://gitlab.com/azriel91/autexousious/badges/master/coverage.svg)](https://gitlab.com/azriel91/autexousious/commits/master)
+![CI](https://github.com/azriel91/autexousious/workflows/CI/badge.svg)
 
-This project is in the early stages of development for a moddable 2D side scroller.
+<!-- TODO: Re-enable once we can test with coverage in Github -->
+<!-- [![coverage report](https://gitlab.com/azriel91/autexousious/badges/master/coverage.svg)](https://gitlab.com/azriel91/autexousious/commits/master) -->
+
+![Will screenshot](img/multiplayer.png)
+
+Repository for the game *Will*, and supporting applications. These include:
+
+* **Will:** 2.5D moddable action / adventure game.
+* **Session Server:** Server to coordinate online play.
 
 ## Development
 
+The applications in this repository are built on the [Amethyst game engine](https://github.com/amethyst/amethyst).
+
 ### Setup
 
-```bash
-git clone git@github.com:azriel91/autexousious.git
-cd autexousious
-mkdir assets
-git clone git@github.com:azriel91/will_assets.git assets/default
-```
+1. Install [Rust](https://rustup.rs/).
+2. Install [system dependencies](https://github.com/amethyst/amethyst#dependencies).
+3. Clone this repository and the asset repository.
+
+    ```bash
+    git clone git@github.com:azriel91/autexousious.git
+    cd autexousious
+    mkdir assets
+    git clone git@github.com:azriel91/will_assets.git assets/default
+    ```
+
+### Ongoing
+
+* Running applications:
+
+    ```bash
+    # Will
+    cargo run --bin will --release
+    cargo run --bin will --release -- --session_server_address 127.0.0.1
+
+    # Session server
+    cargo run --bin session_server --release -- --address 127.0.0.1
+    ```
+
+* Running tests:
+
+    ```bash
+    # quieten output
+    export AMETHYST_LOG_LEVEL_FILTER=WARN
+
+    cargo test --workspace -- --no-capture
+    ```
 
 ## License
 
