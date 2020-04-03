@@ -5804,8 +5804,9 @@ dependencies = [
 
 [[package]]
 name = "structopt-toml"
-version = "0.4.1-pre"
-source = "git+https://github.com/azriel91/structopt-toml.git?branch=maintenance/update-dependencies#f85428a73afc480c403bc03a55f78ef93b03e4bb"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dbbc52c7ae53b2b407dd76a7fcc711fd7d2a3688b477f1f59bf94620f710c3d"
 dependencies = [
  "clap",
  "failure",
@@ -5819,8 +5820,9 @@ dependencies = [
 
 [[package]]
 name = "structopt-toml-derive"
-version = "0.4.0"
-source = "git+https://github.com/azriel91/structopt-toml.git?branch=maintenance/update-dependencies#f85428a73afc480c403bc03a55f78ef93b03e4bb"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f970dcff89dcffecc5e6a1a7ff01a4353778728cca8376e8be15a1ef7ba6fc"
 dependencies = [
  "proc-macro2 1.0.10",
  "quote 1.0.3",
