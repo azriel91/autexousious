@@ -9,23 +9,23 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application_menu = { path = "../application_menu" }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
 character_selection_ui_model = { path = "../character_selection_ui_model" }
 control_settings_model = { path = "../control_settings_model" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 input_reaction_model = { path = "../input_reaction_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.104", features = ["derive"] }
+serde = { version = "1.0.105", features = ["derive"] }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
-strum = "0.17.1"
-strum_macros = "0.17.1"
+strum = "0.18.0"
+strum_macros = "0.18.0"
 ui_button_model = { path = "../ui_button_model" }
 ui_form_model = { path = "../ui_form_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }

@@ -9,25 +9,25 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 bitflags = "1.2.1"
-console = "0.9.2"
-derivative = "1.0.3"
+console = "0.10.0"
+derivative = "2.1.0"
 derive-new = "0.5.8"
-itertools = "0.8.2"
+itertools = "0.9.0"
 log = "0.4.8"
 shell-words = "0.1.0"
 state_registry = { path = "../state_registry" }
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.9"
-strum = "0.17.1"
+structopt = "0.3.12"
+strum = "0.18.0"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application_robot = { path = "../application_robot" }
-assert_cmd = "0.12.0"
+assert_cmd = "1.0.1"
 escargot = "0.5.0"
-structopt-derive = "0.4.2"
+structopt-derive = "0.4.5"

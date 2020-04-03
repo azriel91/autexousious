@@ -9,7 +9,7 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application_event = { path = "../application_event" }
 application_ui = { path = "../application_ui" }
 asset_model = { path = "../asset_model" }
@@ -24,7 +24,7 @@ chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }

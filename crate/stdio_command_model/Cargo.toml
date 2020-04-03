@@ -9,8 +9,8 @@ doctest = false
 test = false
 
 [dependencies]
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
-serde = { version = "1.0.104", features = ["derive"] }
+serde = { version = "1.0.105", features = ["derive"] }
 state_registry = { path = "../state_registry" }
-structopt = "0.3.9"
+structopt = "0.3.12"

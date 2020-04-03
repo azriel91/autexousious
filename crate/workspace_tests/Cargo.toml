@@ -5,8 +5,8 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
-amethyst_test = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
@@ -16,7 +16,7 @@ application_state = { path = "../application_state" }
 application_test_support = { path = "../application_test_support" }
 application_ui = { path = "../application_ui" }
 approx = "0.3.2"
-assert_cmd = "0.12.0"
+assert_cmd = "1.0.1"
 asset_derive = { path = "../asset_derive" }
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
@@ -54,7 +54,7 @@ collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 energy_loading = { path = "../energy_loading" }
@@ -114,7 +114,7 @@ ron = "0.5.1"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
-serde = { version = "1.0.104", features = ["derive"] }
+serde = { version = "1.0.105", features = ["derive"] }
 serde_yaml = "0.8.11"
 session_host_model = { path = "../session_host_model" }
 session_host_play = { path = "../session_host_play" }
@@ -139,10 +139,10 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.9"
-structopt-derive = "0.4.2"
-strum = "0.17.1"
-strum_macros = "0.17.1"
+structopt = "0.3.12"
+structopt-derive = "0.4.5"
+strum = "0.18.0"
+strum_macros = "0.18.0"
 team_model = { path = "../team_model" }
 tempfile = "3.1.0"
 test_object_model = { path = "../test_object_model" }

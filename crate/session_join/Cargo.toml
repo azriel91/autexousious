@@ -9,10 +9,10 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "maintenance/correct-amethyst-test-features", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
-derivative = "1.0.3"
+derivative = "2.1.0"
 derive-new = "0.5.8"
 log = "0.4.8"
 network_session_model = { path = "../network_session_model" }

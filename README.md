@@ -48,7 +48,7 @@ The applications in this repository are built on the [Amethyst game engine](http
     # quieten output
     export AMETHYST_LOG_LEVEL_FILTER=WARN
 
-    cargo test --workspace -- --no-capture
+    cargo test --workspace --tests -- --no-capture
     ```
 
 ## License
