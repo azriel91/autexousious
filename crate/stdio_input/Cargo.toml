@@ -9,7 +9,7 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "gl", "test-support"] }
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 bitflags = "1.2.1"
@@ -26,7 +26,7 @@ structopt = "0.3.12"
 strum = "0.18.0"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "gl", "test-support"] }
 application_robot = { path = "../application_robot" }
 assert_cmd = "1.0.1"
 escargot = "0.5.0"
