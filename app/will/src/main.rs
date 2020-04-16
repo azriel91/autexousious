@@ -12,7 +12,7 @@ use std::{
 #[cfg(not(feature = "wasm"))]
 use amethyst::window::DisplayConfig;
 use amethyst::{
-    assets::HotReloadBundle,
+    assets::{HotReloadBundle, HotReloadStrategy},
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
@@ -237,7 +237,11 @@ fn main() -> Result<(), Error> {
         )?;
         let rendering_bundle = RenderingBundle::<DefaultBackend>::new(display_config, event_loop);
 
-        Ok((player_input_configs, rendering_bundle))
+        Ok((
+            player_input_configs,
+            HotReloadStrategy::default(),
+            rendering_bundle,
+        ))
     };
 
     run_application(fn_setup)
@@ -252,6 +256,7 @@ mod wasm {
     use std::path::Path;
 
     use amethyst::{
+        assets::HotReloadStrategy,
         renderer::{types::DefaultBackend, RenderingBundle},
         window::{DisplayConfig, EventLoop},
     };
@@ -328,7 +333,11 @@ mod wasm {
                     self.canvas_element,
                 );
 
-                Ok((player_input_configs, rendering_bundle))
+                Ok((
+                    player_input_configs,
+                    HotReloadStrategy::every(10),
+                    rendering_bundle,
+                ))
             };
 
             match super::run_application(setup_fn) {
@@ -344,7 +353,14 @@ where
     FnSetup: FnOnce(
         &Path,
         &EventLoop<()>,
-    ) -> Result<(PlayerInputConfigs, RenderingBundle<DefaultBackend>), Error>,
+    ) -> Result<
+        (
+            PlayerInputConfigs,
+            HotReloadStrategy,
+            RenderingBundle<DefaultBackend>,
+        ),
+        Error,
+    >,
 {
     let mut will_config = AppFile::find(WILL_CONFIG)
         .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
@@ -366,7 +382,8 @@ where
     let assets_dir = AppDir::assets()?;
 
     let event_loop = EventLoop::new();
-    let (player_input_configs, rendering_bundle) = fn_setup(&app_root, &event_loop)?;
+    let (player_input_configs, hot_reload_strategy, rendering_bundle) =
+        fn_setup(&app_root, &event_loop)?;
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
@@ -385,7 +402,7 @@ where
             .with_bundle(AudioBundle::default())?
             .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?
             .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
-            .with_bundle(HotReloadBundle::default())?
+            .with_bundle(HotReloadBundle::new(hot_reload_strategy))?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
             .with_bundle(AudioLoadingBundle::new())?
