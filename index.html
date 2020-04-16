@@ -33,12 +33,14 @@
           let canvas = document.getElementById("amethyst-canvas");
           let player_input_configs = await fetch('resources/player_input_configs.yaml')
             .then((response) => { return response.text(); });
-          console.log(player_input_configs);
+          let theme = await fetch('resources/font_config.ron')
+            .then((response) => { return response.text(); });
 
           wasm_bindgen.WillAppBuilder
             .new()
             .with_canvas(canvas)
             .with_player_input_configs(player_input_configs)
+            .with_theme(theme)
             .run();
         });
       }

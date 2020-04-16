@@ -11,6 +11,7 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
+use application_ui::{ApplicationUiBundle, FontConfigLoader};
 use asset_model::config::AssetType;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
@@ -97,7 +98,9 @@ impl AutexousiousApplication {
     /// Returns an application with game assets loaded, without `state_play` systems.
     pub fn state_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
+        let font_config = FontConfigLoader::load().expect("Failed to load `FontConfig`.");
         AutexousiousApplication::render_and_ui()
+            .with_bundle(ApplicationUiBundle::new(font_config))
             // On Windows, using `AudioBundle` causes a segfault.
             // On Linux, using `AudioSystem` (which needs a default `Output` device) causes a panic.
             //
@@ -180,7 +183,9 @@ impl AutexousiousApplication {
     /// those events.
     pub fn config_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
+        let font_config = FontConfigLoader::load().expect("Failed to load `FontConfig`.");
         AutexousiousApplication::render_and_ui()
+            .with_bundle(ApplicationUiBundle::new(font_config))
             // On Windows, using `AudioBundle` causes a segfault.
             // On Linux, using `AudioSystem` (which needs a default `Output` device) causes a panic.
             //

@@ -33,6 +33,9 @@ use application::Format;
 use application::{AppDir, AppFile, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
+#[cfg(not(feature = "wasm"))]
+use application_ui::FontConfigLoader;
+use application_ui::{ApplicationUiBundle, FontConfig};
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use asset_selection_stdio::AssetSelectionStdioBundle;
 use asset_selection_ui_play::{
@@ -122,6 +125,7 @@ use ui_play::{
     UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
+#[cfg(target_arch = "wasm32")]
 mod built_in;
 
 /// Default file for application arguments.
@@ -239,6 +243,7 @@ fn main() -> Result<(), Error> {
 
         Ok((
             player_input_configs,
+            FontConfigLoader::load()?,
             HotReloadStrategy::default(),
             rendering_bundle,
         ))
@@ -259,8 +264,10 @@ mod wasm {
         assets::HotReloadStrategy,
         renderer::{types::DefaultBackend, RenderingBundle},
         window::{DisplayConfig, EventLoop},
+        Error,
     };
     use application::{AppFile, Format};
+    use application_ui::FontConfigLoader;
     use game_input_model::config::PlayerInputConfigs;
     use log::{debug, error};
     use wasm_bindgen::prelude::*;
@@ -276,6 +283,8 @@ mod wasm {
         canvas_element: Option<HtmlCanvasElement>,
         /// Input bindings data.
         player_input_configs: Option<String>,
+        /// Theme data.
+        theme: Option<String>,
     }
 
     #[wasm_bindgen]
@@ -291,9 +300,15 @@ mod wasm {
             self
         }
 
-        /// Sets the canvas element for the `WillAppBuilder`.
+        /// Sets the `PlayerInputConfigs` configuration for the `WillAppBuilder`.
         pub fn with_player_input_configs(mut self, player_input_configs: String) -> Self {
             self.player_input_configs = Some(player_input_configs);
+            self
+        }
+
+        /// Sets the `Theme` configuration for the `WillAppBuilder`.
+        pub fn with_theme(mut self, theme: String) -> Self {
+            self.theme = Some(theme);
             self
         }
 
@@ -327,6 +342,11 @@ mod wasm {
                         PlayerInputConfigs::built_in()
                     };
 
+                let font_config = if let Some(font_config) = self.theme {
+                    FontConfigLoader::load_bytes(font_config.as_bytes())
+                } else {
+                    Err(Error::from_string("Theme configuration not set."))
+                }?;
                 let rendering_bundle = RenderingBundle::<DefaultBackend>::new(
                     display_config,
                     event_loop,
@@ -335,6 +355,7 @@ mod wasm {
 
                 Ok((
                     player_input_configs,
+                    font_config,
                     HotReloadStrategy::every(10),
                     rendering_bundle,
                 ))
@@ -356,6 +377,7 @@ where
     ) -> Result<
         (
             PlayerInputConfigs,
+            FontConfig,
             HotReloadStrategy,
             RenderingBundle<DefaultBackend>,
         ),
@@ -382,7 +404,7 @@ where
     let assets_dir = AppDir::assets()?;
 
     let event_loop = EventLoop::new();
-    let (player_input_configs, hot_reload_strategy, rendering_bundle) =
+    let (player_input_configs, font_config, hot_reload_strategy, rendering_bundle) =
         fn_setup(&app_root, &event_loop)?;
 
     let game_mode_selection_state =
@@ -637,6 +659,7 @@ where
             // down as well.
             .with_bundle(TransformBundle::new())?
             .with_bundle(UiBundle::<ControlBindings>::new())?
+            .with_bundle(ApplicationUiBundle::new(font_config))?
             .with_bundle(
                 rendering_bundle
                     .with_plugin(RenderToWindow::new().with_clear(ClearColor {

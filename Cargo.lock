@@ -442,6 +442,7 @@ dependencies = [
  "amethyst",
  "amethyst_test",
  "application_event",
+ "application_ui",
  "asset_loading",
  "asset_model",
  "asset_play",

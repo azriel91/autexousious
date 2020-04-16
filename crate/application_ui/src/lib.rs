@@ -48,10 +48,14 @@
 //! text in regular, bold, italic, and bold italic fonts.
 
 pub use crate::{
-    font_config::FontConfig, font_variant::FontVariant, theme::Theme, theme_loader::ThemeLoader,
+    application_ui_bundle::ApplicationUiBundle, font_config::FontConfig,
+    font_config_loader::FontConfigLoader, font_variant::FontVariant, theme::Theme,
+    theme_loader::ThemeLoader,
 };
 
+mod application_ui_bundle;
 mod font_config;
+mod font_config_loader;
 mod font_variant;
 mod theme;
 mod theme_loader;
