@@ -28,7 +28,9 @@ use amethyst::{
     window::EventLoop,
     CoreApplication, Error, GameDataBuilder, LoggerConfig,
 };
-use application::{AppDir, AppFile, Format, IoUtils};
+#[cfg(not(feature = "wasm"))]
+use application::Format;
+use application::{AppDir, AppFile, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
@@ -119,6 +121,8 @@ use ui_play::{
     UiTransformForFovSystemDesc, UiTransformInsertionRectifySystem,
     UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
+
+mod built_in;
 
 /// Default file for application arguments.
 const WILL_CONFIG: &str = "will.toml";
@@ -219,9 +223,13 @@ pub fn init_panic_hook() {
 
 #[cfg(not(feature = "wasm"))]
 fn main() -> Result<(), Error> {
-    amethyst::start_logger(Default::default());
+    let fn_setup = |_app_root: &Path, event_loop: &EventLoop<()>| {
+        let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
+            AppDir::RESOURCES,
+            "player_input_configs.yaml",
+            Format::Yaml,
+        )?;
 
-    let rendering_bundle_fn = |_app_root: &Path, event_loop: &EventLoop<()>| {
         let display_config = AppFile::load_in::<DisplayConfig, _>(
             AppDir::RESOURCES,
             "display_config.ron",
@@ -229,10 +237,10 @@ fn main() -> Result<(), Error> {
         )?;
         let rendering_bundle = RenderingBundle::<DefaultBackend>::new(display_config, event_loop);
 
-        Ok(rendering_bundle)
+        Ok((player_input_configs, rendering_bundle))
     };
 
-    run_application(rendering_bundle_fn)
+    run_application(fn_setup)
 }
 
 #[allow(unused)]
@@ -247,48 +255,96 @@ mod wasm {
         renderer::{types::DefaultBackend, RenderingBundle},
         window::{DisplayConfig, EventLoop},
     };
+    use application::{AppFile, Format};
+    use game_input_model::config::PlayerInputConfigs;
+    use log::{debug, error};
     use wasm_bindgen::prelude::*;
     use web_sys::HtmlCanvasElement;
 
+    use crate::built_in::BuiltIn;
+
+    /// Will application builder.
     #[wasm_bindgen]
-    pub fn run(canvas_element: Option<HtmlCanvasElement>) {
-        // Make panic return a stack trace
-        crate::init_panic_hook();
+    #[derive(Debug, Default)]
+    pub struct WillAppBuilder {
+        /// User supplied canvas, if any.
+        canvas_element: Option<HtmlCanvasElement>,
+        /// Input bindings data.
+        player_input_configs: Option<String>,
+    }
 
-        wasm_logger::init(wasm_logger::Config::new(log::Level::Trace));
+    #[wasm_bindgen]
+    impl WillAppBuilder {
+        /// Returns a new `WillAppBuilder`.
+        pub fn new() -> Self {
+            Self::default()
+        }
 
-        log::debug!("run()");
-        log::debug!("canvas element: {:?}", canvas_element);
+        /// Sets the canvas element for the `WillAppBuilder`.
+        pub fn with_canvas(mut self, canvas: HtmlCanvasElement) -> Self {
+            self.canvas_element = Some(canvas);
+            self
+        }
 
-        let dimensions = canvas_element
-            .as_ref()
-            .map(|canvas_element| (canvas_element.width(), canvas_element.height()));
-        log::debug!("dimensions: {:?}", dimensions);
+        /// Sets the canvas element for the `WillAppBuilder`.
+        pub fn with_player_input_configs(mut self, player_input_configs: String) -> Self {
+            self.player_input_configs = Some(player_input_configs);
+            self
+        }
 
-        let display_config = DisplayConfig {
-            dimensions,
-            ..Default::default()
-        };
+        pub fn run(self) {
+            // Make panic return a stack trace
+            crate::init_panic_hook();
 
-        let rendering_bundle_fn = move |_: &Path, event_loop: &EventLoop<()>| {
-            let rendering_bundle =
-                RenderingBundle::<DefaultBackend>::new(display_config, event_loop, canvas_element);
+            wasm_logger::init(wasm_logger::Config::new(log::Level::Trace));
 
-            Ok(rendering_bundle)
-        };
+            debug!("canvas element: {:?}", self.canvas_element);
 
-        let res = super::run_application(rendering_bundle_fn);
-        match res {
-            Ok(_) => log::info!("Exited without error"),
-            Err(e) => log::error!("Main returned an error: {:?}", e),
+            let dimensions = self
+                .canvas_element
+                .as_ref()
+                .map(|canvas_element| (canvas_element.width(), canvas_element.height()));
+            debug!("dimensions: {:?}", dimensions);
+
+            let display_config = DisplayConfig {
+                dimensions,
+                ..Default::default()
+            };
+
+            let setup_fn = move |_: &Path, event_loop: &EventLoop<()>| {
+                let player_input_configs =
+                    if let Some(player_input_configs) = self.player_input_configs.as_ref() {
+                        AppFile::load_bytes(player_input_configs.as_bytes(), Format::Yaml)?
+                    } else {
+                        // Hard coded player_input_configs
+                        debug!("Using built in player_input_configs.");
+
+                        PlayerInputConfigs::built_in()
+                    };
+
+                let rendering_bundle = RenderingBundle::<DefaultBackend>::new(
+                    display_config,
+                    event_loop,
+                    self.canvas_element,
+                );
+
+                Ok((player_input_configs, rendering_bundle))
+            };
+
+            match super::run_application(setup_fn) {
+                Ok(_) => {}
+                Err(e) => error!("Main returned an error: {:?}", e),
+            }
         }
     }
 }
 
-fn run_application<FnRenderingBundle>(rendering_bundle_fn: FnRenderingBundle) -> Result<(), Error>
+fn run_application<FnSetup>(fn_setup: FnSetup) -> Result<(), Error>
 where
-    FnRenderingBundle:
-        FnOnce(&Path, &EventLoop<()>) -> Result<RenderingBundle<DefaultBackend>, Error>,
+    FnSetup: FnOnce(
+        &Path,
+        &EventLoop<()>,
+    ) -> Result<(PlayerInputConfigs, RenderingBundle<DefaultBackend>), Error>,
 {
     let mut will_config = AppFile::find(WILL_CONFIG)
         .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
@@ -310,19 +366,16 @@ where
     let assets_dir = AppDir::assets()?;
 
     let event_loop = EventLoop::new();
-    let rendering_bundle = rendering_bundle_fn(&app_root, &event_loop)?;
+    let (player_input_configs, rendering_bundle) = fn_setup(&app_root, &event_loop)?;
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
-    let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
-        AppDir::RESOURCES,
-        "player_input_configs.yaml",
-        Format::Yaml,
-    )?;
     let player_controllers = PlayerControllers::from(&player_input_configs);
+
+    let bindings = Bindings::try_from(&player_input_configs)?;
 
     let mut game_data = GameDataBuilder::default();
     if !will_config.headless {
@@ -330,10 +383,7 @@ where
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(
-                InputBundle::<ControlBindings>::new()
-                    .with_bindings(Bindings::try_from(&player_input_configs)?),
-            )?
+            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?
             .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?

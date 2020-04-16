@@ -1,7 +1,5 @@
 use std::{
-    ffi,
-    fs::File,
-    io,
+    ffi, io,
     marker::PhantomData,
     path::{Path, PathBuf},
 };
@@ -9,7 +7,9 @@ use std::{
 use amethyst::{utils::application_root_dir, Error};
 use serde::Deserialize;
 
-use crate::{FindContext, Format, IoUtils};
+#[cfg(not(target_arch = "wasm32"))]
+use crate::IoUtils;
+use crate::{FindContext, Format};
 
 /// Functions to discover and interact with application files.
 #[derive(Debug)]
@@ -84,9 +84,13 @@ impl AppFile {
             let mut resource_path = base_dir.join(&conf_dir);
             resource_path.push(&file_name);
 
+            #[cfg(not(target_arch = "wasm32"))]
             if resource_path.exists() {
                 return Ok(resource_path);
             }
+
+            #[cfg(target_arch = "wasm32")]
+            return Ok(resource_path);
         }
 
         let find_context = FindContext {
@@ -130,7 +134,7 @@ impl AppFile {
     ///
     /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
     /// * `file_name`: Name of the file to search for relative to the executable.
-    /// * `format`: File [format][format].
+    /// * `format`: File [format].
     ///
     /// [format]: enum.Format.html
     ///
@@ -152,16 +156,13 @@ impl AppFile {
     /// }
     ///
     /// // Search for '<application_dir>/resources/config.ron'.
-    /// let config: Config = match AppFile::load_in(
-    ///     AppDir::RESOURCES,
-    ///     "config.ron",
-    ///     Format::Ron,
-    /// ) {
+    /// let config: Config = match AppFile::load_in(AppDir::RESOURCES, "config.ron", Format::Ron) {
     ///     Ok(path) => path,
     ///     Err(e) => panic!("Failed to load configuration file: {}", e),
     /// };
     ///
     /// println!("Config: {:?}", config);
+    /// ```
     pub fn load_in<T, P>(conf_dir: P, file_name: &str, format: Format) -> Result<T, Error>
     where
         for<'de> T: Deserialize<'de>,
@@ -176,15 +177,28 @@ impl AppFile {
         for<'de> T: Deserialize<'de>,
         P: AsRef<Path> + AsRef<ffi::OsStr>,
     {
-        match format {
-            Format::Ron => {
-                let file_reader = File::open(file_path)?;
-                Ok(ron::de::from_reader(file_reader)?)
-            }
-            Format::Yaml => {
-                let yaml_contents = IoUtils::read_file(file_path.as_ref())?;
-                Ok(serde_yaml::from_slice(&yaml_contents)?)
-            }
-        }
+        let bytes = IoUtils::read_file(file_path.as_ref())?;
+
+        Self::load_bytes(&bytes, format)
+    }
+
+    /// Loads and returns data from bytes.
+    ///
+    /// # Parameters:
+    ///
+    /// * `bytes`: Bytes of the data.
+    /// * `format`: File [format].
+    ///
+    /// [format]: enum.Format.html
+    pub fn load_bytes<T>(bytes: &[u8], format: Format) -> Result<T, Error>
+    where
+        for<'de> T: Deserialize<'de>,
+    {
+        let data = match format {
+            Format::Ron => ron::de::from_bytes(&bytes)?,
+            Format::Yaml => serde_yaml::from_slice(&bytes)?,
+        };
+
+        Ok(data)
     }
 }
