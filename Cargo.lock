@@ -5843,13 +5843,10 @@ dependencies = [
  "amethyst",
  "application_event",
  "application_input",
- "application_robot",
- "assert_cmd",
  "bitflags",
  "console",
  "derivative 2.1.1",
  "derive-new",
- "escargot",
  "itertools",
  "log",
  "shell-words",
@@ -5857,7 +5854,6 @@ dependencies = [
  "stdio_command_model",
  "stdio_spi",
  "structopt",
- "structopt-derive",
  "strum",
 ]
 
