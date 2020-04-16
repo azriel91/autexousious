@@ -7,9 +7,7 @@ use std::{
 use amethyst::{utils::application_root_dir, Error};
 use serde::Deserialize;
 
-#[cfg(not(target_arch = "wasm32"))]
-use crate::IoUtils;
-use crate::{FindContext, Format};
+use crate::{FindContext, Format, IoUtils};
 
 /// Functions to discover and interact with application files.
 #[derive(Debug)]

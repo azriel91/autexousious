@@ -32,7 +32,7 @@ set -ex
 (
   cd "${app_crate_dir}"
   RUSTFLAGS='-C target-feature=+atomics,+bulk-memory' \
-    cargo build --bin will -v --target wasm32-unknown-unknown -Z build-std=std,panic_abort \
+    cargo build --bin will --target wasm32-unknown-unknown -Z build-std=std,panic_abort \
     --features "wasm" --release
 
   # Note the usage of `--no-modules` here which is used to create an output which
