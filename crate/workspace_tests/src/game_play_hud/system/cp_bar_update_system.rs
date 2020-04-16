@@ -16,7 +16,7 @@ mod tests {
     fn sets_transform_x_and_scale() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_effect(|world| {
                 <CpBarPrefab as PrefabData>::SystemData::setup(world);
                 <CpBarUpdateSystem as System>::SystemData::setup(world);

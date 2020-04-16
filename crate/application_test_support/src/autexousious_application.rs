@@ -91,7 +91,7 @@ impl AutexousiousApplication {
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(CameraOrthoSystem::default(), "camera_ortho", &[])
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
     }
 
     /// Returns an application with game assets loaded, without `state_play` systems.

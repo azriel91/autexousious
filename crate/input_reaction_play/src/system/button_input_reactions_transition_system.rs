@@ -8,7 +8,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
     ui::{UiEvent, UiEventType},
-    winit::MouseButton,
+    winit::event::MouseButton,
 };
 use derivative::Derivative;
 use derive_new::new;

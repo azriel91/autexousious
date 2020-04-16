@@ -3,8 +3,11 @@ mod test {
     use amethyst::{
         ecs::{World, WorldExt},
         winit::{
-            DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode,
-            WindowEvent, WindowId,
+            event::{
+                DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode,
+                VirtualKeyCode, WindowEvent,
+            },
+            window::WindowId,
         },
         StateData, StateEvent, Trans,
     };
@@ -58,21 +61,18 @@ mod test {
         ); // kcov-ignore
     }
 
-    fn key_event(scancode: ScanCode, virtual_keycode: VirtualKeyCode) -> Event {
+    #[allow(deprecated)]
+    fn key_event(scancode: ScanCode, virtual_keycode: VirtualKeyCode) -> Event<'static, ()> {
         Event::WindowEvent {
             window_id: unsafe { WindowId::dummy() },
             event: WindowEvent::KeyboardInput {
+                is_synthetic: true,
                 device_id: unsafe { DeviceId::dummy() },
                 input: KeyboardInput {
                     scancode,
                     state: ElementState::Pressed,
                     virtual_keycode: Some(virtual_keycode),
-                    modifiers: ModifiersState {
-                        shift: false,
-                        ctrl: false,
-                        alt: false,
-                        logo: false,
-                    },
+                    modifiers: ModifiersState::default(),
                 },
             },
         }

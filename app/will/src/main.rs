@@ -6,9 +6,11 @@ use std::{
     fs::File,
     io::BufReader,
     net::{IpAddr, Ipv4Addr},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
+#[cfg(not(feature = "wasm"))]
+use amethyst::window::DisplayConfig;
 use amethyst::{
     assets::HotReloadBundle,
     audio::AudioBundle,
@@ -17,12 +19,13 @@ use amethyst::{
     network::simulation::tcp::TcpNetworkBundle,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
+        rendy::hal::command::ClearColor,
         types::DefaultBackend,
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
     utils::{application_root_dir, ortho_camera::CameraOrthoSystem},
-    window::DisplayConfig,
+    window::EventLoop,
     CoreApplication, Error, GameDataBuilder, LoggerConfig,
 };
 use application::{AppDir, AppFile, Format, IoUtils};
@@ -205,7 +208,88 @@ fn session_server_config(will_config: &WillConfig) -> SessionServerConfig {
     }
 }
 
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen]
+pub fn init_panic_hook() {
+    console_error_panic_hook::set_once();
+}
+
+#[cfg(not(feature = "wasm"))]
 fn main() -> Result<(), Error> {
+    amethyst::start_logger(Default::default());
+
+    let rendering_bundle_fn = |_app_root: &Path, event_loop: &EventLoop<()>| {
+        let display_config = AppFile::load_in::<DisplayConfig, _>(
+            AppDir::RESOURCES,
+            "display_config.ron",
+            Format::Ron,
+        )?;
+        let rendering_bundle = RenderingBundle::<DefaultBackend>::new(display_config, event_loop);
+
+        Ok(rendering_bundle)
+    };
+
+    run_application(rendering_bundle_fn)
+}
+
+#[allow(unused)]
+#[cfg(feature = "wasm")]
+fn main() {}
+
+#[cfg(feature = "wasm")]
+mod wasm {
+    use std::path::Path;
+
+    use amethyst::{
+        renderer::{types::DefaultBackend, RenderingBundle},
+        window::{DisplayConfig, EventLoop},
+    };
+    use wasm_bindgen::prelude::*;
+    use web_sys::HtmlCanvasElement;
+
+    #[wasm_bindgen]
+    pub fn run(canvas_element: Option<HtmlCanvasElement>) {
+        // Make panic return a stack trace
+        crate::init_panic_hook();
+
+        wasm_logger::init(wasm_logger::Config::new(log::Level::Trace));
+
+        log::debug!("run()");
+        log::debug!("canvas element: {:?}", canvas_element);
+
+        let dimensions = canvas_element
+            .as_ref()
+            .map(|canvas_element| (canvas_element.width(), canvas_element.height()));
+        log::debug!("dimensions: {:?}", dimensions);
+
+        let display_config = DisplayConfig {
+            dimensions,
+            ..Default::default()
+        };
+
+        let rendering_bundle_fn = move |_: &Path, event_loop: &EventLoop<()>| {
+            let rendering_bundle =
+                RenderingBundle::<DefaultBackend>::new(display_config, event_loop, canvas_element);
+
+            Ok(rendering_bundle)
+        };
+
+        let res = super::run_application(rendering_bundle_fn);
+        match res {
+            Ok(_) => log::info!("Exited without error"),
+            Err(e) => log::error!("Main returned an error: {:?}", e),
+        }
+    }
+}
+
+fn run_application<FnRenderingBundle>(rendering_bundle_fn: FnRenderingBundle) -> Result<(), Error>
+where
+    FnRenderingBundle:
+        FnOnce(&Path, &EventLoop<()>) -> Result<RenderingBundle<DefaultBackend>, Error>,
+{
     let mut will_config = AppFile::find(WILL_CONFIG)
         .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
         .and_then(|bytes| String::from_utf8(bytes).map_err(Error::from))
@@ -222,7 +306,11 @@ fn main() -> Result<(), Error> {
     logger_setup(will_config.logger_config.take())?;
     debug!("will_config: {:?}", will_config);
 
+    let app_root = application_root_dir()?;
     let assets_dir = AppDir::assets()?;
+
+    let event_loop = EventLoop::new();
+    let rendering_bundle = rendering_bundle_fn(&app_root, &event_loop)?;
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
@@ -238,12 +326,6 @@ fn main() -> Result<(), Error> {
 
     let mut game_data = GameDataBuilder::default();
     if !will_config.headless {
-        let display_config = AppFile::load_in::<DisplayConfig, _>(
-            AppDir::RESOURCES,
-            "display_config.ron",
-            Format::Ron,
-        )?;
-
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
@@ -489,10 +571,10 @@ fn main() -> Result<(), Error> {
             .with_bundle(TransformBundle::new())?
             .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(
-                RenderingBundle::<DefaultBackend>::new()
-                    .with_plugin(
-                        RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
-                    )
+                rendering_bundle
+                    .with_plugin(RenderToWindow::new().with_clear(ClearColor {
+                        float32: [0., 0., 0., 1.],
+                    }))
                     .with_plugin(RenderFlat2D::default())
                     .with_plugin(RenderUi::default()),
             )?
@@ -509,14 +591,12 @@ fn main() -> Result<(), Error> {
             );
     }
 
-    let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+    let app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
         .with_resource(session_server_config)
         .with_resource(player_controllers)
         .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(will_config.frame_rate))
         .build(game_data)?;
 
-    app.run();
-
-    Ok(())
+    app.run_winit_loop(event_loop);
 }

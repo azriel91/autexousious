@@ -71,6 +71,17 @@ ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 ui_loading = { path = "../../crate/ui_loading" }
 ui_play = { path = "../../crate/ui_play" }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = { version = "0.1.6" }
+wasm-bindgen = { version = "0.2.60" }
+wasm-logger = { version = "0.2.0" }
+web-sys = { version = "0.3.36" }
+
 [dev-dependencies]
 assert_cmd = "1.0.1"
 escargot = "0.5.0"
+
+[features]
+default = ["parallel"]
+parallel = ["amethyst/parallel"]
+wasm = ["amethyst/wasm"]

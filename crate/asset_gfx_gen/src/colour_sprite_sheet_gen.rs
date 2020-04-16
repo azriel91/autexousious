@@ -4,7 +4,7 @@ use amethyst::renderer::{
     loaders::load_from_srgba,
     palette::Srgba,
     rendy::{
-        hal::image::{Filter, Kind, SamplerInfo, ViewKind, WrapMode},
+        hal::image::{Filter, Kind, SamplerDesc, ViewKind, WrapMode},
         texture::{pixel::Rgba8Srgb, TextureBuilder},
     },
     types::TextureData,
@@ -116,7 +116,7 @@ impl ColourSpriteSheetGen {
                 .with_view_kind(ViewKind::D2)
                 .with_data_width(image_w)
                 .with_data_height(image_h)
-                .with_sampler_info(SamplerInfo::new(Filter::Linear, WrapMode::Clamp))
+                .with_sampler_info(SamplerDesc::new(Filter::Linear, WrapMode::Clamp))
                 .with_data(pixel_data);
             let texture_data = texture_builder.into();
 

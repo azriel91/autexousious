@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::winit::VirtualKeyCode;
+use amethyst::winit::event::VirtualKeyCode;
 use derive_new::new;
 use kinematic_model::config::PositionInit;
 use serde::{Deserialize, Serialize};

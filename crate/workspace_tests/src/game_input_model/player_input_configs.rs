@@ -4,7 +4,7 @@ mod tests {
 
     use amethyst::{
         input::{Axis as InputAxis, BindingError, Bindings, Button},
-        winit::VirtualKeyCode,
+        winit::event::VirtualKeyCode,
     };
     use hamcrest::prelude::*;
 

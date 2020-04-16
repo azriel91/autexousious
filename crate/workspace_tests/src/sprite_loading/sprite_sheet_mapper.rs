@@ -21,7 +21,7 @@ mod test {
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world);
@@ -94,7 +94,7 @@ mod test {
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -168,7 +168,7 @@ mod test {
     fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [no_offsets_definition()];
                 let texture_handles = test_texture_handles(world);

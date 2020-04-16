@@ -29,7 +29,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_effect(|world| {
                 <EnergyComponentStorages as SystemData>::setup(world);
             })

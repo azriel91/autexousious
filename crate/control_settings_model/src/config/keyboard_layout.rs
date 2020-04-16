@@ -1,4 +1,4 @@
-use amethyst::winit::VirtualKeyCode;
+use amethyst::winit::event::VirtualKeyCode;
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
 

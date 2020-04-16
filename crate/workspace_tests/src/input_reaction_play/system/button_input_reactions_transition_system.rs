@@ -8,7 +8,7 @@ mod tests {
         input::InputEvent,
         shred::{ResourceId, SystemData},
         shrev::EventChannel,
-        winit::VirtualKeyCode,
+        winit::event::VirtualKeyCode,
         Error,
     };
     use application::IoUtils;

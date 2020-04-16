@@ -4,7 +4,7 @@ use amethyst::{
     ecs::{Read, World},
     shred::SystemData,
     shrev::{EventChannel, ReaderId},
-    winit::Event,
+    winit::event::Event,
 };
 use asset_selection_model::play::AssetSelectionEvent;
 use control_settings_model::ControlSettingsEvent;
@@ -51,5 +51,5 @@ pub enum AppEvent {
     /// `stdio_command` events.
     StdioCommand(StdioCommandEvent),
     /// Events sent by the winit window.
-    Window(Event),
+    Window(Event<'static, ()>),
 }

@@ -21,7 +21,7 @@ mod tests {
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_assertion(|world| {
                 let sprites_definition = AppFile::load_in::<SpritesDefinition, _>(
                     &*CHAR_BAT_PATH,

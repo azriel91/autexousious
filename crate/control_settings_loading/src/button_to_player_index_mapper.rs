@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::{
     input::{Axis, Button},
-    winit::VirtualKeyCode,
+    winit::event::VirtualKeyCode,
 };
 use game_input_model::config::{ControllerId, PlayerInputConfigs};
 use smallvec::SmallVec;
