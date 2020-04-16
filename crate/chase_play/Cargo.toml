@@ -9,7 +9,7 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "gl", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support"] }
 chase_model = { path = "../chase_model" }
 derivative = "2.1.0"
 derive-new = "0.5.8"

@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "gl", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support"] }
 application = { path = "../../crate/application" }
 application_event = { path = "../../crate/application_event" }
 application_input = { path = "../../crate/application_input" }
@@ -84,4 +84,7 @@ escargot = "0.5.0"
 [features]
 default = ["parallel"]
 parallel = ["amethyst/parallel"]
+gl = ["amethyst/gl"]
+vulkan = ["amethyst/vulkan"]
+metal = ["amethyst/metal"]
 wasm = ["amethyst/wasm"]
