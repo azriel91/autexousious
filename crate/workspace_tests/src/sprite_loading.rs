@@ -47,6 +47,6 @@ mod tests {
                     panic!("Failed to load sprites: {:?}", e); // kcov-ignore
                 } // kcov-ignore
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 }

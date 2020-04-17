@@ -187,7 +187,7 @@ mod tests {
 
                 assertion_fn(character_irs, &input_reactions_assets);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn test_character_sequence() -> CharacterSequence {

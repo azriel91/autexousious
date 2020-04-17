@@ -497,7 +497,7 @@ mod tests {
                     expect_events(world, charge_use_events);
                 }
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn test_character_sequence() -> CharacterSequence {

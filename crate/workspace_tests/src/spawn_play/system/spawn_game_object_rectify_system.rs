@@ -104,7 +104,7 @@ mod tests {
             )
             .with_effect(setup_fn)
             .with_assertion(assertion_fn)
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn spawn_entity(

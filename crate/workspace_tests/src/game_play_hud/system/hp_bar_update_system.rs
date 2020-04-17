@@ -64,6 +64,6 @@ mod tests {
                 assert_eq!(&Vector3::new(83., 446., 790.), transform.translation());
                 assert_eq!(20., transform.scale()[0]);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 }

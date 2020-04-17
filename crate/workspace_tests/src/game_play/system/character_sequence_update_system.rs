@@ -133,7 +133,7 @@ mod tests {
                     },
                 );
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     type TestSystemData<'s> = (

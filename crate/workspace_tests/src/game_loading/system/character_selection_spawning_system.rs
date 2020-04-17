@@ -139,7 +139,7 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_assertion(assertion_fn)
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn first_character_asset_id(world: &mut World) -> AssetId {

@@ -154,7 +154,7 @@ mod tests {
 
                 assert_eq!(sequence_id_expected, sequence_id);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn button_sequence() -> UiSequence {
