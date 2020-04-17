@@ -160,7 +160,7 @@ ui_model_spi = { path = "../ui_model_spi" }
 ui_play = { path = "../ui_play" }
 
 [features]
-default = ["parallel", "vulkan"]
+default = ["parallel", "gl"]
 parallel = ["amethyst/parallel"]
 gl = ["amethyst/gl"]
 vulkan = ["amethyst/vulkan"]

@@ -82,7 +82,7 @@ assert_cmd = "1.0.1"
 escargot = "0.5.0"
 
 [features]
-default = ["parallel"]
+default = ["parallel", "gl"]
 parallel = ["amethyst/parallel"]
 gl = ["amethyst/gl"]
 vulkan = ["amethyst/vulkan"]
