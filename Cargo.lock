@@ -6586,6 +6586,7 @@ dependencies = [
 name = "wasm_support_fs"
 version = "0.19.0"
 dependencies = [
+ "lazy_static",
  "log",
  "web-sys",
 ]
