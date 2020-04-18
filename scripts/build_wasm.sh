@@ -33,7 +33,7 @@ set -ex
   cd "${app_crate_dir}"
   RUSTFLAGS='-C target-feature=+atomics,+bulk-memory' \
     cargo build --bin will --target wasm32-unknown-unknown -Z build-std=std,panic_abort \
-    --features "wasm" --release
+    --no-default-features --features "gl wasm" --release
 
   # Note the usage of `--no-modules` here which is used to create an output which
   # is usable from Web Workers. We notably can't use `--target bundler` since
