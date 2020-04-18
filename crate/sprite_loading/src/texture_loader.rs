@@ -54,13 +54,6 @@ impl TextureLoader {
                         },
                     )
                 };
-                let sprite_image_path = sprite_image_path.canonicalize().unwrap_or_else(|e| {
-                    panic!(
-                        "Failed to canonicalize texture path: `{}`. Error: {}",
-                        sprite_image_path.display(),
-                        e
-                    )
-                });
 
                 let error_msg = format!(
                     "Failed to transform sprite image path to String: `{}`",
