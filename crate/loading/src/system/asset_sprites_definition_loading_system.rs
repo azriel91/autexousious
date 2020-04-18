@@ -57,7 +57,12 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
             // Return early if `sprites.yaml` does not exist.
             // This means `asset_sprites_definition_handles` will not have a key for the current
             // `asset_id`.
-            if !sprites_definition_path.exists() {
+            #[cfg(not(target_arch = "wasm32"))]
+            let sprites_definition_path_exists = sprites_definition_path.exists();
+            #[cfg(target_arch = "wasm32")]
+            let sprites_definition_path_exists = sprites_definition_path.exists_on_server();
+
+            if !sprites_definition_path_exists {
                 return;
             }
         }

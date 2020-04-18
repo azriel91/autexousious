@@ -1,7 +1,11 @@
 use std::{iter::FromIterator, str::FromStr};
 
 use amethyst::assets::ProgressCounter;
-use asset_model::{config::AssetType, loaded::AssetId};
+use asset_loading::ASSETS_DEFAULT_DIR;
+use asset_model::{
+    config::{AssetSlugBuilder, AssetType},
+    loaded::AssetId,
+};
 use loading_model::loaded::LoadStage;
 use log::debug;
 use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
@@ -9,6 +13,7 @@ use object_type::ObjectType;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteSequenceName;
+use state_registry::StateId;
 use ui_model::config::UiDefinition;
 
 use crate::{
@@ -182,6 +187,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
         asset_id: AssetId,
     ) -> bool {
         let AssetLoadingResources {
+            asset_id_mappings,
             asset_type_mappings,
             ..
         } = asset_loading_resources;
@@ -190,6 +196,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 DefinitionLoadingResourcesRead {
                     character_definition_assets,
                     energy_definition_assets,
+                    ui_definition_assets,
                     asset_character_definition_handle,
                     asset_energy_definition_handle,
                     asset_ui_definition_handle,
@@ -252,7 +259,54 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
             AssetType::Ui => {
                 asset_ui_definition_handle
                     .get(asset_id)
-                    .map(|_| asset_sequence_id_mappings_sprite.get(asset_id).is_some())
+                    .map(|ui_definition_handle| {
+                        ui_definition_assets
+                            .get(ui_definition_handle)
+                            .expect("Expected `UiDefinition` to exist.")
+                    })
+                    .map(|ui_definition| {
+                        // when there is an `AssetUiDefinition`, we check if the sequence ID
+                        // mappings is populated.
+                        let sequence_id_mappings_loaded =
+                            asset_sequence_id_mappings_sprite.get(asset_id).is_some();
+
+                        // In addition, for `UiDefinition`s that need to display mini control
+                        // buttons, then we must also wait for the `control_settings` asset to have
+                        // its sequence ID mappings populated.
+                        let control_settings_sequence_id_mappings_loaded =
+                            if ui_definition.display_control_buttons {
+                                // Look up ControlSettings asset for mini control buttons display.
+                                let asset_slug_control_settings = AssetSlugBuilder::default()
+                                    .namespace(ASSETS_DEFAULT_DIR.to_string())
+                                    .name(StateId::ControlSettings.to_string())
+                                    .build()
+                                    .expect("Expected control settings asset slug to be valid.");
+                                let asset_id_control_settings = {
+                                    let asset_id_control_settings =
+                                        asset_id_mappings.id(&asset_slug_control_settings).copied();
+                                    if asset_id_control_settings == Some(asset_id) {
+                                        // If the current asset ID is the same as the control_settings `AssetId`, then we
+                                        // return None -- we don't allow displaying the mini control buttons. This also
+                                        // prevents waiting on our own asset ID to be loaded.
+                                        None
+                                    } else {
+                                        asset_id_control_settings
+                                    }
+                                };
+
+                                if let Some(asset_id_control_settings) = asset_id_control_settings {
+                                    asset_sequence_id_mappings_sprite
+                                        .get(asset_id_control_settings)
+                                        .is_some()
+                                } else {
+                                    true
+                                }
+                            } else {
+                                true
+                            };
+
+                        sequence_id_mappings_loaded && control_settings_sequence_id_mappings_loaded
+                    })
                     .unwrap_or(true) // Default to true when there is no asset UI definition.
             }
         }
