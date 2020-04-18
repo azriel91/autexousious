@@ -1402,6 +1402,7 @@ dependencies = [
  "derivative 2.1.1",
  "derive-new",
  "log",
+ "wasm_support_fs",
 ]
 
 [[package]]
@@ -6244,6 +6245,7 @@ dependencies = [
  "derive-new",
  "log",
  "ui_audio_model",
+ "wasm_support_fs",
 ]
 
 [[package]]

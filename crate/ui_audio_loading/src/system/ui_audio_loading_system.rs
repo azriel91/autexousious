@@ -15,6 +15,8 @@ use ui_audio_model::{
     loaded::UiSfxMap,
     UiAudioLoadingStatus,
 };
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::PathAccessExt;
 
 /// File name of the UI audio configuration.
 const UI_AUDIO_YAML: &str = "ui_audio.yaml";
@@ -71,8 +73,12 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
             *ui_audio_loading_status = UiAudioLoadingStatus::InProgress;
 
             let ui_audio_yaml_path = self.assets_dir.join(UI_AUDIO_YAML);
+            #[cfg(not(target_arch = "wasm32"))]
+            let ui_audio_yaml_path_exists = ui_audio_yaml_path.exists();
+            #[cfg(target_arch = "wasm32")]
+            let ui_audio_yaml_path_exists = ui_audio_yaml_path.exists_on_server();
 
-            if ui_audio_yaml_path.exists() {
+            if ui_audio_yaml_path_exists {
                 // Borrow self piecewise.
                 let progress_counter = &mut self.progress_counter;
                 let ui_sfx_paths_handle = &mut self.ui_sfx_paths_handle;

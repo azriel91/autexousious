@@ -4,6 +4,7 @@
 //!
 //! This is required for WASM support.
 
-pub use crate::dir_access::DirAccess;
+pub use crate::{dir_access::DirAccess, path_access_ext::PathAccessExt};
 
 mod dir_access;
+mod path_access_ext;

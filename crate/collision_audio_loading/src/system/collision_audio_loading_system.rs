@@ -15,6 +15,8 @@ use collision_audio_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::PathAccessExt;
 
 /// File name of the collision audio configuration.
 const COLLISION_AUDIO_YAML: &str = "collision_audio.yaml";
@@ -71,8 +73,12 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
             *collision_audio_loading_status = CollisionAudioLoadingStatus::InProgress;
 
             let collision_audio_yaml_path = self.assets_dir.join(COLLISION_AUDIO_YAML);
+            #[cfg(not(target_arch = "wasm32"))]
+            let collision_audio_yaml_path_exists = collision_audio_yaml_path.exists();
+            #[cfg(target_arch = "wasm32")]
+            let collision_audio_yaml_path_exists = collision_audio_yaml_path.exists_on_server();
 
-            if collision_audio_yaml_path.exists() {
+            if collision_audio_yaml_path_exists {
                 // Borrow self piecewise.
                 let progress_counter = &mut self.progress_counter;
                 let collision_sfx_paths_handle = &mut self.collision_sfx_paths_handle;
