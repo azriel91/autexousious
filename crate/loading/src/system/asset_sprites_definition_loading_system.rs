@@ -3,6 +3,8 @@ use asset_loading::YamlFormat;
 use asset_model::{config::AssetType, loaded::AssetId};
 use loading_model::loaded::LoadStage;
 use log::debug;
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::PathAccessExt;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
@@ -115,7 +117,12 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
 
                 if let AssetType::Map | AssetType::Ui = asset_type {
                     // If there is no sprites definition, return `true`. Otherwise return `false`.
-                    !sprites_definition_path.exists()
+                    #[cfg(not(target_arch = "wasm32"))]
+                    let sprites_definition_path_exists = sprites_definition_path.exists();
+                    #[cfg(target_arch = "wasm32")]
+                    let sprites_definition_path_exists = sprites_definition_path.exists_on_server();
+
+                    !sprites_definition_path_exists
                 } else {
                     false
                 }

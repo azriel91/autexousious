@@ -3262,6 +3262,7 @@ dependencies = [
  "ui_menu_item_model",
  "ui_model",
  "ui_model_spi",
+ "wasm_support_fs",
 ]
 
 [[package]]
