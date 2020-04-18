@@ -590,6 +590,7 @@ dependencies = [
  "serde",
  "serde_yaml",
  "strum",
+ "web-sys",
 ]
 
 [[package]]
