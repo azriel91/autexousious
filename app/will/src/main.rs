@@ -173,6 +173,7 @@ impl WillConfig {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
     let is_user_specified = logger_config_path.is_some();
 
@@ -258,13 +259,13 @@ fn main() {}
 
 #[cfg(feature = "wasm")]
 mod wasm {
-    use std::path::Path;
+    use std::{io::BufReader, path::Path};
 
     use amethyst::{
         assets::HotReloadStrategy,
         renderer::{types::DefaultBackend, RenderingBundle},
         window::{DisplayConfig, EventLoop},
-        Error,
+        Error, LoggerConfig,
     };
     use application::{AppFile, Format};
     use application_ui::FontConfigLoader;
@@ -285,6 +286,8 @@ mod wasm {
         player_input_configs: Option<String>,
         /// Theme data.
         theme: Option<String>,
+        /// Logger configuration.
+        logger_config: Option<String>,
     }
 
     #[wasm_bindgen]
@@ -312,11 +315,26 @@ mod wasm {
             self
         }
 
+        /// Sets the logger configuration for the `WillAppBuilder`.
+        pub fn with_logger_config(mut self, logger_config: String) -> Self {
+            self.logger_config = Some(logger_config);
+            self
+        }
+
         pub fn run(self) {
             // Make panic return a stack trace
             crate::init_panic_hook();
 
-            wasm_logger::init(wasm_logger::Config::new(log::Level::Trace));
+            let logger_config: LoggerConfig = self
+                .logger_config
+                .as_ref()
+                .map(String::as_bytes)
+                .map(BufReader::new)
+                .map(serde_yaml::from_reader)
+                .map(Result::ok)
+                .flatten()
+                .unwrap_or_default();
+            amethyst::Logger::from_config(logger_config).start();
 
             debug!("canvas element: {:?}", self.canvas_element);
 
@@ -397,6 +415,7 @@ where
 
     let session_server_config = session_server_config(&will_config);
 
+    #[cfg(not(target_arch = "wasm32"))]
     logger_setup(will_config.logger_config.take())?;
     debug!("will_config: {:?}", will_config);
 

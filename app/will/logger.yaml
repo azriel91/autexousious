@@ -4,6 +4,7 @@ log_gfx_backend_level: "warn"
 log_gfx_rendy_level: "warn"
 module_levels:
   - ["amethyst", "warn"]
+  - ["amethyst_audio", "info"]
   - ["amethyst_assets", "info"]
   - ["amethyst_rendy", "info"]
   - ["application", "info"]
@@ -14,6 +15,7 @@ module_levels:
   - ["control_settings", "info"]
   - ["game_mode_selection", "info"]
   - ["gfx_backend_vulkan", "warn"]
+  - ["gfx_backend_gl", "warn"]
   - ["input_reaction_play", "info"]
   - ["loading", "info"]
   - ["map_selection", "info"]
@@ -37,5 +39,6 @@ module_levels:
   - ["state_play", "info"]
   - ["stdio_input", "info"]
   - ["ui_audio_loading", "info"]
+  - ["wasm_support_fs", "info"]
   - ["will", "info"]
   - ["winit", "warn"]

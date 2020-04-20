@@ -35,12 +35,15 @@
             .then((response) => { return response.text(); });
           let theme = await fetch('resources/font_config.ron')
             .then((response) => { return response.text(); });
+          let logger_config = await fetch('app/will/logger.yaml')
+            .then((response) => { return response.text(); });
 
           wasm_bindgen.WillAppBuilder
             .new()
             .with_canvas(canvas)
             .with_player_input_configs(player_input_configs)
             .with_theme(theme)
+            .with_logger_config(logger_config)
             .run();
         });
       }

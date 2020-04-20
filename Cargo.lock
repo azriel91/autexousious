@@ -83,6 +83,7 @@ dependencies = [
  "amethyst_ui",
  "amethyst_utils",
  "amethyst_window",
+ "console_log",
  "crossbeam-channel 0.4.2",
  "derivative 1.0.4",
  "dirs",
@@ -1529,6 +1530,15 @@ checksum = "b8d976903543e0c48546a91908f21588a680a8c8f984df9a5d69feccb2b2a211"
 dependencies = [
  "cfg-if",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "console_log"
+version = "0.1.2"
+source = "git+https://github.com/azriel91/console_log.git?branch=feature/add-colors#c9296dc1eb95d0f2030b0113cbe5830065dd0782"
+dependencies = [
+ "log",
+ "web-sys",
 ]
 
 [[package]]
@@ -6572,17 +6582,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "daf76fe7d25ac79748a37538b7daeed1c7a6867c92d3245c12c6222e4a20d639"
 
 [[package]]
-name = "wasm-logger"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "074649a66bb306c8f2068c9016395fa65d8e08d2affcbf95acf3c24c3ab19718"
-dependencies = [
- "log",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
 name = "wasm_support_fs"
 version = "0.19.0"
 dependencies = [
@@ -6757,7 +6756,6 @@ dependencies = [
  "ui_loading",
  "ui_play",
  "wasm-bindgen",
- "wasm-logger",
  "web-sys",
 ]
 

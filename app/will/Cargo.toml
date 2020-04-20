@@ -74,7 +74,6 @@ ui_play = { path = "../../crate/ui_play" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { version = "0.1.6" }
 wasm-bindgen = { version = "0.2.60" }
-wasm-logger = { version = "0.2.0" }
 web-sys = { version = "0.3.36" }
 
 [dev-dependencies]
