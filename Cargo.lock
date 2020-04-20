@@ -1550,9 +1550,10 @@ dependencies = [
 [[package]]
 name = "console_log"
 version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e7871d2947441b0fdd8e2bd1ce2a2f75304f896582c0d572162d48290683c48"
 dependencies = [
  "log",
- "wasm-bindgen",
  "web-sys",
 ]
 
