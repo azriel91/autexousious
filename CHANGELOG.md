@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+* Support for GL renderer backend. ([#219])
+* Initial support for Web Assembly (WASM). ([#219])
+
+[#219]: https://gitlab.com/azriel91/autexousious/issues/219
+
 ## 0.18.0 (2020-03-13)
 
 ### Added
