@@ -4,6 +4,8 @@ use asset_model::{config::AssetType, loaded::AssetId};
 use loading_model::loaded::LoadStage;
 use log::debug;
 use object_type::ObjectType;
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::PathAccessExt;
 
 use crate::{
     AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResources,
@@ -112,7 +114,14 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
             AssetType::Ui => {
                 // Load `background.yaml` if it exists, don't error if not.
                 let background_definition_path = asset_path.join("background.yaml");
-                if background_definition_path.exists() {
+
+                #[cfg(not(target_arch = "wasm32"))]
+                let background_definition_path_exists = background_definition_path.exists();
+                #[cfg(target_arch = "wasm32")]
+                let background_definition_path_exists =
+                    background_definition_path.exists_on_server();
+
+                if background_definition_path_exists {
                     let background_definition_handle = loader.load(
                         background_definition_path
                             .to_str()
@@ -128,7 +137,13 @@ impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
 
                 // Load `ui.yaml` if it exists, don't error if not.
                 let ui_definition_path = asset_path.join("ui.yaml");
-                if ui_definition_path.exists() {
+
+                #[cfg(not(target_arch = "wasm32"))]
+                let ui_definition_path_exists = ui_definition_path.exists();
+                #[cfg(target_arch = "wasm32")]
+                let ui_definition_path_exists = ui_definition_path.exists_on_server();
+
+                if ui_definition_path_exists {
                     let ui_definition_handle = loader.load(
                         ui_definition_path
                             .to_str()

@@ -7,8 +7,11 @@ mod tests {
         input::{Axis as InputAxis, Bindings, Button, InputEvent, InputHandler},
         shrev::{EventChannel, ReaderId},
         winit::{
-            DeviceId, ElementState, Event, KeyboardInput, ModifiersState, VirtualKeyCode,
-            WindowEvent, WindowId,
+            event::{
+                DeviceId, ElementState, Event, KeyboardInput, ModifiersState, VirtualKeyCode,
+                WindowEvent,
+            },
+            window::WindowId,
         },
         Error,
     };
@@ -85,7 +88,7 @@ mod tests {
     }
 
     fn run_test(
-        key_events: Vec<Event>,
+        key_events: Vec<Event<'static, ()>>,
         input_events_expected: Vec<GameInputEvent>,
     ) -> Result<(), Error> {
         let player_input_configs = player_input_configs();
@@ -171,29 +174,26 @@ mod tests {
         ControllerConfig::new(axes, actions)
     }
 
-    fn key_press(virtual_keycode: VirtualKeyCode) -> Event {
+    fn key_press(virtual_keycode: VirtualKeyCode) -> Event<'static, ()> {
         key_event(virtual_keycode, ElementState::Pressed)
     }
 
-    fn key_release(virtual_keycode: VirtualKeyCode) -> Event {
+    fn key_release(virtual_keycode: VirtualKeyCode) -> Event<'static, ()> {
         key_event(virtual_keycode, ElementState::Released)
     }
 
-    fn key_event(virtual_keycode: VirtualKeyCode, state: ElementState) -> Event {
+    #[allow(deprecated)]
+    fn key_event(virtual_keycode: VirtualKeyCode, state: ElementState) -> Event<'static, ()> {
         Event::WindowEvent {
             window_id: unsafe { WindowId::dummy() },
             event: WindowEvent::KeyboardInput {
+                is_synthetic: true,
                 device_id: unsafe { DeviceId::dummy() },
                 input: KeyboardInput {
                     scancode: 404,
                     state,
                     virtual_keycode: Some(virtual_keycode),
-                    modifiers: ModifiersState {
-                        shift: false,
-                        ctrl: false,
-                        alt: false,
-                        logo: false,
-                    },
+                    modifiers: ModifiersState::default(),
                 },
             },
         }

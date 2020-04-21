@@ -8,7 +8,9 @@ use std::{
 
 use amethyst::{utils::application_root_dir, Error};
 
-use crate::{AppFile, DiscoveryContext};
+use crate::AppFile;
+#[cfg(not(target_arch = "wasm32"))]
+use crate::DiscoveryContext;
 
 /// Functions to discover and interact with application files.
 #[derive(Debug)]
@@ -69,6 +71,7 @@ impl AppDir {
         let dir = AppFile::find_in_internal(current_exe_result, Path::new(""), dir_name)?;
 
         // Canonicalize path to handle symlinks.
+        #[cfg(not(target_arch = "wasm32"))]
         match dir.canonicalize() {
             Ok(dir) => {
                 if dir.is_dir() {
@@ -88,5 +91,8 @@ impl AppDir {
             .into()),
             // kcov-ignore-end
         }
+
+        #[cfg(target_arch = "wasm32")]
+        Ok(dir)
     }
 }

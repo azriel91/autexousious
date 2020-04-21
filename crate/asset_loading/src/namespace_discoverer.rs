@@ -2,6 +2,8 @@ use std::path::Path;
 
 use application::IoUtils;
 use log::error;
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::PathAccessExt;
 
 use crate::{DirTraverse, NamespaceDirectory};
 
@@ -52,7 +54,17 @@ impl NamespaceDiscoverer {
                 let path = assets_dir.join(&namespace);
                 (namespace, path)
             })
-            .filter(|(_namespace, dir)| dir.is_dir())
+            .filter(|(_namespace, dir)| {
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    dir.is_dir()
+                }
+
+                #[cfg(target_arch = "wasm32")]
+                {
+                    dir.exists_on_server()
+                }
+            })
             .chain(namespaces_downloaded)
             .map(|(namespace, path)| NamespaceDirectory { namespace, path })
             .collect::<Vec<_>>()

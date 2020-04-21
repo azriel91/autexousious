@@ -25,7 +25,7 @@ mod test {
     fn loads_object_assets() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
@@ -97,7 +97,7 @@ mod test {
                 assert_frame_component_data_count!(body_sequence_handles);
                 assert_frame_component_data_count!(interactions_sequence_handles);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     type TestSystemData<'s> = (

@@ -1,6 +1,6 @@
 use amethyst::{
     input::{Axis as InputAxis, Button},
-    winit::VirtualKeyCode,
+    winit::event::VirtualKeyCode,
 };
 use game_input_model::{
     config::{Axis, PlayerInputConfigs},

@@ -85,7 +85,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(SpriteLoadingBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_setup(<AssetTextureLoadingSystem as System<'_>>::SystemData::setup)
             .with_effect(move |world| {
                 let asset_id = AssetQueries::id_generate_any(world);
@@ -156,7 +156,7 @@ mod tests {
                     asset_id,
                 ))
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     struct SetupParams {

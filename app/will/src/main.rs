@@ -6,28 +6,36 @@ use std::{
     fs::File,
     io::BufReader,
     net::{IpAddr, Ipv4Addr},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
+#[cfg(not(feature = "wasm"))]
+use amethyst::window::DisplayConfig;
 use amethyst::{
-    assets::HotReloadBundle,
+    assets::{HotReloadBundle, HotReloadStrategy},
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
     network::simulation::tcp::TcpNetworkBundle,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
+        rendy::hal::command::ClearColor,
         types::DefaultBackend,
         RenderingBundle,
     },
     ui::{RenderUi, UiBundle},
     utils::{application_root_dir, ortho_camera::CameraOrthoSystem},
-    window::DisplayConfig,
+    window::EventLoop,
     CoreApplication, Error, GameDataBuilder, LoggerConfig,
 };
-use application::{AppDir, AppFile, Format, IoUtils};
+#[cfg(not(feature = "wasm"))]
+use application::Format;
+use application::{AppDir, AppFile, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
+#[cfg(not(feature = "wasm"))]
+use application_ui::FontConfigLoader;
+use application_ui::{ApplicationUiBundle, FontConfig};
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
 use asset_selection_stdio::AssetSelectionStdioBundle;
 use asset_selection_ui_play::{
@@ -117,6 +125,9 @@ use ui_play::{
     UiTransformInsertionRectifySystemDesc, WidgetSequenceUpdateSystem,
 };
 
+#[cfg(target_arch = "wasm32")]
+mod built_in;
+
 /// Default file for application arguments.
 const WILL_CONFIG: &str = "will.toml";
 
@@ -162,6 +173,7 @@ impl WillConfig {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn logger_setup(logger_config_path: Option<PathBuf>) -> Result<(), Error> {
     let is_user_specified = logger_config_path.is_some();
 
@@ -205,7 +217,191 @@ fn session_server_config(will_config: &WillConfig) -> SessionServerConfig {
     }
 }
 
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(feature = "wasm")]
+#[wasm_bindgen]
+pub fn init_panic_hook() {
+    console_error_panic_hook::set_once();
+}
+
+#[cfg(not(feature = "wasm"))]
 fn main() -> Result<(), Error> {
+    let fn_setup = |_app_root: &Path, event_loop: &EventLoop<()>| {
+        let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
+            AppDir::RESOURCES,
+            "player_input_configs.yaml",
+            Format::Yaml,
+        )?;
+
+        let display_config = AppFile::load_in::<DisplayConfig, _>(
+            AppDir::RESOURCES,
+            "display_config.ron",
+            Format::Ron,
+        )?;
+        let rendering_bundle = RenderingBundle::<DefaultBackend>::new(display_config, event_loop);
+
+        Ok((
+            player_input_configs,
+            FontConfigLoader::load()?,
+            HotReloadStrategy::default(),
+            rendering_bundle,
+        ))
+    };
+
+    run_application(fn_setup)
+}
+
+#[allow(unused)]
+#[cfg(feature = "wasm")]
+fn main() {}
+
+#[cfg(feature = "wasm")]
+mod wasm {
+    use std::{io::BufReader, path::Path};
+
+    use amethyst::{
+        assets::HotReloadStrategy,
+        renderer::{types::DefaultBackend, RenderingBundle},
+        window::{DisplayConfig, EventLoop},
+        Error, LoggerConfig,
+    };
+    use application::{AppFile, Format};
+    use application_ui::FontConfigLoader;
+    use game_input_model::config::PlayerInputConfigs;
+    use log::{debug, error};
+    use wasm_bindgen::prelude::*;
+    use web_sys::HtmlCanvasElement;
+
+    use crate::built_in::BuiltIn;
+
+    /// Will application builder.
+    #[wasm_bindgen]
+    #[derive(Debug, Default)]
+    pub struct WillAppBuilder {
+        /// User supplied canvas, if any.
+        canvas_element: Option<HtmlCanvasElement>,
+        /// Input bindings data.
+        player_input_configs: Option<String>,
+        /// Theme data.
+        theme: Option<String>,
+        /// Logger configuration.
+        logger_config: Option<String>,
+    }
+
+    #[wasm_bindgen]
+    impl WillAppBuilder {
+        /// Returns a new `WillAppBuilder`.
+        pub fn new() -> Self {
+            Self::default()
+        }
+
+        /// Sets the canvas element for the `WillAppBuilder`.
+        pub fn with_canvas(mut self, canvas: HtmlCanvasElement) -> Self {
+            self.canvas_element = Some(canvas);
+            self
+        }
+
+        /// Sets the `PlayerInputConfigs` configuration for the `WillAppBuilder`.
+        pub fn with_player_input_configs(mut self, player_input_configs: String) -> Self {
+            self.player_input_configs = Some(player_input_configs);
+            self
+        }
+
+        /// Sets the `Theme` configuration for the `WillAppBuilder`.
+        pub fn with_theme(mut self, theme: String) -> Self {
+            self.theme = Some(theme);
+            self
+        }
+
+        /// Sets the logger configuration for the `WillAppBuilder`.
+        pub fn with_logger_config(mut self, logger_config: String) -> Self {
+            self.logger_config = Some(logger_config);
+            self
+        }
+
+        pub fn run(self) {
+            // Make panic return a stack trace
+            crate::init_panic_hook();
+
+            let logger_config: LoggerConfig = self
+                .logger_config
+                .as_ref()
+                .map(String::as_bytes)
+                .map(BufReader::new)
+                .map(serde_yaml::from_reader)
+                .map(Result::ok)
+                .flatten()
+                .unwrap_or_default();
+            amethyst::Logger::from_config(logger_config).start();
+
+            debug!("canvas element: {:?}", self.canvas_element);
+
+            let dimensions = self
+                .canvas_element
+                .as_ref()
+                .map(|canvas_element| (canvas_element.width(), canvas_element.height()));
+            debug!("dimensions: {:?}", dimensions);
+
+            let display_config = DisplayConfig {
+                dimensions,
+                ..Default::default()
+            };
+
+            let setup_fn = move |_: &Path, event_loop: &EventLoop<()>| {
+                let player_input_configs =
+                    if let Some(player_input_configs) = self.player_input_configs.as_ref() {
+                        AppFile::load_bytes(player_input_configs.as_bytes(), Format::Yaml)?
+                    } else {
+                        // Hard coded player_input_configs
+                        debug!("Using built in player_input_configs.");
+
+                        PlayerInputConfigs::built_in()
+                    };
+
+                let font_config = if let Some(font_config) = self.theme {
+                    FontConfigLoader::load_bytes(font_config.as_bytes())
+                } else {
+                    Err(Error::from_string("Theme configuration not set."))
+                }?;
+                let rendering_bundle = RenderingBundle::<DefaultBackend>::new(
+                    display_config,
+                    event_loop,
+                    self.canvas_element,
+                );
+
+                Ok((
+                    player_input_configs,
+                    font_config,
+                    HotReloadStrategy::every(10),
+                    rendering_bundle,
+                ))
+            };
+
+            match super::run_application(setup_fn) {
+                Ok(_) => {}
+                Err(e) => error!("Main returned an error: {:?}", e),
+            }
+        }
+    }
+}
+
+fn run_application<FnSetup>(fn_setup: FnSetup) -> Result<(), Error>
+where
+    FnSetup: FnOnce(
+        &Path,
+        &EventLoop<()>,
+    ) -> Result<
+        (
+            PlayerInputConfigs,
+            FontConfig,
+            HotReloadStrategy,
+            RenderingBundle<DefaultBackend>,
+        ),
+        Error,
+    >,
+{
     let mut will_config = AppFile::find(WILL_CONFIG)
         .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
         .and_then(|bytes| String::from_utf8(bytes).map_err(Error::from))
@@ -219,41 +415,41 @@ fn main() -> Result<(), Error> {
 
     let session_server_config = session_server_config(&will_config);
 
+    #[cfg(not(target_arch = "wasm32"))]
     logger_setup(will_config.logger_config.take())?;
     debug!("will_config: {:?}", will_config);
 
+    let app_root = application_root_dir()?;
     let assets_dir = AppDir::assets()?;
+
+    let event_loop = EventLoop::new();
+    let (player_input_configs, font_config, hot_reload_strategy, rendering_bundle) =
+        fn_setup(&app_root, &event_loop)?;
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
-    let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
-        AppDir::RESOURCES,
-        "player_input_configs.yaml",
-        Format::Yaml,
-    )?;
     let player_controllers = PlayerControllers::from(&player_input_configs);
+
+    let bindings = Bindings::try_from(&player_input_configs)?;
 
     let mut game_data = GameDataBuilder::default();
     if !will_config.headless {
-        let display_config = AppFile::load_in::<DisplayConfig, _>(
-            AppDir::RESOURCES,
-            "display_config.ron",
-            Format::Ron,
-        )?;
-
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(
-                InputBundle::<ControlBindings>::new()
-                    .with_bindings(Bindings::try_from(&player_input_configs)?),
-            )?
-            .with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?
-            .with_bundle(HotReloadBundle::default())?
+            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            game_data = game_data.with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?;
+        }
+
+        game_data = game_data
+            .with_bundle(HotReloadBundle::new(hot_reload_strategy))?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
             .with_bundle(AudioLoadingBundle::new())?
@@ -349,90 +545,97 @@ fn main() -> Result<(), Error> {
                 any::type_name::<SessionInputResourcesSyncSystem>(),
                 &[],
             )
-            .with_bundle(AssetPlayBundle::new())?
-            .with_system_desc(
-                SessionHostRequestSystemDesc::default(),
-                any::type_name::<SessionHostRequestSystem>(),
-                &[],
-            )
-            .with_system_desc(
-                SessionJoinRequestSystemDesc::default(),
-                any::type_name::<SessionJoinRequestSystem>(),
-                &[],
-            )
-            .with_system_desc(
-                SessionLobbyRequestSystemDesc::default(),
-                any::type_name::<SessionLobbyRequestSystem>(),
-                &[],
-            )
-            .with_system_desc(
-                NetworkInputRequestSystemDesc::default(),
-                any::type_name::<NetworkInputRequestSystem>(),
-                &["input_system"],
-            )
-            .with_system_desc(
-                NetMessageRequestSystemDesc::default(),
-                any::type_name::<NetMessageRequestSystem>(),
-                &[
+            .with_bundle(AssetPlayBundle::new())?;
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            game_data = game_data
+                .with_system_desc(
+                    SessionHostRequestSystemDesc::default(),
                     any::type_name::<SessionHostRequestSystem>(),
+                    &[],
+                )
+                .with_system_desc(
+                    SessionJoinRequestSystemDesc::default(),
                     any::type_name::<SessionJoinRequestSystem>(),
+                    &[],
+                )
+                .with_system_desc(
+                    SessionLobbyRequestSystemDesc::default(),
                     any::type_name::<SessionLobbyRequestSystem>(),
+                    &[],
+                )
+                .with_system_desc(
+                    NetworkInputRequestSystemDesc::default(),
                     any::type_name::<NetworkInputRequestSystem>(),
-                ],
-            )
-            .with_system_desc(
-                NetListenerSystemDesc::default(),
-                any::type_name::<NetListenerSystem>(),
-                &[],
-            )
-            .with_system_desc(
-                SessionHostResponseSystemDesc::default(),
-                any::type_name::<SessionHostResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
-            )
-            .with_system_desc(
-                SessionJoinResponseSystemDesc::default(),
-                any::type_name::<SessionJoinResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
-            )
-            .with_system_desc(
-                SessionLobbyResponseSystemDesc::default(),
-                any::type_name::<SessionLobbyResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
-            )
-            .with_system_desc(
-                SessionMessageResponseSystemDesc::default(),
-                any::type_name::<SessionMessageResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
-            )
-            .with_system_desc(
-                NetworkInputResponseSystemDesc::default(),
-                any::type_name::<NetworkInputResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
-            )
-            .with(
-                SessionCodeLabelUpdateSystem::new(),
-                any::type_name::<SessionCodeLabelUpdateSystem>(),
-                &[
+                    &["input_system"],
+                )
+                .with_system_desc(
+                    NetMessageRequestSystemDesc::default(),
+                    any::type_name::<NetMessageRequestSystem>(),
+                    &[
+                        any::type_name::<SessionHostRequestSystem>(),
+                        any::type_name::<SessionJoinRequestSystem>(),
+                        any::type_name::<SessionLobbyRequestSystem>(),
+                        any::type_name::<NetworkInputRequestSystem>(),
+                    ],
+                )
+                .with_system_desc(
+                    NetListenerSystemDesc::default(),
+                    any::type_name::<NetListenerSystem>(),
+                    &[],
+                )
+                .with_system_desc(
+                    SessionHostResponseSystemDesc::default(),
                     any::type_name::<SessionHostResponseSystem>(),
+                    &[any::type_name::<NetListenerSystem>()],
+                )
+                .with_system_desc(
+                    SessionJoinResponseSystemDesc::default(),
                     any::type_name::<SessionJoinResponseSystem>(),
+                    &[any::type_name::<NetListenerSystem>()],
+                )
+                .with_system_desc(
+                    SessionLobbyResponseSystemDesc::default(),
+                    any::type_name::<SessionLobbyResponseSystem>(),
+                    &[any::type_name::<NetListenerSystem>()],
+                )
+                .with_system_desc(
+                    SessionMessageResponseSystemDesc::default(),
                     any::type_name::<SessionMessageResponseSystem>(),
-                ],
-            )
-            .with(
-                SessionDeviceEntityCreateDeleteSystem::new(),
-                any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
-                &[
-                    any::type_name::<SessionHostResponseSystem>(),
-                    any::type_name::<SessionJoinResponseSystem>(),
-                    any::type_name::<SessionMessageResponseSystem>(),
-                ],
-            )
-            .with(
-                SessionDeviceWidgetUpdateSystem::new(),
-                any::type_name::<SessionDeviceWidgetUpdateSystem>(),
-                &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
-            )
+                    &[any::type_name::<NetListenerSystem>()],
+                )
+                .with_system_desc(
+                    NetworkInputResponseSystemDesc::default(),
+                    any::type_name::<NetworkInputResponseSystem>(),
+                    &[any::type_name::<NetListenerSystem>()],
+                )
+                .with(
+                    SessionCodeLabelUpdateSystem::new(),
+                    any::type_name::<SessionCodeLabelUpdateSystem>(),
+                    &[
+                        any::type_name::<SessionHostResponseSystem>(),
+                        any::type_name::<SessionJoinResponseSystem>(),
+                        any::type_name::<SessionMessageResponseSystem>(),
+                    ],
+                )
+                .with(
+                    SessionDeviceEntityCreateDeleteSystem::new(),
+                    any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
+                    &[
+                        any::type_name::<SessionHostResponseSystem>(),
+                        any::type_name::<SessionJoinResponseSystem>(),
+                        any::type_name::<SessionMessageResponseSystem>(),
+                    ],
+                )
+                .with(
+                    SessionDeviceWidgetUpdateSystem::new(),
+                    any::type_name::<SessionDeviceWidgetUpdateSystem>(),
+                    &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
+                );
+        }
+
+        game_data = game_data
             .with_system_desc(
                 StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
@@ -488,11 +691,12 @@ fn main() -> Result<(), Error> {
             // down as well.
             .with_bundle(TransformBundle::new())?
             .with_bundle(UiBundle::<ControlBindings>::new())?
+            .with_bundle(ApplicationUiBundle::new(font_config))?
             .with_bundle(
-                RenderingBundle::<DefaultBackend>::new()
-                    .with_plugin(
-                        RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
-                    )
+                rendering_bundle
+                    .with_plugin(RenderToWindow::new().with_clear(ClearColor {
+                        float32: [0., 0., 0., 1.],
+                    }))
                     .with_plugin(RenderFlat2D::default())
                     .with_plugin(RenderUi::default()),
             )?
@@ -509,14 +713,12 @@ fn main() -> Result<(), Error> {
             );
     }
 
-    let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
+    let app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
         .with_resource(session_server_config)
         .with_resource(player_controllers)
         .with_resource(player_input_configs)
         .with_frame_limit_config(frame_rate_limit_config(will_config.frame_rate))
         .build(game_data)?;
 
-    app.run();
-
-    Ok(())
+    app.run_winit_loop(event_loop);
 }

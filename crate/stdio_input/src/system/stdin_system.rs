@@ -1,15 +1,21 @@
 use std::{
-    sync::mpsc::{self, Receiver, TryRecvError},
+    sync::{
+        mpsc::{self, Receiver, TryRecvError},
+        Arc,
+    },
     thread,
 };
 
 use amethyst::{
-    ecs::{ReadExpect, System, World, Write},
+    assets::ThreadPool,
+    core::SystemDesc,
+    ecs::{ReadExpect, System, World, WorldExt, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use application_input::ApplicationEvent;
 use derivative::Derivative;
+use derive_new::new;
 use log::{debug, error, info, trace, warn};
 use state_registry::StateId;
 use stdio_command_model::StdinCommandBarrier;
@@ -38,6 +44,23 @@ pub struct StdinSystemData<'s> {
     pub variant_and_tokens_ec: Write<'s, EventChannel<VariantAndTokens>>,
 }
 
+/// Builds an `StdinSystem`.
+#[derive(Default, Debug, new)]
+pub struct StdinSystemDesc;
+
+impl<'a, 'b> SystemDesc<'a, 'b, StdinSystem> for StdinSystemDesc {
+    fn build(self, world: &mut World) -> StdinSystem {
+        <StdinSystem as System<'_>>::SystemData::setup(world);
+
+        let thread_pool = &**world.read_resource::<Arc<ThreadPool>>();
+
+        let (tx, rx) = mpsc::channel();
+        thread_pool.spawn(move || StdinReader::new(tx).start());
+
+        StdinSystem::new(rx)
+    }
+}
+
 /// Rendering system.
 #[derive(Debug)]
 pub struct StdinSystem {
@@ -47,10 +70,8 @@ pub struct StdinSystem {
 
 impl StdinSystem {
     /// Returns a new `StdinSystem` that listens to stdin on a separate thread.
-    // kcov-ignore-start
-    pub fn new() -> Self {
-        // kcov-ignore-end
-        Self::default()
+    pub fn new(rx: Receiver<String>) -> Self {
+        Self { rx }
     }
 
     /// Returns a new `StdinSystem`. Visible for testing.

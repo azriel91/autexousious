@@ -5,6 +5,8 @@ use std::{
 };
 
 use log::{error, warn};
+#[cfg(target_arch = "wasm32")]
+use wasm_support_fs::DirAccess;
 
 /// Functions to make directory traversal code more ergonomic.
 #[derive(Debug)]
@@ -20,11 +22,19 @@ impl DirTraverse {
     ///
     /// * `dir`: Path of the directory to list.
     pub fn child_directories(dir: &Path) -> Vec<PathBuf> {
-        Self::entries(dir).map_or_else(Vec::new, |entries| {
-            entries
-                .filter_map(|entry| Self::entry_to_dir_path_buf(&entry))
-                .collect::<Vec<_>>()
-        })
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            Self::entries(dir).map_or_else(Vec::new, |entries| {
+                entries
+                    .filter_map(|entry| Self::entry_to_dir_path_buf(&entry))
+                    .collect::<Vec<_>>()
+            })
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        {
+            DirAccess::child_dirs(dir)
+        }
     }
 
     /// Returns the entries of the specified directory.

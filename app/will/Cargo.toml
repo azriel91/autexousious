@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav"] }
 application = { path = "../../crate/application" }
 application_event = { path = "../../crate/application_event" }
 application_input = { path = "../../crate/application_input" }
@@ -71,6 +71,19 @@ ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 ui_loading = { path = "../../crate/ui_loading" }
 ui_play = { path = "../../crate/ui_play" }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = { version = "0.1.6" }
+wasm-bindgen = { version = "0.2.60" }
+web-sys = { version = "0.3.36" }
+
 [dev-dependencies]
 assert_cmd = "1.0.1"
 escargot = "0.5.0"
+
+[features]
+default = ["parallel", "gl"]
+parallel = ["amethyst/parallel"]
+gl = ["amethyst/gl"]
+vulkan = ["amethyst/vulkan"]
+metal = ["amethyst/metal"]
+wasm = ["amethyst/wasm"]

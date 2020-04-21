@@ -6,11 +6,10 @@ use amethyst::{
     ui::{FontAsset, FontHandle, TtfFormat},
     Error,
 };
-use application::{AppDir, AppFile, Format};
 
 use crate::{FontConfig, FontVariant, Theme};
 
-/// Privates functionality to load an application theme.
+/// Provides functionality to load an application theme.
 #[derive(Debug)]
 pub struct ThemeLoader;
 
@@ -20,19 +19,8 @@ impl ThemeLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the theme into.
-    pub fn load(world: &mut World) -> Result<(), Error> {
-        Self::load_internal(world, AppDir::RESOURCES, "font_config.ron")
-    }
-
-    /// Visible for testing.
-    #[inline]
-    pub fn load_internal(
-        world: &mut World,
-        conf_dir: &str,
-        font_config_name: &str,
-    ) -> Result<(), Error> {
-        let font_config: FontConfig = AppFile::load_in(conf_dir, font_config_name, Format::Ron)?;
-
+    /// * `font_config`: Loaded font configuration.
+    pub fn load(world: &mut World, font_config: FontConfig) -> Result<(), Error> {
         let font_paths = vec![
             (FontVariant::Regular, font_config.regular),
             (FontVariant::Bold, font_config.bold),

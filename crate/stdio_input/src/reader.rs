@@ -96,5 +96,3 @@ impl StdinReader {
     }
     // kcov-ignore-end
 }
-
-// Covered by integration test

@@ -6,7 +6,7 @@ pub(crate) use crate::ion::{StatementSplitter, StatementVariant, Terminator};
 pub use crate::{
     io_app_event_utils::IoAppEventUtils,
     stdio_input_bundle::StdioInputBundle,
-    system::{StdinSystem, StdinSystemData},
+    system::{StdinSystem, StdinSystemData, StdinSystemDesc},
 };
 
 pub(crate) mod ion;

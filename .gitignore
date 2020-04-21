@@ -1,5 +1,6 @@
 /.vscode/launch.json
 /target/
+/pkg/
 **/*.rs.bk
 *.zip
 

@@ -16,7 +16,7 @@ mod tests {
     fn sets_transform_x_and_scale() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_effect(|world| {
                 <CpBarPrefab as PrefabData>::SystemData::setup(world);
                 <CpBarUpdateSystem as System>::SystemData::setup(world);
@@ -67,6 +67,6 @@ mod tests {
                 assert_eq!(&Vector3::new(118., 442., 790.), transform.translation());
                 assert_eq!(90., transform.scale()[0]);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 }

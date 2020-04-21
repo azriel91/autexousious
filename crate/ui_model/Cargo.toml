@@ -9,7 +9,7 @@ doctest = false
 test = false
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "vulkan", "test-support"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav"] }
 application_menu = { path = "../application_menu" }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }

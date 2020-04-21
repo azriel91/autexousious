@@ -17,7 +17,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_effect(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -42,7 +42,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_effect(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -82,7 +82,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     #[test]

@@ -8,7 +8,7 @@ mod tests {
         ecs::{Read, ReadExpect, WorldExt},
         input::Button,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
-        winit::{MouseButton, VirtualKeyCode},
+        winit::event::{MouseButton, VirtualKeyCode},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -149,7 +149,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(InputReactionLoadingBundle::new())
@@ -187,7 +187,7 @@ mod tests {
 
                 assertion_fn(character_irs, &input_reactions_assets);
             })
-            .run_isolated()
+            .run_winit_loop()
     }
 
     fn test_character_sequence() -> CharacterSequence {

@@ -7,12 +7,11 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use application_state::AutexState;
-use application_ui::ThemeLoader;
 use asset_model::loaded::{AssetIdMappings, AssetTypeMappings};
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use loading_model::loaded::{AssetLoadStage, LoadStage};
-use log::{error, warn};
+use log::warn;
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
 
@@ -66,15 +65,9 @@ impl<'a, 'b, S> State<GameData<'a, 'b>, AppEvent> for LoadingState<'a, 'b, S>
 where
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         data.world.insert(StateId::Loading);
         self.stopwatch.start();
-
-        if let Err(e) = ThemeLoader::load(&mut data.world) {
-            let err_msg = format!("Failed to load theme: {}", e);
-            error!("{}", &err_msg);
-            panic!(err_msg);
-        }
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
