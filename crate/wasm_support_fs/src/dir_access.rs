@@ -13,7 +13,7 @@ impl DirAccess {
     pub fn child_dirs(dir: &Path) -> Vec<PathBuf> {
         let dir_str = format!("{}", dir.display());
         #[cfg(windows)]
-        let dir_str = dir_str.replace('\\', '/');
+        let dir_str = dir_str.replace("\\", "/");
 
         let xhr = XmlHttpRequest::new().expect("Failed to construct XmlHttpRequest");
 
@@ -75,7 +75,7 @@ impl DirAccess {
                     None
                 } else {
                     #[cfg(windows)]
-                    let path_str = path_str.replace('/', '\\');
+                    let path_str = path_str.replace("/", "\\");
 
                     Some(PathBuf::from(path_str))
                 }

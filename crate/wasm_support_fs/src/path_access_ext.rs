@@ -38,7 +38,7 @@ impl PathAccessExt for Path {
 fn lookup_path_on_server(path: &Path) -> bool {
     let path_str = format!("{}", path.display());
     #[cfg(windows)]
-    let path_str = path_str.replace('\\', '/');
+    let path_str = path_str.replace("\\", "/");
 
     let xhr = XmlHttpRequest::new().expect("Failed to construct XmlHttpRequest");
 

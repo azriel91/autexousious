@@ -83,8 +83,10 @@ impl AppFile {
             resource_path.push(&file_name);
 
             #[cfg(not(target_arch = "wasm32"))]
-            if resource_path.exists() {
-                return Ok(resource_path);
+            {
+                if resource_path.exists() {
+                    return Ok(resource_path);
+                }
             }
 
             #[cfg(target_arch = "wasm32")]
