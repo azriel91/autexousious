@@ -16,7 +16,7 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
-    network::simulation::tcp::TcpNetworkBundle,
+    network::simulation::web_socket::WebSocketNetworkBundle,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         rendy::hal::command::ClearColor,
@@ -133,9 +133,6 @@ const WILL_CONFIG: &str = "will.toml";
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
-
-/// `TcpListener` buffer size.
-const TCP_RECV_BUFFER_SIZE: usize = 2048;
 
 #[derive(Debug, Deserialize, Serialize, StructOpt, StructOptToml)]
 #[serde(default)]
@@ -445,7 +442,7 @@ where
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            game_data = game_data.with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?;
+            game_data = game_data.with_bundle(WebSocketNetworkBundle::new(None))?;
         }
 
         game_data = game_data
