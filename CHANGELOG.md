@@ -12,8 +12,8 @@
 
 * Transport protocol for network play is switched to [web sockets]. ([#209])
 
-[#209]: https://gitlab.com/azriel91/autexousious/issues/209
-[#219]: https://gitlab.com/azriel91/autexousious/issues/219
+[#209]: https://github.com/azriel91/autexousious/issues/209
+[#219]: https://github.com/azriel91/autexousious/issues/219
 [web sockets]: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
 
 ## 0.18.0 (2020-03-13)
@@ -38,15 +38,15 @@
 
 * Relative paths to textures now load on Windows. ([#205])
 
-[#198]: https://gitlab.com/azriel91/autexousious/issues/198
-[#199]: https://gitlab.com/azriel91/autexousious/issues/199
-[#200]: https://gitlab.com/azriel91/autexousious/issues/200
-[#201]: https://gitlab.com/azriel91/autexousious/issues/201
-[#202]: https://gitlab.com/azriel91/autexousious/issues/202
-[#204]: https://gitlab.com/azriel91/autexousious/issues/204
-[#205]: https://gitlab.com/azriel91/autexousious/issues/205
-[#206]: https://gitlab.com/azriel91/autexousious/issues/206
-[#207]: https://gitlab.com/azriel91/autexousious/issues/207
+[#198]: https://github.com/azriel91/autexousious/issues/198
+[#199]: https://github.com/azriel91/autexousious/issues/199
+[#200]: https://github.com/azriel91/autexousious/issues/200
+[#201]: https://github.com/azriel91/autexousious/issues/201
+[#202]: https://github.com/azriel91/autexousious/issues/202
+[#204]: https://github.com/azriel91/autexousious/issues/204
+[#205]: https://github.com/azriel91/autexousious/issues/205
+[#206]: https://github.com/azriel91/autexousious/issues/206
+[#207]: https://github.com/azriel91/autexousious/issues/207
 
 ## 0.17.0 (2020-01-31)
 
@@ -56,9 +56,9 @@
 * Map selection UI displays a grid of available characters. ([#176])
 * Control buttons are displayed on UIs. ([#191])
 
-[#176]: https://gitlab.com/azriel91/autexousious/issues/176
-[#190]: https://gitlab.com/azriel91/autexousious/issues/190
-[#191]: https://gitlab.com/azriel91/autexousious/issues/191
+[#176]: https://github.com/azriel91/autexousious/issues/176
+[#190]: https://github.com/azriel91/autexousious/issues/190
+[#191]: https://github.com/azriel91/autexousious/issues/191
 
 ## 0.16.0 (2019-12-20)
 
@@ -86,12 +86,12 @@
 
 * Delete entities that are spawned out of bounds. ([#184])
 
-[#177]: https://gitlab.com/azriel91/autexousious/issues/177
-[#178]: https://gitlab.com/azriel91/autexousious/issues/178
-[#180]: https://gitlab.com/azriel91/autexousious/issues/180
-[#184]: https://gitlab.com/azriel91/autexousious/issues/184
-[#185]: https://gitlab.com/azriel91/autexousious/issues/185
-[#186]: https://gitlab.com/azriel91/autexousious/issues/186
+[#177]: https://github.com/azriel91/autexousious/issues/177
+[#178]: https://github.com/azriel91/autexousious/issues/178
+[#180]: https://github.com/azriel91/autexousious/issues/180
+[#184]: https://github.com/azriel91/autexousious/issues/184
+[#185]: https://github.com/azriel91/autexousious/issues/185
+[#186]: https://github.com/azriel91/autexousious/issues/186
 
 ## 0.15.0 (2019-11-08)
 
@@ -112,11 +112,11 @@
 * `GamePlayBundle` systems are moved to the main dispatcher. ([#175])
 * Added delay after game ends before reading input for returning to menu. ([#179])
 
-[#171]: https://gitlab.com/azriel91/autexousious/issues/171
-[#172]: https://gitlab.com/azriel91/autexousious/issues/172
-[#174]: https://gitlab.com/azriel91/autexousious/issues/174
-[#175]: https://gitlab.com/azriel91/autexousious/issues/175
-[#179]: https://gitlab.com/azriel91/autexousious/issues/179
+[#171]: https://github.com/azriel91/autexousious/issues/171
+[#172]: https://github.com/azriel91/autexousious/issues/172
+[#174]: https://github.com/azriel91/autexousious/issues/174
+[#175]: https://github.com/azriel91/autexousious/issues/175
+[#179]: https://github.com/azriel91/autexousious/issues/179
 
 ## 0.14.0 (2019-09-27)
 
@@ -144,18 +144,18 @@
 * Switching map selection actually switches the map. ([#166])
 * Going back from map selection does not return to main menu. ([#166])
 
-[#125]: https://gitlab.com/azriel91/autexousious/issues/125
-[#142]: https://gitlab.com/azriel91/autexousious/issues/142
-[#154]: https://gitlab.com/azriel91/autexousious/issues/154
-[#155]: https://gitlab.com/azriel91/autexousious/issues/155
-[#158]: https://gitlab.com/azriel91/autexousious/issues/158
-[#160]: https://gitlab.com/azriel91/autexousious/issues/160
-[#161]: https://gitlab.com/azriel91/autexousious/issues/161
-[#162]: https://gitlab.com/azriel91/autexousious/issues/162
-[#163]: https://gitlab.com/azriel91/autexousious/issues/163
-[#165]: https://gitlab.com/azriel91/autexousious/issues/165
-[#166]: https://gitlab.com/azriel91/autexousious/issues/166
-[#167]: https://gitlab.com/azriel91/autexousious/issues/167
+[#125]: https://github.com/azriel91/autexousious/issues/125
+[#142]: https://github.com/azriel91/autexousious/issues/142
+[#154]: https://github.com/azriel91/autexousious/issues/154
+[#155]: https://github.com/azriel91/autexousious/issues/155
+[#158]: https://github.com/azriel91/autexousious/issues/158
+[#160]: https://github.com/azriel91/autexousious/issues/160
+[#161]: https://github.com/azriel91/autexousious/issues/161
+[#162]: https://github.com/azriel91/autexousious/issues/162
+[#163]: https://github.com/azriel91/autexousious/issues/163
+[#165]: https://github.com/azriel91/autexousious/issues/165
+[#166]: https://github.com/azriel91/autexousious/issues/166
+[#167]: https://github.com/azriel91/autexousious/issues/167
 
 ## 0.13.0 (2019-08-16)
 
@@ -180,12 +180,12 @@
 
 * `spawn_play` flakey test segmentation fault. ([#145])
 
-[#113]: https://gitlab.com/azriel91/autexousious/issues/113
-[#115]: https://gitlab.com/azriel91/autexousious/issues/115
-[#145]: https://gitlab.com/azriel91/autexousious/issues/145
-[#147]: https://gitlab.com/azriel91/autexousious/issues/147
-[#148]: https://gitlab.com/azriel91/autexousious/issues/148
-[#149]: https://gitlab.com/azriel91/autexousious/issues/149
+[#113]: https://github.com/azriel91/autexousious/issues/113
+[#115]: https://github.com/azriel91/autexousious/issues/115
+[#145]: https://github.com/azriel91/autexousious/issues/145
+[#147]: https://github.com/azriel91/autexousious/issues/147
+[#148]: https://github.com/azriel91/autexousious/issues/148
+[#149]: https://github.com/azriel91/autexousious/issues/149
 
 ## 0.12.0 (2019-07-05)
 
@@ -208,14 +208,14 @@
 * Removed dependency cycles in crates. ([#135])
 * Missing system dependency for `CharacterControlTransitions`. ([#139])
 
-[#111]: https://gitlab.com/azriel91/autexousious/issues/111
-[#126]: https://gitlab.com/azriel91/autexousious/issues/126
-[#131]: https://gitlab.com/azriel91/autexousious/issues/131
-[#134]: https://gitlab.com/azriel91/autexousious/issues/134
-[#135]: https://gitlab.com/azriel91/autexousious/issues/135
-[#136]: https://gitlab.com/azriel91/autexousious/issues/136
-[#139]: https://gitlab.com/azriel91/autexousious/issues/139
-[#140]: https://gitlab.com/azriel91/autexousious/issues/140
+[#111]: https://github.com/azriel91/autexousious/issues/111
+[#126]: https://github.com/azriel91/autexousious/issues/126
+[#131]: https://github.com/azriel91/autexousious/issues/131
+[#134]: https://github.com/azriel91/autexousious/issues/134
+[#135]: https://github.com/azriel91/autexousious/issues/135
+[#136]: https://github.com/azriel91/autexousious/issues/136
+[#139]: https://github.com/azriel91/autexousious/issues/139
+[#140]: https://github.com/azriel91/autexousious/issues/140
 
 ## 0.11.0 (2019-05-24)
 
@@ -259,18 +259,18 @@
 * `Walk` sequence stays on first frame when an action button is held. ([#114])
 * Character sprites now correctly render at their entity position. ([#129])
 
-[#96]: https://gitlab.com/azriel91/autexousious/issues/96
-[#103]: https://gitlab.com/azriel91/autexousious/issues/103
-[#110]: https://gitlab.com/azriel91/autexousious/issues/110
-[#114]: https://gitlab.com/azriel91/autexousious/issues/114
-[#117]: https://gitlab.com/azriel91/autexousious/issues/117
-[#118]: https://gitlab.com/azriel91/autexousious/issues/118
-[#120]: https://gitlab.com/azriel91/autexousious/issues/120
-[#122]: https://gitlab.com/azriel91/autexousious/issues/122
-[#124]: https://gitlab.com/azriel91/autexousious/issues/124
-[#127]: https://gitlab.com/azriel91/autexousious/issues/127
-[#128]: https://gitlab.com/azriel91/autexousious/issues/128
-[#129]: https://gitlab.com/azriel91/autexousious/issues/129
+[#96]: https://github.com/azriel91/autexousious/issues/96
+[#103]: https://github.com/azriel91/autexousious/issues/103
+[#110]: https://github.com/azriel91/autexousious/issues/110
+[#114]: https://github.com/azriel91/autexousious/issues/114
+[#117]: https://github.com/azriel91/autexousious/issues/117
+[#118]: https://github.com/azriel91/autexousious/issues/118
+[#120]: https://github.com/azriel91/autexousious/issues/120
+[#122]: https://github.com/azriel91/autexousious/issues/122
+[#124]: https://github.com/azriel91/autexousious/issues/124
+[#127]: https://github.com/azriel91/autexousious/issues/127
+[#128]: https://github.com/azriel91/autexousious/issues/128
+[#129]: https://github.com/azriel91/autexousious/issues/129
 
 ## 0.10.0 (2019-03-29)
 
@@ -298,13 +298,13 @@
 
 * No longer use `amethyst_animation` to update object and map components. ([#92], [#99])
 
-[#92]: https://gitlab.com/azriel91/autexousious/issues/92
-[#98]: https://gitlab.com/azriel91/autexousious/issues/98
-[#99]: https://gitlab.com/azriel91/autexousious/issues/99
-[#101]: https://gitlab.com/azriel91/autexousious/issues/101
-[#102]: https://gitlab.com/azriel91/autexousious/issues/102
-[#104]: https://gitlab.com/azriel91/autexousious/issues/104
-[#105]: https://gitlab.com/azriel91/autexousious/issues/105
+[#92]: https://github.com/azriel91/autexousious/issues/92
+[#98]: https://github.com/azriel91/autexousious/issues/98
+[#99]: https://github.com/azriel91/autexousious/issues/99
+[#101]: https://github.com/azriel91/autexousious/issues/101
+[#102]: https://github.com/azriel91/autexousious/issues/102
+[#104]: https://github.com/azriel91/autexousious/issues/104
+[#105]: https://github.com/azriel91/autexousious/issues/105
 
 ## 0.9.0 (2019-02-15)
 
@@ -319,9 +319,9 @@
 * `KeyboardEscapeIntercept` is now tested properly without simulating input. ([#15])
 * Load game objects and maps asynchronously. ([#94])
 
-[#15]: https://gitlab.com/azriel91/autexousious/issues/15
-[#93]: https://gitlab.com/azriel91/autexousious/issues/93
-[#94]: https://gitlab.com/azriel91/autexousious/issues/94
+[#15]: https://github.com/azriel91/autexousious/issues/15
+[#93]: https://github.com/azriel91/autexousious/issues/93
+[#94]: https://github.com/azriel91/autexousious/issues/94
 
 ## 0.8.0 (2019-01-04)
 
@@ -331,9 +331,9 @@
 * Components are now more granular. ([#83])
 * Components are augmented onto existing entities instead of added when built. ([#56])
 
-[#56]: https://gitlab.com/azriel91/autexousious/issues/56
-[#81]: https://gitlab.com/azriel91/autexousious/issues/81
-[#83]: https://gitlab.com/azriel91/autexousious/issues/83
+[#56]: https://github.com/azriel91/autexousious/issues/56
+[#81]: https://github.com/azriel91/autexousious/issues/81
+[#83]: https://github.com/azriel91/autexousious/issues/83
 
 ## 0.7.0 (2018-11-23)
 
@@ -344,10 +344,10 @@
 * Game win condition when there is one player remaining. ([#71])
 * Mirrored collision detection. ([#82])
 
-[#69]: https://gitlab.com/azriel91/autexousious/issues/69
-[#70]: https://gitlab.com/azriel91/autexousious/issues/70
-[#71]: https://gitlab.com/azriel91/autexousious/issues/71
-[#82]: https://gitlab.com/azriel91/autexousious/issues/82
+[#69]: https://github.com/azriel91/autexousious/issues/69
+[#70]: https://github.com/azriel91/autexousious/issues/70
+[#71]: https://github.com/azriel91/autexousious/issues/71
+[#82]: https://github.com/azriel91/autexousious/issues/82
 
 ## 0.6.0 (2018-10-12)
 
@@ -368,12 +368,12 @@
 
 * Allow maps without layers. ([#72])
 
-[#57]: https://gitlab.com/azriel91/autexousious/issues/57
-[#63]: https://gitlab.com/azriel91/autexousious/issues/63
-[#66]: https://gitlab.com/azriel91/autexousious/issues/66
-[#67]: https://gitlab.com/azriel91/autexousious/issues/67
-[#68]: https://gitlab.com/azriel91/autexousious/issues/68
-[#72]: https://gitlab.com/azriel91/autexousious/issues/72
+[#57]: https://github.com/azriel91/autexousious/issues/57
+[#63]: https://github.com/azriel91/autexousious/issues/63
+[#66]: https://github.com/azriel91/autexousious/issues/66
+[#67]: https://github.com/azriel91/autexousious/issues/67
+[#68]: https://github.com/azriel91/autexousious/issues/68
+[#72]: https://github.com/azriel91/autexousious/issues/72
 
 ## 0.5.0 (2018-08-31)
 
@@ -397,13 +397,13 @@
 * Map layers with different sprite dimensions are now rendered with the right layout data. ([#55])
 * Characters switch to the `jump_descend` sequence when airborne during `walk`, `run`, and `run_stop`. ([#49])
 
-[#47]: https://gitlab.com/azriel91/autexousious/issues/47
-[#48]: https://gitlab.com/azriel91/autexousious/issues/48
-[#49]: https://gitlab.com/azriel91/autexousious/issues/49
-[#50]: https://gitlab.com/azriel91/autexousious/issues/50
-[#51]: https://gitlab.com/azriel91/autexousious/issues/51
-[#52]: https://gitlab.com/azriel91/autexousious/issues/52
-[#55]: https://gitlab.com/azriel91/autexousious/issues/55
+[#47]: https://github.com/azriel91/autexousious/issues/47
+[#48]: https://github.com/azriel91/autexousious/issues/48
+[#49]: https://github.com/azriel91/autexousious/issues/49
+[#50]: https://github.com/azriel91/autexousious/issues/50
+[#51]: https://github.com/azriel91/autexousious/issues/51
+[#52]: https://github.com/azriel91/autexousious/issues/52
+[#55]: https://github.com/azriel91/autexousious/issues/55
 
 ## 0.4.0 (2018-07-20)
 
