@@ -1,6 +1,6 @@
 [package]
 name = "sprite_model"
-version = "0.18.0"
+version = "0.19.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 

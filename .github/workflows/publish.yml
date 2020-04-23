@@ -51,6 +51,10 @@ jobs:
           name: linux-x86_64
           path: target/publish/app
 
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
@@ -58,7 +62,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ steps.vars.extract_version.version }}
 
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -67,7 +71,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ steps.vars.extract_version.version }}
 
   prepare_artifacts_windows:
     name: Prepare Artifacts (Windows)
@@ -115,6 +119,10 @@ jobs:
           name: windows-x86_64
           path: target/publish/app
 
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
@@ -122,7 +130,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ steps.vars.extract_version.version }}
 
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -131,4 +139,4 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ steps.vars.extract_version.version }}
