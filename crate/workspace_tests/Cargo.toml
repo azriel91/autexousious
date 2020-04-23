@@ -53,6 +53,7 @@ collision_audio_play = { path = "../collision_audio_play" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
+crossbeam-channel = "0.4.2"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derivative = "2.1.0"
 derive-new = "0.5.8"

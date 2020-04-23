@@ -14,6 +14,7 @@ application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 bitflags = "1.2.1"
 console = "0.10.0"
+crossbeam-channel = "0.4.2"
 derivative = "2.1.0"
 derive-new = "0.5.8"
 itertools = "0.9.0"
