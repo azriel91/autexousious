@@ -42,6 +42,7 @@ jobs:
   publish_itch_io_linux:
     name: Publish to itch.io (Linux)
     needs: prepare_artifacts_linux
+    runs-on: ubuntu-latest
     if: success()
     timeout-minutes: 15
     steps:
