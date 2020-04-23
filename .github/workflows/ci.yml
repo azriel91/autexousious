@@ -89,6 +89,15 @@ jobs:
           --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
           cargo test --workspace --tests --bins --release
 
+      - name: Package Artifacts
+        run: scripts/publish_prepare_app.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux-x86_64
+          path: target/publish/app
+
   build_windows:
     name: Build (Windows)
     runs-on: windows-latest
@@ -104,7 +113,17 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all-targets --release
+          args: --tests --bins --release
+
+      - name: Package Artifacts
+        run: scripts/publish_prepare_app.bat
+        shell: cmd
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows-x86_64
+          path: target/publish/app
 
   build_wasm:
     name: Build (WASM)
@@ -130,3 +149,9 @@ jobs:
 
       - name: Build WASM
         run: scripts/build_wasm.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: wasm32
+          path: pkg
