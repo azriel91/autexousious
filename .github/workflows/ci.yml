@@ -3,101 +3,101 @@ on: [pull_request]
 name: CI
 
 jobs:
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  # audit:
+  #   name: Audit
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - uses: actions-rs/audit-check@v1
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-  license:
-    name: License Conformance
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - run: scripts/conformance_license.sh
+  # license:
+  #   name: License Conformance
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - run: scripts/conformance_license.sh
 
-  fmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          components: rustfmt
+  # fmt:
+  #   name: Rustfmt
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: nightly
+  #         override: true
+  #         components: rustfmt
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: fmt
+  #         args: --all -- --check
 
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: clippy
+  # clippy:
+  #   name: Clippy
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
+  #         components: clippy
 
-      - name: Install Clippy
-        run: rustup component add clippy
+  #     - name: Install Clippy
+  #       run: rustup component add clippy
 
-      - name: Install Linux Packages
-        run: scripts/install_packages_linux.sh
+  #     - name: Install Linux Packages
+  #       run: scripts/install_packages_linux.sh
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: clippy
+  #         args: -- -D warnings
 
-  build_linux:
-    name: Build (Linux)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+  # build_linux:
+  #   name: Build (Linux)
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
 
-      - name: Install Linux Packages
-        run: scripts/install_packages_linux.sh
+  #     - name: Install Linux Packages
+  #       run: scripts/install_packages_linux.sh
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --all-targets --release
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --all-targets --release
 
-  build_windows:
-    name: Build (Windows)
-    runs-on: windows-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+  # build_windows:
+  #   name: Build (Windows)
+  #   runs-on: windows-latest
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --all-targets --release
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --all-targets --release
 
   build_wasm:
     name: Build (WASM)
