@@ -4,10 +4,10 @@ on:
 name: Publish
 
 jobs:
-  build_linux:
-    name: Build (Linux)
+  prepare_artifacts_linux:
+    name: Prepare Artifacts (Linux)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -24,48 +24,48 @@ jobs:
           command: build
           args: --all-targets --release
 
-  publish_prepare_linux:
-    name: Prepare Artifacts (Linux)
-    needs: build_linux
-    if: success()
-    timeout-minutes: 15
-    steps:
       - run: scripts/publish_prepare_app.sh
 
-  publish_itch_io_linux_will:
-    name: itch.io - Will (Linux)
-    needs: publish_prepare_linux
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux-x86_64
+          path: target/publish/app
+
+  publish_itch_io_linux:
+    name: Publish to itch.io (Linux)
+    needs: prepare_artifacts_linux
     if: success()
     timeout-minutes: 15
     steps:
+      - name: Retrieve Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: linux-x86_64
+          path: target/publish/app
+
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-          CHANNEL: linux-x86_64-server
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: linux-x86_64
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
           VERSION: ${{ github.ref }}
 
-  publish_itch_io_linux_session_server:
-    name: itch.io - Session Server (Linux)
-    needs: publish_prepare_linux
-    if: success()
-    timeout-minutes: 15
-    steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
           CHANNEL: linux-x86_64-server
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
           VERSION: ${{ github.ref }}
 
-  build_windows:
-    name: Build (windows)
+  prepare_artifacts_windows:
+    name: Prepare Artifacts (Windows)
     runs-on: windows-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -79,42 +79,40 @@ jobs:
           command: build
           args: --all-targets --release
 
-  publish_prepare_windows:
-    name: Prepare Artifacts (Windows)
-    needs: build_windows
-    runs-on: windows-latest
-    if: success()
-    timeout-minutes: 15
-    steps:
       - run: scripts/publish_prepare_app.bat
         shell: cmd
 
-  publish_itch_io_windows_will:
-    name: itch.io - Will (Windows)
-    needs: publish_prepare_windows
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows-x86_64
+          path: target/publish/app
+
+  publish_itch_io_windows:
+    name: Publish to itch.io (Windows)
+    needs: prepare_artifacts_windows
     runs-on: windows-latest
     if: success()
     timeout-minutes: 15
     steps:
+      - name: Retrieve Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: windows-x86_64
+          path: target/publish/app
+
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-          CHANNEL: windows-x86_64-server
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: windows-x86_64
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
           VERSION: ${{ github.ref }}
 
-  publish_itch_io_windows_session_server:
-    name: itch.io - Session Server (Windows)
-    needs: publish_prepare_windows
-    runs-on: windows-latest
-    if: success()
-    timeout-minutes: 15
-    steps:
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
           CHANNEL: windows-x86_64-server
           ITCH_GAME: will
           ITCH_USER: azriel91
