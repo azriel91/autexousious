@@ -13,9 +13,6 @@ andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance
 # https://github.com/sgrif/derive_deref/pull/6
 derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
 
-# https://github.com/iamcodemaker/console_log/pull/6
-# console_log = { path = "/mnt/data/work/github/iamcodemaker/console_log" }
-
 [patch."https://github.com/amethyst/amethyst.git"]
 amethyst = { path = "/mnt/data/work/github/amethyst/amethyst" }
 amethyst_test = { path = "/mnt/data/work/github/amethyst/amethyst/amethyst_test" }
