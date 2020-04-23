@@ -387,7 +387,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -403,7 +403,7 @@ dependencies = [
 
 [[package]]
 name = "application_event"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_selection_model",
@@ -423,11 +423,11 @@ dependencies = [
 
 [[package]]
 name = "application_input"
-version = "0.18.0"
+version = "0.19.0"
 
 [[package]]
 name = "application_menu"
-version = "0.1.0"
+version = "0.19.0"
 dependencies = [
  "game_mode_selection_model",
  "network_mode_selection_model",
@@ -436,7 +436,7 @@ dependencies = [
 
 [[package]]
 name = "application_robot"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_input",
@@ -445,7 +445,7 @@ dependencies = [
 
 [[package]]
 name = "application_state"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -458,7 +458,7 @@ dependencies = [
 
 [[package]]
 name = "application_test_support"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "amethyst_test",
@@ -509,7 +509,7 @@ dependencies = [
 
 [[package]]
 name = "application_ui"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application",
@@ -579,7 +579,7 @@ dependencies = [
 
 [[package]]
 name = "asset_derive"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "proc-macro2 1.0.10",
@@ -590,7 +590,7 @@ dependencies = [
 
 [[package]]
 name = "asset_gfx_gen"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -599,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "asset_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application",
@@ -616,7 +616,7 @@ dependencies = [
 
 [[package]]
 name = "asset_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -634,7 +634,7 @@ dependencies = [
 
 [[package]]
 name = "asset_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_menu",
@@ -665,7 +665,7 @@ dependencies = [
 
 [[package]]
 name = "asset_selection_model"
-version = "0.1.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -677,7 +677,7 @@ dependencies = [
 
 [[package]]
 name = "asset_selection_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -691,7 +691,7 @@ dependencies = [
 
 [[package]]
 name = "asset_selection_ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -714,7 +714,7 @@ dependencies = [
 
 [[package]]
 name = "asset_selection_ui_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -741,7 +741,7 @@ dependencies = [
 
 [[package]]
 name = "asset_ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -771,7 +771,7 @@ dependencies = [
 
 [[package]]
 name = "asset_ui_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_selection_model",
@@ -785,7 +785,7 @@ dependencies = [
 
 [[package]]
 name = "assets_built_in"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "asset_model",
  "background_model",
@@ -795,7 +795,7 @@ dependencies = [
 
 [[package]]
 name = "assets_test"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "asset_model",
  "lazy_static",
@@ -822,7 +822,7 @@ dependencies = [
 
 [[package]]
 name = "audio_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "audio_model",
@@ -832,7 +832,7 @@ dependencies = [
 
 [[package]]
 name = "audio_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -847,7 +847,7 @@ dependencies = [
 
 [[package]]
 name = "audio_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "audio_model",
@@ -870,7 +870,7 @@ checksum = "f8aac770f1885fd7e387acedd76065302551364496e46b3dd00860b2f8359b9d"
 
 [[package]]
 name = "background_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "background_model",
@@ -879,7 +879,7 @@ dependencies = [
 
 [[package]]
 name = "background_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -1064,7 +1064,7 @@ dependencies = [
 
 [[package]]
 name = "camera_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -1074,7 +1074,7 @@ dependencies = [
 
 [[package]]
 name = "camera_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "camera_model",
@@ -1143,7 +1143,7 @@ dependencies = [
 
 [[package]]
 name = "character_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "character_model",
@@ -1161,7 +1161,7 @@ dependencies = [
 
 [[package]]
 name = "character_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "approx 0.3.2",
@@ -1193,7 +1193,7 @@ dependencies = [
 
 [[package]]
 name = "character_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "approx 0.3.2",
@@ -1213,7 +1213,7 @@ dependencies = [
 
 [[package]]
 name = "character_prefab"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -1231,7 +1231,7 @@ dependencies = [
 
 [[package]]
 name = "character_selection"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -1248,7 +1248,7 @@ dependencies = [
 
 [[package]]
 name = "character_selection_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -1262,7 +1262,7 @@ dependencies = [
 
 [[package]]
 name = "character_selection_ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -1283,7 +1283,7 @@ dependencies = [
 
 [[package]]
 name = "charge_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -1297,7 +1297,7 @@ dependencies = [
 
 [[package]]
 name = "charge_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "charge_model",
@@ -1309,7 +1309,7 @@ dependencies = [
 
 [[package]]
 name = "chase_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -1321,7 +1321,7 @@ dependencies = [
 
 [[package]]
 name = "chase_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "chase_model",
@@ -1442,7 +1442,7 @@ dependencies = [
 
 [[package]]
 name = "collision_audio_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_loading",
@@ -1455,7 +1455,7 @@ dependencies = [
 
 [[package]]
 name = "collision_audio_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -1469,7 +1469,7 @@ dependencies = [
 
 [[package]]
 name = "collision_audio_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_audio_model",
@@ -1479,7 +1479,7 @@ dependencies = [
 
 [[package]]
 name = "collision_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_model",
@@ -1489,7 +1489,7 @@ dependencies = [
 
 [[package]]
 name = "collision_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -1514,7 +1514,7 @@ dependencies = [
 
 [[package]]
 name = "collision_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_model",
@@ -1618,7 +1618,7 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 
 [[package]]
 name = "control_settings"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -1632,7 +1632,7 @@ dependencies = [
 
 [[package]]
 name = "control_settings_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "camera_model",
@@ -1650,7 +1650,7 @@ dependencies = [
 
 [[package]]
 name = "control_settings_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -1928,7 +1928,7 @@ dependencies = [
 
 [[package]]
 name = "debug_util_amethyst"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
 ]
@@ -2112,7 +2112,7 @@ checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
 name = "energy_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -2123,7 +2123,7 @@ dependencies = [
 
 [[package]]
 name = "energy_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -2149,7 +2149,7 @@ dependencies = [
 
 [[package]]
 name = "energy_prefab"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_model",
@@ -2309,7 +2309,7 @@ checksum = "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b"
 
 [[package]]
 name = "frame_rate"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
 ]
@@ -2353,7 +2353,7 @@ dependencies = [
 
 [[package]]
 name = "game_input"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "game_input_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "game_input_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2397,7 +2397,7 @@ dependencies = [
 
 [[package]]
 name = "game_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2423,7 +2423,7 @@ dependencies = [
 
 [[package]]
 name = "game_mode_selection"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2444,7 +2444,7 @@ dependencies = [
 
 [[package]]
 name = "game_mode_selection_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "menu_model",
@@ -2457,7 +2457,7 @@ dependencies = [
 
 [[package]]
 name = "game_mode_selection_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2469,7 +2469,7 @@ dependencies = [
 
 [[package]]
 name = "game_mode_selection_ui"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -2481,7 +2481,7 @@ dependencies = [
 
 [[package]]
 name = "game_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -2490,7 +2490,7 @@ dependencies = [
 
 [[package]]
 name = "game_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2542,7 +2542,7 @@ dependencies = [
 
 [[package]]
 name = "game_play_hud"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_gfx_gen",
@@ -2556,7 +2556,7 @@ dependencies = [
 
 [[package]]
 name = "game_play_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -2570,7 +2570,7 @@ dependencies = [
 
 [[package]]
 name = "game_play_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -2581,7 +2581,7 @@ dependencies = [
 
 [[package]]
 name = "game_stats_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "derivative 2.1.1",
  "derive-new",
@@ -3047,7 +3047,7 @@ dependencies = [
 
 [[package]]
 name = "input_reaction_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -3059,7 +3059,7 @@ dependencies = [
 
 [[package]]
 name = "input_reaction_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "approx 0.3.2",
@@ -3088,7 +3088,7 @@ dependencies = [
 
 [[package]]
 name = "input_reaction_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "approx 0.3.2",
@@ -3214,7 +3214,7 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
 name = "kinematic_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -3225,7 +3225,7 @@ dependencies = [
 
 [[package]]
 name = "kinematic_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -3329,7 +3329,7 @@ checksum = "ae91b68aebc4ddb91978b11a1b02ddd8602a05ec19002801c5666000e05e0f83"
 
 [[package]]
 name = "loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application",
@@ -3393,7 +3393,7 @@ dependencies = [
 
 [[package]]
 name = "loading_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "asset_model",
  "slotmap 0.4.0",
@@ -3420,7 +3420,7 @@ dependencies = [
 
 [[package]]
 name = "logic_clock"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -3432,7 +3432,7 @@ dependencies = [
 
 [[package]]
 name = "logic_clock_derive"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "proc-macro2 1.0.10",
  "proc_macro_roids",
@@ -3457,7 +3457,7 @@ dependencies = [
 
 [[package]]
 name = "map_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -3469,7 +3469,7 @@ dependencies = [
 
 [[package]]
 name = "map_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -3491,7 +3491,7 @@ dependencies = [
 
 [[package]]
 name = "map_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -3508,7 +3508,7 @@ dependencies = [
 
 [[package]]
 name = "map_selection"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -3524,7 +3524,7 @@ dependencies = [
 
 [[package]]
 name = "map_selection_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -3539,7 +3539,7 @@ dependencies = [
 
 [[package]]
 name = "map_selection_ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -3605,7 +3605,7 @@ dependencies = [
 
 [[package]]
 name = "menu_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -3679,7 +3679,7 @@ dependencies = [
 
 [[package]]
 name = "mirrored_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -3747,7 +3747,7 @@ dependencies = [
 
 [[package]]
 name = "net_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -3765,7 +3765,7 @@ dependencies = [
 
 [[package]]
 name = "net_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "bincode",
@@ -3782,7 +3782,7 @@ dependencies = [
 
 [[package]]
 name = "network_input_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -3796,7 +3796,7 @@ dependencies = [
 
 [[package]]
 name = "network_mode_selection"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -3813,7 +3813,7 @@ dependencies = [
 
 [[package]]
 name = "network_mode_selection_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "menu_model",
@@ -3826,7 +3826,7 @@ dependencies = [
 
 [[package]]
 name = "network_mode_selection_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -3838,7 +3838,7 @@ dependencies = [
 
 [[package]]
 name = "network_session_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "derive-new",
  "derive_deref",
@@ -3849,7 +3849,7 @@ dependencies = [
 
 [[package]]
 name = "network_session_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -4024,7 +4024,7 @@ dependencies = [
 
 [[package]]
 name = "numeric_newtype_derive"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "derive_more",
  "proc-macro2 1.0.10",
@@ -4074,7 +4074,7 @@ dependencies = [
 
 [[package]]
 name = "object_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -4098,7 +4098,7 @@ dependencies = [
 
 [[package]]
 name = "object_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -4125,7 +4125,7 @@ dependencies = [
 
 [[package]]
 name = "object_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -4141,7 +4141,7 @@ dependencies = [
 
 [[package]]
 name = "object_status_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -4152,7 +4152,7 @@ dependencies = [
 
 [[package]]
 name = "object_status_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -4161,7 +4161,7 @@ dependencies = [
 
 [[package]]
 name = "object_test"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "amethyst_test",
@@ -4184,7 +4184,7 @@ dependencies = [
 
 [[package]]
 name = "object_type"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "enum_variant_type",
  "serde",
@@ -4291,7 +4291,7 @@ dependencies = [
 
 [[package]]
 name = "parent_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -4299,7 +4299,7 @@ dependencies = [
 
 [[package]]
 name = "parent_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5316,7 +5316,7 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "sequence_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -5330,7 +5330,7 @@ dependencies = [
 
 [[package]]
 name = "sequence_loading_spi"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "sequence_model_spi",
@@ -5338,7 +5338,7 @@ dependencies = [
 
 [[package]]
 name = "sequence_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -5362,11 +5362,11 @@ dependencies = [
 
 [[package]]
 name = "sequence_model_core"
-version = "0.18.0"
+version = "0.19.0"
 
 [[package]]
 name = "sequence_model_derive"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -5385,7 +5385,7 @@ dependencies = [
 
 [[package]]
 name = "sequence_model_spi"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -5394,7 +5394,7 @@ dependencies = [
 
 [[package]]
 name = "sequence_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -5460,7 +5460,7 @@ dependencies = [
 
 [[package]]
 name = "session_host"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -5476,7 +5476,7 @@ dependencies = [
 
 [[package]]
 name = "session_host_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -5490,7 +5490,7 @@ dependencies = [
 
 [[package]]
 name = "session_host_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5505,7 +5505,7 @@ dependencies = [
 
 [[package]]
 name = "session_host_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -5516,7 +5516,7 @@ dependencies = [
 
 [[package]]
 name = "session_host_ui_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5528,7 +5528,7 @@ dependencies = [
 
 [[package]]
 name = "session_join"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -5544,7 +5544,7 @@ dependencies = [
 
 [[package]]
 name = "session_join_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -5560,7 +5560,7 @@ dependencies = [
 
 [[package]]
 name = "session_join_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5575,7 +5575,7 @@ dependencies = [
 
 [[package]]
 name = "session_join_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -5586,7 +5586,7 @@ dependencies = [
 
 [[package]]
 name = "session_lobby"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -5604,7 +5604,7 @@ dependencies = [
 
 [[package]]
 name = "session_lobby_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -5617,7 +5617,7 @@ dependencies = [
 
 [[package]]
 name = "session_lobby_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5631,7 +5631,7 @@ dependencies = [
 
 [[package]]
 name = "session_lobby_ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -5650,7 +5650,7 @@ dependencies = [
 
 [[package]]
 name = "session_lobby_ui_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -5666,7 +5666,7 @@ dependencies = [
 
 [[package]]
 name = "session_server"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "bimap",
@@ -5703,7 +5703,7 @@ dependencies = [
 
 [[package]]
 name = "shape_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "serde",
  "strum_macros",
@@ -5765,7 +5765,7 @@ checksum = "b5752e017e03af9d735b4b069f53b7a7fd90fefafa04d8bd0c25581b0bff437f"
 
 [[package]]
 name = "shrev_support"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "log",
@@ -5850,7 +5850,7 @@ dependencies = [
 
 [[package]]
 name = "spawn_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -5860,7 +5860,7 @@ dependencies = [
 
 [[package]]
 name = "spawn_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -5876,7 +5876,7 @@ dependencies = [
 
 [[package]]
 name = "spawn_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -5946,7 +5946,7 @@ dependencies = [
 
 [[package]]
 name = "sprite_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_gfx_gen",
@@ -5960,7 +5960,7 @@ dependencies = [
 
 [[package]]
 name = "sprite_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -5981,7 +5981,7 @@ dependencies = [
 
 [[package]]
 name = "sprite_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -5992,7 +5992,7 @@ dependencies = [
 
 [[package]]
 name = "state_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6010,7 +6010,7 @@ dependencies = [
 
 [[package]]
 name = "state_registry"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -6022,7 +6022,7 @@ dependencies = [
 
 [[package]]
 name = "state_support"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6052,7 +6052,7 @@ dependencies = [
 
 [[package]]
 name = "stdio_command_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "derivative 2.1.1",
  "derive-new",
@@ -6063,7 +6063,7 @@ dependencies = [
 
 [[package]]
 name = "stdio_command_stdio"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -6076,7 +6076,7 @@ dependencies = [
 
 [[package]]
 name = "stdio_input"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -6098,7 +6098,7 @@ dependencies = [
 
 [[package]]
 name = "stdio_spi"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
@@ -6263,7 +6263,7 @@ dependencies = [
 
 [[package]]
 name = "team_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -6307,7 +6307,7 @@ dependencies = [
 
 [[package]]
 name = "test_object_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -6328,7 +6328,7 @@ dependencies = [
 
 [[package]]
 name = "test_support"
-version = "0.18.0"
+version = "0.19.0"
 
 [[package]]
 name = "textwrap"
@@ -6421,7 +6421,7 @@ dependencies = [
 
 [[package]]
 name = "tracker"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -6493,7 +6493,7 @@ checksum = "c85f514e095d348c279b1e5cd76795082cf15bd59b93207832abe0b1d8fed236"
 
 [[package]]
 name = "ui_audio_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_loading",
@@ -6506,7 +6506,7 @@ dependencies = [
 
 [[package]]
 name = "ui_audio_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
@@ -6520,7 +6520,7 @@ dependencies = [
 
 [[package]]
 name = "ui_button_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6538,7 +6538,7 @@ dependencies = [
 
 [[package]]
 name = "ui_form_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6554,7 +6554,7 @@ dependencies = [
 
 [[package]]
 name = "ui_label_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_ui",
@@ -6573,7 +6573,7 @@ dependencies = [
 
 [[package]]
 name = "ui_loading"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derive-new",
@@ -6582,7 +6582,7 @@ dependencies = [
 
 [[package]]
 name = "ui_menu_item_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6603,7 +6603,7 @@ dependencies = [
 
 [[package]]
 name = "ui_model"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_menu",
@@ -6629,7 +6629,7 @@ dependencies = [
 
 [[package]]
 name = "ui_model_spi"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
@@ -6644,7 +6644,7 @@ dependencies = [
 
 [[package]]
 name = "ui_model_spi_play"
-version = "0.1.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "derivative 2.1.1",
@@ -6653,7 +6653,7 @@ dependencies = [
 
 [[package]]
 name = "ui_play"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "camera_model",
@@ -6963,7 +6963,7 @@ dependencies = [
 
 [[package]]
 name = "will"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "application",
@@ -7112,7 +7112,7 @@ dependencies = [
 
 [[package]]
 name = "workspace_tests"
-version = "0.18.0"
+version = "0.19.0"
 dependencies = [
  "amethyst",
  "amethyst_test",
