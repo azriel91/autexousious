@@ -462,8 +462,18 @@ where
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?
-            .with_bundle(WebSocketNetworkBundle::new(None))?
+            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;
+
+        #[cfg(not(feature = "wasm"))]
+        {
+            game_data = game_data.with_bundle(WebSocketNetworkBundle::new(None))?;
+        }
+        #[cfg(feature = "wasm")]
+        {
+            game_data = game_data.with_bundle(WebSocketNetworkBundle::new())?;
+        }
+
+        game_data = game_data
             .with_bundle(HotReloadBundle::new(hot_reload_strategy))?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
