@@ -32,10 +32,11 @@ app_publish_artifacts_server=(
 )
 
 # Download "default" assets.
-assets_ref=master
-git_described=$(git describe HEAD --tags)
-if [[ "${git_described}" =~ '^[0-9]+[.][0-9]+[.][0-9]+$' ]]
-then assets_ref="${git_described}"
+#
+# `VERSION` is set in `ci.yml` / `publish.yml`.
+assets_ref="master"
+if [[ "${VERSION}" =~ '^[0-9]+[.][0-9]+[.][0-9]+$' ]]
+then assets_ref="${VERSION}"
 fi
 
 wget "https://gitlab.com/azriel91/will_assets_test/-/archive/${assets_ref}/will_assets_test-${assets_ref}.zip"

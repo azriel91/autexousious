@@ -10,10 +10,10 @@ $app_crate_dir = "$repository_dir\app\$app_name"
 $app_assets_dir = "$app_crate_dir\assets"
 
 # Download "default" assets.
+#
+# `VERSION` is set in `ci.yml` / `publish.yml`.
 $assets_ref = "master"
-$git_described = git describe HEAD --tags | Out-String
-
-if ($git_described -match "^[0-9]+\.[0-9]+\.[0-9]+$") { $assets_ref = $git_described }
+if ($env:VERSION -match "^[0-9]+\.[0-9]+\.[0-9]+$") { $assets_ref = $env:VERSION }
 $assets_zip = "$Env:TMP\will_assets_test-$assets_ref.zip";
 
 New-Item -ItemType Directory -Force -Path "$app_assets_dir"

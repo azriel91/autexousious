@@ -16,6 +16,10 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Install Linux Packages
         run: scripts/install_packages_linux.sh
 
@@ -25,6 +29,8 @@ jobs:
           args: --bins --release
 
       - name: Package Artifacts
+        env:
+          VERSION: ${{ steps.vars.extract_version.version }}
         run: scripts/publish_prepare_app.sh
 
       - name: Upload Artifacts
@@ -75,12 +81,18 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - uses: actions-rs/cargo@v1
         with:
           command: build
           args: --bins --release
 
       - name: Package Artifacts
+        env:
+          VERSION: ${{ steps.vars.extract_version.version }}
         run: scripts/publish_prepare_app.bat
         shell: cmd
 
