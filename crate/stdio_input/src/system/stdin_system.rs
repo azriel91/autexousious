@@ -55,7 +55,10 @@ impl<'a, 'b> SystemDesc<'a, 'b, StdinSystem> for StdinSystemDesc {
         let thread_pool = &**world.read_resource::<Arc<ThreadPool>>();
 
         let (tx, rx) = mpsc::channel();
-        thread_pool.spawn(move || StdinReader::new(tx).start());
+        thread_pool.spawn(move || {
+            // Don't care about panics.
+            let _ = std::panic::catch_unwind(|| StdinReader::new(tx).start());
+        });
 
         StdinSystem::new(rx)
     }
