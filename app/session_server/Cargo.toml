@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["network"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["network", "web_socket"] }
 bimap = "0.4.0"
 bincode = "1.2.1"
 derivative = "2.1.0"

@@ -7,8 +7,8 @@ use std::{
 };
 
 use amethyst::{
-    network::simulation::tcp::TcpNetworkBundle, utils::application_root_dir, Application, Error,
-    GameDataBuilder, LoggerConfig, SimpleState,
+    network::simulation::web_socket::WebSocketNetworkBundle, utils::application_root_dir,
+    Application, Error, GameDataBuilder, LoggerConfig, SimpleState,
 };
 use frame_rate::strategy::frame_rate_limit_config;
 use net_play::{NetListenerSystem, NetListenerSystemDesc};
@@ -28,9 +28,6 @@ mod system;
 
 /// Default file for logger configuration.
 const LOGGER_CONFIG: &str = "logger.yaml";
-
-/// `TcpListener` buffer size.
-const TCP_RECV_BUFFER_SIZE: usize = 2048;
 
 /// Default empty state
 pub struct RunState;
@@ -102,10 +99,7 @@ fn main() -> Result<(), Error> {
     let assets_dir = application_root_dir()?.join("./");
 
     let game_data = GameDataBuilder::default()
-        .with_bundle(TcpNetworkBundle::new(
-            Some(tcp_listener),
-            TCP_RECV_BUFFER_SIZE,
-        ))?
+        .with_bundle(WebSocketNetworkBundle::new(Some(tcp_listener)))?
         .with_system_desc(
             NetListenerSystemDesc::default(),
             any::type_name::<NetListenerSystem>(),

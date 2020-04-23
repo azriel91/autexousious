@@ -3,20 +3,18 @@
 use std::{
     any,
     convert::TryFrom,
-    fs::File,
-    io::BufReader,
     net::{IpAddr, Ipv4Addr},
     path::{Path, PathBuf},
 };
-
 #[cfg(not(feature = "wasm"))]
-use amethyst::window::DisplayConfig;
+use std::{fs::File, io::BufReader};
+
 use amethyst::{
     assets::{HotReloadBundle, HotReloadStrategy},
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
-    network::simulation::tcp::TcpNetworkBundle,
+    network::simulation::web_socket::WebSocketNetworkBundle,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         rendy::hal::command::ClearColor,
@@ -26,11 +24,13 @@ use amethyst::{
     ui::{RenderUi, UiBundle},
     utils::{application_root_dir, ortho_camera::CameraOrthoSystem},
     window::EventLoop,
-    CoreApplication, Error, GameDataBuilder, LoggerConfig,
+    CoreApplication, Error, GameDataBuilder,
 };
 #[cfg(not(feature = "wasm"))]
-use application::Format;
-use application::{AppDir, AppFile, IoUtils};
+use amethyst::{window::DisplayConfig, LoggerConfig};
+use application::AppDir;
+#[cfg(not(feature = "wasm"))]
+use application::{AppFile, Format, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
 #[cfg(not(feature = "wasm"))]
@@ -68,6 +68,7 @@ use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
+#[cfg(not(feature = "wasm"))]
 use log::debug;
 use map_loading::MapLoadingBundle;
 use net_play::{
@@ -129,14 +130,16 @@ use ui_play::{
 mod built_in;
 
 /// Default file for application arguments.
+#[cfg(not(feature = "wasm"))]
 const WILL_CONFIG: &str = "will.toml";
 
 /// Default file for logger configuration.
+#[cfg(not(feature = "wasm"))]
 const LOGGER_CONFIG: &str = "logger.yaml";
 
-/// `TcpListener` buffer size.
-const TCP_RECV_BUFFER_SIZE: usize = 2048;
-
+/// Startup parameters for `Will`.
+///
+/// Note: `StructOptToml` implements `Default` for this.
 #[derive(Debug, Deserialize, Serialize, StructOpt, StructOptToml)]
 #[serde(default)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -228,6 +231,21 @@ pub fn init_panic_hook() {
 
 #[cfg(not(feature = "wasm"))]
 fn main() -> Result<(), Error> {
+    let mut will_config = AppFile::find(WILL_CONFIG)
+        .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
+        .and_then(|bytes| String::from_utf8(bytes).map_err(Error::from))
+        .and_then(|will_config_toml| {
+            WillConfig::from_args_with_toml(&will_config_toml).map_err(|e| Error::from(e.compat()))
+        })
+        .unwrap_or_else(|e| {
+            eprintln!("{}", e);
+            WillConfig::from_args()
+        });
+
+    logger_setup(will_config.logger_config.take())?;
+
+    debug!("will_config: {:?}", will_config);
+
     let fn_setup = |_app_root: &Path, event_loop: &EventLoop<()>| {
         let player_input_configs = AppFile::load_in::<PlayerInputConfigs, _>(
             AppDir::RESOURCES,
@@ -243,6 +261,7 @@ fn main() -> Result<(), Error> {
         let rendering_bundle = RenderingBundle::<DefaultBackend>::new(display_config, event_loop);
 
         Ok((
+            will_config,
             player_input_configs,
             FontConfigLoader::load()?,
             HotReloadStrategy::default(),
@@ -274,6 +293,7 @@ mod wasm {
     use wasm_bindgen::prelude::*;
     use web_sys::HtmlCanvasElement;
 
+    use super::WillConfig;
     use crate::built_in::BuiltIn;
 
     /// Will application builder.
@@ -282,6 +302,8 @@ mod wasm {
     pub struct WillAppBuilder {
         /// User supplied canvas, if any.
         canvas_element: Option<HtmlCanvasElement>,
+        /// Will configuration.
+        will_config: Option<String>,
         /// Input bindings data.
         player_input_configs: Option<String>,
         /// Theme data.
@@ -300,6 +322,12 @@ mod wasm {
         /// Sets the canvas element for the `WillAppBuilder`.
         pub fn with_canvas(mut self, canvas: HtmlCanvasElement) -> Self {
             self.canvas_element = Some(canvas);
+            self
+        }
+
+        /// Sets the `WillConfig` for the `WillAppBuilder`.
+        pub fn with_will_config(mut self, will_config: String) -> Self {
+            self.will_config = Some(will_config);
             self
         }
 
@@ -350,6 +378,12 @@ mod wasm {
             };
 
             let setup_fn = move |_: &Path, event_loop: &EventLoop<()>| {
+                let will_config = if let Some(will_config) = self.will_config.as_ref() {
+                    AppFile::load_bytes(will_config.as_bytes(), Format::Yaml)?
+                } else {
+                    WillConfig::default()
+                };
+
                 let player_input_configs =
                     if let Some(player_input_configs) = self.player_input_configs.as_ref() {
                         AppFile::load_bytes(player_input_configs.as_bytes(), Format::Yaml)?
@@ -372,6 +406,7 @@ mod wasm {
                 );
 
                 Ok((
+                    will_config,
                     player_input_configs,
                     font_config,
                     HotReloadStrategy::every(10),
@@ -394,6 +429,7 @@ where
         &EventLoop<()>,
     ) -> Result<
         (
+            WillConfig,
             PlayerInputConfigs,
             FontConfig,
             HotReloadStrategy,
@@ -402,29 +438,14 @@ where
         Error,
     >,
 {
-    let mut will_config = AppFile::find(WILL_CONFIG)
-        .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
-        .and_then(|bytes| String::from_utf8(bytes).map_err(Error::from))
-        .and_then(|will_config_toml| {
-            WillConfig::from_args_with_toml(&will_config_toml).map_err(|e| Error::from(e.compat()))
-        })
-        .unwrap_or_else(|e| {
-            eprintln!("{}", e);
-            WillConfig::from_args()
-        });
-
-    let session_server_config = session_server_config(&will_config);
-
-    #[cfg(not(target_arch = "wasm32"))]
-    logger_setup(will_config.logger_config.take())?;
-    debug!("will_config: {:?}", will_config);
-
     let app_root = application_root_dir()?;
     let assets_dir = AppDir::assets()?;
 
     let event_loop = EventLoop::new();
-    let (player_input_configs, font_config, hot_reload_strategy, rendering_bundle) =
+    let (will_config, player_input_configs, font_config, hot_reload_strategy, rendering_bundle) =
         fn_setup(&app_root, &event_loop)?;
+
+    let session_server_config = session_server_config(&will_config);
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new()).build();
@@ -443,9 +464,13 @@ where
             .with_bundle(AudioBundle::default())?
             .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;
 
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(feature = "wasm"))]
         {
-            game_data = game_data.with_bundle(TcpNetworkBundle::new(None, TCP_RECV_BUFFER_SIZE))?;
+            game_data = game_data.with_bundle(WebSocketNetworkBundle::new(None))?;
+        }
+        #[cfg(feature = "wasm")]
+        {
+            game_data = game_data.with_bundle(WebSocketNetworkBundle::new())?;
         }
 
         game_data = game_data
@@ -545,97 +570,90 @@ where
                 any::type_name::<SessionInputResourcesSyncSystem>(),
                 &[],
             )
-            .with_bundle(AssetPlayBundle::new())?;
-
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            game_data = game_data
-                .with_system_desc(
-                    SessionHostRequestSystemDesc::default(),
+            .with_bundle(AssetPlayBundle::new())?
+            .with_system_desc(
+                SessionHostRequestSystemDesc::default(),
+                any::type_name::<SessionHostRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::default(),
+                any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionLobbyRequestSystemDesc::default(),
+                any::type_name::<SessionLobbyRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                NetworkInputRequestSystemDesc::default(),
+                any::type_name::<NetworkInputRequestSystem>(),
+                &["input_system"],
+            )
+            .with_system_desc(
+                NetMessageRequestSystemDesc::default(),
+                any::type_name::<NetMessageRequestSystem>(),
+                &[
                     any::type_name::<SessionHostRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionJoinRequestSystemDesc::default(),
                     any::type_name::<SessionJoinRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionLobbyRequestSystemDesc::default(),
                     any::type_name::<SessionLobbyRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    NetworkInputRequestSystemDesc::default(),
                     any::type_name::<NetworkInputRequestSystem>(),
-                    &["input_system"],
-                )
-                .with_system_desc(
-                    NetMessageRequestSystemDesc::default(),
-                    any::type_name::<NetMessageRequestSystem>(),
-                    &[
-                        any::type_name::<SessionHostRequestSystem>(),
-                        any::type_name::<SessionJoinRequestSystem>(),
-                        any::type_name::<SessionLobbyRequestSystem>(),
-                        any::type_name::<NetworkInputRequestSystem>(),
-                    ],
-                )
-                .with_system_desc(
-                    NetListenerSystemDesc::default(),
-                    any::type_name::<NetListenerSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionHostResponseSystemDesc::default(),
+                ],
+            )
+            .with_system_desc(
+                NetListenerSystemDesc::default(),
+                any::type_name::<NetListenerSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionHostResponseSystemDesc::default(),
+                any::type_name::<SessionHostResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionLobbyResponseSystemDesc::default(),
+                any::type_name::<SessionLobbyResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionMessageResponseSystemDesc::default(),
+                any::type_name::<SessionMessageResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                NetworkInputResponseSystemDesc::default(),
+                any::type_name::<NetworkInputResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with(
+                SessionCodeLabelUpdateSystem::new(),
+                any::type_name::<SessionCodeLabelUpdateSystem>(),
+                &[
                     any::type_name::<SessionHostResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionJoinResponseSystemDesc::default(),
                     any::type_name::<SessionJoinResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionLobbyResponseSystemDesc::default(),
-                    any::type_name::<SessionLobbyResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionMessageResponseSystemDesc::default(),
                     any::type_name::<SessionMessageResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    NetworkInputResponseSystemDesc::default(),
-                    any::type_name::<NetworkInputResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with(
-                    SessionCodeLabelUpdateSystem::new(),
-                    any::type_name::<SessionCodeLabelUpdateSystem>(),
-                    &[
-                        any::type_name::<SessionHostResponseSystem>(),
-                        any::type_name::<SessionJoinResponseSystem>(),
-                        any::type_name::<SessionMessageResponseSystem>(),
-                    ],
-                )
-                .with(
-                    SessionDeviceEntityCreateDeleteSystem::new(),
-                    any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
-                    &[
-                        any::type_name::<SessionHostResponseSystem>(),
-                        any::type_name::<SessionJoinResponseSystem>(),
-                        any::type_name::<SessionMessageResponseSystem>(),
-                    ],
-                )
-                .with(
-                    SessionDeviceWidgetUpdateSystem::new(),
-                    any::type_name::<SessionDeviceWidgetUpdateSystem>(),
-                    &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
-                );
-        }
-
-        game_data = game_data
+                ],
+            )
+            .with(
+                SessionDeviceEntityCreateDeleteSystem::new(),
+                any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
+            )
+            .with(
+                SessionDeviceWidgetUpdateSystem::new(),
+                any::type_name::<SessionDeviceWidgetUpdateSystem>(),
+                &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
+            )
             .with_system_desc(
                 StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),

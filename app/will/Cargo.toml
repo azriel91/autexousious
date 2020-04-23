@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 application = { path = "../../crate/application" }
 application_event = { path = "../../crate/application_event" }
 application_input = { path = "../../crate/application_input" }
@@ -74,7 +74,7 @@ ui_play = { path = "../../crate/ui_play" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { version = "0.1.6" }
 wasm-bindgen = { version = "0.2.60" }
-web-sys = { version = "0.3.36" }
+web-sys = { version = "0.3.36", features = ["ErrorEvent", "MessageEvent", "WebSocket"] }
 
 [dev-dependencies]
 assert_cmd = "1.0.1"

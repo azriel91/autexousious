@@ -6,6 +6,7 @@ module_levels:
   - ["amethyst", "warn"]
   - ["amethyst_audio", "info"]
   - ["amethyst_assets", "info"]
+  - ["amethyst_network", "info"]
   - ["amethyst_rendy", "info"]
   - ["application", "info"]
   - ["application_state", "info"]

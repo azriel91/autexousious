@@ -6,8 +6,15 @@
 
 * Support for GL renderer backend. ([#219])
 * Initial support for Web Assembly (WASM). ([#219])
+* Initial support for network play in WASM. ([#209])
 
+### Changed
+
+* Transport protocol for network play is switched to [web sockets]. ([#209])
+
+[#209]: https://gitlab.com/azriel91/autexousious/issues/209
 [#219]: https://gitlab.com/azriel91/autexousious/issues/219
+[web sockets]: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
 
 ## 0.18.0 (2020-03-13)
 
