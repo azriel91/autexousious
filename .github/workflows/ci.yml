@@ -77,22 +77,17 @@ jobs:
       - name: Install Linux Packages
         run: scripts/install_packages_linux_ci.sh
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --workspace --tests --bins --no-run --release
-
       - name: Prepare Test Environment
         run: 'sudo bash -c ''echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf'' && sudo usermod -aG audio $USER'
 
-      - name: Run Tests
+      - name: Build And Test
         env:
           AMETHYST_LOG_LEVEL_FILTER: WARN
         run: >-
           /usr/bin/xvfb-run
           --auto-servernum
           --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
-          cargo test --workspace --tests --release
+          cargo test --workspace --tests --bins --release
 
   build_windows:
     name: Build (Windows)
