@@ -65,7 +65,7 @@ jobs:
   build_and_test_linux:
     name: Build and Test (Linux)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -79,8 +79,11 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          command: build
-          args: --all-targets --release
+          command: test
+          args: --workspace --tests --bins --no-run --release
+
+      - name: Prepare Test Environment
+        run: 'sudo echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf && sudo usermod -aG audio $USER'
 
       - name: Run Tests
         run: >-
