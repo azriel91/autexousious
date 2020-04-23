@@ -1,10 +1,9 @@
 function web_socket_send(web_socket, src) {
     // Turn the array view into owned memory.
-    // var standalone = [...src];
+    var standalone = [...src];
     // Make it a Uint8Array.
-    // let bytes = new Uint8Array(standalone);
+    let bytes = new Uint8Array(standalone);
 
-    var bytes = new Blob(src);
     console.log("Bytes to send: "+ bytes);
     web_socket.send(bytes);
 }

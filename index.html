@@ -32,6 +32,8 @@
           await wasm_bindgen('./pkg/will_bg.wasm');
 
           let canvas = document.getElementById("amethyst-canvas");
+          let will_config = await fetch('app/will/will_web.yaml')
+            .then((response) => { return response.text(); });
           let player_input_configs = await fetch('resources/player_input_configs.yaml')
             .then((response) => { return response.text(); });
           let theme = await fetch('resources/font_config.ron')
@@ -42,6 +44,7 @@
           wasm_bindgen.WillAppBuilder
             .new()
             .with_canvas(canvas)
+            .with_will_config(will_config)
             .with_player_input_configs(player_input_configs)
             .with_theme(theme)
             .with_logger_config(logger_config)
