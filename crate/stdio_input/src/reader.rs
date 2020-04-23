@@ -1,15 +1,10 @@
-use std::{
-    io::{self, Write},
-    sync::mpsc::Sender,
-};
+use std::io::{self, Write};
 
 use console::{style, Term};
+use crossbeam_channel::Sender;
 use log::{debug, info, trace, warn};
 
 use crate::Terminator;
-
-/// Name of this reader, useful when naming threads.
-pub const NAME: &str = concat!(module_path!(), "::StdinReader");
 
 /// Reads lines from stdin and sends them to the [`StdinSystem`](struct.StdinSystem.html).
 ///

@@ -1,10 +1,4 @@
-use std::{
-    sync::{
-        mpsc::{self, Receiver, TryRecvError},
-        Arc,
-    },
-    thread,
-};
+use std::sync::Arc;
 
 use amethyst::{
     assets::ThreadPool,
@@ -14,6 +8,7 @@ use amethyst::{
     shrev::EventChannel,
 };
 use application_input::ApplicationEvent;
+use crossbeam_channel::{Receiver, TryRecvError};
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error, info, trace, warn};
@@ -21,10 +16,7 @@ use state_registry::StateId;
 use stdio_command_model::StdinCommandBarrier;
 use stdio_spi::VariantAndTokens;
 
-use crate::{
-    reader::{self, StdinReader},
-    IoAppEventUtils, StatementSplitter, StatementVariant,
-};
+use crate::{reader::StdinReader, IoAppEventUtils, StatementSplitter, StatementVariant};
 
 /// `StdinSystemData`.
 #[derive(Derivative, SystemData)]
@@ -54,8 +46,11 @@ impl<'a, 'b> SystemDesc<'a, 'b, StdinSystem> for StdinSystemDesc {
 
         let thread_pool = &**world.read_resource::<Arc<ThreadPool>>();
 
-        let (tx, rx) = mpsc::channel();
-        thread_pool.spawn(move || StdinReader::new(tx).start());
+        let (tx, rx) = crossbeam_channel::unbounded();
+        thread_pool.spawn(move || {
+            // Don't care about panics.
+            let _ = std::panic::catch_unwind(|| StdinReader::new(tx).start());
+        });
 
         StdinSystem::new(rx)
     }
@@ -84,20 +79,6 @@ impl StdinSystem {
         reader_spawn_fn();
         StdinSystem { rx }
     }
-}
-
-impl Default for StdinSystem {
-    fn default() -> Self {
-        let (tx, rx) = mpsc::channel();
-        let reader_spawn_fn = || {
-            thread::Builder::new()
-                .name(reader::NAME.to_string())
-                .spawn(|| StdinReader::new(tx).start())
-                // TODO: replace new() with build() and return Result<..>
-                .expect("Failed to spawn StdinReader thread.");
-        };
-        Self::internal_new(rx, reader_spawn_fn)
-    } // kcov-ignore
 }
 
 impl<'s> System<'s> for StdinSystem {

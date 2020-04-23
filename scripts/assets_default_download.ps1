@@ -11,10 +11,9 @@ $app_assets_dir = "$app_crate_dir\assets"
 
 # Download "default" assets.
 #
-# `CI_COMMIT_TAG` is a variable set in gitlab runner CI.
-# See <https://docs.gitlab.com/ee/ci/variables/predefined_variables.html>
+# `VERSION` is set in `ci.yml` / `publish.yml`.
 $assets_ref = "master"
-if ($env:CI_COMMIT_TAG) { $assets_ref=$env:CI_COMMIT_TAG }
+if ($env:VERSION -match "^[0-9]+\.[0-9]+\.[0-9]+$") { $assets_ref = $env:VERSION }
 $assets_zip = "$Env:TMP\will_assets_test-$assets_ref.zip";
 
 New-Item -ItemType Directory -Force -Path "$app_assets_dir"

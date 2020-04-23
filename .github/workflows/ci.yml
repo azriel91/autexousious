@@ -62,10 +62,10 @@ jobs:
           command: clippy
           args: -- -D warnings
 
-  build_linux:
-    name: Build (Linux)
+  build_and_test_linux:
+    name: Build and Test (Linux)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -74,13 +74,41 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Install Linux Packages
-        run: scripts/install_packages_linux.sh
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
 
-      - uses: actions-rs/cargo@v1
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux_ci.sh
+
+      - name: Prepare Test Environment
+        run: 'sudo bash -c ''echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf'' && sudo usermod -aG audio $USER'
+
+      - name: Build And Test
+        env:
+          AMETHYST_LOG_LEVEL_FILTER: WARN
+        run: >-
+          /usr/bin/xvfb-run
+          --auto-servernum
+          --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
+          cargo test --workspace --tests --bins --release
+
+      - name: Build Session Server
+        uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all-targets --release
+          args: --bin session_server --release
+
+      - name: Package Artifacts
+        env:
+          VERSION: ${{ steps.vars.extract_version.version }}
+        run: scripts/publish_prepare_app.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux-x86_64
+          path: target/publish/app
 
   build_windows:
     name: Build (Windows)
@@ -94,7 +122,54 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Extract Version
+        id: extract_version
+        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all-targets --release
+          args: --tests --bins --release
+
+      - name: Package Artifacts
+        env:
+          VERSION: ${{ steps.vars.extract_version.version }}
+        run: scripts/publish_prepare_app.bat
+        shell: cmd
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows-x86_64
+          path: target/publish/app
+
+  build_wasm:
+    name: Build (WASM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          target: wasm32-unknown-unknown
+          components: rust-src
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux.sh
+
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: wasm-bindgen-cli
+          version: latest
+
+      - name: Build WASM
+        run: scripts/build_wasm.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: wasm32
+          path: pkg

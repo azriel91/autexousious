@@ -33,9 +33,12 @@ app_publish_artifacts_server=(
 
 # Download "default" assets.
 #
-# `CI_COMMIT_TAG` is a variable set in gitlab runner CI.
-# See <https://docs.gitlab.com/ee/ci/variables/predefined_variables.html>
-assets_ref=${CI_COMMIT_TAG:-master}
+# `VERSION` is set in `ci.yml` / `publish.yml`.
+assets_ref="master"
+if [[ "${VERSION}" =~ '^[0-9]+[.][0-9]+[.][0-9]+$' ]]
+then assets_ref="${VERSION}"
+fi
+
 wget "https://gitlab.com/azriel91/will_assets_test/-/archive/${assets_ref}/will_assets_test-${assets_ref}.zip"
 unzip -uoq "will_assets_test-${assets_ref}.zip" -d "${app_assets_dir}"
 mv "${app_assets_dir}/will_assets_test-${assets_ref}" "${app_assets_dir}/default"

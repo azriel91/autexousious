@@ -1,7 +1,5 @@
 #[cfg(test)]
 mod test {
-    use std::sync::mpsc::{self, Sender};
-
     use amethyst::{
         ecs::prelude::RunNow,
         shred::{SystemData, World},
@@ -9,6 +7,7 @@ mod test {
     };
     use application_event::AppEventVariant;
     use application_input::ApplicationEvent;
+    use crossbeam_channel::Sender;
     use state_registry::StateId;
     use stdio_command_model::StdinCommandBarrier;
     use stdio_spi::VariantAndTokens;
@@ -48,7 +47,7 @@ mod test {
         world.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
         world.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
 
-        let (tx, rx) = mpsc::channel();
+        let (tx, rx) = crossbeam_channel::unbounded();
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let (application_ev_id, variant_and_tokens_id) = {
