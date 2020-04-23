@@ -86,6 +86,8 @@ jobs:
         run: 'sudo echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf && sudo usermod -aG audio $USER'
 
       - name: Run Tests
+        env:
+          AMETHYST_LOG_LEVEL_FILTER: WARN
         run: >-
           /usr/bin/xvfb-run
           --auto-servernum
