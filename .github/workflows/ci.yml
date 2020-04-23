@@ -83,7 +83,7 @@ jobs:
           args: --workspace --tests --bins --no-run --release
 
       - name: Prepare Test Environment
-        run: 'sudo echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf && sudo usermod -aG audio $USER'
+        run: 'sudo bash -c ''echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf'' && sudo usermod -aG audio $USER'
 
       - name: Run Tests
         env:
