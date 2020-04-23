@@ -3,14 +3,12 @@
 use std::{
     any,
     convert::TryFrom,
-    fs::File,
-    io::BufReader,
     net::{IpAddr, Ipv4Addr},
     path::{Path, PathBuf},
 };
-
 #[cfg(not(feature = "wasm"))]
-use amethyst::window::DisplayConfig;
+use std::{fs::File, io::BufReader};
+
 use amethyst::{
     assets::{HotReloadBundle, HotReloadStrategy},
     audio::AudioBundle,
@@ -26,11 +24,13 @@ use amethyst::{
     ui::{RenderUi, UiBundle},
     utils::{application_root_dir, ortho_camera::CameraOrthoSystem},
     window::EventLoop,
-    CoreApplication, Error, GameDataBuilder, LoggerConfig,
+    CoreApplication, Error, GameDataBuilder,
 };
 #[cfg(not(feature = "wasm"))]
-use application::Format;
-use application::{AppDir, AppFile, IoUtils};
+use amethyst::{window::DisplayConfig, LoggerConfig};
+use application::AppDir;
+#[cfg(not(feature = "wasm"))]
+use application::{AppFile, Format, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
 #[cfg(not(feature = "wasm"))]
@@ -68,6 +68,7 @@ use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
+#[cfg(not(feature = "wasm"))]
 use log::debug;
 use map_loading::MapLoadingBundle;
 use net_play::{
@@ -129,9 +130,11 @@ use ui_play::{
 mod built_in;
 
 /// Default file for application arguments.
+#[cfg(not(feature = "wasm"))]
 const WILL_CONFIG: &str = "will.toml";
 
 /// Default file for logger configuration.
+#[cfg(not(feature = "wasm"))]
 const LOGGER_CONFIG: &str = "logger.yaml";
 
 /// Startup parameters for `Will`.
