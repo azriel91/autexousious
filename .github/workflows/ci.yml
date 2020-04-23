@@ -98,3 +98,28 @@ jobs:
         with:
           command: build
           args: --all-targets --release
+
+  build_wasm:
+    name: Build (WASM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          target: wasm32-unknown-unknown
+          components: rust-src
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux.sh
+
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: wasm-bindgen-cli
+          version: latest
+
+      - name: Build WASM
+        run: scripts/build_wasm.sh
