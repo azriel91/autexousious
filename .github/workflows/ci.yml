@@ -93,6 +93,12 @@ jobs:
           --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
           cargo test --workspace --tests --bins --release
 
+      - name: Build Session Server
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --bin session_server --release
+
       - name: Package Artifacts
         env:
           VERSION: ${{ steps.vars.extract_version.version }}
