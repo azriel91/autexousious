@@ -232,9 +232,13 @@ dependencies = [
  "amethyst_core",
  "amethyst_error",
  "bytes",
+ "crossbeam-channel 0.4.2",
+ "js-sys",
  "laminar",
  "log",
  "tungstenite",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

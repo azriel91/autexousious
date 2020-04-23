@@ -438,14 +438,8 @@ where
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
-            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;
-
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            game_data = game_data.with_bundle(WebSocketNetworkBundle::new(None))?;
-        }
-
-        game_data = game_data
+            .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?
+            .with_bundle(WebSocketNetworkBundle::new(None))?
             .with_bundle(HotReloadBundle::new(hot_reload_strategy))?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
@@ -542,97 +536,90 @@ where
                 any::type_name::<SessionInputResourcesSyncSystem>(),
                 &[],
             )
-            .with_bundle(AssetPlayBundle::new())?;
-
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            game_data = game_data
-                .with_system_desc(
-                    SessionHostRequestSystemDesc::default(),
+            .with_bundle(AssetPlayBundle::new())?
+            .with_system_desc(
+                SessionHostRequestSystemDesc::default(),
+                any::type_name::<SessionHostRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionJoinRequestSystemDesc::default(),
+                any::type_name::<SessionJoinRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionLobbyRequestSystemDesc::default(),
+                any::type_name::<SessionLobbyRequestSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                NetworkInputRequestSystemDesc::default(),
+                any::type_name::<NetworkInputRequestSystem>(),
+                &["input_system"],
+            )
+            .with_system_desc(
+                NetMessageRequestSystemDesc::default(),
+                any::type_name::<NetMessageRequestSystem>(),
+                &[
                     any::type_name::<SessionHostRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionJoinRequestSystemDesc::default(),
                     any::type_name::<SessionJoinRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionLobbyRequestSystemDesc::default(),
                     any::type_name::<SessionLobbyRequestSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    NetworkInputRequestSystemDesc::default(),
                     any::type_name::<NetworkInputRequestSystem>(),
-                    &["input_system"],
-                )
-                .with_system_desc(
-                    NetMessageRequestSystemDesc::default(),
-                    any::type_name::<NetMessageRequestSystem>(),
-                    &[
-                        any::type_name::<SessionHostRequestSystem>(),
-                        any::type_name::<SessionJoinRequestSystem>(),
-                        any::type_name::<SessionLobbyRequestSystem>(),
-                        any::type_name::<NetworkInputRequestSystem>(),
-                    ],
-                )
-                .with_system_desc(
-                    NetListenerSystemDesc::default(),
-                    any::type_name::<NetListenerSystem>(),
-                    &[],
-                )
-                .with_system_desc(
-                    SessionHostResponseSystemDesc::default(),
+                ],
+            )
+            .with_system_desc(
+                NetListenerSystemDesc::default(),
+                any::type_name::<NetListenerSystem>(),
+                &[],
+            )
+            .with_system_desc(
+                SessionHostResponseSystemDesc::default(),
+                any::type_name::<SessionHostResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionJoinResponseSystemDesc::default(),
+                any::type_name::<SessionJoinResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionLobbyResponseSystemDesc::default(),
+                any::type_name::<SessionLobbyResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                SessionMessageResponseSystemDesc::default(),
+                any::type_name::<SessionMessageResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with_system_desc(
+                NetworkInputResponseSystemDesc::default(),
+                any::type_name::<NetworkInputResponseSystem>(),
+                &[any::type_name::<NetListenerSystem>()],
+            )
+            .with(
+                SessionCodeLabelUpdateSystem::new(),
+                any::type_name::<SessionCodeLabelUpdateSystem>(),
+                &[
                     any::type_name::<SessionHostResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionJoinResponseSystemDesc::default(),
                     any::type_name::<SessionJoinResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionLobbyResponseSystemDesc::default(),
-                    any::type_name::<SessionLobbyResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    SessionMessageResponseSystemDesc::default(),
                     any::type_name::<SessionMessageResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with_system_desc(
-                    NetworkInputResponseSystemDesc::default(),
-                    any::type_name::<NetworkInputResponseSystem>(),
-                    &[any::type_name::<NetListenerSystem>()],
-                )
-                .with(
-                    SessionCodeLabelUpdateSystem::new(),
-                    any::type_name::<SessionCodeLabelUpdateSystem>(),
-                    &[
-                        any::type_name::<SessionHostResponseSystem>(),
-                        any::type_name::<SessionJoinResponseSystem>(),
-                        any::type_name::<SessionMessageResponseSystem>(),
-                    ],
-                )
-                .with(
-                    SessionDeviceEntityCreateDeleteSystem::new(),
-                    any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
-                    &[
-                        any::type_name::<SessionHostResponseSystem>(),
-                        any::type_name::<SessionJoinResponseSystem>(),
-                        any::type_name::<SessionMessageResponseSystem>(),
-                    ],
-                )
-                .with(
-                    SessionDeviceWidgetUpdateSystem::new(),
-                    any::type_name::<SessionDeviceWidgetUpdateSystem>(),
-                    &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
-                );
-        }
-
-        game_data = game_data
+                ],
+            )
+            .with(
+                SessionDeviceEntityCreateDeleteSystem::new(),
+                any::type_name::<SessionDeviceEntityCreateDeleteSystem>(),
+                &[
+                    any::type_name::<SessionHostResponseSystem>(),
+                    any::type_name::<SessionJoinResponseSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
+            )
+            .with(
+                SessionDeviceWidgetUpdateSystem::new(),
+                any::type_name::<SessionDeviceWidgetUpdateSystem>(),
+                &[any::type_name::<SessionDeviceEntityCreateDeleteSystem>()],
+            )
             .with_system_desc(
                 StateItemUiInputAugmentSystemDesc::default(),
                 any::type_name::<StateItemUiInputAugmentSystem>(),
