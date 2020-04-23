@@ -101,7 +101,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.sh
 
       - name: Upload Artifacts
@@ -133,7 +133,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.bat
         shell: cmd
 

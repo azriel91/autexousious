@@ -30,7 +30,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.sh
 
       - name: Upload Artifacts
@@ -63,7 +63,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
 
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -72,7 +72,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
 
   prepare_artifacts_windows:
     name: Prepare Artifacts (Windows)
@@ -97,7 +97,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.bat
         shell: cmd
 
@@ -131,7 +131,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
 
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -140,4 +140,4 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
