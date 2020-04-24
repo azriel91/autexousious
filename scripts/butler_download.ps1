@@ -17,4 +17,4 @@ if (-not (Test-Path $butler_path)) {
 iex "$butler_path upgrade --assume-yes --force"
 
 # echo version
-iex "$butler_path -V"
+iex "$butler_path --version"
