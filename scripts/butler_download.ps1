@@ -14,6 +14,7 @@ if (-not (Test-Path $butler_path)) {
   Expand-Archive -Path $butler_zip -DestinationPath $butler_dir -Force
 }
 
-$butler_path upgrade --assume-yes --force
+iex "$butler_path upgrade --assume-yes --force"
+iex "$butler_path --version"
 
-$butler_path --version
+exit 0
