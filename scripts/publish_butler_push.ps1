@@ -9,15 +9,15 @@ $env:BUTLER_API_KEY > $butler_creds_path
 butler `
   -i "$butler_creds_path" `
   push `
-  "target\publish\app\$app" `
-  "$env:ITCH_IO_USER/$game:$env:CHANNEL" `
-  --userversion "$env:VERSION" `
+  "target\publish\app\${app}" `
+  "${env:ITCH_IO_USER}/${game}:${env:CHANNEL}" `
+  --userversion "${env:VERSION}" `
   --if-changed
 
 butler `
   -i "$butler_creds_path" `
   push `
-  "target\publish\app\$app_server" `
-  "$env:ITCH_IO_USER/$game:$env:CHANNEL_SERVER" `
-  --userversion "$env:VERSION" `
+  "target\publish\app\${app_server}" `
+  "${env:ITCH_IO_USER}/${game}:${env:CHANNEL_SERVER}" `
+  --userversion "${env:VERSION}" `
   --if-changed
