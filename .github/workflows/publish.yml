@@ -131,7 +131,7 @@ jobs:
         run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
 
       - name: Download Butler
-        run: .\scripts\butler_download.ps1
+        run: powershell -File .\scripts\butler_download.ps1
         shell: powershell
 
       - name: Publish Will And Session Server
@@ -141,5 +141,5 @@ jobs:
           VERSION: ${{ steps.extract_version.outputs.version }}
           CHANNEL: windows-x86_64
           CHANNEL_SERVER: windows-x86_64-server
-        run: .\scripts\publish_butler_push.ps1
+        run: powershell -File .\scripts\publish_butler_push.ps1
         shell: powershell
