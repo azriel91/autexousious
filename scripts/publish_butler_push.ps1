@@ -6,7 +6,7 @@ $app_server = "session_server";
 $butler_creds_path = "target\butler_creds";
 $env:BUTLER_API_KEY > $butler_creds_path
 
-butler `
+.\butler.exe `
   -i "$butler_creds_path" `
   push `
   "target\publish\app\${app}" `
@@ -14,7 +14,7 @@ butler `
   --userversion "${env:VERSION}" `
   --if-changed
 
-butler `
+.\butler.exe `
   -i "$butler_creds_path" `
   push `
   "target\publish\app\${app_server}" `
