@@ -30,7 +30,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.sh
 
       - name: Upload Artifacts
@@ -63,7 +63,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/will
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
 
       - uses: josephbmanley/butler-publish-itchio-action@master
         env:
@@ -72,7 +72,7 @@ jobs:
           ITCH_GAME: will
           ITCH_USER: azriel91
           PACKAGE: target/publish/app/session_server
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
 
   prepare_artifacts_windows:
     name: Prepare Artifacts (Windows)
@@ -97,7 +97,7 @@ jobs:
 
       - name: Package Artifacts
         env:
-          VERSION: ${{ steps.vars.extract_version.version }}
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: scripts/publish_prepare_app.bat
         shell: cmd
 
@@ -124,20 +124,15 @@ jobs:
         id: extract_version
         run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
 
-      - uses: josephbmanley/butler-publish-itchio-action@master
-        env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
-          CHANNEL: windows-x86_64
-          ITCH_GAME: will
-          ITCH_USER: azriel91
-          PACKAGE: target/publish/app/will
-          VERSION: ${{ steps.vars.extract_version.version }}
+      - name: Download Butler
+        run: scripts/butler_download.ps1
+        shell: powershell
 
-      - uses: josephbmanley/butler-publish-itchio-action@master
+      - name: Publish Will And Session Server
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
-          CHANNEL: windows-x86_64-server
-          ITCH_GAME: will
-          ITCH_USER: azriel91
-          PACKAGE: target/publish/app/session_server
-          VERSION: ${{ steps.vars.extract_version.version }}
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          ITCH_IO_USER: azriel91
+          VERSION: ${{ steps.extract_version.outputs.version }}
+          CHANNEL: windows-x86_64
+          CHANNEL_SERVER: windows-x86_64-server
+        run: scripts/publish_butler_push.ps1

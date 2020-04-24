@@ -4,5 +4,5 @@
 **/*.rs.bk
 *.zip
 
-/assets/default
+/app/will/assets/default
 /scenes

@@ -16,7 +16,9 @@ $assets_ref = "master"
 if ($env:VERSION -match "^[0-9]+\.[0-9]+\.[0-9]+$") { $assets_ref = $env:VERSION }
 $assets_zip = "$Env:TMP\will_assets_test-$assets_ref.zip";
 
-New-Item -ItemType Directory -Force -Path "$app_assets_dir"
+if (!(Test-Path "$app_assets_dir")) {
+  New-Item -ItemType Directory -Force -Path "$app_assets_dir"
+}
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
 Invoke-WebRequest "https://gitlab.com/azriel91/will_assets_test/-/archive/$assets_ref/will_assets_test-$assets_ref.zip" -OutFile $assets_zip;
 
