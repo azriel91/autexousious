@@ -46,6 +46,10 @@ jobs:
     if: success()
     timeout-minutes: 15
     steps:
+      # Note: we don't checkout the repository, so if you need a script from the repository, make
+      # sure to include the following task:
+      # - uses: actions/checkout@v2
+
       - name: Retrieve Artifacts
         uses: actions/download-artifact@v1
         with:
@@ -98,7 +102,7 @@ jobs:
       - name: Package Artifacts
         env:
           VERSION: ${{ steps.extract_version.outputs.version }}
-        run: scripts/publish_prepare_app.bat
+        run: .\scripts\publish_prepare_app.bat
         shell: cmd
 
       - name: Upload Artifacts
@@ -114,6 +118,8 @@ jobs:
     if: success()
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v2
+
       - name: Retrieve Artifacts
         uses: actions/download-artifact@v1
         with:
@@ -125,7 +131,7 @@ jobs:
         run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
 
       - name: Download Butler
-        run: scripts/butler_download.ps1
+        run: .\scripts\butler_download.ps1
         shell: powershell
 
       - name: Publish Will And Session Server
@@ -135,4 +141,5 @@ jobs:
           VERSION: ${{ steps.extract_version.outputs.version }}
           CHANNEL: windows-x86_64
           CHANNEL_SERVER: windows-x86_64-server
-        run: scripts/publish_butler_push.ps1
+        run: .\scripts\publish_butler_push.ps1
+        shell: powershell
