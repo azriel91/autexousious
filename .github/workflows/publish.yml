@@ -92,7 +92,7 @@ jobs:
 
       - name: Extract Version
         id: extract_version
-        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+        run: echo "::set-output name=version::$(${env:GITHUB_REF}.Split('/', 3)[2])"
 
       - uses: actions-rs/cargo@v1
         with:
@@ -128,7 +128,7 @@ jobs:
 
       - name: Extract Version
         id: extract_version
-        run: echo ::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)
+        run: echo "::set-output name=version::$(${env:GITHUB_REF}.Split('/', 3)[2])"
 
       - name: Download Butler
         run: powershell -File .\scripts\butler_download.ps1
