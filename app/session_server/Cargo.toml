@@ -8,7 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["network", "web_socket"] }
 bimap = "0.4.0"
 bincode = "1.2.1"
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 frame_rate = { path = "../../crate/frame_rate" }
@@ -22,5 +22,5 @@ serde_yaml = "0.8.11"
 session_host_model = { path = "../../crate/session_host_model" }
 session_join_model = { path = "../../crate/session_join_model" }
 session_lobby_model = { path = "../../crate/session_lobby_model" }
-structopt = "0.3.12"
-structopt-derive = "0.4.5"
+structopt = "0.3.14"
+structopt-derive = "0.4.7"

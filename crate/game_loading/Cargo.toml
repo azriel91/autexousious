@@ -16,7 +16,7 @@ asset_model = { path = "../asset_model" }
 camera_model = { path = "../camera_model" }
 character_prefab = { path = "../character_prefab" }
 character_selection_model = { path = "../character_selection_model" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }

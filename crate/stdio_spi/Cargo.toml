@@ -13,6 +13,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 application_event = { path = "../application_event" }
 clap = "2.33.0"
 derive-new = "0.5.8"
-err-derive = "0.2.3"
+err-derive = "0.2.4"
 log = "0.4.8"
-structopt = "0.3.12"
+structopt = "0.3.14"

@@ -13,9 +13,9 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 application_event = { path = "../application_event" }
 application_input = { path = "../application_input" }
 bitflags = "1.2.1"
-console = "0.10.0"
+console = "0.11.2"
 crossbeam-channel = "0.4.2"
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 itertools = "0.9.0"
 log = "0.4.8"
@@ -23,5 +23,5 @@ shell-words = "0.1.0"
 state_registry = { path = "../state_registry" }
 stdio_command_model = { path = "../stdio_command_model" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.12"
+structopt = "0.3.14"
 strum = "0.18.0"

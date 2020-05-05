@@ -14,7 +14,7 @@ approx = "0.3.2"
 asset_model = { path = "../asset_model" }
 character_model = { path = "../character_model" }
 charge_model = { path = "../charge_model" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }

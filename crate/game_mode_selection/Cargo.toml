@@ -15,7 +15,7 @@ menu_model = { path = "../menu_model" }
 application_state = { path = "../application_state" }
 character_selection = { path = "../character_selection" }
 control_settings = { path = "../control_settings" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }

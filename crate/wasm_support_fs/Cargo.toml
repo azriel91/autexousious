@@ -11,4 +11,4 @@ test = false
 [dependencies]
 lazy_static = "1.4.0"
 log = "0.4.8"
-web-sys = { version = "0.3.36", features = ["XmlHttpRequest"] }
+web-sys = { version = "0.3.39", features = ["XmlHttpRequest"] }

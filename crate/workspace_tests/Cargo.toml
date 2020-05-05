@@ -55,13 +55,13 @@ collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
 crossbeam-channel = "0.4.2"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
-enumflags2 = "0.6.2"
+enumflags2 = "0.6.4"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
@@ -115,7 +115,7 @@ ron = "0.5.1"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
-serde = { version = "1.0.105", features = ["derive"] }
+serde = { version = "1.0.106", features = ["derive"] }
 serde_yaml = "0.8.11"
 session_host_model = { path = "../session_host_model" }
 session_host_play = { path = "../session_host_play" }
@@ -140,8 +140,8 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.12"
-structopt-derive = "0.4.5"
+structopt = "0.3.14"
+structopt-derive = "0.4.7"
 strum = "0.18.0"
 strum_macros = "0.18.0"
 team_model = { path = "../team_model" }

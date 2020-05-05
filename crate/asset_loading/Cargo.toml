@@ -16,7 +16,7 @@ derive-new = "0.5.8"
 heck = "0.3.1"
 log = "0.4.8"
 object_type = { path = "../object_type" }
-serde = { version = "1.0.105", features = ["derive"] }
+serde = { version = "1.0.106", features = ["derive"] }
 serde_yaml = "0.8.11"
 strum = "0.18.0"
 
