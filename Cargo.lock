@@ -66,7 +66,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.15.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -83,7 +83,7 @@ dependencies = [
  "amethyst_window",
  "console_log",
  "crossbeam-channel 0.4.2",
- "derivative 1.0.4",
+ "derivative",
  "dirs",
  "failure",
  "fern",
@@ -102,13 +102,13 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.11.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_core",
  "amethyst_derive",
  "amethyst_error",
  "crossbeam-queue 0.1.2",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "erased-serde",
  "err-derive",
@@ -130,7 +130,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.10.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -146,7 +146,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.14.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "log",
  "ron",
@@ -156,7 +156,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.9.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_core",
@@ -173,13 +173,13 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.10.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "alga",
  "alga_derive",
  "amethyst_error",
  "approx 0.3.2",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "fnv",
  "getset",
@@ -196,7 +196,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.8.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "heck",
  "proc-macro-crate",
@@ -209,7 +209,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.5.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "backtrace",
 ]
@@ -217,13 +217,13 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.11.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
  "amethyst_error",
  "amethyst_window",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "fnv",
  "serde",
@@ -234,7 +234,7 @@ dependencies = [
 [[package]]
 name = "amethyst_network"
 version = "0.8.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_core",
  "amethyst_error",
@@ -251,7 +251,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.5.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_config",
@@ -260,7 +260,7 @@ dependencies = [
  "amethyst_error",
  "amethyst_window",
  "approx 0.3.2",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "failure",
  "fnv",
@@ -280,10 +280,10 @@ dependencies = [
 [[package]]
 name = "amethyst_test"
 version = "0.6.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "derive_deref",
  "lazy_static",
@@ -293,7 +293,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.10.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_audio",
@@ -304,7 +304,7 @@ dependencies = [
  "amethyst_rendy",
  "amethyst_window",
  "clipboard",
- "derivative 1.0.4",
+ "derivative",
  "derive-new",
  "failure",
  "fnv",
@@ -325,7 +325,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.10.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_assets",
  "amethyst_controls",
@@ -344,7 +344,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.5.0"
-source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#f68d6605710b0cadcc283d1aff6fade44f09857d"
+source = "git+https://github.com/amethyst/amethyst.git?branch=wasm#12a8cace9c9d97cf2455adb28267354c2e6b90ce"
 dependencies = [
  "amethyst_config",
  "amethyst_core",
@@ -387,7 +387,7 @@ name = "application"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "lazy_static",
  "log",
@@ -437,7 +437,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_input",
- "derivative 2.1.1",
+ "derivative",
 ]
 
 [[package]]
@@ -446,7 +446,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "application_event",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "log",
@@ -590,7 +590,7 @@ name = "asset_gfx_gen"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "integer-sqrt",
 ]
 
@@ -616,7 +616,7 @@ name = "asset_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_builder",
  "derive_deref",
@@ -642,7 +642,7 @@ dependencies = [
  "character_model",
  "chase_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "input_reaction_model",
@@ -680,7 +680,7 @@ dependencies = [
  "application_event",
  "asset_model",
  "asset_selection_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "stdio_spi",
@@ -694,7 +694,7 @@ dependencies = [
  "asset_model",
  "asset_selection_model",
  "asset_ui_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "game_input_model",
@@ -719,7 +719,7 @@ dependencies = [
  "asset_selection_ui_model",
  "asset_ui_model",
  "camera_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "kinematic_model",
@@ -745,7 +745,7 @@ dependencies = [
  "asset_selection_model",
  "camera_model",
  "chase_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "indexmap",
@@ -774,7 +774,7 @@ dependencies = [
  "asset_selection_model",
  "asset_ui_model",
  "chase_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "ui_model_spi",
@@ -834,7 +834,7 @@ dependencies = [
  "amethyst",
  "asset_derive",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "sequence_model_derive",
@@ -848,7 +848,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "audio_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "sequence_model",
 ]
@@ -881,7 +881,7 @@ dependencies = [
  "amethyst",
  "asset_derive",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -1064,7 +1064,7 @@ name = "camera_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
 ]
@@ -1075,7 +1075,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "camera_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
  "map_model",
@@ -1145,7 +1145,7 @@ dependencies = [
  "amethyst",
  "character_model",
  "charge_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "game_input_model",
@@ -1167,7 +1167,7 @@ dependencies = [
  "audio_model",
  "charge_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -1197,7 +1197,7 @@ dependencies = [
  "asset_model",
  "character_model",
  "charge_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "input_reaction_model",
@@ -1216,7 +1216,7 @@ dependencies = [
  "asset_model",
  "character_model",
  "charge_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -1236,7 +1236,7 @@ dependencies = [
  "asset_model",
  "asset_selection_model",
  "character_selection_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "object_type",
@@ -1249,7 +1249,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "serde",
@@ -1264,7 +1264,7 @@ dependencies = [
  "amethyst",
  "asset_model",
  "asset_ui_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "indexmap",
@@ -1283,7 +1283,7 @@ name = "charge_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -1298,7 +1298,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "charge_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -1310,7 +1310,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
  "serde",
@@ -1322,7 +1322,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "chase_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
 ]
@@ -1432,7 +1432,7 @@ dependencies = [
  "amethyst",
  "asset_loading",
  "collision_audio_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "wasm_support_fs",
@@ -1444,7 +1444,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "serde",
@@ -1479,7 +1479,7 @@ dependencies = [
  "amethyst",
  "asset_derive",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -1503,7 +1503,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "logic_clock",
@@ -1589,7 +1589,7 @@ dependencies = [
  "amethyst",
  "application_event",
  "control_settings_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "state_registry",
@@ -1619,7 +1619,7 @@ name = "control_settings_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "game_input_model",
@@ -1911,17 +1911,6 @@ dependencies = [
 
 [[package]]
 name = "derivative"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c6d883546668a3e2011b6a716a7330b82eabb0151b138217f632c8243e17135"
-dependencies = [
- "proc-macro2 0.4.30",
- "quote 0.6.13",
- "syn 0.15.44",
-]
-
-[[package]]
-name = "derivative"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb582b60359da160a9477ee80f15c8d784c477e69c217ef2cdd4169c24ea380f"
@@ -2081,7 +2070,7 @@ name = "energy_loading"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "energy_model",
@@ -2096,7 +2085,7 @@ dependencies = [
  "asset_model",
  "audio_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -2119,7 +2108,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "map_model",
@@ -2243,11 +2232,10 @@ checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 
 [[package]]
 name = "fern"
-version = "0.5.9"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e69ab0d5aca163e388c3a49d284fed6c3d0810700e77c5ae2756a50ec1a4daaa"
+checksum = "8c9a4820f0ccc8a7afd67c39a0f1a0f4b07ca1725164271a64939d7aeb9af065"
 dependencies = [
- "chrono",
  "colored",
  "log",
 ]
@@ -2323,7 +2311,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -2337,7 +2325,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "log",
@@ -2372,7 +2360,7 @@ dependencies = [
  "camera_model",
  "character_prefab",
  "character_selection_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "game_model",
@@ -2396,7 +2384,7 @@ dependencies = [
  "application_state",
  "character_selection",
  "control_settings",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_loading",
  "game_mode_selection_model",
@@ -2473,7 +2461,7 @@ dependencies = [
  "collision_audio_play",
  "collision_model",
  "collision_play",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "game_model",
@@ -2514,7 +2502,7 @@ dependencies = [
  "asset_gfx_gen",
  "charge_model",
  "chase_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "object_model",
  "parent_model",
@@ -2525,7 +2513,7 @@ name = "game_play_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive_deref",
  "derive_more",
  "logic_clock",
@@ -2549,7 +2537,7 @@ dependencies = [
 name = "game_stats_model"
 version = "0.19.0"
 dependencies = [
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "team_model",
 ]
@@ -3016,7 +3004,7 @@ name = "input_reaction_loading"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "input_reaction_model",
@@ -3033,7 +3021,7 @@ dependencies = [
  "asset_model",
  "asset_selection_model",
  "control_settings_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -3063,7 +3051,7 @@ dependencies = [
  "asset_ui_model",
  "chase_model",
  "control_settings_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "game_mode_selection_model",
@@ -3198,7 +3186,7 @@ dependencies = [
  "amethyst",
  "asset_derive",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "log",
@@ -3320,7 +3308,7 @@ dependencies = [
  "collision_model",
  "control_settings_loading",
  "control_settings_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "energy_model",
  "game_input_model",
@@ -3443,7 +3431,7 @@ dependencies = [
  "asset_derive",
  "asset_model",
  "background_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -3463,7 +3451,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "enumflags2",
  "kinematic_model",
@@ -3483,7 +3471,7 @@ dependencies = [
  "application_state",
  "asset_model",
  "asset_selection_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "map_selection_model",
@@ -3497,7 +3485,7 @@ dependencies = [
  "amethyst",
  "asset_model",
  "asset_selection_model",
- "derivative 2.1.1",
+ "derivative",
  "serde",
  "structopt",
  "structopt-derive",
@@ -3512,7 +3500,7 @@ dependencies = [
  "amethyst",
  "asset_model",
  "asset_ui_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "indexmap",
  "kinematic_model",
@@ -3576,7 +3564,7 @@ name = "menu_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
 ]
@@ -3651,7 +3639,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -3718,7 +3706,7 @@ name = "net_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -3737,7 +3725,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "bincode",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -3753,7 +3741,7 @@ name = "network_input_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -3769,7 +3757,7 @@ dependencies = [
  "amethyst",
  "application_event",
  "application_state",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "menu_model",
@@ -3820,7 +3808,7 @@ name = "network_session_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -4050,7 +4038,7 @@ dependencies = [
  "audio_model",
  "character_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "energy_model",
  "kinematic_model",
@@ -4072,7 +4060,7 @@ dependencies = [
  "asset_model",
  "audio_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -4096,7 +4084,7 @@ name = "object_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "kinematic_model",
@@ -4112,7 +4100,7 @@ name = "object_status_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive_more",
  "numeric_newtype_derive",
  "serde",
@@ -4270,7 +4258,7 @@ name = "parent_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "parent_model",
@@ -5288,7 +5276,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "sequence_loading_spi",
@@ -5312,7 +5300,7 @@ dependencies = [
  "asset_derive",
  "asset_model",
  "bimap",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -5338,7 +5326,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
- "derivative 2.1.1",
+ "derivative",
  "derive_deref",
  "proc-macro2 1.0.12",
  "proc_macro_roids",
@@ -5366,7 +5354,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "sequence_model",
@@ -5433,7 +5421,7 @@ dependencies = [
  "amethyst",
  "application_event",
  "application_state",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "network_session_model",
@@ -5461,7 +5449,7 @@ name = "session_host_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -5487,7 +5475,7 @@ name = "session_host_ui_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "network_session_model",
@@ -5501,7 +5489,7 @@ dependencies = [
  "amethyst",
  "application_event",
  "application_state",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "network_session_model",
@@ -5531,7 +5519,7 @@ name = "session_join_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -5560,7 +5548,7 @@ dependencies = [
  "application_event",
  "application_state",
  "character_selection",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_loading",
  "game_play",
@@ -5588,7 +5576,7 @@ name = "session_lobby_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "net_model",
@@ -5603,7 +5591,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "kinematic_model",
@@ -5622,7 +5610,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
  "log",
@@ -5639,7 +5627,7 @@ dependencies = [
  "amethyst",
  "bimap",
  "bincode",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "frame_rate",
@@ -5850,7 +5838,7 @@ dependencies = [
  "asset_model",
  "character_model",
  "character_prefab",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "energy_prefab",
  "kinematic_model",
@@ -5919,7 +5907,7 @@ dependencies = [
  "amethyst",
  "asset_gfx_gen",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "sequence_loading_spi",
@@ -5933,7 +5921,7 @@ dependencies = [
  "amethyst",
  "asset_derive",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "derive_more",
@@ -5952,7 +5940,7 @@ name = "sprite_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
  "sprite_model",
@@ -5965,7 +5953,7 @@ dependencies = [
  "amethyst",
  "asset_model",
  "camera_play",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "log",
@@ -5981,7 +5969,7 @@ name = "state_registry"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "serde",
  "strum",
@@ -6022,7 +6010,7 @@ dependencies = [
 name = "stdio_command_model"
 version = "0.19.0"
 dependencies = [
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "serde",
  "state_registry",
@@ -6052,7 +6040,7 @@ dependencies = [
  "bitflags",
  "console",
  "crossbeam-channel 0.4.2",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "itertools",
  "log",
@@ -6234,7 +6222,7 @@ name = "team_model"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive_more",
  "numeric_newtype_derive",
  "serde",
@@ -6291,7 +6279,7 @@ dependencies = [
  "asset_derive",
  "audio_model",
  "collision_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "kinematic_model",
  "object_model",
@@ -6402,7 +6390,7 @@ name = "tracker"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
 ]
@@ -6475,7 +6463,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_loading",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "log",
  "ui_audio_model",
@@ -6488,7 +6476,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_derive",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "serde",
@@ -6502,7 +6490,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "kinematic_model",
@@ -6520,7 +6508,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "kinematic_model",
@@ -6537,7 +6525,7 @@ dependencies = [
  "amethyst",
  "application_ui",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "kinematic_model",
@@ -6564,7 +6552,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "kinematic_model",
@@ -6589,7 +6577,7 @@ dependencies = [
  "asset_model",
  "character_selection_ui_model",
  "control_settings_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "input_reaction_model",
  "map_selection_ui_model",
@@ -6611,7 +6599,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "asset_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "indexmap",
@@ -6625,7 +6613,7 @@ name = "ui_model_spi_play"
 version = "0.19.0"
 dependencies = [
  "amethyst",
- "derivative 2.1.1",
+ "derivative",
  "ui_model_spi",
 ]
 
@@ -6635,7 +6623,7 @@ version = "0.19.0"
 dependencies = [
  "amethyst",
  "camera_model",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "game_input_model",
  "sequence_model",
@@ -7142,7 +7130,7 @@ dependencies = [
  "collision_play",
  "crossbeam-channel 0.4.2",
  "debug_util_amethyst",
- "derivative 2.1.1",
+ "derivative",
  "derive-new",
  "derive_deref",
  "energy_loading",
