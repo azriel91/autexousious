@@ -80,20 +80,21 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
+      - uses: actions-rs/install@v0.1
         with:
-          version: '0.12.3'
-          run-types: Tests
-          timeout: 120 # seconds
-          args: '--workspace'
+          crate: cargo-tarpaulin
+          version: latest
+
+      - name: 'Run `cargo-tarpaulin`'
+        uses: actions-rs/cargo@v1
+        with:
+          command: tarpaulin
+          args: --workspace --run-types Tests --out Xml
         env:
           AMETHYST_LOG_LEVEL_FILTER: WARN
 
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1.0.2
-        with:
-          token: ${{secrets.CODECOV_TOKEN}}
+        uses: codecov/codecov-action@v1
 
   build_and_test_linux:
     name: Build and Test (Linux)
