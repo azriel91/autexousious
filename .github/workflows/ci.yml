@@ -1,4 +1,10 @@
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
 
 name: CI
 
@@ -62,10 +68,37 @@ jobs:
           command: clippy
           args: -- -D warnings
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          version: '0.12.3'
+          run-types: Tests
+          timeout: 120 # seconds
+          args: '--workspace'
+        env:
+          AMETHYST_LOG_LEVEL_FILTER: WARN
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+
   build_and_test_linux:
     name: Build and Test (Linux)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
