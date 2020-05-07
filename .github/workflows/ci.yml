@@ -77,13 +77,14 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: nightly
           override: true
 
       - uses: actions-rs/install@v0.1
         with:
           crate: cargo-tarpaulin
           version: latest
+          use-tool-cache: true
 
       - name: 'Run `cargo-tarpaulin`'
         uses: actions-rs/cargo@v1
