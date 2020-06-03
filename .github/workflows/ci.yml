@@ -90,7 +90,6 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: tarpaulin
-          args: --workspace --run-types Tests --out Xml
         env:
           AMETHYST_LOG_LEVEL_FILTER: WARN
 
