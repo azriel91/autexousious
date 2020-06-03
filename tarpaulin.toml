@@ -1,0 +1,6 @@
+[workspace_default]
+workspace = true
+
+[report]
+out = ["Html", "Xml"]
+output-dir = "target/tarpaulin"
