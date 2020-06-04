@@ -95,6 +95,8 @@ jobs:
 
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v1
+        with:
+          file: ./target/tarpaulin/cobertura.xml
 
   build_and_test_linux:
     name: Build and Test (Linux)
