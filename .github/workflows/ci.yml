@@ -86,10 +86,18 @@ jobs:
           version: latest
           use-tool-cache: true
 
+      - name: 'Print `cargo-tarpaulin` version'
+        run: cargo tarpaulin --version
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux_ci.sh
+
       - name: 'Run `cargo-tarpaulin`'
-        uses: actions-rs/cargo@v1
-        with:
-          command: tarpaulin
+        run: >-
+          /usr/bin/xvfb-run
+          --auto-servernum
+          --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
+          cargo tarpaulin -v
         env:
           AMETHYST_LOG_LEVEL_FILTER: WARN
 
