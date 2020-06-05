@@ -1,6 +1,7 @@
 use amethyst::{
-    prelude::*,
+    ecs::{Read, SystemData, World, WorldExt},
     shrev::{EventChannel, ReaderId},
+    StateData, Trans,
 };
 use application_input::ApplicationEvent;
 
@@ -24,6 +25,7 @@ impl ApplicationEventIntercept {
         //
         // > @torkleyy: No need to unregister, it's just two integer values.
         // > @Rhuagh: Just drop the reader id
+        <Read<'_, EventChannel<ApplicationEvent>> as SystemData<'_>>::setup(world);
         let reader_id = world
             .write_resource::<EventChannel<ApplicationEvent>>()
             .register_reader(); // kcov-ignore

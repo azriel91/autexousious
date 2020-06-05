@@ -13,7 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 charge_model = { path = "../charge_model" }
 chase_model = { path = "../chase_model" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 object_model = { path = "../object_model" }
 parent_model = { path = "../parent_model"}

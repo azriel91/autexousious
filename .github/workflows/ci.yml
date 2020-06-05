@@ -1,4 +1,10 @@
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
 
 name: CI
 
@@ -47,7 +53,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: nightly
           override: true
           components: clippy
 
@@ -62,10 +68,51 @@ jobs:
           command: clippy
           args: -- -D warnings
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-tarpaulin
+          version: latest
+          use-tool-cache: true
+
+      - name: 'Print `cargo-tarpaulin` version'
+        run: cargo tarpaulin --version
+
+      - name: Install Linux Packages
+        run: scripts/install_packages_linux_ci.sh
+
+      - name: Prepare Test Environment
+        run: 'sudo bash -c ''echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf'' && sudo usermod -aG audio $USER'
+
+      - name: 'Run `cargo-tarpaulin`'
+        run: >-
+          /usr/bin/xvfb-run
+          --auto-servernum
+          --server-args="-screen 0 1280x1024x24+32 -pixdepths 3 27 32 -ac +extension GLX +render -noreset"
+          cargo tarpaulin -v
+        env:
+          AMETHYST_LOG_LEVEL_FILTER: WARN
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./target/tarpaulin/cobertura.xml
+
   build_and_test_linux:
     name: Build and Test (Linux)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -143,33 +190,44 @@ jobs:
           name: windows-x86_64
           path: target/publish/app
 
-  build_wasm:
-    name: Build (WASM)
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          target: wasm32-unknown-unknown
-          components: rust-src
+  # Disabled because `wasm-bindgen` errs on:
+  #
+  # ```
+  # wasm-bindgen is currently incompatible with modules that already have a start function
+  # ```
+  #
+  # It used to work with wasm-bindgen 0.2.62, but reverting to that no longer works.
+  # Perhaps it's because Rust nightly has an update that prevents that from working anymore.
+  #
+  # Currently we decide to not maintain WASM as the application fundamentally does not work well in the browser.
 
-      - name: Install Linux Packages
-        run: scripts/install_packages_linux.sh
+  # build_wasm:
+  #   name: Build (WASM)
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: nightly
+  #         override: true
+  #         target: wasm32-unknown-unknown
+  #         components: rust-src
 
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: wasm-bindgen-cli
-          version: latest
+  #     - name: Install Linux Packages
+  #       run: scripts/install_packages_linux.sh
 
-      - name: Build WASM
-        run: scripts/build_wasm.sh
+  #     - uses: actions-rs/install@v0.1
+  #       with:
+  #         crate: wasm-bindgen-cli
+  #         version: latest
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: wasm32
-          path: pkg
+  #     - name: Build WASM
+  #       run: scripts/build_wasm.sh
+
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v1
+  #       with:
+  #         name: wasm32
+  #         path: pkg

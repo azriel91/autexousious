@@ -11,7 +11,7 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 asset_model = { path = "../asset_model" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.99.5"

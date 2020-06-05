@@ -6,7 +6,7 @@ use std::{
     net::{IpAddr, Ipv4Addr},
     path::{Path, PathBuf},
 };
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 use std::{fs::File, io::BufReader};
 
 use amethyst::{
@@ -26,17 +26,18 @@ use amethyst::{
     window::EventLoop,
     CoreApplication, Error, GameDataBuilder,
 };
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 use amethyst::{window::DisplayConfig, LoggerConfig};
 use application::AppDir;
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 use application::{AppFile, Format, IoUtils};
 use application_event::{AppEvent, AppEventReader, AppEventVariant};
 use application_robot::RobotState;
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 use application_ui::FontConfigLoader;
 use application_ui::{ApplicationUiBundle, FontConfig};
 use asset_play::{AssetPlayBundle, ItemIdEventSystem};
+#[cfg(not(target_arch = "wasm32"))]
 use asset_selection_stdio::AssetSelectionStdioBundle;
 use asset_selection_ui_play::{
     ApwPreviewSpawnSystemCharacter, ApwPreviewSpawnSystemMap, AssetSelectionSfxSystem,
@@ -61,14 +62,16 @@ use game_input_model::{
 };
 use game_input_stdio::ControlInputEventStdinMapper;
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
+#[cfg(not(target_arch = "wasm32"))]
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionSfxSystem;
 use game_play::GamePlayBundle;
+#[cfg(not(target_arch = "wasm32"))]
 use game_play_stdio::GamePlayStdioBundle;
 use input_reaction_loading::InputReactionLoadingBundle;
 use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 use log::debug;
 use map_loading::MapLoadingBundle;
 use net_play::{
@@ -78,6 +81,7 @@ use network_input_play::{
     NetworkInputRequestSystem, NetworkInputRequestSystemDesc, NetworkInputResponseSystem,
     NetworkInputResponseSystemDesc,
 };
+#[cfg(not(target_arch = "wasm32"))]
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
 use network_session_play::{
@@ -91,11 +95,13 @@ use session_host_play::{
     SessionHostRequestSystem, SessionHostRequestSystemDesc, SessionHostResponseSystem,
     SessionHostResponseSystemDesc,
 };
+#[cfg(not(target_arch = "wasm32"))]
 use session_host_stdio::SessionHostStdioBundle;
 use session_join_play::{
     SessionJoinRequestSystem, SessionJoinRequestSystemDesc, SessionJoinResponseSystem,
     SessionJoinResponseSystemDesc,
 };
+#[cfg(not(target_arch = "wasm32"))]
 use session_join_stdio::SessionJoinStdioBundle;
 use session_lobby_play::{
     SessionLobbyRequestSystem, SessionLobbyRequestSystemDesc, SessionLobbyResponseSystem,
@@ -112,7 +118,9 @@ use state_play::{
     StateItemUiInputAugmentSystem, StateItemUiInputAugmentSystemDesc,
 };
 use state_registry::StateId;
+#[cfg(not(target_arch = "wasm32"))]
 use stdio_command_stdio::{StdioCommandProcessingSystem, StdioCommandStdioBundle};
+#[cfg(not(target_arch = "wasm32"))]
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
@@ -130,11 +138,11 @@ use ui_play::{
 mod built_in;
 
 /// Default file for application arguments.
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 const WILL_CONFIG: &str = "will.toml";
 
 /// Default file for logger configuration.
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 const LOGGER_CONFIG: &str = "logger.yaml";
 
 /// Startup parameters for `Will`.
@@ -220,16 +228,16 @@ fn session_server_config(will_config: &WillConfig) -> SessionServerConfig {
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn init_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-#[cfg(not(feature = "wasm"))]
+#[cfg(not(target_arch = "wasm32"))]
 fn main() -> Result<(), Error> {
     let mut will_config = AppFile::find(WILL_CONFIG)
         .and_then(|will_config_path| IoUtils::read_file(&will_config_path).map_err(Error::from))
@@ -273,10 +281,10 @@ fn main() -> Result<(), Error> {
 }
 
 #[allow(unused)]
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 fn main() {}
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 mod wasm {
     use std::{io::BufReader, path::Path};
 
@@ -464,11 +472,11 @@ where
             .with_bundle(AudioBundle::default())?
             .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;
 
-        #[cfg(not(feature = "wasm"))]
+        #[cfg(not(target_arch = "wasm32"))]
         {
             game_data = game_data.with_bundle(WebSocketNetworkBundle::new(None))?;
         }
-        #[cfg(feature = "wasm")]
+        #[cfg(target_arch = "wasm32")]
         {
             game_data = game_data.with_bundle(WebSocketNetworkBundle::new())?;
         }
@@ -505,15 +513,27 @@ where
                 SharedControllerInputUpdateSystem::new(),
                 any::type_name::<SharedControllerInputUpdateSystem>(),
                 &[any::type_name::<ControllerInputUpdateSystem>()],
-            )
-            .with_bundle(StdioInputBundle::new())?
-            .with_bundle(StdioCommandStdioBundle::new())?
-            .with_bundle(AssetSelectionStdioBundle::new())?
-            .with_bundle(GamePlayStdioBundle::new())?
-            .with_bundle(GameModeSelectionStdioBundle::new())?
-            .with_bundle(NetworkModeSelectionStdioBundle::new())?
-            .with_bundle(SessionHostStdioBundle::new())?
-            .with_bundle(SessionJoinStdioBundle::new())?
+            );
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            game_data = game_data
+                .with_bundle(StdioInputBundle::new())?
+                .with_bundle(StdioCommandStdioBundle::new())?
+                .with_bundle(AssetSelectionStdioBundle::new())?
+                .with_bundle(GamePlayStdioBundle::new())?
+                .with_bundle(GameModeSelectionStdioBundle::new())?
+                .with_bundle(NetworkModeSelectionStdioBundle::new())?
+                .with_bundle(SessionHostStdioBundle::new())?
+                .with_bundle(SessionJoinStdioBundle::new())?;
+        }
+
+        #[cfg(not(target_arch = "wasm32"))]
+        let ui_active_widget_deps = [any::type_name::<StdioCommandProcessingSystem>()];
+        #[cfg(target_arch = "wasm32")]
+        let ui_active_widget_deps = [];
+
+        game_data = game_data
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(BackgroundLoadingBundle::new())?
@@ -528,7 +548,7 @@ where
             .with(
                 UiActiveWidgetUpdateSystem::new(),
                 any::type_name::<UiActiveWidgetUpdateSystem>(),
-                &[any::type_name::<StdioCommandProcessingSystem>()],
+                &ui_active_widget_deps,
             )
             .with(
                 UiTextColourUpdateSystem::new(),

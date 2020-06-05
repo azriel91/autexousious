@@ -16,10 +16,16 @@ test -d "${coverage_dir}" || mkdir -p "${coverage_dir}"
 kcov_exclude_line="kcov-ignore"
 kcov_exclude_region="kcov-ignore-start:kcov-ignore-end"
 
+profile_arg=""
+if [ "${profile}" = "release" ]
+then
+  profile_arg="--release"
+fi
+
 # Builds all crates including tests, but don't run them yet.
 # We will run the tests wrapped in `kcov`.
 test_bins_by_crate="$(
-    cargo test --no-run --message-format=json |
+    cargo test --workspace --tests ${profile_arg} --no-run --message-format=json |
     jq -r "select(.profile.test == true) | (.package_id | split(\" \"))[0] + \";\" + .filenames[]"
   )"
 
@@ -31,12 +37,13 @@ crate_coverage_dirs=()
 for test_bin_by_crate in $test_bins_by_crate; do
   crate_name=${test_bin_by_crate%%;*}
   test_bin_path=${test_bin_by_crate##*;}
-  test_bin_name=${test_bin_path##*/target/debug/}
+  test_bin_name=${test_bin_path##*/target/${profile}/deps/}
   crate_dir="${repository_dir}/crate/${crate_name}"
 
   test -d "${crate_dir}" || continue;
 
   crate_coverage_dir="${coverage_dir}/${test_bin_name}"
+  test -d "${crate_coverage_dir}" || mkdir -p "${crate_coverage_dir}"
   crate_coverage_dirs+=("${crate_coverage_dir}")
 
   if [[ "${crate_name}" == "workspace_tests" ]]

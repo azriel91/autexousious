@@ -104,7 +104,7 @@ set +x
 . ./scripts/log.sh
 
 if [ -n "$(git status --porcelain)" ]; then
-    git commit -am "Updated workspace dependencies"
+    git commit -am "Updates workspace dependencies"
     notice "Updated workspace dependencies and committed changes."
     info "Remember to run \`cargo test\` before pushing."
 fi
@@ -140,7 +140,7 @@ set +x
 . ./scripts/log.sh
 
 if [ -n "$(git status --porcelain)" ]; then
-    git commit -am "Upgraded workspace dependencies"
+    git commit -am "Upgrades workspace dependencies"
     notice "Upgraded workspace dependencies and committed changes."
     info "Remember to run \`cargo test\` before pushing."
 fi

@@ -1,9 +1,8 @@
-use std::sync::Arc;
+use std::thread;
 
 use amethyst::{
-    assets::ThreadPool,
     core::SystemDesc,
-    ecs::{ReadExpect, System, World, WorldExt, Write},
+    ecs::{ReadExpect, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -44,13 +43,14 @@ impl<'a, 'b> SystemDesc<'a, 'b, StdinSystem> for StdinSystemDesc {
     fn build(self, world: &mut World) -> StdinSystem {
         <StdinSystem as System<'_>>::SystemData::setup(world);
 
-        let thread_pool = &**world.read_resource::<Arc<ThreadPool>>();
-
         let (tx, rx) = crossbeam_channel::unbounded();
-        thread_pool.spawn(move || {
-            // Don't care about panics.
-            let _ = std::panic::catch_unwind(|| StdinReader::new(tx).start());
-        });
+        thread::Builder::new()
+            .name(String::from("stdio_input::reader"))
+            .spawn(move || {
+                // Don't care about panics.
+                let _ = std::panic::catch_unwind(|| StdinReader::new(tx).start());
+            })
+            .expect("Failed to spawn StdinReader thread.");
 
         StdinSystem::new(rx)
     }

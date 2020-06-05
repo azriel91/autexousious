@@ -24,7 +24,7 @@ chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
-derivative = "2.1.0"
+derivative = "2.1.1"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }

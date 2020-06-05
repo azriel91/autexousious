@@ -18,4 +18,4 @@ kinematic_model = { path = "../kinematic_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.105", features = ["derive"] }
+serde = { version = "1.0.106", features = ["derive"] }

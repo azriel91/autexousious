@@ -11,8 +11,8 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 menu_model = { path = "../menu_model" }
-serde = { version = "1.0.105", features = ["derive"] }
-structopt = "0.3.12"
-structopt-derive = "0.4.5"
+serde = { version = "1.0.106", features = ["derive"] }
+structopt = "0.3.14"
+structopt-derive = "0.4.7"
 strum = "0.18.0"
 strum_macros = "0.18.0"

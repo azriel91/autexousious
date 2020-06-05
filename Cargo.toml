@@ -7,8 +7,8 @@ members = ["app/*", "crate/*"]
 codegen-units = 1
 
 [patch.crates-io]
-# https://github.com/trimental/andrew/pull/2
-andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance/update-dependencies" }
+# Needs `smithay-client-toolkit` release > 0.9.1
+andrew = { git = "https://github.com/smithay/andrew.git", rev = "389208b" }
 
 # https://github.com/sgrif/derive_deref/pull/6
 derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
