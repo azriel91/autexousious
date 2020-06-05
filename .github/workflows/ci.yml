@@ -92,6 +92,9 @@ jobs:
       - name: Install Linux Packages
         run: scripts/install_packages_linux_ci.sh
 
+      - name: Prepare Test Environment
+        run: 'sudo bash -c ''echo -e "pcm.!default {\n    type plug\n    slave.pcm \"null\"\n}" > /etc/asound.conf'' && sudo usermod -aG audio $USER'
+
       - name: 'Run `cargo-tarpaulin`'
         run: >-
           /usr/bin/xvfb-run
