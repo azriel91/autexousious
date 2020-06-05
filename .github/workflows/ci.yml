@@ -190,33 +190,44 @@ jobs:
           name: windows-x86_64
           path: target/publish/app
 
-  build_wasm:
-    name: Build (WASM)
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-          target: wasm32-unknown-unknown
-          components: rust-src
+  # Disabled because `wasm-bindgen` errs on:
+  #
+  # ```
+  # wasm-bindgen is currently incompatible with modules that already have a start function
+  # ```
+  #
+  # It used to work with wasm-bindgen 0.2.62, but reverting to that no longer works.
+  # Perhaps it's because Rust nightly has an update that prevents that from working anymore.
+  #
+  # Currently we decide to not maintain WASM as the application fundamentally does not work well in the browser.
 
-      - name: Install Linux Packages
-        run: scripts/install_packages_linux.sh
+  # build_wasm:
+  #   name: Build (WASM)
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: nightly
+  #         override: true
+  #         target: wasm32-unknown-unknown
+  #         components: rust-src
 
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: wasm-bindgen-cli
-          version: latest
+  #     - name: Install Linux Packages
+  #       run: scripts/install_packages_linux.sh
 
-      - name: Build WASM
-        run: scripts/build_wasm.sh
+  #     - uses: actions-rs/install@v0.1
+  #       with:
+  #         crate: wasm-bindgen-cli
+  #         version: latest
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: wasm32
-          path: pkg
+  #     - name: Build WASM
+  #       run: scripts/build_wasm.sh
+
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v1
+  #       with:
+  #         name: wasm32
+  #         path: pkg
