@@ -16,6 +16,7 @@ use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use kinematic_model::loaded::ObjectAccelerationSequenceHandles;
 use loading_model::loaded::LoadStage;
+use loading_spi::{AssetLoadingResources, SequenceComponentLoadingResources};
 use log::debug;
 use sequence_model::loaded::WaitSequenceHandles;
 use spawn_model::loaded::SpawnsSequenceHandles;
@@ -23,10 +24,7 @@ use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
 
-use crate::{
-    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
-    SequenceComponentLoadingResources,
-};
+use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
 pub use self::{
     map_ascl::MapAscl, object_ascl::ObjectAscl, ui_ascl::UiAscl,

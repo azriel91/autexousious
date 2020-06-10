@@ -16,13 +16,13 @@ mod tests {
         CHAR_BAT_PATH, CHAR_BAT_SLUG, MAP_EMPTY_PATH, MAP_EMPTY_SLUG, MAP_FADE_PATH, MAP_FADE_SLUG,
     };
     use loading_model::loaded::LoadStage;
+    use loading_spi::{AssetLoadingResources, SpritesDefinitionLoadingResources};
     use object_type::ObjectType;
     use slotmap::SecondaryMap;
     use sprite_model::config::SpritesDefinition;
 
     use loading::{
-        AssetLoadingResources, AssetPartLoader, AssetSpritesDefinitionLoader,
-        AssetSpritesDefinitionLoadingSystem, SpritesDefinitionLoadingResources,
+        AssetPartLoader, AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem,
     };
 
     #[test]

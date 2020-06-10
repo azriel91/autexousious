@@ -89,6 +89,7 @@ kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
 loading = { path = "../loading" }
 loading_model = { path = "../loading_model" }
+loading_spi = { path = "../loading_spi" }
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 map_loading = { path = "../map_loading" }

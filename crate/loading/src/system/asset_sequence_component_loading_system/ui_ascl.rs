@@ -13,6 +13,10 @@ use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
 };
 use kinematic_loading::PositionInitsLoader;
+use loading_spi::{
+    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+};
 use sequence_loading::{
     SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
@@ -33,10 +37,8 @@ use state_registry::StateId;
 use ui_model::config::{UiDefinition, UiType};
 
 use crate::{
-    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
-    SequenceComponentLoadingResources, TextureLoadingResourcesRead, UiAsclCharacterSelection,
-    UiAsclComponents, UiAsclControlSettings, UiAsclForm, UiAsclMapSelection, UiAsclMenu,
-    UiAsclSessionLobby,
+    UiAsclCharacterSelection, UiAsclComponents, UiAsclControlSettings, UiAsclForm,
+    UiAsclMapSelection, UiAsclMenu, UiAsclSessionLobby,
 };
 
 /// Loads sequence components for UI assets.

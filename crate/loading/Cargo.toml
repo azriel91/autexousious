@@ -40,6 +40,7 @@ input_reaction_model = { path = "../input_reaction_model" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
+loading_spi = { path = "../loading_spi" }
 log = "0.4.8"
 map_model = { path = "../map_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }

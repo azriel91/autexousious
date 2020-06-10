@@ -7,8 +7,9 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use application_test_support::AssetQueries;
     use asset_model::loaded::AssetId;
-    use loading::{AssetLoadingResources, AssetPartLoader};
+    use loading::AssetPartLoader;
     use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStage, LoadStatus};
+    use loading_spi::AssetLoadingResources;
     use slotmap::SecondaryMap;
 
     use loading::AssetPartLoadingSystem;

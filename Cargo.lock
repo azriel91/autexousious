@@ -3324,6 +3324,7 @@ dependencies = [
  "kinematic_loading",
  "kinematic_model",
  "loading_model",
+ "loading_spi",
  "log",
  "map_model",
  "map_selection_ui_model",
@@ -3359,6 +3360,31 @@ version = "0.19.0"
 dependencies = [
  "asset_model",
  "slotmap 0.4.0",
+]
+
+[[package]]
+name = "loading_spi"
+version = "0.20.0"
+dependencies = [
+ "amethyst",
+ "asset_model",
+ "audio_model",
+ "background_model",
+ "camera_model",
+ "character_model",
+ "collision_model",
+ "derivative",
+ "energy_model",
+ "game_input_model",
+ "input_reaction_model",
+ "kinematic_model",
+ "loading_model",
+ "map_model",
+ "sequence_model",
+ "slotmap 0.4.0",
+ "spawn_model",
+ "sprite_model",
+ "ui_model",
 ]
 
 [[package]]
@@ -7192,6 +7218,7 @@ dependencies = [
  "lazy_static",
  "loading",
  "loading_model",
+ "loading_spi",
  "log",
  "logic_clock",
  "map_loading",

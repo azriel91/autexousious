@@ -20,15 +20,13 @@ mod tests {
     use character_model::config::CharacterDefinition;
     use energy_model::config::EnergyDefinition;
     use loading_model::loaded::LoadStage;
+    use loading_spi::{AssetLoadingResources, DefinitionLoadingResources};
     use map_model::config::MapDefinition;
     use object_type::ObjectType;
     use slotmap::SecondaryMap;
     use ui_model::config::UiDefinition;
 
-    use loading::{
-        AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetLoadingResources,
-        AssetPartLoader, DefinitionLoadingResources,
-    };
+    use loading::{AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetPartLoader};
 
     #[test]
     fn loads_character_definition() -> Result<(), Error> {

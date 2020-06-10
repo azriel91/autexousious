@@ -11,17 +11,16 @@ use kinematic_model::{
     config::{PositionInit, VelocityInit},
     play::PositionZAsY,
 };
+use loading_spi::{
+    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+};
 use log::warn;
 use mirrored_model::play::Mirrored;
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::{loaded::Object, play::Grounding};
 use object_type::ObjectType;
 use sequence_model::loaded::SequenceId;
-
-use crate::{
-    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
-    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
-};
 
 /// Loads sequence components for object assets.
 #[derive(Debug)]

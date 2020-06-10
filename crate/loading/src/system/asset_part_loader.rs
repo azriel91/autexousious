@@ -1,8 +1,7 @@
 use amethyst::ecs::SystemData;
 use asset_model::loaded::AssetId;
 use loading_model::loaded::LoadStage;
-
-use crate::AssetLoadingResources;
+use loading_spi::AssetLoadingResources;
 
 /// Loads part of an asset.
 ///

@@ -15,16 +15,16 @@ mod tests {
         loaded::{AssetId, AssetTypeMappings},
     };
     use loading_model::loaded::LoadStage;
+    use loading_spi::{
+        AssetLoadingResources, SpritesDefinitionLoadingResources, TextureLoadingResources,
+    };
     use object_type::ObjectType;
     use slotmap::SecondaryMap;
     use sprite_loading::SpriteLoadingBundle;
     use sprite_model::config::SpritesDefinition;
     use test_support::{load_yaml, source_dir};
 
-    use loading::{
-        AssetLoadingResources, AssetPartLoader, AssetTextureLoader, AssetTextureLoadingSystem,
-        SpritesDefinitionLoadingResources, TextureLoadingResources,
-    };
+    use loading::{AssetPartLoader, AssetTextureLoader, AssetTextureLoadingSystem};
 
     #[test]
     fn loads_textures() -> Result<(), Error> {

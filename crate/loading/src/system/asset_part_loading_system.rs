@@ -7,8 +7,9 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use loading_model::loaded::{AssetLoadStage, AssetLoadStatus, LoadStatus};
+use loading_spi::AssetLoadingResources;
 
-use crate::{AssetLoadingResources, AssetPartLoader};
+use crate::AssetPartLoader;
 
 /// Loads part of a collective asset.
 #[derive(Derivative, new)]

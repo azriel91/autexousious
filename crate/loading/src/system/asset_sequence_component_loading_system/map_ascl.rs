@@ -1,6 +1,10 @@
 use amethyst::ecs::{Builder, WorldExt};
 use asset_model::loaded::{AssetId, ItemId, ItemIds};
 use kinematic_loading::PositionInitsLoader;
+use loading_spi::{
+    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+};
 use map_model::loaded::Margins;
 use sequence_loading::{
     SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
@@ -10,11 +14,6 @@ use sprite_loading::{
     SpriteRenderSequenceLoader, TintSequenceHandlesLoader, TintSequenceLoader,
 };
 use sprite_model::config::SpriteSequenceName;
-
-use crate::{
-    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
-    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
-};
 
 /// Loads sequence components for map assets.
 #[derive(Debug)]
