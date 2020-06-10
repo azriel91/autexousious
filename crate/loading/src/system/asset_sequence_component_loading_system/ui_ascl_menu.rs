@@ -14,19 +14,19 @@ use ui_menu_item_model::{
 };
 use ui_model_spi::loaded::WidgetStatusSequences;
 
-use crate::UiComponentsAscl;
+use crate::UiAsclComponents;
 
 /// Loads asset items for a `UiMenu`.
 #[derive(Debug)]
-pub struct UiMenuAscl;
+pub struct UiAsclMenu;
 
-impl UiMenuAscl {
+impl UiAsclMenu {
     /// Loads asset items for a `UiMenu`.
     pub fn load(
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        ui_components_ascl: &UiComponentsAscl,
+        ui_ascl_components: &UiAsclComponents,
         item_ids_all: &mut Vec<ItemId>,
         player_controllers: &PlayerControllers,
         ui_menu_items_cfg: &UiMenuItems<MenuIndex>,
@@ -37,14 +37,14 @@ impl UiMenuAscl {
                 Vec::with_capacity(ui_menu_items_cfg.len()),
             ),
             |(mut ui_menu_item_item_ids, mut sprite_item_ids), (index, ui_menu_item_cfg)| {
-                let UiComponentsAscl {
+                let UiAsclComponents {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = ui_components_ascl.clone();
+                } = ui_ascl_components.clone();
 
                 let tab_order = (index as u32) << 1;
 

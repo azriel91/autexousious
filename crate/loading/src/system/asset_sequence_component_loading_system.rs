@@ -1,13 +1,13 @@
 mod map_ascl;
 mod object_ascl;
 mod ui_ascl;
-mod ui_character_selection_ascl;
-mod ui_components_ascl;
-mod ui_control_settings_ascl;
-mod ui_form_ascl;
-mod ui_map_selection_ascl;
-mod ui_menu_ascl;
-mod ui_session_lobby_ascl;
+mod ui_ascl_character_selection;
+mod ui_ascl_components;
+mod ui_ascl_control_settings;
+mod ui_ascl_form;
+mod ui_ascl_map_selection;
+mod ui_ascl_menu;
+mod ui_ascl_session_lobby;
 
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -30,10 +30,10 @@ use crate::{
 
 pub use self::{
     map_ascl::MapAscl, object_ascl::ObjectAscl, ui_ascl::UiAscl,
-    ui_character_selection_ascl::UiCharacterSelectionAscl, ui_components_ascl::UiComponentsAscl,
-    ui_control_settings_ascl::UiControlSettingsAscl, ui_form_ascl::UiFormAscl,
-    ui_map_selection_ascl::UiMapSelectionAscl, ui_menu_ascl::UiMenuAscl,
-    ui_session_lobby_ascl::UiSessionLobbyAscl,
+    ui_ascl_character_selection::UiAsclCharacterSelection, ui_ascl_components::UiAsclComponents,
+    ui_ascl_control_settings::UiAsclControlSettings, ui_ascl_form::UiAsclForm,
+    ui_ascl_map_selection::UiAsclMapSelection, ui_ascl_menu::UiAsclMenu,
+    ui_ascl_session_lobby::UiAsclSessionLobby,
 };
 
 /// Loads asset sequence components.

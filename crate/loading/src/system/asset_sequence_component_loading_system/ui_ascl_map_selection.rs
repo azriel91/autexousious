@@ -27,20 +27,20 @@ use sequence_loading::SequenceIdMapper;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use sprite_model::config::SpriteSequenceName;
 
-use crate::UiComponentsAscl;
+use crate::UiAsclComponents;
 
 /// Loads asset items for a `MapSelection` UI.
 #[derive(Debug)]
-pub struct UiMapSelectionAscl;
+pub struct UiAsclMapSelection;
 
-impl UiMapSelectionAscl {
+impl UiAsclMapSelection {
     /// Loads asset items for a `MapSelection` UI.
     pub fn load(
         asset_type_mappings: &AssetTypeMappings,
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        ui_components_ascl: &UiComponentsAscl,
+        ui_ascl_components: &UiAsclComponents,
         item_ids_all: &mut Vec<ItemId>,
         map_selection_ui: &MapSelectionUi,
     ) {
@@ -90,14 +90,14 @@ impl UiMapSelectionAscl {
                 .zip(sequence_id_inits.into_iter())
                 .zip(layers.keys())
                 .map(|((position_init, sequence_id_init), msw_layer)| {
-                    let UiComponentsAscl {
+                    let UiAsclComponents {
                         sequence_end_transitions,
                         wait_sequence_handles,
                         tint_sequence_handles,
                         scale_sequence_handles,
                         input_reactions_sequence_handles,
                         sprite_render_sequence_handles,
-                    } = ui_components_ascl.clone();
+                    } = ui_ascl_components.clone();
 
                     let mut item_entity_builder = asset_world
                         .create_entity()
@@ -153,7 +153,7 @@ impl UiMapSelectionAscl {
             asset_world,
             asset_slug,
             sequence_id_mappings,
-            ui_components_ascl,
+            ui_ascl_components,
             maps_available_selector,
         ));
     }
@@ -163,7 +163,7 @@ impl UiMapSelectionAscl {
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        ui_components_ascl: &UiComponentsAscl,
+        ui_ascl_components: &UiAsclComponents,
         maps_available_selector: &config::AssetSelector<T>,
     ) -> ItemId
     where
@@ -248,14 +248,14 @@ impl UiMapSelectionAscl {
                     &ui_sprite_label.sequence,
                 );
 
-                let UiComponentsAscl {
+                let UiAsclComponents {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = ui_components_ascl.clone();
+                } = ui_ascl_components.clone();
 
                 let chase_mode_stick = ChaseModeStick::new(Some(offset));
                 let mut item_entity_builder = asset_world

@@ -7,9 +7,9 @@ use session_lobby_ui_model::{
 
 /// Loads asset items for a `SessionLobbyUi`.
 #[derive(Debug)]
-pub struct UiSessionLobbyAscl;
+pub struct UiAsclSessionLobby;
 
-impl UiSessionLobbyAscl {
+impl UiAsclSessionLobby {
     /// Loads asset items for a `SessionLobbyUi`.
     pub fn load(
         asset_world: &mut AssetWorld,

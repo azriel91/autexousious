@@ -7,19 +7,19 @@ use sequence_loading::SequenceIdMapper;
 use sequence_model::loaded::SequenceIdMappings;
 use sprite_model::config::SpriteSequenceName;
 
-use crate::UiComponentsAscl;
+use crate::UiAsclComponents;
 
 /// Loads asset items for a `ControlSettings` UI.
 #[derive(Debug)]
-pub struct UiControlSettingsAscl;
+pub struct UiAsclControlSettings;
 
-impl UiControlSettingsAscl {
+impl UiAsclControlSettings {
     /// Loads asset items for a `ControlSettings` UI.
     pub fn load(
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        ui_components_ascl: &UiComponentsAscl,
+        ui_ascl_components: &UiAsclComponents,
         item_ids_all: &mut Vec<ItemId>,
         control_settings: &ControlSettings,
         keyboard_button_labels: &ControlButtonLabels,
@@ -38,14 +38,14 @@ impl UiControlSettingsAscl {
             .into_iter()
             .zip(sequence_id_inits.into_iter())
             .map(|(position_init, sequence_id_init)| {
-                let UiComponentsAscl {
+                let UiAsclComponents {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = ui_components_ascl.clone();
+                } = ui_ascl_components.clone();
 
                 let mut item_entity_builder = asset_world
                     .create_entity()
