@@ -18,9 +18,9 @@ use crate::{
 
 /// Loads sequence components for map assets.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderMap;
+pub struct MapAscl;
 
-impl AssetSequenceComponentLoaderMap {
+impl MapAscl {
     /// Loads sequence components for map assets.
     pub fn load(
         asset_loading_resources: &mut AssetLoadingResources<'_>,

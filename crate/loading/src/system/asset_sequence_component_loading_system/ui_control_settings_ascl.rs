@@ -7,19 +7,19 @@ use sequence_loading::SequenceIdMapper;
 use sequence_model::loaded::SequenceIdMappings;
 use sprite_model::config::SpriteSequenceName;
 
-use crate::AssetSequenceComponentLoaderUiComponents;
+use crate::UiComponentsAscl;
 
 /// Loads asset items for a `ControlSettings` UI.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderUiControlSettings;
+pub struct UiControlSettingsAscl;
 
-impl AssetSequenceComponentLoaderUiControlSettings {
+impl UiControlSettingsAscl {
     /// Loads asset items for a `ControlSettings` UI.
     pub fn load(
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
+        ui_components_ascl: &UiComponentsAscl,
         item_ids_all: &mut Vec<ItemId>,
         control_settings: &ControlSettings,
         keyboard_button_labels: &ControlButtonLabels,
@@ -38,14 +38,14 @@ impl AssetSequenceComponentLoaderUiControlSettings {
             .into_iter()
             .zip(sequence_id_inits.into_iter())
             .map(|(position_init, sequence_id_init)| {
-                let AssetSequenceComponentLoaderUiComponents {
+                let UiComponentsAscl {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = asset_sequence_component_loader_ui_components.clone();
+                } = ui_components_ascl.clone();
 
                 let mut item_entity_builder = asset_world
                     .create_entity()

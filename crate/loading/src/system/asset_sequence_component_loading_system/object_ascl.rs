@@ -25,9 +25,9 @@ use crate::{
 
 /// Loads sequence components for object assets.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderObject;
+pub struct ObjectAscl;
 
-impl AssetSequenceComponentLoaderObject {
+impl ObjectAscl {
     /// Loads sequence components for object assets.
     pub fn load(
         asset_loading_resources: &mut AssetLoadingResources<'_>,

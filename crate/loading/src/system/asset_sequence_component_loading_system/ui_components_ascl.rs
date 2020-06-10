@@ -6,7 +6,7 @@ use sprite_model::loaded::{
 
 /// Common components for UI items.
 #[derive(Clone, Debug)]
-pub struct AssetSequenceComponentLoaderUiComponents {
+pub struct UiComponentsAscl {
     /// Sequence transition upon sequence end.
     pub sequence_end_transitions: SequenceEndTransitions,
     /// Sequence of `WaitSequenceHandle`s.

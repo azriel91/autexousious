@@ -13,55 +13,56 @@ use asset_selection_ui_model::{
 use asset_ui_model::{
     config::{self, AssetDisplay, AssetDisplayGrid, AssetDisplayLayout},
     loaded::{
-        AssetDisplayCellMap, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
+        AssetDisplayCellCharacter, AssetSelectionCell, AssetSelectionHighlight, AssetSelector,
         AswPortraits,
     },
     play::{AssetSelectionHighlightMain, AssetSelectionStatus},
 };
+use character_selection_ui_model::config::{
+    CharacterSelectionUi, CswLayer, CswLayerName, CswTemplate,
+};
 use chase_model::play::ChaseModeStick;
-use game_input_model::play::SharedInputControlled;
+use game_input_model::play::InputControlled;
 use kinematic_loading::PositionInitsLoader;
 use kinematic_model::config::{Position, PositionInit};
-use map_selection_ui_model::config::{MapSelectionUi, MpwTemplate, MswLayer, MswLayerName};
+use object_type::ObjectType;
 use sequence_loading::SequenceIdMapper;
 use sequence_model::{config::SequenceNameString, loaded::SequenceIdMappings};
 use sprite_model::config::SpriteSequenceName;
 
-use crate::AssetSequenceComponentLoaderUiComponents;
+use crate::UiComponentsAscl;
 
-/// Loads asset items for a `MapSelection` UI.
+/// Loads asset items for a `CharacterSelection` UI.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderUiMapSelection;
+pub struct UiCharacterSelectionAscl;
 
-impl AssetSequenceComponentLoaderUiMapSelection {
-    /// Loads asset items for a `MapSelection` UI.
+impl UiCharacterSelectionAscl {
+    /// Loads asset items for a `CharacterSelection` UI.
     pub fn load(
         asset_type_mappings: &AssetTypeMappings,
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
+        ui_components_ascl: &UiComponentsAscl,
         item_ids_all: &mut Vec<ItemId>,
-        map_selection_ui: &MapSelectionUi,
+        character_selection_ui: &CharacterSelectionUi,
     ) {
-        let MapSelectionUi {
-            map_preview:
-                MpwTemplate {
-                    position: position_map_preview,
-                    dimensions: dimensions_map_preview,
+        let CharacterSelectionUi {
+            widgets, // Vec<CswDefinition>
+            widget_template:
+                CswTemplate {
                     portraits,
                     layers, // IndexMap<String, UiSpriteLabel>
                 },
-            maps_available_selector,
-        } = map_selection_ui;
-        let position_map_preview = *position_map_preview;
-        let dimensions_map_preview = *dimensions_map_preview;
+            characters_available_selector,
+        } = character_selection_ui;
 
         // Store widget item IDs in `item_ids_all` to be spawned during state ID
         // updates, but don't store item IDs for widget template layers as those
         // are instantiated when each widget item ID is attached to an entity.
 
         // Layer item IDs
+        let position_inits_widgets = PositionInitsLoader::items_to_datas(widgets.iter());
         let asw_portraits = portraits
             .iter()
             .map(|(asw_portrait_name, sequence_name_string)| {
@@ -73,88 +74,98 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                 (*asw_portrait_name, sequence_id)
             })
             .collect::<AswPortraits>();
-        let item_id_map_preview_layers = {
-            let mut position_inits = PositionInitsLoader::items_to_datas(layers.values());
-            position_inits
-                .iter_mut()
-                .for_each(|position_init| *position_init += position_map_preview);
-            let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
-                sequence_id_mappings,
-                asset_slug,
-                layers.values().map(AsRef::<SequenceNameString<_>>::as_ref),
-            );
+        let item_ids_layers = position_inits_widgets
+            .0
+            .into_iter()
+            .map(|position_init_widget| {
+                let mut position_inits = PositionInitsLoader::items_to_datas(layers.values());
+                position_inits
+                    .iter_mut()
+                    .for_each(|position_init| *position_init += position_init_widget);
+                let sequence_id_inits = SequenceIdMapper::<SpriteSequenceName>::items_to_datas(
+                    sequence_id_mappings,
+                    asset_slug,
+                    layers.values().map(AsRef::<SequenceNameString<_>>::as_ref),
+                );
 
-            position_inits
-                .0
+                position_inits
+                    .0
+                    .into_iter()
+                    .zip(sequence_id_inits.into_iter())
+                    .zip(layers.keys())
+                    .map(|((position_init, sequence_id_init), csw_layer)| {
+                        let UiComponentsAscl {
+                            sequence_end_transitions,
+                            wait_sequence_handles,
+                            tint_sequence_handles,
+                            scale_sequence_handles,
+                            input_reactions_sequence_handles,
+                            sprite_render_sequence_handles,
+                        } = ui_components_ascl.clone();
+
+                        let mut item_entity_builder = asset_world
+                            .create_entity()
+                            .with(position_init)
+                            .with(sequence_id_init)
+                            .with(sequence_end_transitions)
+                            .with(wait_sequence_handles)
+                            .with(tint_sequence_handles)
+                            .with(scale_sequence_handles)
+                            .with(input_reactions_sequence_handles);
+
+                        match csw_layer {
+                            CswLayer::Name(CswLayerName::Main) => {
+                                item_entity_builder = item_entity_builder.with(ApwMain);
+                            }
+                            CswLayer::Name(CswLayerName::Portrait) => {
+                                item_entity_builder =
+                                    item_entity_builder.with(asw_portraits.clone());
+                            }
+                            _ => {}
+                        }
+
+                        if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles
+                        {
+                            item_entity_builder =
+                                item_entity_builder.with(sprite_render_sequence_handles);
+                        }
+
+                        item_entity_builder.build()
+                    })
+                    .map(ItemId::new)
+                    .collect::<Vec<ItemId>>()
+            })
+            .collect::<Vec<Vec<ItemId>>>();
+
+        // Widget item IDs
+        let item_ids_apw_container = {
+            let apw_item_ids = item_ids_layers
                 .into_iter()
-                .zip(sequence_id_inits.into_iter())
-                .zip(layers.keys())
-                .map(|((position_init, sequence_id_init), msw_layer)| {
-                    let AssetSequenceComponentLoaderUiComponents {
-                        sequence_end_transitions,
-                        wait_sequence_handles,
-                        tint_sequence_handles,
-                        scale_sequence_handles,
-                        input_reactions_sequence_handles,
-                        sprite_render_sequence_handles,
-                    } = asset_sequence_component_loader_ui_components.clone();
-
-                    let mut item_entity_builder = asset_world
+                .map(AssetPreviewWidget::new)
+                .map(|asset_preview_widget| {
+                    asset_world
                         .create_entity()
-                        .with(position_init)
-                        .with(sequence_id_init)
-                        .with(sequence_end_transitions)
-                        .with(wait_sequence_handles)
-                        .with(tint_sequence_handles)
-                        .with(scale_sequence_handles)
-                        .with(input_reactions_sequence_handles);
-
-                    match msw_layer {
-                        MswLayer::Name(MswLayerName::Main) => {
-                            item_entity_builder = item_entity_builder
-                                .with(ApwMain)
-                                .with(dimensions_map_preview);
-                        }
-                        MswLayer::Name(MswLayerName::Portrait) => {
-                            item_entity_builder = item_entity_builder.with(asw_portraits.clone());
-                        }
-                        _ => {}
-                    }
-
-                    if let Some(sprite_render_sequence_handles) = sprite_render_sequence_handles {
-                        item_entity_builder =
-                            item_entity_builder.with(sprite_render_sequence_handles);
-                    }
-
-                    item_entity_builder.build()
+                        .with(asset_preview_widget)
+                        .build()
                 })
                 .map(ItemId::new)
-                .collect::<Vec<ItemId>>()
-        };
-
-        // Widget item ID
-        let item_id_map_preview = {
-            let map_preview_widget = AssetPreviewWidget {
-                layers: item_id_map_preview_layers,
-            };
-            let item_entity = asset_world.create_entity().with(map_preview_widget).build();
-            let apw_item_id = ItemId::new(item_entity);
+                .collect::<Vec<ItemId>>();
 
             let apw_container_entity = asset_world
                 .create_entity()
-                .with(ApwContainer::Shared { apw_item_id })
+                .with(ApwContainer::Individual { apw_item_ids })
                 .build();
             ItemId::new(apw_container_entity)
         };
 
-        item_ids_all.push(item_id_map_preview);
+        item_ids_all.push(item_ids_apw_container);
         item_ids_all.push(Self::asset_selector_item(
             asset_type_mappings,
             asset_world,
             asset_slug,
             sequence_id_mappings,
-            asset_sequence_component_loader_ui_components,
-            maps_available_selector,
+            ui_components_ascl,
+            characters_available_selector,
         ));
     }
 
@@ -163,18 +174,18 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
-        maps_available_selector: &config::AssetSelector<T>,
+        ui_components_ascl: &UiComponentsAscl,
+        characters_available_selector: &config::AssetSelector<T>,
     ) -> ItemId
     where
-        T: Default + Into<AssetType> + Send + Sync + 'static,
+        T: Default + Into<ObjectType> + Send + Sync + 'static,
     {
         let config::AssetSelector {
             asset_display: AssetDisplay {
                 position, layout, ..
             },
             selection_highlights,
-        } = maps_available_selector;
+        } = characters_available_selector;
 
         let AssetDisplayLayout::Grid(AssetDisplayGrid {
             column_count,
@@ -184,14 +195,15 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // `AssetId`s for the asset type to display.
         //
         // We want to create an item for each of these in the correct place in the grid.
-        let asset_type = Into::<AssetType>::into(T::default());
+        let object_type = Into::<ObjectType>::into(T::default());
+        let asset_type = AssetType::Object(object_type);
         let asset_display_cell_item_ids = iter::once(AssetSelectionCell::Random)
             .chain(
                 asset_type_mappings
                     .iter_ids(&asset_type)
                     .copied()
                     .map(|asset_id| AssetSelectionCell::Id {
-                        display_cell: AssetDisplayCellMap {
+                        display_cell: AssetDisplayCellCharacter {
                             asset_id,
                             cell_size,
                         },
@@ -237,7 +249,8 @@ impl AssetSequenceComponentLoaderUiMapSelection {
         // Create item for each `AssetSelectionHighlight`.
         let asset_selection_highlight_item_ids = selection_highlights
             .iter()
-            .map(|ash_template| {
+            .enumerate()
+            .map(|(index, ash_template)| {
                 let ui_sprite_label = &ash_template.sprite;
                 let position_init = ui_sprite_label.position;
                 let offset = Position::<f32>::from(position_init);
@@ -248,14 +261,14 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     &ui_sprite_label.sequence,
                 );
 
-                let AssetSequenceComponentLoaderUiComponents {
+                let UiComponentsAscl {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = asset_sequence_component_loader_ui_components.clone();
+                } = ui_components_ascl.clone();
 
                 let chase_mode_stick = ChaseModeStick::new(Some(offset));
                 let mut item_entity_builder = asset_world
@@ -263,7 +276,7 @@ impl AssetSequenceComponentLoaderUiMapSelection {
                     .with(position_init)
                     .with(sequence_id_init)
                     .with(chase_mode_stick)
-                    .with(SharedInputControlled)
+                    .with(InputControlled::new(index))
                     .with(sequence_end_transitions)
                     .with(wait_sequence_handles)
                     .with(tint_sequence_handles)
@@ -280,17 +293,19 @@ impl AssetSequenceComponentLoaderUiMapSelection {
             })
             .collect::<Vec<ItemId>>() // Collect to reclaim `asset_world` for next closure.
             .into_iter()
-            .map(|ash_sprite_item_id| {
+            .enumerate()
+            .map(|(index, ash_sprite_item_id)| {
                 let asset_selection_highlight = AssetSelectionHighlight { ash_sprite_item_id };
                 let item_entity = asset_world
                     .create_entity()
                     // `StickToTargetObjectSystem` doesn't insert `Position` / `Transform` if it
                     // isn't already there.
                     .with(PositionInit::default())
+                    .with(InputControlled::new(index))
                     .with(ChaseModeStick::default())
                     .with(asset_selection_highlight)
                     .with(AssetSelectionHighlightMain)
-                    .with(AssetSelectionStatus::InProgress)
+                    .with(AssetSelectionStatus::Inactive)
                     .build();
 
                 ItemId::new(item_entity)

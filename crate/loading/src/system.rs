@@ -8,11 +8,9 @@ pub use self::{
     },
     asset_part_loading_system::AssetPartLoadingSystem,
     asset_sequence_component_loading_system::{
-        AssetSequenceComponentLoader, AssetSequenceComponentLoaderUiCharacterSelection,
-        AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-        AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
-        AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoaderUiSessionLobby,
-        AssetSequenceComponentLoadingSystem,
+        AssetSequenceComponentLoader, AssetSequenceComponentLoadingSystem,
+        UiCharacterSelectionAscl, UiComponentsAscl, UiControlSettingsAscl, UiFormAscl,
+        UiMapSelectionAscl, UiMenuAscl, UiSessionLobbyAscl,
     },
     asset_sprites_definition_loading_system::{
         AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem,

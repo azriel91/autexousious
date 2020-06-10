@@ -9,19 +9,19 @@ use ui_form_model::{
 };
 use ui_model_spi::loaded::WidgetStatusSequences;
 
-use crate::AssetSequenceComponentLoaderUiComponents;
+use crate::UiComponentsAscl;
 
 /// Loads asset items for a `UiForm`.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderUiForm;
+pub struct UiFormAscl;
 
-impl AssetSequenceComponentLoaderUiForm {
+impl UiFormAscl {
     /// Loads asset items for a `UiForm`.
     pub fn load(
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
+        ui_components_ascl: &UiComponentsAscl,
         item_ids_all: &mut Vec<ItemId>,
         ui_form_items: &UiFormItems,
     ) {
@@ -33,7 +33,7 @@ impl AssetSequenceComponentLoaderUiForm {
                     asset_world,
                     asset_slug,
                     sequence_id_mappings,
-                    asset_sequence_component_loader_ui_components,
+                    ui_components_ascl,
                     ui_form_item,
                 );
                 let item_entity_input = Self::load_item_entity_input(asset_world, ui_form_item);
@@ -73,7 +73,7 @@ impl AssetSequenceComponentLoaderUiForm {
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
+        ui_components_ascl: &UiComponentsAscl,
         ui_form_item: &UiFormItem,
     ) -> ItemId {
         let ui_sprite_label = &ui_form_item.sprite;
@@ -96,14 +96,14 @@ impl AssetSequenceComponentLoaderUiForm {
             })
             .collect::<WidgetStatusSequences>();
 
-        let AssetSequenceComponentLoaderUiComponents {
+        let UiComponentsAscl {
             sequence_end_transitions,
             wait_sequence_handles,
             tint_sequence_handles,
             scale_sequence_handles,
             input_reactions_sequence_handles,
             sprite_render_sequence_handles,
-        } = asset_sequence_component_loader_ui_components.clone();
+        } = ui_components_ascl.clone();
 
         let item_entity_sprite = {
             let mut item_entity_builder = asset_world

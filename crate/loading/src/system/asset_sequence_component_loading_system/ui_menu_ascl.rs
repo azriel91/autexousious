@@ -14,19 +14,19 @@ use ui_menu_item_model::{
 };
 use ui_model_spi::loaded::WidgetStatusSequences;
 
-use crate::AssetSequenceComponentLoaderUiComponents;
+use crate::UiComponentsAscl;
 
 /// Loads asset items for a `UiMenu`.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderUiMenu;
+pub struct UiMenuAscl;
 
-impl AssetSequenceComponentLoaderUiMenu {
+impl UiMenuAscl {
     /// Loads asset items for a `UiMenu`.
     pub fn load(
         asset_world: &mut AssetWorld,
         asset_slug: &AssetSlug,
         sequence_id_mappings: &SequenceIdMappings<SpriteSequenceName>,
-        asset_sequence_component_loader_ui_components: &AssetSequenceComponentLoaderUiComponents,
+        ui_components_ascl: &UiComponentsAscl,
         item_ids_all: &mut Vec<ItemId>,
         player_controllers: &PlayerControllers,
         ui_menu_items_cfg: &UiMenuItems<MenuIndex>,
@@ -37,14 +37,14 @@ impl AssetSequenceComponentLoaderUiMenu {
                 Vec::with_capacity(ui_menu_items_cfg.len()),
             ),
             |(mut ui_menu_item_item_ids, mut sprite_item_ids), (index, ui_menu_item_cfg)| {
-                let AssetSequenceComponentLoaderUiComponents {
+                let UiComponentsAscl {
                     sequence_end_transitions,
                     wait_sequence_handles,
                     tint_sequence_handles,
                     scale_sequence_handles,
                     input_reactions_sequence_handles,
                     sprite_render_sequence_handles,
-                } = asset_sequence_component_loader_ui_components.clone();
+                } = ui_components_ascl.clone();
 
                 let tab_order = (index as u32) << 1;
 

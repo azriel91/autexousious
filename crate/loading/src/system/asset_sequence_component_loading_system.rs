@@ -1,13 +1,13 @@
-mod asset_sequence_component_loader_map;
-mod asset_sequence_component_loader_object;
-mod asset_sequence_component_loader_ui;
-mod asset_sequence_component_loader_ui_character_selection;
-mod asset_sequence_component_loader_ui_components;
-mod asset_sequence_component_loader_ui_control_settings;
-mod asset_sequence_component_loader_ui_form;
-mod asset_sequence_component_loader_ui_map_selection;
-mod asset_sequence_component_loader_ui_menu;
-mod asset_sequence_component_loader_ui_session_lobby;
+mod map_ascl;
+mod object_ascl;
+mod ui_ascl;
+mod ui_character_selection_ascl;
+mod ui_components_ascl;
+mod ui_control_settings_ascl;
+mod ui_form_ascl;
+mod ui_map_selection_ascl;
+mod ui_menu_ascl;
+mod ui_session_lobby_ascl;
 
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -29,16 +29,11 @@ use crate::{
 };
 
 pub use self::{
-    asset_sequence_component_loader_map::AssetSequenceComponentLoaderMap,
-    asset_sequence_component_loader_object::AssetSequenceComponentLoaderObject,
-    asset_sequence_component_loader_ui::AssetSequenceComponentLoaderUi,
-    asset_sequence_component_loader_ui_character_selection::AssetSequenceComponentLoaderUiCharacterSelection,
-    asset_sequence_component_loader_ui_components::AssetSequenceComponentLoaderUiComponents,
-    asset_sequence_component_loader_ui_control_settings::AssetSequenceComponentLoaderUiControlSettings,
-    asset_sequence_component_loader_ui_form::AssetSequenceComponentLoaderUiForm,
-    asset_sequence_component_loader_ui_map_selection::AssetSequenceComponentLoaderUiMapSelection,
-    asset_sequence_component_loader_ui_menu::AssetSequenceComponentLoaderUiMenu,
-    asset_sequence_component_loader_ui_session_lobby::AssetSequenceComponentLoaderUiSessionLobby,
+    map_ascl::MapAscl, object_ascl::ObjectAscl, ui_ascl::UiAscl,
+    ui_character_selection_ascl::UiCharacterSelectionAscl, ui_components_ascl::UiComponentsAscl,
+    ui_control_settings_ascl::UiControlSettingsAscl, ui_form_ascl::UiFormAscl,
+    ui_map_selection_ascl::UiMapSelectionAscl, ui_menu_ascl::UiMenuAscl,
+    ui_session_lobby_ascl::UiSessionLobbyAscl,
 };
 
 /// Loads asset sequence components.
@@ -76,7 +71,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         match asset_type {
             AssetType::Object(object_type) => {
-                AssetSequenceComponentLoaderObject::load(
+                ObjectAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,
@@ -84,14 +79,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 );
             }
             AssetType::Map => {
-                AssetSequenceComponentLoaderMap::load(
+                MapAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,
                 );
             }
             AssetType::Ui => {
-                AssetSequenceComponentLoaderUi::load(
+                UiAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,
