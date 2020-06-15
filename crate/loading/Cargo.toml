@@ -40,7 +40,9 @@ input_reaction_model = { path = "../input_reaction_model" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
+loading_spi = { path = "../loading_spi" }
 log = "0.4.8"
+map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 mirrored_model = { path = "../mirrored_model" }
@@ -63,6 +65,7 @@ strum = "0.18.0"
 ui_audio_model = { path = "../ui_audio_model" }
 ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }
+ui_loading = { path = "../ui_loading" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
 ui_model_spi = { path = "../ui_model_spi" }

@@ -10,5 +10,32 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
+application_menu = { path = "../application_menu" }
+asset_loading = { path = "../asset_loading" }
+asset_model = { path = "../asset_model" }
+asset_selection_ui_model = { path = "../asset_selection_ui_model" }
+asset_ui_model = { path = "../asset_ui_model" }
+character_selection_ui_model = { path = "../character_selection_ui_model" }
+chase_model = { path = "../chase_model" }
+control_settings_loading = { path = "../control_settings_loading" }
+control_settings_model = { path = "../control_settings_model" }
 derive-new = "0.5.8"
+game_input_model = { path = "../game_input_model" }
+input_reaction_loading = { path = "../input_reaction_loading" }
+input_reaction_model = { path = "../input_reaction_model" }
+kinematic_loading = { path = "../kinematic_loading" }
+kinematic_model = { path = "../kinematic_model" }
+loading_spi = { path = "../loading_spi" }
+map_selection_ui_model = { path = "../map_selection_ui_model" }
+object_type = { path = "../object_type" }
+sequence_loading = { path = "../sequence_loading" }
+sequence_model = { path = "../sequence_model" }
+session_lobby_ui_model = { path = "../session_lobby_ui_model" }
+smallvec = "1.4.0"
+sprite_loading = { path = "../sprite_loading" }
+sprite_model = { path = "../sprite_model" }
+state_registry = { path = "../state_registry" }
+ui_form_model = { path = "../ui_form_model" }
+ui_menu_item_model = { path = "../ui_menu_item_model" }
 ui_model = { path = "../ui_model" }
+ui_model_spi = { path = "../ui_model_spi" }

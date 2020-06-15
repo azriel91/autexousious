@@ -7,6 +7,7 @@ use asset_model::{
     loaded::AssetId,
 };
 use loading_model::loaded::LoadStage;
+use loading_spi::{AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResources};
 use log::debug;
 use object_model::config::{GameObjectFrame, GameObjectSequence, ObjectDefinition};
 use object_type::ObjectType;
@@ -16,10 +17,7 @@ use sprite_model::config::SpriteSequenceName;
 use state_registry::StateId;
 use ui_model::config::UiDefinition;
 
-use crate::{
-    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResourcesRead,
-    IdMappingResources,
-};
+use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
 /// Maps asset sequence name strings to IDs.
 pub type AssetIdMappingSystem = AssetPartLoadingSystem<AssetIdMapper>;

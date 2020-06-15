@@ -18,6 +18,7 @@ mod tests {
     use character_model::config::{CharacterDefinition, CharacterSequenceName};
     use energy_loading::EnergyLoadingBundle;
     use energy_model::config::{EnergyDefinition, EnergySequenceName};
+    use loading_spi::{AssetLoadingResources, DefinitionLoadingResources, IdMappingResources};
     use map_loading::MapLoadingBundle;
     use map_model::config::MapDefinition;
     use object_type::ObjectType;
@@ -28,10 +29,7 @@ mod tests {
     use test_support::load_yaml;
     use ui_loading::UiLoadingBundle;
 
-    use loading::{
-        AssetIdMapper, AssetIdMappingSystem, AssetLoadingResources, AssetPartLoader,
-        DefinitionLoadingResources, IdMappingResources,
-    };
+    use loading::{AssetIdMapper, AssetIdMappingSystem, AssetPartLoader};
 
     #[test]
     fn preprocess_sets_asset_sequence_id_mappings_capacity() -> Result<(), Error> {

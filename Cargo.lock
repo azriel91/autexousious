@@ -3324,7 +3324,9 @@ dependencies = [
  "kinematic_loading",
  "kinematic_model",
  "loading_model",
+ "loading_spi",
  "log",
+ "map_loading",
  "map_model",
  "map_selection_ui_model",
  "mirrored_model",
@@ -3347,6 +3349,7 @@ dependencies = [
  "ui_audio_model",
  "ui_form_model",
  "ui_label_model",
+ "ui_loading",
  "ui_menu_item_model",
  "ui_model",
  "ui_model_spi",
@@ -3359,6 +3362,31 @@ version = "0.19.0"
 dependencies = [
  "asset_model",
  "slotmap 0.4.0",
+]
+
+[[package]]
+name = "loading_spi"
+version = "0.20.0"
+dependencies = [
+ "amethyst",
+ "asset_model",
+ "audio_model",
+ "background_model",
+ "camera_model",
+ "character_model",
+ "collision_model",
+ "derivative",
+ "energy_model",
+ "game_input_model",
+ "input_reaction_model",
+ "kinematic_model",
+ "loading_model",
+ "map_model",
+ "sequence_model",
+ "slotmap 0.4.0",
+ "spawn_model",
+ "sprite_model",
+ "ui_model",
 ]
 
 [[package]]
@@ -3422,10 +3450,15 @@ name = "map_loading"
 version = "0.19.0"
 dependencies = [
  "amethyst",
+ "asset_model",
  "derive-new",
+ "kinematic_loading",
+ "loading_spi",
  "log",
  "map_model",
+ "sequence_loading",
  "sequence_model",
+ "sprite_loading",
  "sprite_model",
 ]
 
@@ -4042,13 +4075,17 @@ dependencies = [
  "asset_model",
  "audio_loading",
  "audio_model",
+ "character_loading",
  "character_model",
  "collision_model",
  "derivative",
  "derive-new",
  "energy_model",
+ "input_reaction_loading",
  "kinematic_model",
+ "loading_spi",
  "log",
+ "mirrored_model",
  "object_model",
  "object_type",
  "rayon",
@@ -6573,8 +6610,35 @@ name = "ui_loading"
 version = "0.19.0"
 dependencies = [
  "amethyst",
+ "application_menu",
+ "asset_loading",
+ "asset_model",
+ "asset_selection_ui_model",
+ "asset_ui_model",
+ "character_selection_ui_model",
+ "chase_model",
+ "control_settings_loading",
+ "control_settings_model",
  "derive-new",
+ "game_input_model",
+ "input_reaction_loading",
+ "input_reaction_model",
+ "kinematic_loading",
+ "kinematic_model",
+ "loading_spi",
+ "map_selection_ui_model",
+ "object_type",
+ "sequence_loading",
+ "sequence_model",
+ "session_lobby_ui_model",
+ "smallvec 1.4.0",
+ "sprite_loading",
+ "sprite_model",
+ "state_registry",
+ "ui_form_model",
+ "ui_menu_item_model",
  "ui_model",
+ "ui_model_spi",
 ]
 
 [[package]]
@@ -7192,6 +7256,7 @@ dependencies = [
  "lazy_static",
  "loading",
  "loading_model",
+ "loading_spi",
  "log",
  "logic_clock",
  "map_loading",

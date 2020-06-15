@@ -13,6 +13,10 @@ use input_reaction_model::loaded::{
     InputReaction, InputReactionsSequenceHandle, InputReactionsSequenceHandles,
 };
 use kinematic_loading::PositionInitsLoader;
+use loading_spi::{
+    AssetLoadingResources, DefinitionLoadingResourcesRead, IdMappingResourcesRead,
+    SequenceComponentLoadingResources, TextureLoadingResourcesRead,
+};
 use sequence_loading::{
     SequenceEndTransitionsLoader, SequenceIdMapper, WaitSequenceHandlesLoader, WaitSequenceLoader,
 };
@@ -32,20 +36,26 @@ use sprite_model::{
 use state_registry::StateId;
 use ui_model::config::{UiDefinition, UiType};
 
-use crate::{
-    AssetLoadingResources, AssetSequenceComponentLoaderUiCharacterSelection,
-    AssetSequenceComponentLoaderUiComponents, AssetSequenceComponentLoaderUiControlSettings,
-    AssetSequenceComponentLoaderUiForm, AssetSequenceComponentLoaderUiMapSelection,
-    AssetSequenceComponentLoaderUiMenu, AssetSequenceComponentLoaderUiSessionLobby,
-    DefinitionLoadingResourcesRead, IdMappingResourcesRead, SequenceComponentLoadingResources,
-    TextureLoadingResourcesRead,
+pub use self::{
+    ui_ascl_character_selection::UiAsclCharacterSelection, ui_ascl_components::UiAsclComponents,
+    ui_ascl_control_settings::UiAsclControlSettings, ui_ascl_form::UiAsclForm,
+    ui_ascl_map_selection::UiAsclMapSelection, ui_ascl_menu::UiAsclMenu,
+    ui_ascl_session_lobby::UiAsclSessionLobby,
 };
+
+mod ui_ascl_character_selection;
+mod ui_ascl_components;
+mod ui_ascl_control_settings;
+mod ui_ascl_form;
+mod ui_ascl_map_selection;
+mod ui_ascl_menu;
+mod ui_ascl_session_lobby;
 
 /// Loads sequence components for UI assets.
 #[derive(Debug)]
-pub struct AssetSequenceComponentLoaderUi;
+pub struct UiAscl;
 
-impl AssetSequenceComponentLoaderUi {
+impl UiAscl {
     /// Loads sequence components for UI assets.
     pub fn load(
         asset_loading_resources: &mut AssetLoadingResources<'_>,
@@ -326,62 +336,61 @@ impl AssetSequenceComponentLoaderUi {
                 .collect::<Vec<ItemId>>();
             item_ids_all.append(&mut item_ids_button);
 
-            let asset_sequence_component_loader_ui_components =
-                AssetSequenceComponentLoaderUiComponents {
-                    sequence_end_transitions,
-                    wait_sequence_handles,
-                    tint_sequence_handles,
-                    scale_sequence_handles,
-                    input_reactions_sequence_handles,
-                    sprite_render_sequence_handles,
-                };
+            let ui_ascl_components = UiAsclComponents {
+                sequence_end_transitions,
+                wait_sequence_handles,
+                tint_sequence_handles,
+                scale_sequence_handles,
+                input_reactions_sequence_handles,
+                sprite_render_sequence_handles,
+            };
 
             match ui_type {
                 UiType::Form(ui_form_items) => {
-                    AssetSequenceComponentLoaderUiForm::load(
+                    UiAsclForm::load(
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
                         sequence_id_mappings,
-                        &asset_sequence_component_loader_ui_components,
+                        &ui_ascl_components,
                         &mut item_ids_all,
                         ui_form_items,
                     );
                 }
                 UiType::Menu(ui_menu_items) => {
-                    AssetSequenceComponentLoaderUiMenu::load(
+                    UiAsclMenu::load(
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
                         sequence_id_mappings,
-                        &asset_sequence_component_loader_ui_components,
+                        &ui_ascl_components,
                         &mut item_ids_all,
                         &sequence_component_loading_resources.player_controllers,
                         ui_menu_items,
                     );
                 }
                 UiType::CharacterSelection(character_selection_ui) => {
-                    AssetSequenceComponentLoaderUiCharacterSelection::load(
+                    UiAsclCharacterSelection::load(
                         asset_type_mappings,
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
                         sequence_id_mappings,
-                        &asset_sequence_component_loader_ui_components,
+                        &ui_ascl_components,
                         &mut item_ids_all,
                         character_selection_ui,
                     );
                 }
                 UiType::MapSelection(map_selection_ui) => {
-                    AssetSequenceComponentLoaderUiMapSelection::load(
+                    UiAsclMapSelection::load(
                         asset_type_mappings,
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
                         sequence_id_mappings,
-                        &asset_sequence_component_loader_ui_components,
+                        &ui_ascl_components,
                         &mut item_ids_all,
                         map_selection_ui,
                     );
                 }
                 UiType::SessionLobby(session_lobby_ui) => {
-                    AssetSequenceComponentLoaderUiSessionLobby::load(
+                    UiAsclSessionLobby::load(
                         &mut sequence_component_loading_resources.asset_world,
                         &mut item_ids_all,
                         session_lobby_ui,
@@ -391,11 +400,11 @@ impl AssetSequenceComponentLoaderUi {
                     let keyboard_button_labels = keyboard_button_labels
                         .as_ref()
                         .expect("Expected `keyboard_button_labels` to exist.");
-                    AssetSequenceComponentLoaderUiControlSettings::load(
+                    UiAsclControlSettings::load(
                         &mut sequence_component_loading_resources.asset_world,
                         asset_slug,
                         sequence_id_mappings,
-                        &asset_sequence_component_loader_ui_components,
+                        &ui_ascl_components,
                         &mut item_ids_all,
                         control_settings,
                         keyboard_button_labels,
@@ -658,20 +667,19 @@ impl AssetSequenceComponentLoaderUi {
                             .collect::<Vec<InputReactionsSequenceHandle<InputReaction>>>();
                         InputReactionsSequenceHandles::new(input_reactions_sequence_handles)
                     };
-                    let asset_sequence_component_loader_ui_components =
-                        AssetSequenceComponentLoaderUiComponents {
-                            sequence_end_transitions,
-                            wait_sequence_handles,
-                            tint_sequence_handles,
-                            scale_sequence_handles,
-                            sprite_render_sequence_handles,
-                            input_reactions_sequence_handles,
-                        };
+                    let ui_ascl_components = UiAsclComponents {
+                        sequence_end_transitions,
+                        wait_sequence_handles,
+                        tint_sequence_handles,
+                        scale_sequence_handles,
+                        sprite_render_sequence_handles,
+                        input_reactions_sequence_handles,
+                    };
 
                     Some((
                         asset_id_control_settings,
                         control_buttons_display_labels,
-                        asset_sequence_component_loader_ui_components,
+                        ui_ascl_components,
                     ))
                 } else {
                     None
@@ -683,7 +691,7 @@ impl AssetSequenceComponentLoaderUi {
         if let Some((
             asset_id_control_settings,
             control_buttons_display_labels,
-            asset_sequence_component_loader_ui_components,
+            ui_ascl_components,
         )) = control_buttons_display_data
         {
             let sequence_id_mappings_control_settings = asset_sequence_id_mappings_sprite
@@ -719,14 +727,14 @@ impl AssetSequenceComponentLoaderUi {
                 .into_iter()
                 .zip(sequence_id_inits.into_iter())
                 .map(|(position_init, sequence_id_init)| {
-                    let AssetSequenceComponentLoaderUiComponents {
+                    let UiAsclComponents {
                         sequence_end_transitions,
                         wait_sequence_handles,
                         tint_sequence_handles,
                         scale_sequence_handles,
                         input_reactions_sequence_handles,
                         sprite_render_sequence_handles,
-                    } = asset_sequence_component_loader_ui_components.clone();
+                    } = ui_ascl_components.clone();
 
                     let mut item_entity_builder = asset_world
                         .create_entity()

@@ -9,24 +9,12 @@ pub use crate::{
         AssetDefinitionLoader, AssetDefinitionLoadingSystem, AssetDiscoverySystem,
         AssetDiscoverySystemData, AssetIdMapper, AssetIdMappingSystem, AssetPartLoader,
         AssetPartLoadingCoordinatorSystem, AssetPartLoadingCoordinatorSystemData,
-        AssetPartLoadingSystem, AssetSequenceComponentLoader,
-        AssetSequenceComponentLoaderUiCharacterSelection, AssetSequenceComponentLoaderUiComponents,
-        AssetSequenceComponentLoaderUiControlSettings, AssetSequenceComponentLoaderUiForm,
-        AssetSequenceComponentLoaderUiMapSelection, AssetSequenceComponentLoaderUiMenu,
-        AssetSequenceComponentLoaderUiSessionLobby, AssetSequenceComponentLoadingSystem,
+        AssetPartLoadingSystem, AssetSequenceComponentLoader, AssetSequenceComponentLoadingSystem,
         AssetSpritesDefinitionLoader, AssetSpritesDefinitionLoadingSystem, AssetTextureLoader,
         AssetTextureLoadingSystem,
-    },
-    system_data::{
-        AssetLoadingResources, DefinitionLoadingResources, DefinitionLoadingResourcesRead,
-        IdMappingResources, IdMappingResourcesRead, SequenceComponentLoadingResources,
-        SequenceComponentLoadingResourcesRead, SpritesDefinitionLoadingResources,
-        SpritesDefinitionLoadingResourcesRead, TextureLoadingResources,
-        TextureLoadingResourcesRead,
     },
 };
 
 mod loading_bundle;
 mod loading_state;
 mod system;
-mod system_data;

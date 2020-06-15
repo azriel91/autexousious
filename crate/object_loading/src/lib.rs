@@ -3,10 +3,11 @@
 //! Processes object configuration into the loaded object model.
 
 pub use crate::{
-    object_loader::ObjectLoader, object_loader_params::ObjectLoaderParams,
+    object_ascl::ObjectAscl, object_loader::ObjectLoader, object_loader_params::ObjectLoaderParams,
     object_loader_system_data::ObjectLoaderSystemData, object_loading_status::ObjectLoadingStatus,
 };
 
+mod object_ascl;
 mod object_loader;
 mod object_loader_params;
 mod object_loader_system_data;

@@ -1,14 +1,3 @@
-mod asset_sequence_component_loader_map;
-mod asset_sequence_component_loader_object;
-mod asset_sequence_component_loader_ui;
-mod asset_sequence_component_loader_ui_character_selection;
-mod asset_sequence_component_loader_ui_components;
-mod asset_sequence_component_loader_ui_control_settings;
-mod asset_sequence_component_loader_ui_form;
-mod asset_sequence_component_loader_ui_map_selection;
-mod asset_sequence_component_loader_ui_menu;
-mod asset_sequence_component_loader_ui_session_lobby;
-
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
 use audio_model::loaded::SourceSequenceHandles;
@@ -16,30 +5,18 @@ use character_model::loaded::CharacterIrsHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use kinematic_model::loaded::ObjectAccelerationSequenceHandles;
 use loading_model::loaded::LoadStage;
+use loading_spi::{AssetLoadingResources, SequenceComponentLoadingResources};
 use log::debug;
+use map_loading::MapAscl;
+use object_loading::ObjectAscl;
 use sequence_model::loaded::WaitSequenceHandles;
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
+use ui_loading::UiAscl;
 
-use crate::{
-    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
-    SequenceComponentLoadingResources,
-};
-
-pub use self::{
-    asset_sequence_component_loader_map::AssetSequenceComponentLoaderMap,
-    asset_sequence_component_loader_object::AssetSequenceComponentLoaderObject,
-    asset_sequence_component_loader_ui::AssetSequenceComponentLoaderUi,
-    asset_sequence_component_loader_ui_character_selection::AssetSequenceComponentLoaderUiCharacterSelection,
-    asset_sequence_component_loader_ui_components::AssetSequenceComponentLoaderUiComponents,
-    asset_sequence_component_loader_ui_control_settings::AssetSequenceComponentLoaderUiControlSettings,
-    asset_sequence_component_loader_ui_form::AssetSequenceComponentLoaderUiForm,
-    asset_sequence_component_loader_ui_map_selection::AssetSequenceComponentLoaderUiMapSelection,
-    asset_sequence_component_loader_ui_menu::AssetSequenceComponentLoaderUiMenu,
-    asset_sequence_component_loader_ui_session_lobby::AssetSequenceComponentLoaderUiSessionLobby,
-};
+use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
 /// Loads asset sequence components.
 pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSequenceComponentLoader>;
@@ -76,7 +53,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
 
         match asset_type {
             AssetType::Object(object_type) => {
-                AssetSequenceComponentLoaderObject::load(
+                ObjectAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,
@@ -84,14 +61,14 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                 );
             }
             AssetType::Map => {
-                AssetSequenceComponentLoaderMap::load(
+                MapAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,
                 );
             }
             AssetType::Ui => {
-                AssetSequenceComponentLoaderUi::load(
+                UiAscl::load(
                     asset_loading_resources,
                     sequence_component_loading_resources,
                     asset_id,

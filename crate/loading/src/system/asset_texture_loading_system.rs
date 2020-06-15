@@ -1,13 +1,13 @@
 use amethyst::assets::ProgressCounter;
 use asset_model::loaded::AssetId;
 use loading_model::loaded::LoadStage;
+use loading_spi::{
+    AssetLoadingResources, SpritesDefinitionLoadingResourcesRead, TextureLoadingResources,
+};
 use log::debug;
 use sprite_loading::SpriteLoader;
 
-use crate::{
-    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem,
-    SpritesDefinitionLoadingResourcesRead, TextureLoadingResources,
-};
+use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
 /// Loads asset sprites definitions.
 pub type AssetTextureLoadingSystem = AssetPartLoadingSystem<AssetTextureLoader>;

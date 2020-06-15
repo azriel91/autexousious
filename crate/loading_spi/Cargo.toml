@@ -1,6 +1,6 @@
 [package]
-name = "object_loading"
-version = "0.19.0"
+name = "loading_spi"
+version = "0.20.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -11,23 +11,20 @@ test = false
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 asset_model = { path = "../asset_model" }
-audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }
-character_loading = { path = "../character_loading" }
+background_model = { path = "../background_model" }
+camera_model = { path = "../camera_model" }
 character_model = { path = "../character_model" }
 collision_model = { path = "../collision_model" }
 derivative = "2.1.1"
-derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }
-input_reaction_loading = { path = "../input_reaction_loading" }
+game_input_model = { path = "../game_input_model" }
+input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
-loading_spi = { path = "../loading_spi" }
-log = "0.4.8"
-mirrored_model = { path = "../mirrored_model" }
-object_model = { path = "../object_model" }
-object_type = { path = "../object_type" }
-rayon = "1.3.0"
+loading_model = { path = "../loading_model" }
+map_model = { path = "../map_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.106", features = ["derive"] }
+slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
+ui_model = { path = "../ui_model" }

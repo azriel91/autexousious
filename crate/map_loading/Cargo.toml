@@ -10,8 +10,13 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
+asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
+kinematic_loading = { path = "../kinematic_loading" }
+loading_spi = { path = "../loading_spi" }
 log = "0.4.8"
 map_model = { path = "../map_model" }
+sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
+sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }

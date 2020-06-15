@@ -2,14 +2,13 @@ use amethyst::assets::ProgressCounter;
 use asset_loading::YamlFormat;
 use asset_model::{config::AssetType, loaded::AssetId};
 use loading_model::loaded::LoadStage;
+use loading_spi::{AssetLoadingResources, DefinitionLoadingResources};
 use log::debug;
 use object_type::ObjectType;
 #[cfg(target_arch = "wasm32")]
 use wasm_support_fs::PathAccessExt;
 
-use crate::{
-    AssetLoadingResources, AssetPartLoader, AssetPartLoadingSystem, DefinitionLoadingResources,
-};
+use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
 /// Loads asset definitions.
 pub type AssetDefinitionLoadingSystem = AssetPartLoadingSystem<AssetDefinitionLoader>;
