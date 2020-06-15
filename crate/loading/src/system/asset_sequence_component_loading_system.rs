@@ -1,13 +1,5 @@
 mod map_ascl;
 mod object_ascl;
-mod ui_ascl;
-mod ui_ascl_character_selection;
-mod ui_ascl_components;
-mod ui_ascl_control_settings;
-mod ui_ascl_form;
-mod ui_ascl_map_selection;
-mod ui_ascl_menu;
-mod ui_ascl_session_lobby;
 
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
@@ -23,16 +15,11 @@ use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
     ScaleSequenceHandles, SpriteRenderSequenceHandles, TintSequenceHandles,
 };
+use ui_loading::UiAscl;
 
 use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
-pub use self::{
-    map_ascl::MapAscl, object_ascl::ObjectAscl, ui_ascl::UiAscl,
-    ui_ascl_character_selection::UiAsclCharacterSelection, ui_ascl_components::UiAsclComponents,
-    ui_ascl_control_settings::UiAsclControlSettings, ui_ascl_form::UiAsclForm,
-    ui_ascl_map_selection::UiAsclMapSelection, ui_ascl_menu::UiAsclMenu,
-    ui_ascl_session_lobby::UiAsclSessionLobby,
-};
+pub use self::{map_ascl::MapAscl, object_ascl::ObjectAscl};
 
 /// Loads asset sequence components.
 pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSequenceComponentLoader>;

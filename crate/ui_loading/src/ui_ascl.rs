@@ -36,10 +36,20 @@ use sprite_model::{
 use state_registry::StateId;
 use ui_model::config::{UiDefinition, UiType};
 
-use crate::{
-    UiAsclCharacterSelection, UiAsclComponents, UiAsclControlSettings, UiAsclForm,
-    UiAsclMapSelection, UiAsclMenu, UiAsclSessionLobby,
+pub use self::{
+    ui_ascl_character_selection::UiAsclCharacterSelection, ui_ascl_components::UiAsclComponents,
+    ui_ascl_control_settings::UiAsclControlSettings, ui_ascl_form::UiAsclForm,
+    ui_ascl_map_selection::UiAsclMapSelection, ui_ascl_menu::UiAsclMenu,
+    ui_ascl_session_lobby::UiAsclSessionLobby,
 };
+
+mod ui_ascl_character_selection;
+mod ui_ascl_components;
+mod ui_ascl_control_settings;
+mod ui_ascl_form;
+mod ui_ascl_map_selection;
+mod ui_ascl_menu;
+mod ui_ascl_session_lobby;
 
 /// Loads sequence components for UI assets.
 #[derive(Debug)]
