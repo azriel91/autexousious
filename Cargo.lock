@@ -3326,6 +3326,7 @@ dependencies = [
  "loading_model",
  "loading_spi",
  "log",
+ "map_loading",
  "map_model",
  "map_selection_ui_model",
  "mirrored_model",
@@ -3449,10 +3450,15 @@ name = "map_loading"
 version = "0.19.0"
 dependencies = [
  "amethyst",
+ "asset_model",
  "derive-new",
+ "kinematic_loading",
+ "loading_spi",
  "log",
  "map_model",
+ "sequence_loading",
  "sequence_model",
+ "sprite_loading",
  "sprite_model",
 ]
 
