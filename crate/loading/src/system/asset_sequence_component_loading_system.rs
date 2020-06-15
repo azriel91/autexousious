@@ -1,6 +1,3 @@
-mod map_ascl;
-mod object_ascl;
-
 use amethyst::ecs::WorldExt;
 use asset_model::{config::AssetType, loaded::AssetId};
 use audio_model::loaded::SourceSequenceHandles;
@@ -10,6 +7,7 @@ use kinematic_model::loaded::ObjectAccelerationSequenceHandles;
 use loading_model::loaded::LoadStage;
 use loading_spi::{AssetLoadingResources, SequenceComponentLoadingResources};
 use log::debug;
+use object_loading::ObjectAscl;
 use sequence_model::loaded::WaitSequenceHandles;
 use spawn_model::loaded::SpawnsSequenceHandles;
 use sprite_model::loaded::{
@@ -19,7 +17,9 @@ use ui_loading::UiAscl;
 
 use crate::{AssetPartLoader, AssetPartLoadingSystem};
 
-pub use self::{map_ascl::MapAscl, object_ascl::ObjectAscl};
+pub use self::map_ascl::MapAscl;
+
+mod map_ascl;
 
 /// Loads asset sequence components.
 pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSequenceComponentLoader>;

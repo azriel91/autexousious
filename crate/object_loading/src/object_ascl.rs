@@ -17,10 +17,11 @@ use loading_spi::{
 };
 use log::warn;
 use mirrored_model::play::Mirrored;
-use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::{loaded::Object, play::Grounding};
 use object_type::ObjectType;
 use sequence_model::loaded::SequenceId;
+
+use crate::{ObjectLoader, ObjectLoaderParams};
 
 /// Loads sequence components for object assets.
 #[derive(Debug)]
