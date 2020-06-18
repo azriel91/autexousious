@@ -59,11 +59,12 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
             || session_status == &SessionStatus::HostEstablished
         {
             // Use the last session response even if multiple are received.
-            session_message_events.for_each(|ev| match ev {
-                NetData {
+            session_message_events.for_each(|ev| {
+                if let NetData {
                     data: SessionMessageEvent::SessionDeviceJoin(session_device_join),
                     ..
-                } => {
+                } = ev
+                {
                     let SessionDeviceJoin {
                         session_device,
                         player_controllers: player_controllers_received,
