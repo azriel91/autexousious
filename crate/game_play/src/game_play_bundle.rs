@@ -44,6 +44,7 @@ use map_play::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
     MapOutOfBoundsDeletionSystem, MapSpawnOutOfBoundsDetectionSystem,
 };
+use network_session_model::play::SessionCondition;
 use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
 };
@@ -129,7 +130,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Updates frame limit and ticks the sequence logic clocks.
         builder.add(
-            SequenceUpdateSystem::new(),
+            SequenceUpdateSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<SequenceUpdateSystem>(),
             &[
                 // any::type_name::<SequenceComponentUpdateSystem::<_, _>>(),
@@ -319,7 +320,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // === Effect Detection === //
 
         builder.add(
-            CollisionDetectionSystem::new(),
+            CollisionDetectionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<CollisionDetectionSystem>(),
             &[
                 any::type_name::<StunPointsReductionSystem>(),
@@ -389,24 +390,24 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Charging
         builder.add(
-            ChargeInitializeDetectionSystem::new(),
+            ChargeInitializeDetectionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeInitializeDetectionSystem>(),
             &[&any::type_name::<
                 InputReactionsTransitionSystem<CharacterIrr>,
             >()],
         ); // kcov-ignore
         builder.add(
-            ChargeInitializeDelaySystem::new(),
+            ChargeInitializeDelaySystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeInitializeDelaySystem>(),
             &[any::type_name::<ChargeInitializeDetectionSystem>()],
         ); // kcov-ignore
         builder.add(
-            ChargeIncrementSystem::new(),
+            ChargeIncrementSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeIncrementSystem>(),
             &[any::type_name::<ChargeInitializeDelaySystem>()],
         ); // kcov-ignore
         builder.add(
-            ChargeUsageSystem::new(),
+            ChargeUsageSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeUsageSystem>(),
             &[any::type_name::<ChargeIncrementSystem>()],
         ); // kcov-ignore
@@ -418,12 +419,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // The `HitEffectSystem` depends on the `HittingEffectSystem` to ensure the
         // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
         builder.add(
-            HittingEffectSystem::new(),
+            HittingEffectSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<HittingEffectSystem>(),
             &[],
         ); // kcov-ignore
         builder.add(
-            HitEffectSystem::new(),
+            HitEffectSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<HitEffectSystem>(),
             &[any::type_name::<HittingEffectSystem>()],
         ); // kcov-ignore

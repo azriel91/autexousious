@@ -2483,6 +2483,7 @@ dependencies = [
  "map_play",
  "map_selection_model",
  "mirrored_model",
+ "network_session_model",
  "object_model",
  "object_play",
  "object_status_model",
