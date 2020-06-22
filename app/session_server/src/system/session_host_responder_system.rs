@@ -18,7 +18,10 @@ use session_host_model::{
     SessionHostEvent,
 };
 
-use crate::{model::SessionDeviceMappings, play::SessionTracker};
+use crate::{
+    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings},
+    play::SessionTracker,
+};
 
 /// Limit for number of sessions the server may host;
 const SESSION_COUNT_LIMIT: usize = 10000;
@@ -44,9 +47,12 @@ pub struct SessionHostResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Write<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Write<'s, SessionIdToDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -101,10 +107,15 @@ impl<'s> System<'s> for SessionHostResponderSystem {
             session_host_nec,
             mut session_code_generator,
             mut sessions,
-            mut session_device_mappings,
+            mut session_code_to_id,
+            mut session_id_to_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &mut *session_code_to_id;
+        let session_id_to_device_mappings = &mut *session_id_to_device_mappings;
+        let mut session_device_mappings =
+            SessionDeviceMappings::new(session_code_to_id, session_id_to_device_mappings);
         let mut session_tracker = SessionTracker {
             sessions: &mut sessions,
             session_device_mappings: &mut session_device_mappings,

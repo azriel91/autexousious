@@ -21,7 +21,7 @@ pub struct SessionTracker<'s> {
     /// Sessions (`HashMap<SessionCode, Session>` newtype).
     pub sessions: &'s mut Sessions,
     /// Mappings from `SessionCode` to `NetSessionDevices`, and `SocketAddr` to `SessionCode`.
-    pub session_device_mappings: &'s mut SessionDeviceMappings,
+    pub session_device_mappings: &'s mut SessionDeviceMappings<'s>,
 }
 
 impl<'s> SessionTracker<'s> {

@@ -13,7 +13,7 @@ use game_input_model::GameInputEvent;
 use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 
-use crate::model::SessionDeviceMappings;
+use crate::model::{SessionCodeToId, SessionDeviceMappingsRead, SessionIdToDeviceMappings};
 
 /// Broadcasts `InputEvent`s to connected devices within the same session.
 #[derive(Debug, SystemDesc, new)]
@@ -30,9 +30,12 @@ pub struct NetworkInputResponderSystemData<'s> {
     /// `InputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub network_input_nec: Read<'s, NetEventChannel<GameInputEvent>>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Read<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Read<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Read<'s, SessionIdToDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -78,10 +81,18 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
         &mut self,
         NetworkInputResponderSystemData {
             network_input_nec,
-            session_device_mappings,
+            session_code_to_id,
+            session_id_to_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &*session_code_to_id;
+        let session_id_to_device_mappings = &*session_id_to_device_mappings;
+        let session_device_mappings_read = SessionDeviceMappingsRead {
+            session_code_to_id,
+            session_id_to_device_mappings,
+        };
+
         network_input_nec
             .read(&mut self.game_input_event_rid)
             .for_each(|net_game_input_event| {
@@ -90,9 +101,10 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
                     data: game_input_event,
                 } = net_game_input_event;
 
-                if let Some(session_code) = session_device_mappings.session_code(&socket_addr) {
+                if let Some(session_code) = session_device_mappings_read.session_code(&socket_addr)
+                {
                     if let Some(net_session_devices) =
-                        session_device_mappings.net_session_devices(session_code)
+                        session_device_mappings_read.net_session_devices(session_code)
                     {
                         debug!("Sending `GameInputEvent` for session: `{}`.", session_code);
 

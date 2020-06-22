@@ -10,7 +10,10 @@ use derive_new::new;
 use log::debug;
 use network_session_model::play::Sessions;
 
-use crate::{model::SessionDeviceMappings, play::SessionTracker};
+use crate::{
+    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings},
+    play::SessionTracker,
+};
 
 /// Listens for client disconnects, and removes them from the sessions.
 #[derive(Debug, SystemDesc, new)]
@@ -30,9 +33,12 @@ pub struct SessionDeviceDisconnectResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Write<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Write<'s, SessionIdToDeviceMappings>,
 }
 
 impl<'s> System<'s> for SessionDeviceDisconnectResponderSystem {
@@ -43,9 +49,14 @@ impl<'s> System<'s> for SessionDeviceDisconnectResponderSystem {
         SessionDeviceDisconnectResponderSystemData {
             network_simulation_ec,
             mut sessions,
-            mut session_device_mappings,
+            mut session_code_to_id,
+            mut session_id_to_device_mappings,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &mut *session_code_to_id;
+        let session_id_to_device_mappings = &mut *session_id_to_device_mappings;
+        let mut session_device_mappings =
+            SessionDeviceMappings::new(session_code_to_id, session_id_to_device_mappings);
         let mut session_tracker = SessionTracker {
             sessions: &mut sessions,
             session_device_mappings: &mut session_device_mappings,

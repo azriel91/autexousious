@@ -20,7 +20,10 @@ use session_join_model::{
     SessionJoinEvent,
 };
 
-use crate::{model::SessionDeviceMappings, play::SessionTracker};
+use crate::{
+    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings},
+    play::SessionTracker,
+};
 
 /// Accepts or rejects session requests, and sends the response to the requester.
 #[derive(Debug, SystemDesc, new)]
@@ -40,9 +43,12 @@ pub struct SessionJoinResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Write<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Write<'s, SessionIdToDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -141,10 +147,11 @@ impl SessionJoinResponderSystem {
 
         match bincode::serialize(&net_message_event) {
             Ok(payload) => {
-                let net_session_devices = session_device_mappings
+                let session_device_mappings_read = session_device_mappings.as_read();
+                let net_session_devices = session_device_mappings_read
                     .session_code(&socket_addr_exclude)
                     .and_then(|session_code| {
-                        session_device_mappings.net_session_devices(session_code)
+                        session_device_mappings_read.net_session_devices(session_code)
                     });
                 if let Some(net_session_devices) = net_session_devices {
                     net_session_devices
@@ -188,10 +195,15 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
         SessionJoinResponderSystemData {
             session_join_nec,
             mut sessions,
-            mut session_device_mappings,
+            mut session_code_to_id,
+            mut session_id_to_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &mut *session_code_to_id;
+        let session_id_to_device_mappings = &mut *session_id_to_device_mappings;
+        let mut session_device_mappings =
+            SessionDeviceMappings::new(session_code_to_id, session_id_to_device_mappings);
         let mut session_tracker = SessionTracker {
             sessions: &mut sessions,
             session_device_mappings: &mut session_device_mappings,
