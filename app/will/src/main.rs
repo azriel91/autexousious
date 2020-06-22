@@ -85,8 +85,9 @@ use network_input_play::{
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
 use network_session_model::config::SessionServerConfig;
 use network_session_play::{
-    SessionInputResourcesSyncSystem, SessionInputResourcesSyncSystemDesc,
-    SessionMessageResponseSystem, SessionMessageResponseSystemDesc, SessionStatusNotifierSystem,
+    SessionConditionMarkPendingSystem, SessionInputResourcesSyncSystem,
+    SessionInputResourcesSyncSystemDesc, SessionMessageResponseSystem,
+    SessionMessageResponseSystemDesc, SessionStatusNotifierSystem,
 };
 use parent_play::ChildEntityDeleteSystem;
 use sequence_loading::SequenceLoadingBundle;
@@ -612,6 +613,11 @@ where
                 &["input_system"],
             )
             .with(
+                SessionConditionMarkPendingSystem::new(),
+                any::type_name::<SessionConditionMarkPendingSystem>(),
+                &[any::type_name::<NetworkInputRequestSystem>()],
+            )
+            .with(
                 GameInputTickRequestSystem::new(),
                 any::type_name::<GameInputTickRequestSystem>(),
                 &[any::type_name::<NetworkInputRequestSystem>()],
@@ -624,6 +630,7 @@ where
                     any::type_name::<SessionJoinRequestSystem>(),
                     any::type_name::<SessionLobbyRequestSystem>(),
                     any::type_name::<NetworkInputRequestSystem>(),
+                    any::type_name::<SessionConditionMarkPendingSystem>(),
                     any::type_name::<GameInputTickRequestSystem>(),
                 ],
             )
