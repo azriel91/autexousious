@@ -11,7 +11,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{config::ControlBindings, GameInputEvent};
 use net_model::play::NetMessageEvent;
-use network_session_model::play::SessionStatus;
+use network_session_model::play::{SessionCondition, SessionStatus};
 
 /// Sends network input to a session server.
 #[derive(Debug, SystemDesc, new)]
@@ -28,6 +28,9 @@ pub struct NetworkInputRequestSystemData<'s> {
     /// `InputEvent<ControlBindings>` channel.
     #[derivative(Debug = "ignore")]
     pub input_ec: Read<'s, EventChannel<InputEvent<ControlBindings>>>,
+    /// `SessionCondition` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_condition: Read<'s, SessionCondition>,
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Read<'s, SessionStatus>,
@@ -43,6 +46,7 @@ impl<'s> System<'s> for NetworkInputRequestSystem {
         &mut self,
         NetworkInputRequestSystemData {
             input_ec,
+            session_condition,
             session_status,
             mut net_message_ec,
         }: Self::SystemData,
@@ -50,7 +54,8 @@ impl<'s> System<'s> for NetworkInputRequestSystem {
         let input_events = input_ec.read(&mut self.input_event_rid);
 
         // Guard against sending input events if the application is not in a session.
-        if *session_status == SessionStatus::JoinEstablished
+        if *session_condition == SessionCondition::Ready
+            && *session_status == SessionStatus::JoinEstablished
             || *session_status == SessionStatus::HostEstablished
         {
             input_events
