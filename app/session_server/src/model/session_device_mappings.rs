@@ -147,7 +147,7 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
             .and_then(|session_code_id| self.session_id_to_device_mappings.remove(session_code_id))
     }
 
-    /// Removes the device for the given `SocketAddr`, returning the session code it if it exists.
+    /// Removes the device for the given `SocketAddr`, returning the `SessionCode` if it exists.
     pub fn remove_device(&mut self, socket_addr: &SocketAddr) -> Option<&SessionCode> {
         let session_code_id = self
             .session_id_to_device_mappings
