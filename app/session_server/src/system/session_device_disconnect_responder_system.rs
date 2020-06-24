@@ -7,12 +7,11 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::debug;
 use network_session_model::play::Sessions;
 
 use crate::{
-    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings},
-    play::SessionTracker,
+    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings, SocketToDeviceId},
+    system::SessionCleaner,
 };
 
 /// Listens for client disconnects, and removes them from the sessions.
@@ -36,6 +35,9 @@ pub struct SessionDeviceDisconnectResponderSystemData<'s> {
     /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
     pub session_code_to_id: Write<'s, SessionCodeToId>,
+    /// `SocketToDeviceId` resource.
+    #[derivative(Debug = "ignore")]
+    pub socket_to_device_id: Write<'s, SocketToDeviceId>,
     /// `SessionIdToDeviceMappings` resource.
     #[derivative(Debug = "ignore")]
     pub session_id_to_device_mappings: Write<'s, SessionIdToDeviceMappings>,
@@ -50,6 +52,7 @@ impl<'s> System<'s> for SessionDeviceDisconnectResponderSystem {
             network_simulation_ec,
             mut sessions,
             mut session_code_to_id,
+            mut socket_to_device_id,
             mut session_id_to_device_mappings,
         }: Self::SystemData,
     ) {
@@ -57,22 +60,20 @@ impl<'s> System<'s> for SessionDeviceDisconnectResponderSystem {
         let session_id_to_device_mappings = &mut *session_id_to_device_mappings;
         let mut session_device_mappings =
             SessionDeviceMappings::new(session_code_to_id, session_id_to_device_mappings);
-        let mut session_tracker = SessionTracker {
-            sessions: &mut sessions,
-            session_device_mappings: &mut session_device_mappings,
-        };
         network_simulation_ec
             .read(&mut self.network_simulation_event_rid)
             .for_each(|ev| {
                 if let NetworkSimulationEvent::Disconnect(socket_addr) = ev {
-                    if let Some(session_code) =
-                        session_tracker.remove_device_from_existing_session(*socket_addr)
-                    {
-                        debug!(
-                            "Device `{:?}` disconnected from session: `{}`.",
-                            socket_addr, session_code
-                        );
-                        // TODO: broadcast disconnection event to remaining session devices.
+                    // Forget all clients in the session.
+                    let session_code_and_devices = SessionCleaner::session_forget(
+                        &mut sessions,
+                        &mut session_device_mappings,
+                        &mut socket_to_device_id,
+                        *socket_addr,
+                    );
+
+                    if let Some((_session_code, _net_session_devices)) = session_code_and_devices {
+                        // TODO: Send disconnect message to all clients except the one that disconnected.
                     }
                 }
             });

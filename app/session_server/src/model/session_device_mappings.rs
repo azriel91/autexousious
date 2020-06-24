@@ -158,6 +158,28 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
             .and_then(move |session_code_id| self.session_code_to_id.get_by_right(session_code_id))
     }
 
+    /// Removes the session and `NetSessionDevices` for the given `SocketAddr`, returning them if present.
+    pub fn remove_session(
+        &mut self,
+        socket_addr: &SocketAddr,
+    ) -> Option<(SessionCode, NetSessionDevices)> {
+        self.session_id_to_device_mappings
+            .session_code_id(socket_addr)
+            .and_then(|session_code_id| {
+                let session_code_and_id = self.session_code_to_id.remove_by_right(&session_code_id);
+                let net_session_devices =
+                    self.session_id_to_device_mappings.remove(session_code_id);
+
+                if let (Some((session_code, _id)), Some(net_session_devices)) =
+                    (session_code_and_id, net_session_devices)
+                {
+                    Some((session_code, net_session_devices))
+                } else {
+                    None
+                }
+            })
+    }
+
     /// Reserves capacity for at least `additional` more mappings to be inserted.
     ///
     /// This may reserve more space to avosession_code frequent reallocations.
