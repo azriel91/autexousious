@@ -195,18 +195,16 @@ impl SessionMessageResponderSystem {
                 .map(|net_session_device| net_session_device.socket_addr);
 
             Self::send_game_input_tick(transport_resource, socket_addrs);
+        } else if let Some(session_code) = session_code {
+            error!(
+                "`NetSessionDevices` not found for session: `{}`",
+                session_code
+            );
         } else {
-            if let Some(session_code) = session_code {
-                error!(
-                    "`NetSessionDevices` not found for session: `{}`",
-                    session_code
-                );
-            } else {
-                error!(
-                    "`NetSessionDevices` not found for `SessionCodeId`: `{}`",
-                    session_code_id
-                );
-            }
+            error!(
+                "`NetSessionDevices` not found for `SessionCodeId`: `{}`",
+                session_code_id
+            );
         }
     }
 
