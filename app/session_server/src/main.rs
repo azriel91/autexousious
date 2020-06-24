@@ -19,6 +19,7 @@ use crate::system::{
     SessionDeviceDisconnectResponderSystem, SessionDeviceDisconnectResponderSystemDesc,
     SessionHostResponderSystem, SessionHostResponderSystemDesc, SessionJoinResponderSystem,
     SessionJoinResponderSystemDesc, SessionLobbyResponderSystem, SessionLobbyResponderSystemDesc,
+    SessionMessageResponderSystem, SessionMessageResponderSystemDesc,
 };
 
 pub mod model;
@@ -124,6 +125,14 @@ fn main() -> Result<(), Error> {
             NetworkInputResponderSystemDesc::default(),
             any::type_name::<NetworkInputResponderSystem>(),
             &[any::type_name::<NetListenerSystem>()],
+        )
+        .with_system_desc(
+            SessionMessageResponderSystemDesc::default(),
+            any::type_name::<SessionMessageResponderSystem>(),
+            &[
+                any::type_name::<NetListenerSystem>(),
+                any::type_name::<NetworkInputResponderSystem>(),
+            ],
         )
         .with_system_desc(
             SessionDeviceDisconnectResponderSystemDesc::default(),
