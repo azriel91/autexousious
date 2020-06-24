@@ -63,12 +63,12 @@ impl SessionCleaner {
         socket_addr: SocketAddr,
         session_device_name: &SessionDeviceName,
     ) {
-        if let Some(session_code_existing) =
+        if let Some((session_code, net_session_device)) =
             session_tracker.remove_device_from_existing_session(socket_addr)
         {
             debug!(
                 "Removed `{}` from existing session: `{}`.",
-                session_device_name, session_code_existing
+                &net_session_device.data.name, session_code
             );
         }
 

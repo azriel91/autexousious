@@ -163,24 +163,33 @@ impl SessionIdToDeviceMappings {
         net_session_devices
     }
 
-    /// Removes the device for the given `SocketAddr`, returning the `SessionCodeId` if it exists.
-    pub fn remove_device(&mut self, socket_addr: &SocketAddr) -> Option<SessionCodeId> {
+    /// Removes the device for the given `SocketAddr`, returning it with the `SessionCodeId` if it exists.
+    pub fn remove_device(
+        &mut self,
+        socket_addr: &SocketAddr,
+    ) -> Option<(SessionCodeId, NetSessionDevice)> {
         let session_code_id = self.socket_addr_to_session_code_id.remove(socket_addr);
 
         if let Some(session_code_id) = session_code_id {
-            Self::remove_session_device(
+            let net_session_device = Self::remove_device_internal(
                 &mut self.session_code_id_to_devices,
                 &mut self.socket_addr_to_session_code_id,
                 session_code_id,
                 *socket_addr,
             );
-        }
 
-        session_code_id
+            if let Some(net_session_device) = net_session_device {
+                Some((session_code_id, net_session_device))
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
 
     /// Removes the `NetSessionDevice` for the given `SocketAddr`, returning it if present.
-    fn remove_session_device(
+    fn remove_device_internal(
         session_code_id_to_devices: &mut HashMap<SessionCodeId, NetSessionDevices>,
         socket_addr_to_session_code_id: &mut HashMap<SocketAddr, SessionCodeId>,
         session_code_id: SessionCodeId,

@@ -148,14 +148,19 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
     }
 
     /// Removes the device for the given `SocketAddr`, returning the `SessionCode` if it exists.
-    pub fn remove_device(&mut self, socket_addr: &SocketAddr) -> Option<&SessionCode> {
-        let session_code_id = self
+    pub fn remove_device(
+        &mut self,
+        socket_addr: &SocketAddr,
+    ) -> Option<(&SessionCode, NetSessionDevice)> {
+        let session_code_id_and_device = self
             .session_id_to_device_mappings
             .remove_device(socket_addr);
 
-        session_code_id
-            .as_ref()
-            .and_then(move |session_code_id| self.session_code_to_id.get_by_right(session_code_id))
+        session_code_id_and_device.and_then(move |(session_code_id, net_session_device)| {
+            self.session_code_to_id
+                .get_by_right(&session_code_id)
+                .map(|session_code| (session_code, net_session_device))
+        })
     }
 
     /// Removes the session and `NetSessionDevices` for the given `SocketAddr`, returning them if present.
