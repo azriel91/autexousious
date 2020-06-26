@@ -16,7 +16,7 @@ application_input = { path = "../application_input" }
 application_menu = { path = "../application_menu" }
 application_robot = { path = "../application_robot" }
 application_state = { path = "../application_state" }
-application_test_support = { path = "../application_test_support" }
+application_test_support = { path = "../application_test_support", default-features = false }
 application_ui = { path = "../application_ui" }
 approx = "0.3.2"
 assert_cmd = "1.0.1"
