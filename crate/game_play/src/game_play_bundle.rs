@@ -180,7 +180,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Spawn objects
         builder.add(
-            SpawnGameObjectSystem::new(),
+            SpawnGameObjectSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<SpawnGameObjectSystem>(),
             &[any::type_name::<FrameComponentUpdateSystem<SpawnsSequence>>()],
         ); // kcov-ignore
@@ -213,7 +213,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // vel += `ObjectAcceleration` (from frame config).
         builder.add(
-            ObjectAccelerationSystem::new(),
+            ObjectAccelerationSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ObjectAccelerationSystem>(),
             &[],
         ); // kcov-ignore
@@ -222,7 +222,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // This must be between the `FrameFreezeClockAugmentSystem` and `SequenceUpdateSystem`s
         // since it needs to wait for the `FrameFreezeClock` to tick.
         builder.add(
-            ObjectKinematicsUpdateSystem::new(),
+            ObjectKinematicsUpdateSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ObjectKinematicsUpdateSystem>(),
             &[any::type_name::<ObjectAccelerationSystem>()],
         ); // kcov-ignore
@@ -230,7 +230,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // `Position` correction based on margins.
         // vel += mass
         builder.add(
-            ObjectGravitySystem::new(),
+            ObjectGravitySystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ObjectGravitySystem>(),
             &[any::type_name::<ObjectKinematicsUpdateSystem>()],
         ); // kcov-ignore
@@ -252,13 +252,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Updates `Velocity<f32>` based on grounding.
         builder.add(
-            GroundingFrictionSystem::new(),
+            GroundingFrictionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<GroundingFrictionSystem>(),
             &[any::type_name::<ObjectGroundingSystem>()],
         ); // kcov-ignore
 
         builder.add(
-            MapOutOfBoundsDeletionSystem::new(),
+            MapOutOfBoundsDeletionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<MapOutOfBoundsDeletionSystem>(),
             &[
                 any::type_name::<MapEnterExitDetectionSystem>(),
@@ -266,7 +266,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ],
         ); // kcov-ignore
         builder.add(
-            MapOutOfBoundsClockAugmentSystem::new(),
+            MapOutOfBoundsClockAugmentSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<MapOutOfBoundsClockAugmentSystem>(),
             &[any::type_name::<MapOutOfBoundsDeletionSystem>()],
         ); // kcov-ignore
@@ -297,20 +297,20 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Reduces charge when not charging.
         builder.add(
-            ChargeRetentionSystem::new(),
+            ChargeRetentionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeRetentionSystem>(),
             &[],
         ); // kcov-ignore
 
         // Reduces `StunPoints` each tick.
         builder.add(
-            StunPointsReductionSystem::new(),
+            StunPointsReductionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<StunPointsReductionSystem>(),
             &[],
         ); // kcov-ignore
 
         builder.add(
-            HitRepeatTrackersTickerSystem::new(),
+            HitRepeatTrackersTickerSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<HitRepeatTrackersTickerSystem>(),
             &[any::type_name::<HitRepeatTrackersAugmentSystem>()],
         ); // kcov-ignore
@@ -480,7 +480,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
         builder.add(
-            CameraVelocitySystem::default(),
+            CameraVelocitySystem::default().pausable(SessionCondition::Ready),
             any::type_name::<CameraVelocitySystem>(),
             &[any::type_name::<CameraTrackingSystem>()],
         ); // kcov-ignore
