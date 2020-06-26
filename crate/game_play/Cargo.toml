@@ -40,6 +40,7 @@ map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 map_selection_model = { path = "../map_selection_model" }
 mirrored_model = { path = "../mirrored_model" }
+network_session_model = { path = "../network_session_model" }
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }
 object_status_model = { path = "../object_status_model" }

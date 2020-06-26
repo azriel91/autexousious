@@ -10,7 +10,7 @@ use game_input_model::loaded::PlayerControllers;
 use log::debug;
 use net_model::play::{NetData, NetEventChannel};
 use network_session_model::{
-    play::{SessionDeviceJoin, SessionDevices, SessionStatus},
+    play::{SessionCondition, SessionDeviceJoin, SessionDevices, SessionStatus},
     SessionMessageEvent,
 };
 
@@ -32,6 +32,9 @@ pub struct SessionMessageResponseSystemData<'s> {
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Read<'s, SessionStatus>,
+    /// `SessionCondition` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_condition: Write<'s, SessionCondition>,
     /// `SessionDevices` resource.
     #[derivative(Debug = "ignore")]
     pub session_devices: Write<'s, SessionDevices>,
@@ -48,33 +51,42 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
         SessionMessageResponseSystemData {
             session_message_nec,
             session_status,
+            mut session_condition,
             mut session_devices,
             mut player_controllers,
         }: Self::SystemData,
     ) {
         let session_message_events = session_message_nec.read(&mut self.session_message_event_rid);
-        let session_status = &*session_status;
+        let session_established = *session_status == SessionStatus::JoinEstablished
+            || *session_status == SessionStatus::HostEstablished;
 
-        if session_status == &SessionStatus::JoinEstablished
-            || session_status == &SessionStatus::HostEstablished
-        {
+        if session_established {
             // Use the last session response even if multiple are received.
-            session_message_events.for_each(|ev| match ev {
-                NetData {
-                    data: SessionMessageEvent::SessionDeviceJoin(session_device_join),
-                    ..
-                } => {
-                    let SessionDeviceJoin {
-                        session_device,
-                        player_controllers: player_controllers_received,
-                    } = session_device_join;
+            session_message_events.for_each(|ev| {
+                let NetData { data, .. } = ev;
 
-                    debug!("Session device joined: {:?}", session_device);
+                match data {
+                    SessionMessageEvent::GameInputTick => {
+                        // Have received all `GameInputEvent`s from the session server.
+                        debug!("Session `GameInputTick` received.");
+                        *session_condition = SessionCondition::Ready;
+                    }
+                    SessionMessageEvent::SessionDeviceJoin(session_device_join) => {
+                        let SessionDeviceJoin {
+                            session_device,
+                            player_controllers: player_controllers_received,
+                        } = session_device_join;
 
-                    session_devices.push(session_device.clone());
-                    *player_controllers = player_controllers_received.clone();
+                        debug!("Session device joined: {:?}", session_device);
+
+                        session_devices.push(session_device.clone());
+                        *player_controllers = player_controllers_received.clone();
+                    }
                 }
             });
+        } else {
+            // Unfreeze the other systems if not in a network game.
+            *session_condition = SessionCondition::Ready;
         }
     }
 }

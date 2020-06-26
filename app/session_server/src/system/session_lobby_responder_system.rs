@@ -13,7 +13,7 @@ use log::{debug, error};
 use net_model::play::{NetData, NetEventChannel, NetMessageEvent};
 use session_lobby_model::{play::SessionStartRequestParams, SessionLobbyEvent};
 
-use crate::model::SessionDeviceMappings;
+use crate::model::{SessionCodeToId, SessionDeviceMappingsRead, SessionIdToDeviceMappings};
 
 /// Accepts or rejects session start requests, and notifies all connected devices.
 #[derive(Debug, SystemDesc, new)]
@@ -30,9 +30,12 @@ pub struct SessionLobbyResponderSystemData<'s> {
     /// `SessionLobbyEvent` channel.
     #[derivative(Debug = "ignore")]
     pub session_lobby_nec: Read<'s, NetEventChannel<SessionLobbyEvent>>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Read<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Read<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Read<'s, SessionIdToDeviceMappings>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -78,10 +81,17 @@ impl<'s> System<'s> for SessionLobbyResponderSystem {
         &mut self,
         SessionLobbyResponderSystemData {
             session_lobby_nec,
-            session_device_mappings,
+            session_code_to_id,
+            session_id_to_device_mappings,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &*session_code_to_id;
+        let session_id_to_device_mappings = &*session_id_to_device_mappings;
+        let session_device_mappings_read = SessionDeviceMappingsRead {
+            session_code_to_id,
+            session_id_to_device_mappings,
+        };
         session_lobby_nec
             .read(&mut self.session_lobby_event_rid)
             .filter_map(|session_lobby_event| {
@@ -100,11 +110,11 @@ impl<'s> System<'s> for SessionLobbyResponderSystem {
 
                 // Make sure the start request is for the correct `session_code`.
                 if let Some(session_code_tracked) =
-                    session_device_mappings.session_code(&socket_addr)
+                    session_device_mappings_read.session_code(&socket_addr)
                 {
                     if session_code_tracked == session_code {
                         if let Some(net_session_devices) =
-                            session_device_mappings.net_session_devices(session_code)
+                            session_device_mappings_read.net_session_devices(session_code)
                         {
                             debug!(
                                 "Sending `SessionStartNotify` for session: `{}`.",

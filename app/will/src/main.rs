@@ -78,8 +78,8 @@ use net_play::{
     NetListenerSystem, NetListenerSystemDesc, NetMessageRequestSystem, NetMessageRequestSystemDesc,
 };
 use network_input_play::{
-    NetworkInputRequestSystem, NetworkInputRequestSystemDesc, NetworkInputResponseSystem,
-    NetworkInputResponseSystemDesc,
+    GameInputTickRequestSystem, NetworkInputRequestSystem, NetworkInputRequestSystemDesc,
+    NetworkInputResponseSystem, NetworkInputResponseSystemDesc,
 };
 #[cfg(not(target_arch = "wasm32"))]
 use network_mode_selection_stdio::NetworkModeSelectionStdioBundle;
@@ -611,6 +611,11 @@ where
                 any::type_name::<NetworkInputRequestSystem>(),
                 &["input_system"],
             )
+            .with(
+                GameInputTickRequestSystem::new(),
+                any::type_name::<GameInputTickRequestSystem>(),
+                &[any::type_name::<NetworkInputRequestSystem>()],
+            )
             .with_system_desc(
                 NetMessageRequestSystemDesc::default(),
                 any::type_name::<NetMessageRequestSystem>(),
@@ -619,6 +624,7 @@ where
                     any::type_name::<SessionJoinRequestSystem>(),
                     any::type_name::<SessionLobbyRequestSystem>(),
                     any::type_name::<NetworkInputRequestSystem>(),
+                    any::type_name::<GameInputTickRequestSystem>(),
                 ],
             )
             .with_system_desc(
@@ -644,12 +650,18 @@ where
             .with_system_desc(
                 SessionMessageResponseSystemDesc::default(),
                 any::type_name::<SessionMessageResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
+                &[
+                    any::type_name::<NetListenerSystem>(),
+                    any::type_name::<GameInputTickRequestSystem>(),
+                ],
             )
             .with_system_desc(
                 NetworkInputResponseSystemDesc::default(),
                 any::type_name::<NetworkInputResponseSystem>(),
-                &[any::type_name::<NetListenerSystem>()],
+                &[
+                    any::type_name::<NetListenerSystem>(),
+                    any::type_name::<SessionMessageResponseSystem>(),
+                ],
             )
             .with(
                 SessionCodeLabelUpdateSystem::new(),

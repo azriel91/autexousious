@@ -3,8 +3,8 @@
 //! Provides logic for the network play lobby process.
 
 pub use crate::system::{
-    NetworkInputRequestSystem, NetworkInputRequestSystemDesc, NetworkInputResponseSystem,
-    NetworkInputResponseSystemDesc,
+    GameInputTickRequestSystem, NetworkInputRequestSystem, NetworkInputRequestSystemDesc,
+    NetworkInputResponseSystem, NetworkInputResponseSystemDesc,
 };
 
 mod system;

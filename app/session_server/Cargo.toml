@@ -24,3 +24,14 @@ session_join_model = { path = "../../crate/session_join_model" }
 session_lobby_model = { path = "../../crate/session_lobby_model" }
 structopt = "0.3.14"
 structopt-derive = "0.4.7"
+
+[features]
+# We use `"gl"` because `clippy` is run from the workspace root, and we cannot control features at that level,
+# so we have to use the same default graphical backend as `will`.
+default = ["parallel", "gl"]
+parallel = ["amethyst/parallel"]
+gl = ["amethyst/gl"]
+empty = ["amethyst/empty"]
+vulkan = ["amethyst/vulkan"]
+metal = ["amethyst/metal"]
+wasm = ["amethyst/wasm"]

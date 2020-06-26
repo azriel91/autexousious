@@ -51,9 +51,7 @@ impl<'s> System<'s> for HittingEffectSystem {
                 let hitting_transition = hitting_transitions.get(ev.from).copied();
 
                 if let Some(HittingTransition(sequence_id)) = hitting_transition {
-                    sequence_ids
-                        .insert(ev.from, sequence_id)
-                        .expect("Failed to insert `SequenceId` component.");
+                    let _ = sequence_ids.insert(ev.from, sequence_id);
                 }
             });
     }

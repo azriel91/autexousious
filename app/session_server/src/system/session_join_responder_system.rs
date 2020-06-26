@@ -20,7 +20,11 @@ use session_join_model::{
     SessionJoinEvent,
 };
 
-use crate::{model::SessionDeviceMappings, play::SessionTracker};
+use crate::{
+    model::{SessionCodeToId, SessionDeviceMappings, SessionIdToDeviceMappings, SocketToDeviceId},
+    play::SessionTracker,
+    system::SessionCleaner,
+};
 
 /// Accepts or rejects session requests, and sends the response to the requester.
 #[derive(Debug, SystemDesc, new)]
@@ -40,9 +44,15 @@ pub struct SessionJoinResponderSystemData<'s> {
     /// `Sessions` resource.
     #[derivative(Debug = "ignore")]
     pub sessions: Write<'s, Sessions>,
-    /// `SessionDeviceMappings` resource.
+    /// `SessionCodeToId` resource.
     #[derivative(Debug = "ignore")]
-    pub session_device_mappings: Write<'s, SessionDeviceMappings>,
+    pub session_code_to_id: Write<'s, SessionCodeToId>,
+    /// `SessionIdToDeviceMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_id_to_device_mappings: Write<'s, SessionIdToDeviceMappings>,
+    /// `SocketToDeviceId` resource.
+    #[derivative(Debug = "ignore")]
+    pub socket_to_device_id: Write<'s, SocketToDeviceId>,
     /// `TransportResource` resource.
     #[derivative(Debug = "ignore")]
     pub transport_resource: Write<'s, TransportResource>,
@@ -51,6 +61,7 @@ pub struct SessionJoinResponderSystemData<'s> {
 impl SessionJoinResponderSystem {
     fn handle_session_request(
         session_tracker: &mut SessionTracker,
+        socket_to_device_id: &mut SocketToDeviceId,
         socket_addr: SocketAddr,
         session_join_request_params: &SessionJoinRequestParams,
     ) -> (SessionJoinEvent, Option<SessionMessageEvent>) {
@@ -60,25 +71,25 @@ impl SessionJoinResponderSystem {
             ..
         } = session_join_request_params;
 
-        if let Some(session_code_existing) =
-            session_tracker.remove_device_from_existing_session(socket_addr)
-        {
-            debug!(
-                "Removing `{}` from existing session: `{}`.",
-                session_device_name, session_code_existing
-            );
-        }
+        SessionCleaner::client_forget(
+            session_tracker,
+            socket_to_device_id,
+            socket_addr,
+            session_device_name,
+        );
 
         match session_tracker.append_device(socket_addr, session_join_request_params) {
             Ok((session, session_device, player_controllers, controller_id_offset)) => {
+                socket_to_device_id.insert(socket_addr, session_device.id);
+
                 let session_accept_response = SessionAcceptResponse::new(
                     session,
                     session_device.id,
                     player_controllers.clone(),
                     controller_id_offset,
                 );
-
                 let session_join_event = SessionJoinEvent::SessionAccept(session_accept_response);
+
                 let session_message_event = {
                     let session_device_join =
                         SessionDeviceJoin::new(session_device, player_controllers);
@@ -89,8 +100,8 @@ impl SessionJoinResponderSystem {
             }
             Err(e) => {
                 debug!(
-                    "Rejecting request to join session `{}` joined from `{}`.",
-                    session_code, session_device_name
+                    "Rejecting request to join session `{}` joined from `{}`. Error: `{:?}`",
+                    session_code, session_device_name, e
                 );
 
                 let session_join_event = SessionJoinEvent::SessionReject(
@@ -141,10 +152,11 @@ impl SessionJoinResponderSystem {
 
         match bincode::serialize(&net_message_event) {
             Ok(payload) => {
-                let net_session_devices = session_device_mappings
+                let session_device_mappings_read = session_device_mappings.as_read();
+                let net_session_devices = session_device_mappings_read
                     .session_code(&socket_addr_exclude)
                     .and_then(|session_code| {
-                        session_device_mappings.net_session_devices(session_code)
+                        session_device_mappings_read.net_session_devices(session_code)
                     });
                 if let Some(net_session_devices) = net_session_devices {
                     net_session_devices
@@ -188,10 +200,16 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
         SessionJoinResponderSystemData {
             session_join_nec,
             mut sessions,
-            mut session_device_mappings,
+            mut session_code_to_id,
+            mut session_id_to_device_mappings,
+            mut socket_to_device_id,
             mut transport_resource,
         }: Self::SystemData,
     ) {
+        let session_code_to_id = &mut *session_code_to_id;
+        let session_id_to_device_mappings = &mut *session_id_to_device_mappings;
+        let mut session_device_mappings =
+            SessionDeviceMappings::new(session_code_to_id, session_id_to_device_mappings);
         let mut session_tracker = SessionTracker {
             sessions: &mut sessions,
             session_device_mappings: &mut session_device_mappings,
@@ -213,6 +231,7 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
             .map(|(socket_addr, session_join_request_params)| {
                 let session_join_and_message_events = Self::handle_session_request(
                     &mut session_tracker,
+                    &mut socket_to_device_id,
                     socket_addr,
                     session_join_request_params,
                 );

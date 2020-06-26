@@ -21,7 +21,7 @@ pub struct SessionTracker<'s> {
     /// Sessions (`HashMap<SessionCode, Session>` newtype).
     pub sessions: &'s mut Sessions,
     /// Mappings from `SessionCode` to `NetSessionDevices`, and `SocketAddr` to `SessionCode`.
-    pub session_device_mappings: &'s mut SessionDeviceMappings,
+    pub session_device_mappings: &'s mut SessionDeviceMappings<'s>,
 }
 
 impl<'s> SessionTracker<'s> {
@@ -144,7 +144,7 @@ impl<'s> SessionTracker<'s> {
         }
     }
 
-    /// Removes the device from any previous session, returning the session code.
+    /// Removes the device from any previous session, returning it alongside the session code.
     ///
     /// # Parameters
     ///
@@ -152,8 +152,22 @@ impl<'s> SessionTracker<'s> {
     pub fn remove_device_from_existing_session(
         &mut self,
         socket_addr: SocketAddr,
-    ) -> Option<&SessionCode> {
-        self.session_device_mappings.remove_device(&socket_addr)
+    ) -> Option<(&SessionCode, NetSessionDevice)> {
+        let session_code_and_device = self.session_device_mappings.remove_device(&socket_addr);
+
+        if let Some((session_code, net_session_device)) = session_code_and_device.as_ref() {
+            if let Some(session) = self.sessions.get_mut(session_code) {
+                if let Some(index) = session
+                    .session_devices
+                    .iter()
+                    .position(|session_device| session_device.id == net_session_device.data.id)
+                {
+                    session.session_devices.swap_remove(index);
+                }
+            }
+        }
+
+        session_code_and_device
     }
 
     fn generate_session_code(
