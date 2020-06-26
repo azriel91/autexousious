@@ -290,13 +290,22 @@ impl<'s> System<'s> for SessionMessageResponderSystem {
                         );
 
                         // When all devices are ready, send `GameInputTick`
-                        if Self::session_tick_all_received(session_device_tick_statuses) {
+                        let session_tick_all_received =
+                            Self::session_tick_all_received(session_device_tick_statuses);
+                        if session_tick_all_received {
                             Self::session_game_input_tick(
                                 session_id_to_device_mappings,
                                 &session_code_to_id,
                                 &mut transport_resource,
                                 session_code_id,
                             );
+
+                            // Reset session device tick statuses.
+                            session_device_tick_statuses
+                                .values_mut()
+                                .for_each(|tick_status| {
+                                    *tick_status = GameInputTickStatus::Pending
+                                });
                         }
                     }
                     Err(e) => warn!("{}", e),

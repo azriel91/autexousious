@@ -2610,6 +2610,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gfx-backend-empty"
+version = "0.5.0"
+source = "git+https://github.com/amethyst/gfx?branch=wasm#8537dfbe5ef742309496b7282a07653fc88f037d"
+dependencies = [
+ "gfx-hal",
+ "raw-window-handle",
+]
+
+[[package]]
 name = "gfx-backend-gl"
 version = "0.5.0"
 source = "git+https://github.com/amethyst/gfx?branch=wasm#8537dfbe5ef742309496b7282a07653fc88f037d"
@@ -4965,6 +4974,7 @@ name = "rendy-core"
 version = "0.5.1"
 source = "git+https://github.com/amethyst/rendy.git?branch=wasm#26ec46deeda4ab0368e3c0d30577c4a5ef821683"
 dependencies = [
+ "gfx-backend-empty",
  "gfx-backend-gl",
  "gfx-backend-metal",
  "gfx-backend-vulkan",

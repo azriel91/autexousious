@@ -57,11 +57,10 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
         }: Self::SystemData,
     ) {
         let session_message_events = session_message_nec.read(&mut self.session_message_event_rid);
-        let session_status = &*session_status;
+        let session_established = *session_status == SessionStatus::JoinEstablished
+            || *session_status == SessionStatus::HostEstablished;
 
-        if session_status == &SessionStatus::JoinEstablished
-            || session_status == &SessionStatus::HostEstablished
-        {
+        if session_established {
             // Use the last session response even if multiple are received.
             session_message_events.for_each(|ev| {
                 let NetData { data, .. } = ev;
@@ -69,6 +68,7 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
                 match data {
                     SessionMessageEvent::GameInputTick => {
                         // Have received all `GameInputEvent`s from the session server.
+                        debug!("Session `GameInputTick` received.");
                         *session_condition = SessionCondition::Ready;
                     }
                     SessionMessageEvent::SessionDeviceJoin(session_device_join) => {
@@ -84,6 +84,9 @@ impl<'s> System<'s> for SessionMessageResponseSystem {
                     }
                 }
             });
+        } else {
+            // Unfreeze the other systems if not in a network game.
+            *session_condition = SessionCondition::Ready;
         }
     }
 }

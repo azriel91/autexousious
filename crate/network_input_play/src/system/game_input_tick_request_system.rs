@@ -6,7 +6,10 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use net_model::play::NetMessageEvent;
-use network_session_model::{play::SessionStatus, SessionMessageEvent};
+use network_session_model::{
+    play::{SessionCondition, SessionStatus},
+    SessionMessageEvent,
+};
 
 /// Informs the session server all client network input has been sent.
 #[derive(Debug, new)]
@@ -18,6 +21,9 @@ pub struct GameInputTickRequestSystemData<'s> {
     /// `SessionStatus` resource.
     #[derivative(Debug = "ignore")]
     pub session_status: Read<'s, SessionStatus>,
+    /// `SessionCondition` resource.
+    #[derivative(Debug = "ignore")]
+    pub session_condition: Write<'s, SessionCondition>,
     /// `NetworkMessageEvent` channel.
     #[derivative(Debug = "ignore")]
     pub net_message_ec: Write<'s, EventChannel<NetMessageEvent>>,
@@ -30,16 +36,21 @@ impl<'s> System<'s> for GameInputTickRequestSystem {
         &mut self,
         GameInputTickRequestSystemData {
             session_status,
+            mut session_condition,
             mut net_message_ec,
         }: Self::SystemData,
     ) {
         // Guard against sending input events if the application is not in a session.
-        if *session_status == SessionStatus::JoinEstablished
-            || *session_status == SessionStatus::HostEstablished
-        {
-            net_message_ec.single_write(NetMessageEvent::SessionMessageEvent(
-                SessionMessageEvent::GameInputTick,
-            ));
+        let session_established = *session_status == SessionStatus::JoinEstablished
+            || *session_status == SessionStatus::HostEstablished;
+
+        if session_established {
+            if *session_condition == SessionCondition::Ready {
+                net_message_ec.single_write(NetMessageEvent::SessionMessageEvent(
+                    SessionMessageEvent::GameInputTick,
+                ));
+                *session_condition = SessionCondition::PendingGameInputTick;
+            }
         }
     }
 }
