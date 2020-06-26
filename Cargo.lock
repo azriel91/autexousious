@@ -4169,29 +4169,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "object_test"
-version = "0.19.0"
-dependencies = [
- "amethyst",
- "amethyst_test",
- "application_event",
- "audio_model",
- "collision_loading",
- "collision_model",
- "derive-new",
- "game_input_model",
- "kinematic_model",
- "object_loading",
- "object_model",
- "sequence_loading",
- "sequence_model",
- "spawn_loading",
- "spawn_model",
- "sprite_loading",
- "sprite_model",
-]
-
-[[package]]
 name = "object_type"
 version = "0.19.0"
 dependencies = [
