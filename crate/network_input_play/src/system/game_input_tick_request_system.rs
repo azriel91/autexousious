@@ -44,13 +44,11 @@ impl<'s> System<'s> for GameInputTickRequestSystem {
         let session_established = *session_status == SessionStatus::JoinEstablished
             || *session_status == SessionStatus::HostEstablished;
 
-        if session_established {
-            if *session_condition == SessionCondition::Ready {
-                net_message_ec.single_write(NetMessageEvent::SessionMessageEvent(
-                    SessionMessageEvent::GameInputTick,
-                ));
-                *session_condition = SessionCondition::PendingGameInputTick;
-            }
+        if session_established && *session_condition == SessionCondition::Ready {
+            net_message_ec.single_write(NetMessageEvent::SessionMessageEvent(
+                SessionMessageEvent::GameInputTick,
+            ));
+            *session_condition = SessionCondition::PendingGameInputTick;
         }
     }
 }
