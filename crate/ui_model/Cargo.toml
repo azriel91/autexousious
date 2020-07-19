@@ -20,7 +20,7 @@ derive-new = "0.5.8"
 input_reaction_model = { path = "../input_reaction_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.106", features = ["derive"] }
+serde = { version = "1.0.114", features = ["derive"] }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }

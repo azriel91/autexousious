@@ -14,7 +14,7 @@ asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 kinematic_loading = { path = "../kinematic_loading" }
 loading_spi = { path = "../loading_spi" }
-log = "0.4.8"
+log = "0.4.11"
 map_model = { path = "../map_model" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }

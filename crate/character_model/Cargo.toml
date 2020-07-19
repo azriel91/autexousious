@@ -18,8 +18,8 @@ charge_model = { path = "../charge_model" }
 collision_model = { path = "../collision_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-derive_deref = "1.1.0"
-derive_more = "0.99.5"
+derive_deref = "1.1.1"
+derive_more = "0.99.9"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
@@ -29,7 +29,7 @@ object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.106", features = ["derive"] }
+serde = { version = "1.0.114", features = ["derive"] }
 slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }

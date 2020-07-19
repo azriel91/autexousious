@@ -14,7 +14,7 @@ asset_loading = { path = "../asset_loading" }
 collision_audio_model = { path = "../collision_audio_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm_support_fs = { path = "../wasm_support_fs" }

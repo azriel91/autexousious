@@ -7,23 +7,23 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["network", "web_socket"] }
 bimap = "0.4.0"
-bincode = "1.2.1"
+bincode = "1.3.1"
 derivative = "2.1.1"
 derive-new = "0.5.8"
-derive_deref = "1.1.0"
+derive_deref = "1.1.1"
 frame_rate = { path = "../../crate/frame_rate" }
 game_input_model = { path = "../../crate/game_input_model" }
-log = "0.4.8"
+log = "0.4.11"
 net_model = { path = "../../crate/net_model" }
 net_play = { path = "../../crate/net_play" }
 network_session_model = { path = "../../crate/network_session_model" }
 network_session_play = { path = "../../crate/network_session_play" }
-serde_yaml = "0.8.11"
+serde_yaml = "0.8.13"
 session_host_model = { path = "../../crate/session_host_model" }
 session_join_model = { path = "../../crate/session_join_model" }
 session_lobby_model = { path = "../../crate/session_lobby_model" }
-structopt = "0.3.14"
-structopt-derive = "0.4.7"
+structopt = "0.3.15"
+structopt-derive = "0.4.8"
 
 [features]
 # We use `"gl"` because `clippy` is run from the workspace root, and we cannot control features at that level,

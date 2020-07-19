@@ -34,7 +34,7 @@ game_stats_model = { path = "../game_stats_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 input_reaction_play = { path = "../input_reaction_play" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.8"
+log = "0.4.11"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }

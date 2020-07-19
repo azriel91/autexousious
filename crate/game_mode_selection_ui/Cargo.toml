@@ -12,6 +12,6 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 derive-new = "0.5.8"
 game_mode_selection_model = { path = "../game_mode_selection_model" }
-log = "0.4.8"
+log = "0.4.11"
 menu_model = { path = "../menu_model" }
 ui_audio_model = { path = "../ui_audio_model" }

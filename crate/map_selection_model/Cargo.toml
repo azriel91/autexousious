@@ -13,8 +13,8 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 derivative = "2.1.1"
-serde = { version = "1.0.106", features = ["derive"] }
-structopt = "0.3.14"
-structopt-derive = "0.4.7"
+serde = { version = "1.0.114", features = ["derive"] }
+structopt = "0.3.15"
+structopt-derive = "0.4.8"
 strum = "0.18.0"
 strum_macros = "0.18.0"

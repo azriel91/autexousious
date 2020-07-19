@@ -14,10 +14,10 @@ application = { path = "../application" }
 asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 heck = "0.3.1"
-log = "0.4.8"
+log = "0.4.11"
 object_type = { path = "../object_type" }
-serde = { version = "1.0.106", features = ["derive"] }
-serde_yaml = "0.8.11"
+serde = { version = "1.0.114", features = ["derive"] }
+serde_yaml = "0.8.13"
 strum = "0.18.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

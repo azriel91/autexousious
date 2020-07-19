@@ -20,7 +20,7 @@ derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play = { path = "../game_play" }
-log = "0.4.8"
+log = "0.4.11"
 map_selection = { path = "../map_selection" }
 network_mode_selection = { path = "../network_mode_selection" }
 state_registry = { path = "../state_registry" }

@@ -17,6 +17,6 @@ asset_selection_model = { path = "../asset_selection_model" }
 character_selection_model = { path = "../character_selection_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 object_type = { path = "../object_type" }
 state_registry = { path = "../state_registry" }

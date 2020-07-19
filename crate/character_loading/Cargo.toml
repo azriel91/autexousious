@@ -14,10 +14,10 @@ character_model = { path = "../character_model" }
 charge_model = { path = "../charge_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-derive_deref = "1.1.0"
+derive_deref = "1.1.1"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 lazy_static = "1.4.0"
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-serde_yaml = "0.8.11"
+serde_yaml = "0.8.13"
