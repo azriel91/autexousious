@@ -9,6 +9,3 @@ codegen-units = 1
 [patch.crates-io]
 # Needs `smithay-client-toolkit` release > 0.9.1
 andrew = { git = "https://github.com/smithay/andrew.git", rev = "389208b" }
-
-# https://github.com/sgrif/derive_deref/pull/6
-derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
