@@ -13,10 +13,10 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_model = { path = "../asset_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-derive_deref = "1.1.0"
+derive_deref = "1.1.1"
 kinematic_model = { path = "../kinematic_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.106", features = ["derive"] }
+serde = { version = "1.0.114", features = ["derive"] }
 slotmap = "0.4.0"
 strum = "0.18.0"
 strum_macros = "0.18.0"

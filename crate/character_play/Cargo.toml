@@ -19,7 +19,7 @@ derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.8"
+log = "0.4.11"
 mirrored_model = { path = "../mirrored_model" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }

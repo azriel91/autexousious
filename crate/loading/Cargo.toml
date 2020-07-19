@@ -34,14 +34,14 @@ derivative = "2.1.1"
 derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }
 game_input_model = { path = "../game_input_model" }
-humantime = "2.0.0"
+humantime = "2.0.1"
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
 loading_spi = { path = "../loading_spi" }
-log = "0.4.8"
+log = "0.4.11"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
@@ -52,11 +52,11 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.106", features = ["derive"] }
-serde_yaml = "0.8.11"
+serde = { version = "1.0.114", features = ["derive"] }
+serde_yaml = "0.8.13"
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-smallvec = "1.4.0"
+smallvec = "1.4.1"
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }

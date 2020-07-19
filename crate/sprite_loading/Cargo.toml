@@ -14,6 +14,6 @@ asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_model = { path = "../asset_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sprite_model = { path = "../sprite_model" }

@@ -11,4 +11,4 @@ test = false
 [dependencies]
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
-serde = { version = "1.0.106", features = ["derive"] }
+serde = { version = "1.0.114", features = ["derive"] }

@@ -17,7 +17,7 @@ derivative = "2.1.1"
 derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }
 game_play = { path = "../game_play" }
-log = "0.4.8"
+log = "0.4.11"
 map_selection = { path = "../map_selection" }
 session_lobby_model = { path = "../session_lobby_model" }
 state_registry = { path = "../state_registry" }

@@ -13,7 +13,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 collision_model = { path = "../collision_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 logic_clock = { path = "../logic_clock" }
 mirrored_model = { path = "../mirrored_model" }
 sequence_model = { path = "../sequence_model" }

@@ -16,7 +16,7 @@ charge_model = { path = "../charge_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
-log = "0.4.8"
+log = "0.4.11"
 map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }

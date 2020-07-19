@@ -15,12 +15,12 @@ asset_model = { path = "../asset_model" }
 background_model = { path = "../background_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-derive_deref = "1.1.0"
-derive_more = "0.99.5"
+derive_deref = "1.1.1"
+derive_more = "0.99.9"
 enumflags2 = "0.6.4"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.106", features = ["derive"] }
+serde = { version = "1.0.114", features = ["derive"] }
 slotmap = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 strum = "0.18.0"

@@ -17,7 +17,7 @@ derivative = "2.1.1"
 derive-new = "0.5.8"
 energy_prefab = { path = "../energy_prefab" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.8"
+log = "0.4.11"
 mirrored_model = { path = "../mirrored_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }

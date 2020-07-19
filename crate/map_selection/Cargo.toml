@@ -16,6 +16,6 @@ asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 map_selection_model = { path = "../map_selection_model" }
 state_registry = { path = "../state_registry" }

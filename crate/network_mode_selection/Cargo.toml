@@ -14,7 +14,7 @@ application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
-log = "0.4.8"
+log = "0.4.11"
 menu_model = { path = "../menu_model" }
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 session_host = { path = "../session_host" }

@@ -1,7 +1,7 @@
 use amethyst::{
     core::{math::Vector3, Transform},
     ecs::{Entities, Entity, SystemData, World},
-    renderer::camera::{Camera, Projection},
+    renderer::camera::Camera,
     utils::ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
 };
 use camera_model::play::{CameraTargetCoordinates, CAMERA_ZOOM_DEPTH_DEFAULT};
@@ -68,7 +68,7 @@ impl CameraCreator {
         let (zoom_width, zoom_height) =
             (camera_zoom_dimensions.width, camera_zoom_dimensions.height);
 
-        let camera = Camera::from(Projection::orthographic(
+        let camera = Camera::orthographic(
             -window_width / 2.,
             window_width / 2.,
             -window_height / 2.,
@@ -78,13 +78,15 @@ impl CameraCreator {
             // position, we also need to give it the same Z depth vision to ensure it can see all
             // entities in front of it.
             CAMERA_ZOOM_DEPTH_DEFAULT,
-        ));
+        );
         let camera_ortho = {
             let world_coordinates = CameraOrthoWorldCoordinates {
                 left: -zoom_width / 2.,
                 right: zoom_width / 2.,
                 bottom: -zoom_height / 2.,
                 top: zoom_height / 2.,
+                near: 0.,
+                far: CAMERA_ZOOM_DEPTH_DEFAULT,
             };
             let mut camera_ortho = CameraOrtho::normalized(CameraNormalizeMode::Contain);
             camera_ortho.world_coordinates = world_coordinates;
