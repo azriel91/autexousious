@@ -16,12 +16,12 @@ background_model = { path = "../background_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.1"
-derive_more = "0.99.9"
+derive_more = "0.99.10"
 enumflags2 = "0.6.4"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 slotmap = "0.4.0"
 sprite_model = { path = "../sprite_model" }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"

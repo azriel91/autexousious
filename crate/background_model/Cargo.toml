@@ -15,9 +15,9 @@ asset_model = { path = "../asset_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.1"
-derive_more = "0.99.9"
-indexmap = { version = "1.5.0", features = ["serde-1"] }
+derive_more = "0.99.10"
+indexmap = { version = "1.6.0", features = ["serde-1"] }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 slotmap = "0.4.0"
 sprite_model = { path = "../sprite_model" }

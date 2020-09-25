@@ -10,6 +10,6 @@ test = false
 
 [dependencies]
 enum_variant_type = "0.2.0"
-serde = { version = "1.0.114", features = ["derive"] }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+serde = { version = "1.0.116", features = ["derive"] }
+strum = "0.19.2"
+strum_macros = "0.19.2"

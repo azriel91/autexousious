@@ -12,5 +12,5 @@ test = false
 derive-new = "0.5.8"
 derive_deref = "1.1.1"
 game_input_model = { path = "../game_input_model" }
-serde = { version = "1.0.114", features = ["derive"] }
-structopt = "0.3.15"
+serde = { version = "1.0.116", features = ["derive"] }
+structopt = "0.3.18"

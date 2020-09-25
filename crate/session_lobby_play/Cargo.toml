@@ -16,4 +16,4 @@ log = "0.4.11"
 net_model = { path = "../net_model" }
 network_session_model = { path = "../network_session_model" }
 session_lobby_model = { path = "../session_lobby_model" }
-structopt = "0.3.15"
+structopt = "0.3.18"

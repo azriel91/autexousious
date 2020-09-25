@@ -14,4 +14,4 @@ asset_model = { path = "../asset_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
