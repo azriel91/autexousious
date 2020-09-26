@@ -38,6 +38,7 @@ pub struct UiAsclCharacterSelection;
 
 impl UiAsclCharacterSelection {
     /// Loads asset items for a `CharacterSelection` UI.
+    #[allow(clippy::needless_collect)] // false positive https://github.com/rust-lang/rust-clippy/issues/5991
     pub fn load(
         asset_type_mappings: &AssetTypeMappings,
         asset_world: &mut AssetWorld,

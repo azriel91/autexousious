@@ -144,9 +144,8 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
 }
 
 fn begins_with_vowel(word: &str) -> bool {
-    if let Some('A') | Some('E') | Some('I') | Some('O') | Some('U') = word.chars().next() {
-        true
-    } else {
-        false
-    }
+    word.chars()
+        .next()
+        .map(|first_char| matches!(first_char, 'A' | 'E' | 'I' | 'O' | 'U'))
+        .unwrap_or(false)
 }

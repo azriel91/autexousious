@@ -10,11 +10,7 @@ use asset_loading::YamlFormat;
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use ui_audio_model::{
-    config::{UiSfxId, UiSfxPaths},
-    loaded::UiSfxMap,
-    UiAudioLoadingStatus,
-};
+use ui_audio_model::{config::UiSfxPaths, loaded::UiSfxMap, UiAudioLoadingStatus};
 #[cfg(target_arch = "wasm32")]
 use wasm_support_fs::PathAccessExt;
 
@@ -107,12 +103,7 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
                     // Begin loading it, add the handles for it to the map.
                     // Wait for all of the handles to be loaded.
 
-                    let sfx_to_load = ui_sfx_paths
-                        .iter()
-                        .filter(|(ui_sfx_id, _)| ui_sfx_map.get(ui_sfx_id).is_none())
-                        .collect::<Vec<(&UiSfxId, &PathBuf)>>();
-
-                    sfx_to_load.into_iter().for_each(|(ui_sfx_id, path)| {
+                    ui_sfx_paths.iter().for_each(|(ui_sfx_id, path)| {
                         macro_rules! load {
                             ($audio_format:expr) => {
                                 loader.load(
@@ -123,37 +114,40 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
                                 )
                             };
                         }
-                        let source_handle = match path.extension() {
-                            Some(ext) => {
-                                let ext = ext
-                                    .to_str()
-                                    .expect("Failed to convert extension to unicode string.")
-                                    .to_lowercase();
-                                match ext.as_ref() {
-                                    "mp3" => load!(Mp3Format),
-                                    "wav" => load!(WavFormat),
-                                    "ogg" => load!(OggFormat),
-                                    "flac" => load!(FlacFormat),
-                                    ext => {
-                                        error!(
-                                            "Unsupported extension: \"{}\", \
-                                             falling back to `wav`.",
-                                            ext
-                                        );
-                                        load!(WavFormat)
+
+                        if ui_sfx_map.get(ui_sfx_id).is_none() {
+                            let source_handle = match path.extension() {
+                                Some(ext) => {
+                                    let ext = ext
+                                        .to_str()
+                                        .expect("Failed to convert extension to unicode string.")
+                                        .to_lowercase();
+                                    match ext.as_ref() {
+                                        "mp3" => load!(Mp3Format),
+                                        "wav" => load!(WavFormat),
+                                        "ogg" => load!(OggFormat),
+                                        "flac" => load!(FlacFormat),
+                                        ext => {
+                                            error!(
+                                                "Unsupported extension: \"{}\", \
+                                                 falling back to `wav`.",
+                                                ext
+                                            );
+                                            load!(WavFormat)
+                                        }
                                     }
                                 }
-                            }
-                            None => {
-                                error!(
-                                    "No extension for audio file \"{}\", \
-                                     falling back to `wav`.",
-                                    path.display()
-                                );
-                                load!(WavFormat)
-                            }
-                        };
-                        ui_sfx_map.insert(*ui_sfx_id, source_handle);
+                                None => {
+                                    error!(
+                                        "No extension for audio file \"{}\", \
+                                         falling back to `wav`.",
+                                        path.display()
+                                    );
+                                    load!(WavFormat)
+                                }
+                            };
+                            ui_sfx_map.insert(*ui_sfx_id, source_handle);
+                        }
                     });
 
                     let all_loaded = ui_sfx_map

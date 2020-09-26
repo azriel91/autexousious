@@ -53,13 +53,7 @@ impl<'s> System<'s> for SequenceEndTransitionSystem {
                 "Expected `sequence_update_event_rid` to exist for \
                  `SequenceEndTransitionSystem`.",
             ))
-            .filter(|ev| {
-                if let SequenceUpdateEvent::SequenceEnd { .. } = ev {
-                    true
-                } else {
-                    false
-                }
-            })
+            .filter(|ev| matches!(ev, SequenceUpdateEvent::SequenceEnd { .. }))
             .for_each(|ev| {
                 let entity = ev.entity();
 

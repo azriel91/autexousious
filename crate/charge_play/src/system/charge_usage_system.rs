@@ -60,7 +60,7 @@ impl<'s> System<'s> for ChargeUsageSystem {
             let charge_use_mode = charge_use_modes
                 .get(entity)
                 .copied()
-                .unwrap_or_else(|| ChargeUseMode::Exact);
+                .unwrap_or(ChargeUseMode::Exact);
 
             if charge_tracker_clock.is_beginning() {
                 // No charge stored.

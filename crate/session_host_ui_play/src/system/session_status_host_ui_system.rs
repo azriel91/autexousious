@@ -39,13 +39,7 @@ impl SessionStatusHostUiSystem {
     fn session_host_request_received<'s>(
         mut session_host_events: impl Iterator<Item = &'s SessionHostEvent>,
     ) -> bool {
-        session_host_events.any(|ev| {
-            if let SessionHostEvent::SessionHostRequest(_) = ev {
-                true
-            } else {
-                false
-            }
-        })
+        session_host_events.any(|ev| matches!(ev, SessionHostEvent::SessionHostRequest(_)))
     }
 }
 

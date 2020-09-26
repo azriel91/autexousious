@@ -447,10 +447,7 @@ impl<'a> Iterator for StatementSplitter<'a> {
                 b'#' if self.read == 1
                     || (!self.flags.contains(Flags::DQUOTE)
                         && self.paren_level == 0
-                        && match self.data.as_bytes()[self.read - 2] {
-                            b' ' | b'\t' => true,
-                            _ => false,
-                        }) =>
+                        && matches!(self.data.as_bytes()[self.read - 2], b' ' | b'\t')) =>
                 {
                     return self.match_number_sign(error)
                 }

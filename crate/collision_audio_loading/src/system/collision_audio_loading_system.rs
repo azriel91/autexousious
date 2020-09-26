@@ -8,9 +8,7 @@ use amethyst::{
 };
 use asset_loading::YamlFormat;
 use collision_audio_model::{
-    config::{CollisionSfxId, CollisionSfxPaths},
-    loaded::CollisionSfxMap,
-    CollisionAudioLoadingStatus,
+    config::CollisionSfxPaths, loaded::CollisionSfxMap, CollisionAudioLoadingStatus,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -109,15 +107,8 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                     // Begin loading it, add the handles for it to the map.
                     // Wait for all of the handles to be loaded.
 
-                    let sfx_to_load = collision_sfx_paths
+                    collision_sfx_paths
                         .iter()
-                        .filter(|(collision_sfx_id, _)| {
-                            collision_sfx_map.get(collision_sfx_id).is_none()
-                        })
-                        .collect::<Vec<(&CollisionSfxId, &PathBuf)>>();
-
-                    sfx_to_load
-                        .into_iter()
                         .for_each(|(collision_sfx_id, path)| {
                             macro_rules! load {
                                 ($audio_format:expr) => {
@@ -129,37 +120,41 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                                     )
                                 };
                             }
-                            let source_handle = match path.extension() {
-                                Some(ext) => {
-                                    let ext = ext
-                                        .to_str()
-                                        .expect("Failed to convert extension to unicode string.")
-                                        .to_lowercase();
-                                    match ext.as_ref() {
-                                        "mp3" => load!(Mp3Format),
-                                        "wav" => load!(WavFormat),
-                                        "ogg" => load!(OggFormat),
-                                        "flac" => load!(FlacFormat),
-                                        ext => {
-                                            error!(
-                                                "Unsupported extension: \"{}\", \
-                                                 falling back to `wav`.",
-                                                ext
-                                            );
-                                            load!(WavFormat)
+                            if collision_sfx_map.get(collision_sfx_id).is_none() {
+                                let source_handle = match path.extension() {
+                                    Some(ext) => {
+                                        let ext = ext
+                                            .to_str()
+                                            .expect(
+                                                "Failed to convert extension to unicode string.",
+                                            )
+                                            .to_lowercase();
+                                        match ext.as_ref() {
+                                            "mp3" => load!(Mp3Format),
+                                            "wav" => load!(WavFormat),
+                                            "ogg" => load!(OggFormat),
+                                            "flac" => load!(FlacFormat),
+                                            ext => {
+                                                error!(
+                                                    "Unsupported extension: \"{}\", \
+                                                     falling back to `wav`.",
+                                                    ext
+                                                );
+                                                load!(WavFormat)
+                                            }
                                         }
                                     }
-                                }
-                                None => {
-                                    error!(
-                                        "No extension for audio file \"{}\", \
-                                         falling back to `wav`.",
-                                        path.display()
-                                    );
-                                    load!(WavFormat)
-                                }
-                            };
-                            collision_sfx_map.insert(*collision_sfx_id, source_handle);
+                                    None => {
+                                        error!(
+                                            "No extension for audio file \"{}\", \
+                                             falling back to `wav`.",
+                                            path.display()
+                                        );
+                                        load!(WavFormat)
+                                    }
+                                };
+                                collision_sfx_map.insert(*collision_sfx_id, source_handle);
+                            }
                         });
 
                     let all_loaded = collision_sfx_map
