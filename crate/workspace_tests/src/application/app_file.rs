@@ -119,7 +119,7 @@ mod test {
         use amethyst::utils::application_root_dir;
         use ron::{
             self,
-            de::{ParseError, Position},
+            de::{ErrorCode, Position},
         };
         use serde::Deserialize;
         use serde_yaml;
@@ -248,10 +248,10 @@ mod test {
                 .downcast_ref::<Box<ron::de::Error>>()
             {
                 assert_eq!(
-                    &Box::new(ron::de::Error::Parser(
-                        ParseError::ExpectedStruct,
-                        Position { col: 1, line: 1 }
-                    )),
+                    &Box::new(ron::de::Error {
+                        code: ErrorCode::ExpectedStruct,
+                        position: Position { col: 1, line: 1 }
+                    }),
                     boxed_error
                 )
             } else {
