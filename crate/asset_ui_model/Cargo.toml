@@ -17,7 +17,7 @@ chase_model = { path = "../chase_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.1"
-indexmap = { version = "1.5.0", features = ["serde-1"] }
+indexmap = { version = "1.6.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.11"
 map_model = { path = "../map_model" }
@@ -26,7 +26,7 @@ object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 spawn_play = { path = "../spawn_play" }
 sprite_model = { path = "../sprite_model" }

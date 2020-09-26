@@ -56,7 +56,7 @@ collision_audio_play = { path = "../collision_audio_play" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
-crossbeam-channel = "0.4.2"
+crossbeam-channel = "0.4.4"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
@@ -80,7 +80,7 @@ game_play_model = { path = "../game_play_model" }
 game_play_stdio = { path = "../game_play_stdio" }
 game_stats_model = { path = "../game_stats_model" }
 hamcrest = "0.1.5"
-indexmap = { version = "1.5.0", features = ["serde-1"] }
+indexmap = { version = "1.6.0", features = ["serde-1"] }
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 input_reaction_play = { path = "../input_reaction_play" }
@@ -114,12 +114,12 @@ object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 parent_play = { path = "../parent_play" }
 pretty_assertions = "0.6.1"
-rayon = "1.3.1"
-ron = "0.5.1"
+rayon = "1.4.0"
+ron = "0.6.2"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 serde_yaml = "0.8.13"
 session_host_model = { path = "../session_host_model" }
 session_host_play = { path = "../session_host_play" }
@@ -144,10 +144,10 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.15"
-structopt-derive = "0.4.8"
-strum = "0.18.0"
-strum_macros = "0.18.0"
+structopt = "0.3.18"
+structopt-derive = "0.4.11"
+strum = "0.19.2"
+strum_macros = "0.19.2"
 team_model = { path = "../team_model" }
 tempfile = "3.1.0"
 test_object_model = { path = "../test_object_model" }

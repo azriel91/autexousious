@@ -134,9 +134,7 @@ impl<'s> System<'s> for StdinSystem {
                     }
                 }
 
-                let statements = StatementSplitter::new(&command_chain).collect::<Vec<_>>();
-                statements
-                    .into_iter()
+                StatementSplitter::new(&command_chain)
                     .filter_map(|statement| match statement {
                         Ok(StatementVariant::Default(command))
                         | Ok(StatementVariant::And(command))

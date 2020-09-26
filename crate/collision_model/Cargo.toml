@@ -15,7 +15,7 @@ asset_model = { path = "../asset_model" }
 derivative = "2.1.1"
 derive-new = "0.5.8"
 derive_deref = "1.1.1"
-derive_more = "0.99.9"
+derive_more = "0.99.10"
 kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
@@ -23,8 +23,8 @@ object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"

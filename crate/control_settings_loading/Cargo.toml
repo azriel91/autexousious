@@ -13,11 +13,11 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 camera_model = { path = "../camera_model" }
 control_settings_model = { path = "../control_settings_model" }
 game_input_model = { path = "../game_input_model" }
-indexmap = { version = "1.5.0", features = ["serde-1"] }
+indexmap = { version = "1.6.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.11"
-smallvec = "1.4.1"
+smallvec = "1.4.2"
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }
 ui_model = { path = "../ui_model" }
-strum = "0.18.0"
+strum = "0.19.2"

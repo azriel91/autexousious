@@ -16,13 +16,13 @@ lazy_static! {
 /// Extension methods to access files / directories on the application server.
 pub trait PathAccessExt {
     /// Returns whether this path exists on the server.
-    fn exists_on_server(self: &Self) -> bool;
+    fn exists_on_server(&self) -> bool;
 }
 
 use web_sys::XmlHttpRequest;
 
 impl PathAccessExt for Path {
-    fn exists_on_server(self: &Self) -> bool {
+    fn exists_on_server(&self) -> bool {
         match PATH_EXISTS_CACHE.lock() {
             Ok(mut path_exists_cache) => *path_exists_cache
                 .entry(self.to_path_buf())

@@ -13,4 +13,4 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
 kinematic_model = { path = "../kinematic_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }

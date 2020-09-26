@@ -52,16 +52,16 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 serde_yaml = "0.8.13"
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-smallvec = "1.4.1"
+smallvec = "1.4.2"
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
-strum = "0.18.0"
+strum = "0.19.2"
 ui_audio_model = { path = "../ui_audio_model" }
 ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }

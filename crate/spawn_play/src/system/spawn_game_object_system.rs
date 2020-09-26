@@ -67,13 +67,7 @@ impl<'s> System<'s> for SpawnGameObjectSystem {
                     .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
             .filter(|ev| {
-                if let SequenceUpdateEvent::SequenceBegin { .. }
-                | SequenceUpdateEvent::FrameBegin { .. } = ev
-                {
-                    true
-                } else {
-                    false
-                }
+                matches!(ev, SequenceUpdateEvent::SequenceBegin { .. } | SequenceUpdateEvent::FrameBegin { .. })
             })
             .for_each(|ev| {
                 let entity_parent = ev.entity();

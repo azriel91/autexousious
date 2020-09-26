@@ -20,12 +20,12 @@ derive-new = "0.5.8"
 input_reaction_model = { path = "../input_reaction_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"
 ui_button_model = { path = "../ui_button_model" }
 ui_form_model = { path = "../ui_form_model" }
 ui_menu_item_model = { path = "../ui_menu_item_model" }

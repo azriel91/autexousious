@@ -17,8 +17,8 @@ derive-new = "0.5.8"
 derive_deref = "1.1.1"
 kinematic_model = { path = "../kinematic_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
+serde = { version = "1.0.116", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"
 ui_model_spi = { path = "../ui_model_spi" }

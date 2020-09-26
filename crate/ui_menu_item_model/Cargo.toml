@@ -18,9 +18,9 @@ derive_deref = "1.1.1"
 kinematic_model = { path = "../kinematic_model" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.114", features = ["derive"] }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+serde = { version = "1.0.116", features = ["derive"] }
+strum = "0.19.2"
+strum_macros = "0.19.2"
 ui_label_model = { path = "../ui_label_model" }
 ui_model_spi = { path = "../ui_model_spi" }
 ui_model_spi_play = { path = "../ui_model_spi_play" }

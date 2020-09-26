@@ -12,7 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 asset_selection_model = { path = "../asset_selection_model" }
 control_settings_model = { path = "../control_settings_model" }
-derive_more = "0.99.9"
+derive_more = "0.99.10"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
@@ -21,5 +21,5 @@ session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }
 session_lobby_model = { path = "../session_lobby_model" }
 stdio_command_model = { path = "../stdio_command_model" }
-strum = "0.18.0"
-strum_macros = "0.18.0"
+strum = "0.19.2"
+strum_macros = "0.19.2"
