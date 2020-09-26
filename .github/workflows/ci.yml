@@ -210,7 +210,7 @@ jobs:
       - uses: actions-rs/install@v0.1
         with:
           crate: wasm-bindgen-cli
-          version: '0.2.65'
+          version: '0.2.68'
 
       - name: Build WASM
         run: scripts/build_wasm.sh
