@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 pub enum AswPortraitName {
     /// Portrait when the `AssetSelectionStatus` is `Inactive`.
     Join,
-    /// Portrait when the `AssetSelectionStatus` is `InProgress` and AssetSelection is `Random`.
+    /// Portrait when the `AssetSelectionStatus` is `InProgress` and
+    /// AssetSelection is `Random`.
     Random,
     /// Portrait when the `AssetSelectionStatus` is `InProgress`.
     Select,

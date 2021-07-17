@@ -1,11 +1,13 @@
 //! Configuration types for object sequences.
 //!
-//! A sequence is an independent grouping of frames, which contains not only animation information,
-//! but also the collision zones, interaction, and effects.
+//! A sequence is an independent grouping of frames, which contains not only
+//! animation information, but also the collision zones, interaction, and
+//! effects.
 //!
-//! Sequences are shared by different object types, and are genericized by the sequence name. This is
-//! because different object types have different valid sequence names, and we want to be able to
-//! define this at compile time rather than needing to process this at run time.
+//! Sequences are shared by different object types, and are genericized by the
+//! sequence name. This is because different object types have different valid
+//! sequence names, and we want to be able to define this at compile time rather
+//! than needing to process this at run time.
 
 use derive_new::new;
 use kinematic_model::config::ObjectAcceleration;
@@ -16,8 +18,8 @@ use crate::config::{GameObjectFrame, ObjectFrame};
 
 /// Represents an independent action sequence of an object.
 ///
-/// This carries the information necessary for an `Animation`, as well as the effects and
-/// interactions that happen during each frame of that animation.
+/// This carries the information necessary for an `Animation`, as well as the
+/// effects and interactions that happen during each frame of that animation.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default, deny_unknown_fields)]
 pub struct ObjectSequence<SeqName, Frame = ObjectFrame>

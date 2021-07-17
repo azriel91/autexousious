@@ -2,7 +2,8 @@ use derivative::Derivative;
 use derive_new::new;
 use state_registry::StateId;
 
-/// Resource to indicate a state that the `StdinSystem` should wait before sending events.
+/// Resource to indicate a state that the `StdinSystem` should wait before
+/// sending events.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, new)]
 #[derivative(Default)]
 pub struct StdinCommandBarrier {

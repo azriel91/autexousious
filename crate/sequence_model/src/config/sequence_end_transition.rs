@@ -27,8 +27,8 @@ where
     Delete,
     /// Transition to the specified sequence.
     //
-    // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported yet.
-    // TODO: See: <https://github.com/serde-rs/serde/issues/1402>
+    // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported
+    // yet. TODO: See: <https://github.com/serde-rs/serde/issues/1402>
     SequenceName(SequenceNameString<SeqName>),
 }
 

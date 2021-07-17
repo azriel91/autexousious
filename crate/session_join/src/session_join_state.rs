@@ -14,19 +14,22 @@ use state_registry::StateId;
 /// This state is not intended to be constructed directly, but through the
 /// [`SessionJoinStateBuilder`][state_builder].
 ///
-/// [state_builder]: network_mode_selection_state/struct.SessionJoinStateBuilder.html
+/// [state_builder]:
+/// network_mode_selection_state/struct.SessionJoinStateBuilder.html
 pub type SessionJoinState = AppState<'static, 'static, SessionJoinStateDelegate, SessionJoinEntity>;
 
 /// Builder for a `SessionJoinState`.
 ///
-/// `SystemBundle`s to run in the `SessionJoinState`'s dispatcher are registered on this builder.
+/// `SystemBundle`s to run in the `SessionJoinState`'s dispatcher are registered
+/// on this builder.
 pub type SessionJoinStateBuilder =
     AppStateBuilder<'static, 'static, SessionJoinStateDelegate, SessionJoinEntity>;
 
 /// Delegate `State` for session joining.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `SessionJoinState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `SessionJoinState` is an alias with this as a delegate
+/// state.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct SessionJoinStateDelegate;

@@ -9,8 +9,8 @@ use strum_macros::{Display, EnumString, IntoStaticStr};
 
 /// Number of objects a `Hit` may collide with.
 ///
-/// Serialization and deserialization for this type is custom, so users may specify one of the
-/// following:
+/// Serialization and deserialization for this type is custom, so users may
+/// specify one of the following:
 ///
 /// ```yaml
 /// hit_limit: 2            # HitLimit::Limit(2)
@@ -75,6 +75,14 @@ macro_rules! impl_visit_numeric {
 impl<'de> Visitor<'de> for HitLimitVisitor {
     type Value = HitLimit;
 
+    impl_visit_numeric!(visit_i64, i64);
+
+    impl_visit_numeric!(visit_i128, i128);
+
+    impl_visit_numeric!(visit_u64, u64);
+
+    impl_visit_numeric!(visit_u128, u128);
+
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let variant_unlimited: &str = HitLimit::Unlimited.into();
         formatter.write_str("a u32 or `\"")?;
@@ -99,11 +107,6 @@ impl<'de> Visitor<'de> for HitLimitVisitor {
             Err(E::custom(format!("u32 out of range: {}", value)))
         }
     }
-
-    impl_visit_numeric!(visit_i64, i64);
-    impl_visit_numeric!(visit_i128, i128);
-    impl_visit_numeric!(visit_u64, u64);
-    impl_visit_numeric!(visit_u128, u128);
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
     where

@@ -65,8 +65,8 @@ mod tests {
     }
 
     #[test]
-    fn sends_game_play_end_event_when_one_alive_team_multiple_entities_remaining(
-    ) -> Result<(), Error> {
+    fn sends_game_play_end_event_when_one_alive_team_multiple_entities_remaining()
+    -> Result<(), Error> {
         let winning_team = Team::Number(TeamCounter::new(0));
         run_test(
             SetupParams {

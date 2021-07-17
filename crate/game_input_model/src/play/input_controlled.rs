@@ -13,8 +13,9 @@ use crate::config::ControllerId;
 ///
 /// Stores the controller ID.
 ///
-/// We use a `HashMapStorage` because there wouldn't be that many entities that are controlled by
-/// `Controller`s. We will use a different `Component` for AI controllers.
+/// We use a `HashMapStorage` because there wouldn't be that many entities that
+/// are controlled by `Controller`s. We will use a different `Component` for AI
+/// controllers.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(HashMapStorage)]
 pub struct InputControlled {

@@ -123,8 +123,9 @@ impl UiAsclMenu {
 
         item_ids_all.push(ui_menu_item_id);
 
-        // Since the `UiLabel` entities use a `SharedInputControlled`, we still need entities with
-        // `InputControlled` to that the individual `ControllerInput`s are stored against.
+        // Since the `UiLabel` entities use a `SharedInputControlled`, we still need
+        // entities with `InputControlled` to that the individual
+        // `ControllerInput`s are stored against.
         let input_controlled_items = {
             let controller_count = player_controllers.len();
             (0..controller_count)

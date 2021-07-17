@@ -1,13 +1,15 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[logic_clock]` attribute to generate a newtype around `LogicClock`.
+//! Provides the `#[logic_clock]` attribute to generate a newtype around
+//! `LogicClock`.
 //!
 //! See the `logic_clock` crate for example usage.
 
 // TODO: Test using `compiletest_rs`.
 //
-// At the time of writing, we cannot test using `compiletest_rs` as it does not appear to be able to
-// link to external crates, so it never resolves `derive_more` as a dependency.
+// At the time of writing, we cannot test using `compiletest_rs` as it does not
+// appear to be able to link to external crates, so it never resolves
+// `derive_more` as a dependency.
 
 extern crate proc_macro;
 

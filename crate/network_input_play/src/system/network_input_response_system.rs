@@ -11,7 +11,8 @@ use log::debug;
 use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::SessionStatus;
 
-/// Writes received `GameInputEvent`s from the net channel to the regular event channel.
+/// Writes received `GameInputEvent`s from the net channel to the regular event
+/// channel.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(NetworkInputResponseSystemDesc))]
 pub struct NetworkInputResponseSystem {

@@ -22,8 +22,9 @@ pub struct AppDir(
 impl AppDir {
     // Note to self:
     //
-    // I know in code we use the singular form of the noun, whereas the directory names are plural.
-    // This is in line with Amethyst's convention of resource directories.
+    // I know in code we use the singular form of the noun, whereas the directory
+    // names are plural. This is in line with Amethyst's convention of resource
+    // directories.
 
     /// `assets` directory name.
     pub const ASSETS: &'static str = "assets";
@@ -34,8 +35,9 @@ impl AppDir {
     ///
     /// # Errors
     ///
-    /// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
-    /// when the following scenarios occur:
+    /// Returns a [`Error`][res_err] with error kind
+    /// [`ErrorKind::Discovery`][dir_disc] when the following scenarios
+    /// occur:
     ///
     /// * Unable to retrieve current executable path.
     /// * Unable to retrieve current executable parent.
@@ -50,8 +52,9 @@ impl AppDir {
     ///
     /// # Errors
     ///
-    /// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
-    /// when the following scenarios occur:
+    /// Returns a [`Error`][res_err] with error kind
+    /// [`ErrorKind::Discovery`][dir_disc] when the following scenarios
+    /// occur:
     ///
     /// * Unable to retrieve current executable path.
     /// * Unable to retrieve current executable parent.

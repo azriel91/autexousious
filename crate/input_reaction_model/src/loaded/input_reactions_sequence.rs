@@ -24,8 +24,8 @@ where
     }
 }
 
-// Manually implement `Default` because the component type may not, and the `Default` derive
-// imposes a `Default` bound on type parameters.
+// Manually implement `Default` because the component type may not, and the
+// `Default` derive imposes a `Default` bound on type parameters.
 impl<IR> Default for InputReactionsSequence<IR>
 where
     IR: Send + Sync + 'static,

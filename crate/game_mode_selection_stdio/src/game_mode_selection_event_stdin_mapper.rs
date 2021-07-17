@@ -8,9 +8,9 @@ use stdio_spi::StdinMapper;
 pub struct GameModeSelectionEventStdinMapper;
 
 impl StdinMapper for GameModeSelectionEventStdinMapper {
-    type SystemData = ();
-    type Event = GameModeSelectionEvent;
     type Args = GameModeSelectionEventArgs;
+    type Event = GameModeSelectionEvent;
+    type SystemData = ();
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event, Error> {
         match args {

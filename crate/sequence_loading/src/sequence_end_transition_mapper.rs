@@ -20,7 +20,8 @@ impl<SeqName> SequenceEndTransitionMapper<SeqName>
 where
     SeqName: SequenceName,
 {
-    /// Maps a `config::SequenceEndTransition` to `loaded::SequenceEndTransition`.
+    /// Maps a `config::SequenceEndTransition` to
+    /// `loaded::SequenceEndTransition`.
     pub fn map<SequenceRef, Frm>(
         sequence_id_mappings: &SequenceIdMappings<SeqName>,
         asset_slug: &AssetSlug,
@@ -51,14 +52,16 @@ where
         }
     }
 
-    /// Maps a `config::SequenceEndTransition<T>` to `loaded::SequenceEndTransition`.
+    /// Maps a `config::SequenceEndTransition<T>` to
+    /// `loaded::SequenceEndTransition`.
     ///
-    /// This method differs from [`SequenceEndTransitionMapper::map`] as it accepts a `Sequence`
-    /// with a different `SequenceName`.
+    /// This method differs from [`SequenceEndTransitionMapper::map`] as it
+    /// accepts a `Sequence` with a different `SequenceName`.
     ///
     /// # Panics
     ///
-    /// Panics if the sequence end transition is a `SequenceName` instead of a `String`.
+    /// Panics if the sequence end transition is a `SequenceName` instead of a
+    /// `String`.
     pub fn map_disparate<SequenceRef, SeqNameLocal, Frm>(
         sequence_id_mappings: &SequenceIdMappings<SeqName>,
         asset_slug: &AssetSlug,

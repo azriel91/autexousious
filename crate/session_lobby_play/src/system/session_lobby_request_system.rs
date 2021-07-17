@@ -46,7 +46,8 @@ impl<'s> System<'s> for SessionLobbyRequestSystem {
     ) {
         let mut session_lobby_events = session_lobby_ec.read(&mut self.session_lobby_event_rid);
 
-        // Guard against requesting session to start if the application is not in a session.
+        // Guard against requesting session to start if the application is not in a
+        // session.
         if *session_status == SessionStatus::JoinEstablished
             || *session_status == SessionStatus::HostEstablished
         {

@@ -15,7 +15,8 @@ mod test {
 
     use application_robot::{Intercept, KeyboardEscapeIntercept};
 
-    // Development Note: See content of this file at revision `f3fc60f` if you attempt to use enigo.
+    // Development Note: See content of this file at revision `f3fc60f` if you
+    // attempt to use enigo.
 
     #[test]
     fn handle_event_begin_returns_none_on_non_quit_key() {

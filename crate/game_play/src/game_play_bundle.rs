@@ -121,11 +121,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         //
         // * `SequenceComponentUpdateSystem::<_, _>`
         //
-        // Because there are so many, and we haven't implemented a good way to specify the
-        // dependencies without heaps of duplicated code, we use a barrier.
+        // Because there are so many, and we haven't implemented a good way to specify
+        // the dependencies without heaps of duplicated code, we use a barrier.
         //
-        // TODO: We can potentially use the `inventory` or `linkme` crates to generate the systems
-        // and dependencies.
+        // TODO: We can potentially use the `inventory` or `linkme` crates to generate
+        // the systems and dependencies.
         builder.add_barrier();
 
         // Updates frame limit and ticks the sequence logic clocks.
@@ -219,8 +219,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         // pos += vel
-        // This must be between the `FrameFreezeClockAugmentSystem` and `SequenceUpdateSystem`s
-        // since it needs to wait for the `FrameFreezeClock` to tick.
+        // This must be between the `FrameFreezeClockAugmentSystem` and
+        // `SequenceUpdateSystem`s since it needs to wait for the
+        // `FrameFreezeClock` to tick.
         builder.add(
             ObjectKinematicsUpdateSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ObjectKinematicsUpdateSystem>(),
@@ -364,12 +365,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         // Note: The `CharacterSequenceUpdateSystem` depends on
-        // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
-        // before the `GamePlayState` dispatcher.
+        // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to
+        // be run before the `GamePlayState` dispatcher.
         //
         // It also depends on `&SequenceEndTransitionSystem` as the
-        // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
-        // update.
+        // `CharacterSequenceUpdater` transitions should overwrite the
+        // `SequenceEndTransition` update.
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             any::type_name::<CharacterSequenceUpdateSystem>(),
@@ -414,8 +415,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Hit / Hitting effects.
         //
-        // There are only two currently, but if there is a timer system, perhaps that should go
-        // last.
+        // There are only two currently, but if there is a timer system, perhaps that
+        // should go last.
         // The `HitEffectSystem` depends on the `HittingEffectSystem` to ensure the
         // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
         builder.add(
@@ -429,9 +430,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[any::type_name::<HittingEffectSystem>()],
         ); // kcov-ignore
 
-        // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here
-        // so that the renderer will show the HP including the damage dealt this frame, instead of
-        // one frame later.
+        // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we
+        // put it here so that the renderer will show the HP including the
+        // damage dealt this frame, instead of one frame later.
         builder.add(
             HpBarUpdateSystem::new(),
             any::type_name::<HpBarUpdateSystem>(),

@@ -5,7 +5,8 @@ use net_model::play::{NetSessionDevice, NetSessionDevices};
 
 use crate::model::SessionCodeId;
 
-/// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr` to `SessionCodeId`.
+/// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr` to
+/// `SessionCodeId`.
 #[derive(Clone, Debug, Default, new)]
 pub struct SessionIdToDeviceMappings {
     /// Mappings from `SessionCodeId` to `NetSessionDevices`.
@@ -19,7 +20,8 @@ pub struct SessionIdToDeviceMappings {
 impl SessionIdToDeviceMappings {
     /// Returns a `SessionIdToDeviceMappings` with pre-allocated capacity.
     ///
-    /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
+    /// The mappings are guaranteed to hold `capacity` elements without
+    /// re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         SessionIdToDeviceMappings {
             session_code_id_to_devices: HashMap::with_capacity(capacity),
@@ -27,7 +29,8 @@ impl SessionIdToDeviceMappings {
         }
     }
 
-    /// Returns the number of elements the mappings can hold without reallocating.
+    /// Returns the number of elements the mappings can hold without
+    /// reallocating.
     pub fn capacity(&self) -> usize {
         self.session_code_id_to_devices.capacity()
     }
@@ -74,11 +77,11 @@ impl SessionIdToDeviceMappings {
 
     /// Inserts a new mapping from `SessionCodeId` to `NetSessionDevices`.
     ///
-    /// If a mapping previously existed for the session code, the devices are returned, but the key
-    /// is not updated.
+    /// If a mapping previously existed for the session code, the devices are
+    /// returned, but the key is not updated.
     ///
-    /// If you are attempting to add another device to an existing session, please see the
-    /// [`append`] method.
+    /// If you are attempting to add another device to an existing session,
+    /// please see the [`append`] method.
     ///
     /// # Parameters
     ///
@@ -119,7 +122,8 @@ impl SessionIdToDeviceMappings {
         existing_devices
     }
 
-    /// Returns an iterator of `SessionCodeId`s to `NetSessionDevices` in arbitrary order.
+    /// Returns an iterator of `SessionCodeId`s to `NetSessionDevices` in
+    /// arbitrary order.
     pub fn iter<'a>(&'a self) -> impl Iterator<Item = (&SessionCodeId, &NetSessionDevices)> + 'a {
         self.session_code_id_to_devices.iter()
     }
@@ -136,8 +140,9 @@ impl SessionIdToDeviceMappings {
 
     /// Returns the number of sessions.
     ///
-    /// Because each session has multiple devices, this will differ from the number of socket
-    /// address mappings to the same session. For that, please use the [`len_devices`] method.
+    /// Because each session has multiple devices, this will differ from the
+    /// number of socket address mappings to the same session. For that,
+    /// please use the [`len_devices`] method.
     pub fn len(&self) -> usize {
         self.session_code_id_to_devices.len()
     }
@@ -147,7 +152,8 @@ impl SessionIdToDeviceMappings {
         self.socket_addr_to_session_code_id.len()
     }
 
-    /// Removes the `NetSessionDevices` for the given `SessionCodeId`, returning it if present.
+    /// Removes the `NetSessionDevices` for the given `SessionCodeId`, returning
+    /// it if present.
     pub fn remove(&mut self, session_code_id: SessionCodeId) -> Option<NetSessionDevices> {
         let mut net_session_devices = self.session_code_id_to_devices.remove(&session_code_id);
 
@@ -163,7 +169,8 @@ impl SessionIdToDeviceMappings {
         net_session_devices
     }
 
-    /// Removes the device for the given `SocketAddr`, returning it with the `SessionCodeId` if it exists.
+    /// Removes the device for the given `SocketAddr`, returning it with the
+    /// `SessionCodeId` if it exists.
     pub fn remove_device(
         &mut self,
         socket_addr: &SocketAddr,
@@ -188,7 +195,8 @@ impl SessionIdToDeviceMappings {
         }
     }
 
-    /// Removes the `NetSessionDevice` for the given `SocketAddr`, returning it if present.
+    /// Removes the `NetSessionDevice` for the given `SocketAddr`, returning it
+    /// if present.
     fn remove_device_internal(
         session_code_id_to_devices: &mut HashMap<SessionCodeId, NetSessionDevices>,
         socket_addr_to_session_code_id: &mut HashMap<SocketAddr, SessionCodeId>,
@@ -222,7 +230,8 @@ impl SessionIdToDeviceMappings {
         }
     }
 
-    /// Reserves capacity for at least `additional` more mappings to be inserted.
+    /// Reserves capacity for at least `additional` more mappings to be
+    /// inserted.
     ///
     /// This may reserve more space to avosession_code frequent reallocations.
     ///

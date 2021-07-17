@@ -15,14 +15,15 @@ use log::warn;
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
 
-/// Time limit before outputting a warning message and transitioning to the next state.
+/// Time limit before outputting a warning message and transitioning to the next
+/// state.
 const LOADING_TIME_LIMIT: Duration = Duration::from_secs(10);
 
 /// `State` where resource loading takes place.
 ///
-/// If you use this `State`, you **MUST** ensure that both the `CharacterLoadingBundle` and
-/// `MapLoadingBundle`s are included in the application dispatcher that this `State` delegates to
-/// to load the assets.
+/// If you use this `State`, you **MUST** ensure that both the
+/// `CharacterLoadingBundle` and `MapLoadingBundle`s are included in the
+/// application dispatcher that this `State` delegates to to load the assets.
 ///
 /// # Type Parameters
 ///

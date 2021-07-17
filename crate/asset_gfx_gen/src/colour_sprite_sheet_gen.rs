@@ -21,7 +21,8 @@ const COLOUR_TRANSPARENT: [f32; 4] = [0f32; 4];
 pub struct ColourSpriteSheetGen;
 
 impl ColourSpriteSheetGen {
-    /// Returns a `SpriteRender` that represents a single pixel sprite with the given colour.
+    /// Returns a `SpriteRender` that represents a single pixel sprite with the
+    /// given colour.
     ///
     /// # Parameters
     ///
@@ -57,17 +58,22 @@ impl ColourSpriteSheetGen {
         }
     }
 
-    /// Returns a `SpriteRender` that holds a reference to a gradient spritesheet.
+    /// Returns a `SpriteRender` that holds a reference to a gradient
+    /// spritesheet.
     ///
-    /// This generates a sprite for each colour between `colour_begin` and `colour_end` (inclusive).
-    /// The number of sprites in the sprite sheet is equal to the `sprite_count` parameter.
+    /// This generates a sprite for each colour between `colour_begin` and
+    /// `colour_end` (inclusive). The number of sprites in the sprite sheet
+    /// is equal to the `sprite_count` parameter.
     ///
     /// # Parameters
     ///
     /// * `colour_sprite_gen_data`: System data needed to load colour sprites.
-    /// * `colour_begin`: The beginning colour's RGBA values, each between `0.` and `1.`.
-    /// * `colour_end`: The ending colour's RGBA values, each between `0.` and `1.`.
-    /// * `sprite_count`: Number of discreet colour sprites to generate, minimum 2.
+    /// * `colour_begin`: The beginning colour's RGBA values, each between `0.`
+    ///   and `1.`.
+    /// * `colour_end`: The ending colour's RGBA values, each between `0.` and
+    ///   `1.`.
+    /// * `sprite_count`: Number of discreet colour sprites to generate, minimum
+    ///   2.
     pub fn gradient(
         ColourSpriteSheetGenData {
             loader,
@@ -239,8 +245,8 @@ impl ColourSpriteSheetGen {
                 )
             });
 
-            // Not necessary to add padding pixels explicitly -- that is handled by the
-            // initialization with `capacity`.
+            // Not necessary to add padding pixels explicitly -- that is handled
+            // by the initialization with `capacity`.
         });
 
         let image_width = image_width as u32;

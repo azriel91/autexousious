@@ -19,14 +19,16 @@ pub type SessionHostState = AppState<'static, 'static, SessionHostStateDelegate,
 
 /// Builder for a `SessionHostState`.
 ///
-/// `SystemBundle`s to run in the `SessionHostState`'s dispatcher are registered on this builder.
+/// `SystemBundle`s to run in the `SessionHostState`'s dispatcher are registered
+/// on this builder.
 pub type SessionHostStateBuilder =
     AppStateBuilder<'static, 'static, SessionHostStateDelegate, SessionHostEntity>;
 
 /// Delegate `State` for session hosting.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `SessionHostState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `SessionHostState` is an alias with this as a delegate
+/// state.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct SessionHostStateDelegate;

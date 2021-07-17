@@ -3,8 +3,8 @@ use application_event::AppEvent;
 
 /// Trait to make `amethyst::State` implementations more readable.
 ///
-/// TODO: Ideally we could write `trait AutexState<'a, 'b> = State<GameData<'a, 'b>, AppEvent>`, but
-/// this is pending RFC 1733. See:
+/// TODO: Ideally we could write `trait AutexState<'a, 'b> = State<GameData<'a,
+/// 'b>, AppEvent>`, but this is pending RFC 1733. See:
 ///
 /// * <https://github.com/rust-lang/rfcs/blob/master/text/1733-trait-alias.md>
 /// * <https://github.com/rust-lang/rust/issues/41517>

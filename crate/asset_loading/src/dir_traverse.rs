@@ -15,8 +15,8 @@ pub struct DirTraverse;
 impl DirTraverse {
     /// Returns the child directories of the specified directory.
     ///
-    /// This will traverse symlinks, and if the target path is a directory, will include it in the
-    /// listing.
+    /// This will traverse symlinks, and if the target path is a directory, will
+    /// include it in the listing.
     ///
     /// # Parameters
     ///
@@ -72,7 +72,8 @@ impl DirTraverse {
 
     /// Returns `Some(PathBuf)` if the entry is a directory, `None` otherwise.
     ///
-    /// This also logs an error message if the entry's file type fails to be read.
+    /// This also logs an error message if the entry's file type fails to be
+    /// read.
     ///
     /// # Parameters
     ///
@@ -82,11 +83,7 @@ impl DirTraverse {
             Ok(file_type) => {
                 if file_type.is_dir() || file_type.is_symlink() {
                     let path = entry.path();
-                    if path.is_dir() {
-                        Some(path)
-                    } else {
-                        None
-                    }
+                    if path.is_dir() { Some(path) } else { None }
                 } else {
                     None
                 }

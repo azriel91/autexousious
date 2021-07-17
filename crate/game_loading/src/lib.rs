@@ -2,9 +2,10 @@
 
 //! Provides the `State` where loading of game entities takes place.
 //!
-//! This is split from the `game_play` crate as it allows the `application_test_support` crate to
-//! depend on this crate and spawn objects for use by other crates. The `game_play` crate can then
-//! depend on the `application_test_support` crate for testing its systems.
+//! This is split from the `game_play` crate as it allows the
+//! `application_test_support` crate to depend on this crate and spawn objects
+//! for use by other crates. The `game_play` crate can then depend on the
+//! `application_test_support` crate for testing its systems.
 
 pub use crate::{
     character_augment_status::CharacterAugmentStatus,

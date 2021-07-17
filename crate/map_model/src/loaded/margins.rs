@@ -24,8 +24,8 @@ pub struct Margins {
 
 impl From<MapBounds> for Margins {
     fn from(map_bounds: MapBounds) -> Self {
-        // We add the depth to the bottom and top so that it visually shifts the origin of the z
-        // axis upwards on screen.
+        // We add the depth to the bottom and top so that it visually shifts the origin
+        // of the z axis upwards on screen.
         let bottom = map_bounds.y + map_bounds.z + map_bounds.depth;
         Margins {
             left: map_bounds.x as f32,

@@ -15,7 +15,8 @@ use session_host_model::SessionHostEvent;
 use session_join_model::SessionJoinEvent;
 use session_lobby_model::SessionLobbyEvent;
 
-/// Receives `NetMessageEvent`s and sends each variant's data to the corresponding event channel.
+/// Receives `NetMessageEvent`s and sends each variant's data to the
+/// corresponding event channel.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(NetListenerSystemDesc))]
 pub struct NetListenerSystem {

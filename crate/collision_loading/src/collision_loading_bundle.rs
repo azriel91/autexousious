@@ -15,7 +15,8 @@ use derive_new::new;
 /// * `Processor::<Body>` is added with id `"body_processor"`.
 /// * `Processor::<BodySequence>` is added with id `"body_sequence_processor"`.
 /// * `Processor::<Interactions>` is added with id `"interactions_processor"`.
-/// * `Processor::<InteractionsSequence>` is added with id `"interactions_sequence_processor"`.
+/// * `Processor::<InteractionsSequence>` is added with id
+///   `"interactions_sequence_processor"`.
 #[derive(Debug, new)]
 pub struct CollisionLoadingBundle;
 

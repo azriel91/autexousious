@@ -13,7 +13,8 @@ use smallvec::SmallVec;
 pub struct ControlButtonToButtonMapper;
 
 impl ControlButtonToButtonMapper {
-    /// Returns a map of `PlayerInputConfigs` buttons to the logical control button.
+    /// Returns a map of `PlayerInputConfigs` buttons to the logical control
+    /// button.
     ///
     /// # Parameters
     ///

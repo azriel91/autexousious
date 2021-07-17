@@ -7,9 +7,9 @@ use stdio_spi::StdinMapper;
 pub struct SessionJoinEventStdinMapper;
 
 impl StdinMapper for SessionJoinEventStdinMapper {
-    type SystemData = ();
-    type Event = SessionJoinEvent;
     type Args = SessionJoinEvent;
+    type Event = SessionJoinEvent;
+    type SystemData = ();
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event, Error> {
         Ok(args)

@@ -11,7 +11,8 @@ use game_input_model::{
 };
 use parent_model::play::ParentEntity;
 
-/// Creates a varying number of `AssetPreviewWidget`s depending on number of `PlayerControllers`.
+/// Creates a varying number of `AssetPreviewWidget`s depending on number of
+/// `PlayerControllers`.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub enum ApwContainer {
     /// Each `AssetPreviewWidget` is controlled by its own `InputControlled`.
@@ -92,8 +93,9 @@ impl<'s> ItemComponent<'s> for ApwContainer {
                     .with(SharedInputControlled, shared_input_controlleds)
                     .build();
 
-                // Even when the `AssetSelectionHighlight` entities use a `SharedInputControlled`,
-                // we still need entities with `InputControlled` to receive `ControllerInput`s.
+                // Even when the `AssetSelectionHighlight` entities use a
+                // `SharedInputControlled`, we still need entities with
+                // `InputControlled` to receive `ControllerInput`s.
                 player_controllers
                     .iter()
                     .map(|player_controller| InputControlled::new(player_controller.controller_id))

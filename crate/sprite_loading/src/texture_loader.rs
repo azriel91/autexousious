@@ -13,7 +13,8 @@ use sprite_model::config::SpriteSheetDefinition;
 pub struct TextureLoader;
 
 impl TextureLoader {
-    /// Loads the sprite sheet images as textures and returns the texture handles.
+    /// Loads the sprite sheet images as textures and returns the texture
+    /// handles.
     ///
     /// # Parameters
     ///
@@ -21,7 +22,8 @@ impl TextureLoader {
     /// * `loader`: `Loader` to load assets.
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `object_directory`: Object configuration base directory.
-    /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to load.
+    /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to
+    ///   load.
     pub fn load_textures(
         progress_counter: &mut ProgressCounter,
         loader: &Loader,

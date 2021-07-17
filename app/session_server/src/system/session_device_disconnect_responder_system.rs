@@ -73,7 +73,8 @@ impl<'s> System<'s> for SessionDeviceDisconnectResponderSystem {
                     );
 
                     if let Some((_session_code, _net_session_devices)) = session_code_and_devices {
-                        // TODO: Send disconnect message to all clients except the one that disconnected.
+                        // TODO: Send disconnect message to all clients except
+                        // the one that disconnected.
                     }
                 }
             });

@@ -4,7 +4,8 @@ use sequence_model::loaded::SequenceId;
 
 /// Sequence to transition to when hit by another entity.
 ///
-/// This is a hack to allow the `CharacterHitEffectSystem` to transition character sequences.
+/// This is a hack to allow the `CharacterHitEffectSystem` to transition
+/// character sequences.
 // TODO: Commonize Transition systems <https://gitlab.com/azriel91/autexousious/issues/157>
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 #[storage(DenseVecStorage)]

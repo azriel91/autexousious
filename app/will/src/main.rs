@@ -339,7 +339,8 @@ mod wasm {
             self
         }
 
-        /// Sets the `PlayerInputConfigs` configuration for the `WillAppBuilder`.
+        /// Sets the `PlayerInputConfigs` configuration for the
+        /// `WillAppBuilder`.
         pub fn with_player_input_configs(mut self, player_input_configs: String) -> Self {
             self.player_input_configs = Some(player_input_configs);
             self
@@ -466,8 +467,9 @@ where
 
     let mut game_data = GameDataBuilder::default();
     if !will_config.headless {
-        // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
-        // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
+        // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for
+        // mouse events. `UiBundle` registers `Loader<FontAsset>`, needed by
+        // `ApplicationUiBundle`.
         game_data = game_data
             .with_bundle(AudioBundle::default())?
             .with_bundle(InputBundle::<ControlBindings>::new().with_bindings(bindings))?;

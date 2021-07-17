@@ -22,7 +22,8 @@ use crate::MapSelectionStatus;
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after map selection is complete.
+/// * `F`: Function to construct the state to return after map selection is
+///   complete.
 /// * `S`: State to return.
 ///
 /// [state_builder]: map_selection_state/struct.MapSelectionStateBuilder.html
@@ -31,24 +32,27 @@ pub type MapSelectionState<'a, 'b, F, S> =
 
 /// Builder for a `MapSelectionState`.
 ///
-/// `SystemBundle`s to run in the `MapSelectionState`'s dispatcher are registered on this
-/// builder.
+/// `SystemBundle`s to run in the `MapSelectionState`'s dispatcher are
+/// registered on this builder.
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after map selection is complete.
+/// * `F`: Function to construct the state to return after map selection is
+///   complete.
 /// * `S`: `State` to delegate to.
 pub type MapSelectionStateBuilder<'a, 'b, F, S> =
     AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntity>;
 
 /// Delegate `State` for map selection.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `MapSelectionState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `MapSelectionState` is an alias with this as a delegate
+/// state.
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after map selection is complete.
+/// * `F`: Function to construct the state to return after map selection is
+///   complete.
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]

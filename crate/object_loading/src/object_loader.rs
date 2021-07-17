@@ -74,8 +74,8 @@ impl ObjectLoader {
     {
         // Calculate the indices of each sequence ID.
         //
-        // TODO: Extract this out to a separate loading phase, as other objects may reference this
-        // TODO: object's sequences.
+        // TODO: Extract this out to a separate loading phase, as other objects may
+        // reference this TODO: object's sequences.
         let sequence_id_mappings = object_definition
             .sequences
             .keys()

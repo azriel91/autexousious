@@ -70,11 +70,12 @@ impl<'s> System<'s> for CpBarUpdateSystem {
                     / (*charge_tracker_clock).limit as f32
                     * CP_BAR_LENGTH;
 
-                // This is here because the `DrawFlat2D` pass renders sprites centered -- i.e. the
-                // sprite is shifted left by half its width, and down by half its height.
+                // This is here because the `DrawFlat2D` pass renders sprites centered -- i.e.
+                // the sprite is shifted left by half its width, and down by
+                // half its height.
                 //
-                // Since the `CpBar` is drawn centered, and we want it to be on the left in a fixed
-                // position, we calculate how far it should be.
+                // Since the `CpBar` is drawn centered, and we want it to be on the left in a
+                // fixed position, we calculate how far it should be.
                 let half_cp_missing = (CP_BAR_LENGTH - cp_percentage) / 2.;
                 let translation = transform.translation_mut();
                 translation.x += -half_cp_missing;

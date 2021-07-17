@@ -56,7 +56,8 @@ pub struct ButtonInputReactionsTransitionSystem<IRR> {
     input_event_rid: ReaderId<InputEvent<ControlBindings>>,
     /// Reader ID for the `UiEvent` channel.
     ui_event_rid: ReaderId<UiEvent>,
-    /// Pre-allocated bitset to track entities whose transitions have already been checked.
+    /// Pre-allocated bitset to track entities whose transitions have already
+    /// been checked.
     #[new(default)]
     processed_entities: BitSet,
     /// Marker.
@@ -217,15 +218,16 @@ where
             .map(|(entity, _)| entity)
             .collect::<Vec<Entity>>();
 
-        // We use `InputEvent::KeyPressed` for entities that should react regardless of whether or not the
-        // entity is a UI widget, and whether or not it is focused.
+        // We use `InputEvent::KeyPressed` for entities that should react regardless of
+        // whether or not the entity is a UI widget, and whether or not it is
+        // focused.
         //
-        // For mouse events, we need to make sure the click happened on the UI widget, so we use
-        // `UiEvent`s. Note that the entity must have the `Selectable<()>` and `Interactable`
-        // components.
+        // For mouse events, we need to make sure the click happened on the UI widget,
+        // so we use `UiEvent`s. Note that the entity must have the
+        // `Selectable<()>` and `Interactable` components.
         //
-        // If we did not care about the coordinates of the mouse click, then we could use
-        // `InputEvent::ButtonPressed` for both kinds of tests.
+        // If we did not care about the coordinates of the mouse click, then we could
+        // use `InputEvent::ButtonPressed` for both kinds of tests.
         input_ec.read(&mut self.input_event_rid).for_each(|ev| {
             if let InputEvent::KeyPressed { key_code, .. } = ev {
                 let button = Button::Key(*key_code);

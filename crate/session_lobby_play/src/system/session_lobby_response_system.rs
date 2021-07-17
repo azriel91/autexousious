@@ -11,7 +11,8 @@ use net_model::play::{NetData, NetEventChannel};
 use network_session_model::play::SessionStatus;
 use session_lobby_model::SessionLobbyEvent;
 
-/// Writes received `SessionLobbyEvent`s from the net channel to the regular event channel.
+/// Writes received `SessionLobbyEvent`s from the net channel to the regular
+/// event channel.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionLobbyResponseSystemDesc))]
 pub struct SessionLobbyResponseSystem {

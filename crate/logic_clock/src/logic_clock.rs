@@ -46,8 +46,9 @@ impl LogicClock {
     ///
     /// **Note:**
     ///
-    /// This will not increment the value past the limit, nor will it reset or wrap the value. You
-    /// should use the [LogicClock::reset] method to do this.
+    /// This will not increment the value past the limit, nor will it reset or
+    /// wrap the value. You should use the [LogicClock::reset] method to do
+    /// this.
     pub fn tick(&mut self) {
         if self.value < self.limit {
             self.value += 1;
@@ -58,8 +59,8 @@ impl LogicClock {
     ///
     /// **Note:**
     ///
-    /// This will not decrement the value past 0, nor will it wrap the value. You can use the
-    /// [LogicClock::complete] method to do this.
+    /// This will not decrement the value past 0, nor will it wrap the value.
+    /// You can use the [LogicClock::complete] method to do this.
     pub fn reverse_tick(&mut self) {
         if self.value > 0 {
             self.value -= 1;

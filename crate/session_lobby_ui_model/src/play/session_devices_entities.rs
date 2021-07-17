@@ -3,7 +3,8 @@ use derive_new::new;
 
 /// Entities of the `SessionDevicesWidget`.
 ///
-/// This is used to track the main widget entity, as well as each `SessionDeviceWidget` entity.
+/// This is used to track the main widget entity, as well as each
+/// `SessionDeviceWidget` entity.
 #[derive(Clone, Debug, Default, PartialEq, new)]
 pub struct SessionDevicesEntities {
     /// Main `SessionDevicesWidget` entity.

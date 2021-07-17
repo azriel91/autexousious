@@ -17,8 +17,8 @@ mod tests {
     use game_play::{GamePlayEndTransitionSystem, GamePlayEndTransitionSystemData};
 
     #[test]
-    fn does_not_send_game_play_end_stats_event_when_game_play_transition_clock_not_complete(
-    ) -> Result<(), Error> {
+    fn does_not_send_game_play_end_stats_event_when_game_play_transition_clock_not_complete()
+    -> Result<(), Error> {
         run_test(
             SetupParams {
                 game_play_end_transition_delay_clock:
@@ -69,8 +69,8 @@ mod tests {
     }
 
     #[test]
-    fn does_not_send_game_play_end_stats_event_when_attack_was_previously_pressed_and_is_held(
-    ) -> Result<(), Error> {
+    fn does_not_send_game_play_end_stats_event_when_attack_was_previously_pressed_and_is_held()
+    -> Result<(), Error> {
         run_test(
             SetupParams {
                 game_play_end_transition_delay_clock:
@@ -87,8 +87,8 @@ mod tests {
     }
 
     #[test]
-    fn sends_game_play_end_stats_event_when_attack_was_not_previously_pressed_and_is_now(
-    ) -> Result<(), Error> {
+    fn sends_game_play_end_stats_event_when_attack_was_not_previously_pressed_and_is_now()
+    -> Result<(), Error> {
         run_test(
             SetupParams {
                 game_play_end_transition_delay_clock:

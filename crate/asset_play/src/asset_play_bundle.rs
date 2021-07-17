@@ -255,8 +255,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[
                 // Needed for `Position<f32>` value to be used for `UiTransform`.
                 //
-                // `PositionInit` has special logic to offset the position by parent and offset, and
-                // we want to take advantage of that logic.
+                // `PositionInit` has special logic to offset the position by parent and offset,
+                // and we want to take advantage of that logic.
                 any::type_name::<ItemComponentComponentAugmentSystem<PositionInit>>(),
                 any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
             ],

@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 /// Default number of ticks to wait before transitioning to the next frame.
 pub const WAIT_DEFAULT: u32 = 2;
 
-/// Number of ticks to stay on the current frame before switching to the next frame.
+/// Number of ticks to stay on the current frame before switching to the next
+/// frame.
 #[numeric_newtype]
 #[derive(Component, Debug, Derivative, Deserialize, Serialize)]
 #[derivative(Default)]

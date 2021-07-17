@@ -7,7 +7,8 @@ use slotmap::{DefaultKey, SlotMap};
 
 use crate::play::HitRepeatTracker;
 
-/// Component that tracks the hit repeat delays for the objects that an entity hits.
+/// Component that tracks the hit repeat delays for the objects that an entity
+/// hits.
 #[derive(Component, Clone, Debug, Deref, DerefMut, new)]
 pub struct HitRepeatTrackers(pub SlotMap<DefaultKey, HitRepeatTracker>);
 

@@ -10,7 +10,8 @@ use sprite_model::{
 
 use crate::SpriteRenderSequenceLoader;
 
-/// Loads `SpriteRenderSequenceHandle`s from collections of sequences that contain `SpriteRender` values.
+/// Loads `SpriteRenderSequenceHandle`s from collections of sequences that
+/// contain `SpriteRender` values.
 #[derive(Debug)]
 pub struct SpriteRenderSequenceHandlesLoader<'s> {
     /// `SpriteRenderSequenceLoader`.
@@ -20,9 +21,10 @@ pub struct SpriteRenderSequenceHandlesLoader<'s> {
 impl<'s> SpriteRenderSequenceHandlesLoader<'s> {
     /// Loads `SpriteRenderSequenceHandles`.
     ///
-    /// This is similar to calling the `SequenceComponentDataLoader::load` trait method, with the
-    /// difference that the resources are stored by an instantiation of this type, so they do not
-    /// need to be passed in when this method is called.
+    /// This is similar to calling the `SequenceComponentDataLoader::load` trait
+    /// method, with the difference that the resources are stored by an
+    /// instantiation of this type, so they do not need to be passed in when
+    /// this method is called.
     pub fn items_to_datas<
         'seq_ref,
         'frame_ref: 'seq_ref,

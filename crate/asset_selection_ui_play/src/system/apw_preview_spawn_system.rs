@@ -43,7 +43,8 @@ pub type ApwPreviewSpawnSystemCharacter = ApwPreviewSpawnSystem<CharacterPreview
 /// System to spawn map previews.
 pub type ApwPreviewSpawnSystemMap = ApwPreviewSpawnSystem<MapPreviewSpawn>;
 
-/// Spawns / deletes character preview entities when character selection is switched.
+/// Spawns / deletes character preview entities when character selection is
+/// switched.
 #[derive(Debug, Default, new)]
 pub struct ApwPreviewSpawnSystem<PS> {
     /// Reader ID for the `AssetSelectionEvent` channel.
@@ -108,7 +109,8 @@ impl<PS> ApwPreviewSpawnSystem<PS>
 where
     PS: for<'ps> PreviewSpawner<'ps>,
 {
-    /// Finds the main asset preview widget `Entity` with the given controller ID.
+    /// Finds the main asset preview widget `Entity` with the given controller
+    /// ID.
     fn find_apw_main_entity(
         ApwPreviewSpawnResources {
             entities,
@@ -136,7 +138,8 @@ where
             })
     }
 
-    /// Finds the main asset selection cell `Entity` that the ASH entity is attached to.
+    /// Finds the main asset selection cell `Entity` that the ASH entity is
+    /// attached to.
     fn find_asset_selection_highlight_entity(
         ApwPreviewSpawnResources {
             entities,

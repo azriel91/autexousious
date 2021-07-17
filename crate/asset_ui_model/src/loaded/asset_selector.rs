@@ -27,13 +27,15 @@ where
 {
     /// `ItemId`s of the `AssetDisplayCell`s to instantiate.
     ///
-    /// Note: These must be sorted in the order of the cells left to right, top to bottom.
+    /// Note: These must be sorted in the order of the cells left to right, top
+    /// to bottom.
     pub asset_display_cell_item_ids: Vec<ItemId>,
     /// `ItemId`s of the `AssetSelectorHighlight`s to instantiate.
     pub asset_selection_highlight_item_ids: Vec<ItemId>,
     /// Layout of the asset display cells.
     ///
-    /// This is used to determine the siblings of the `AssetDisplayCell` entities.
+    /// This is used to determine the siblings of the `AssetDisplayCell`
+    /// entities.
     pub layout: AssetDisplayLayout,
     /// Marker.
     pub marker: PhantomData<T>,
@@ -114,8 +116,8 @@ where
             })
             .collect::<Vec<Entity>>();
 
-        // Add `Siblings` and `SiblingsVertical` components for each `AssetDisplayCell` for
-        // navigation.
+        // Add `Siblings` and `SiblingsVertical` components for each `AssetDisplayCell`
+        // for navigation.
         self.augment_siblings(
             ui_rectify_system_data,
             siblings_verticals,
@@ -123,7 +125,8 @@ where
         );
 
         if let Some(first_asset_display_cell) = asset_display_cell_entities.first().copied() {
-            // Set `AssetSelectionHighlight` target to first `AssetSelectorHighlight` entity.
+            // Set `AssetSelectionHighlight` target to first `AssetSelectorHighlight`
+            // entity.
             let target_object = TargetObject::new(first_asset_display_cell);
             self.asset_selection_highlight_item_ids
                 .iter()

@@ -11,7 +11,8 @@ use tracker::Last;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
 ///
-/// In the future this will be type parameterized to specify the detection function.
+/// In the future this will be type parameterized to specify the detection
+/// function.
 #[derive(Debug, Default, new)]
 pub struct GamePlayEndTransitionSystem;
 

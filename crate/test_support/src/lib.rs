@@ -2,7 +2,8 @@
 
 //! Macros to resolve source paths and load files during testing.
 
-/// Returns a `PathBuf` to the directory of the current source file, or an adjacent sub directory.
+/// Returns a `PathBuf` to the directory of the current source file, or an
+/// adjacent sub directory.
 ///
 /// # Examples
 ///

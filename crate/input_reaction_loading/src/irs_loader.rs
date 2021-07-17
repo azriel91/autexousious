@@ -70,7 +70,8 @@ where
         )
     }
 
-    /// Maps `config::InputReactions::<InputReaction<IRR>>` to `loaded::InputReactions::<InputReaction<IRR>>`
+    /// Maps `config::InputReactions::<InputReaction<IRR>>` to
+    /// `loaded::InputReactions::<InputReaction<IRR>>`
     fn input_reactions_loaded_handle(
         loader: &Loader,
         input_reactions_assets: &AssetStorage<loaded::InputReactions<InputReaction<IRR>>>,
@@ -149,8 +150,8 @@ where
         push_action_reactions!(release_jump, ActionRelease, Jump);
         push_action_reactions!(release_attack, ActionRelease, Attack);
         push_action_reactions!(release_special, ActionRelease, Special);
-        // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
-        // `Release` transitions get higher priority.
+        // It is a requirement that we push the `Hold` transitions last, to ensure the
+        // `Press` and `Release` transitions get higher priority.
         push_action_reactions!(hold_defend, ActionHold, Defend);
         push_action_reactions!(hold_jump, ActionHold, Jump);
         push_action_reactions!(hold_attack, ActionHold, Attack);

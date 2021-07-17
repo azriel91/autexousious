@@ -6,8 +6,9 @@ use crate::MapSpawnerResources;
 
 /// Spawns a `Map`.
 ///
-/// This is distinct from the `MapSelectionSpawningSystem` so that other systems that spawn game objects
-/// may use the same logic, while attaching additional components.
+/// This is distinct from the `MapSelectionSpawningSystem` so that other systems
+/// that spawn game objects may use the same logic, while attaching additional
+/// components.
 #[derive(Debug)]
 pub struct MapSpawner;
 

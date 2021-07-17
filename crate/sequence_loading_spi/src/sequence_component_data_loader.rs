@@ -1,10 +1,11 @@
 use amethyst::ecs::Component;
 use sequence_model_spi::loaded::ComponentDataExt;
 
-/// Loads sequence component data, typically a collection of a particular sequence component.
+/// Loads sequence component data, typically a collection of a particular
+/// sequence component.
 ///
-/// This is distinct from `FrameComponentDataLoader` as the sequence component is not necessarily
-/// a `Handle<FrameComponentData>`.
+/// This is distinct from `FrameComponentDataLoader` as the sequence component
+/// is not necessarily a `Handle<FrameComponentData>`.
 pub trait SequenceComponentDataLoader {
     /// The component that changes per sequence.
     type Component: Component;

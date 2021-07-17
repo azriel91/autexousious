@@ -6,8 +6,8 @@ use crate::config::{InputReactionMultiple, InputReactionSingle};
 
 /// Variants of how an `InputReaction` may be specified.
 ///
-/// This is primarily to make it more ergonomic for users to specify different kinds of values in
-/// configuration.
+/// This is primarily to make it more ergonomic for users to specify different
+/// kinds of values in configuration.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
 pub enum InputReaction<SeqName, IRR>

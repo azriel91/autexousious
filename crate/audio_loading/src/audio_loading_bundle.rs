@@ -9,7 +9,8 @@ use derive_new::new;
 
 /// Adds the following systems to the dispatcher.
 ///
-/// * `Processor::<SourceSequence>` is added with id `"source_sequence_processor"`.
+/// * `Processor::<SourceSequence>` is added with id
+///   `"source_sequence_processor"`.
 #[derive(Debug, new)]
 pub struct AudioLoadingBundle;
 

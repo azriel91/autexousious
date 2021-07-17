@@ -26,7 +26,8 @@ mod kw {
 /// The following parameters are optional:
 ///
 /// * `copy`: Indicates that the component is `Copy`.
-/// * `to_owned`: Path to the function to map a borrowed component to an owned component.
+/// * `to_owned`: Path to the function to map a borrowed component to an owned
+///   component.
 ///
 /// ```rust,ignore
 /// #[frame_component_data(Wait, to_owned = std::ops::Deref::deref)]
@@ -37,7 +38,8 @@ pub struct ComponentDataAttributeArgs {
     pub component_path: Path,
     /// Whether the type is copy.
     pub component_copy: bool,
-    /// Function to map a borrowed component to an owned component. i.e. `fn(&C) -> C`.
+    /// Function to map a borrowed component to an owned component. i.e. `fn(&C)
+    /// -> C`.
     pub to_owned_fn: Option<Path>,
 }
 

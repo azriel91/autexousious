@@ -171,8 +171,8 @@ mod tests {
                     world.create_entity().with(SharedInputControlled).build();
                 world.insert((input_controlled_entity, shared_input_controlled_entity));
 
-                // Use the same closure so that the system does not send events before we send the
-                // key events.
+                // Use the same closure so that the system does not send events before we send
+                // the key events.
 
                 let mut game_input_ec = world.write_resource::<EventChannel<GameInputEvent>>();
 

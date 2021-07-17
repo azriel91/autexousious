@@ -596,9 +596,10 @@ impl UiAscl {
             let asset_id_control_settings =
                 asset_id_mappings.id(&asset_slug_control_settings).copied();
             if asset_id_control_settings == Some(asset_id) {
-                // If the current asset ID is the same as the control_settings `AssetId`, then we
-                // return None -- we don't allow displaying the mini control buttons. This also
-                // prevents waiting on our own asset ID to be loaded.
+                // If the current asset ID is the same as the control_settings `AssetId`, then
+                // we return None -- we don't allow displaying the mini control
+                // buttons. This also prevents waiting on our own asset ID to be
+                // loaded.
                 None
             } else {
                 asset_id_control_settings

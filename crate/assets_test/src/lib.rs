@@ -4,11 +4,12 @@
 
 //! Provides assets for testing and asset slugs.
 //!
-//! **WARNING:** This crate is intended strictly for testing, and should not be used in any
-//! non-`test` code. This is because it exports (and hence exposes) the path of this crate's
-//! directory on the machine it is compiled on.
+//! **WARNING:** This crate is intended strictly for testing, and should not be
+//! used in any non-`test` code. This is because it exports (and hence exposes)
+//! the path of this crate's directory on the machine it is compiled on.
 //!
-//! For assets that should be compiled into the executable, please use the `assets_built_in` crate.
+//! For assets that should be compiled into the executable, please use the
+//! `assets_built_in` crate.
 
 pub use crate::{
     common::{ASSETS_PATH, NAMESPACE_TEST, NAMESPACE_TEST_PATH},

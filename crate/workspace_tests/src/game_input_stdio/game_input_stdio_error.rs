@@ -12,7 +12,13 @@ mod tests {
              * 1\n\
              \n\
             ",
-            format!("{}", GameInputStdioError::EntityWithControllerIdNotFound { controller_id: 4, existent_controllers: vec![0, 1] })
+            format!(
+                "{}",
+                GameInputStdioError::EntityWithControllerIdNotFound {
+                    controller_id: 4,
+                    existent_controllers: vec![0, 1]
+                }
+            )
         );
     }
 }

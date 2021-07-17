@@ -12,7 +12,8 @@ use log::error;
 use sequence_model::play::SequenceUpdateEvent;
 use sequence_model_spi::loaded::{ComponentDataExt, FrameComponentData};
 
-/// Updates the frame component value based on the current frame component data handle.
+/// Updates the frame component value based on the current frame component data
+/// handle.
 #[derive(Debug, Default, new)]
 pub struct FrameComponentUpdateSystem<CS>
 where
@@ -116,8 +117,8 @@ where
 
                 let frame_component_data_handle = frame_component_data_handles.get(entity);
 
-                // Some entities will have sequence update events, but not this particular sequence
-                // component.
+                // Some entities will have sequence update events, but not this particular
+                // sequence component.
                 if let Some(frame_component_data_handle) = frame_component_data_handle {
                     let frame_component_data = frame_component_data_assets
                         .get(frame_component_data_handle)

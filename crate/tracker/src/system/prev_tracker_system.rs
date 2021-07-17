@@ -9,7 +9,8 @@ use derive_new::new;
 
 use crate::Prev;
 
-/// Tracks the value of a resource, and adds a `Prev<T>` resource with that value.
+/// Tracks the value of a resource, and adds a `Prev<T>` resource with that
+/// value.
 ///
 /// The order that systems should be dispatched is:
 ///
@@ -17,11 +18,11 @@ use crate::Prev;
 /// 2. System that reads `T` and `Prev<T>`
 /// 3. `PrevTrackerSystem<T>`
 ///
-/// The order is important, otherwise the value that is stored in `Prev<T>` will be exactly the same
-/// as `T`, providing no trackable detection.
+/// The order is important, otherwise the value that is stored in `Prev<T>` will
+/// be exactly the same as `T`, providing no trackable detection.
 ///
-/// This should be used conservatively if the tracked type is `Clone` and not `Copy`, as the memory
-/// allocations can be a performance hit.
+/// This should be used conservatively if the tracked type is `Clone` and not
+/// `Copy`, as the memory allocations can be a performance hit.
 #[derive(Clone, Debug, Default, new)]
 pub struct PrevTrackerSystem<T>
 where

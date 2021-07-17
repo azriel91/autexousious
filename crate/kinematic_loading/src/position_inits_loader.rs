@@ -9,7 +9,8 @@ impl PositionInitsLoader {
     ///
     /// # Parameters
     ///
-    /// * `item_iterator`: Iterator over the items from which to extract the asset data.
+    /// * `item_iterator`: Iterator over the items from which to extract the
+    ///   asset data.
     pub fn items_to_datas<ItemIterator, ItemRef>(item_iterator: ItemIterator) -> PositionInits
     where
         ItemIterator: Iterator<Item = ItemRef>,

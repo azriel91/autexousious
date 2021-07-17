@@ -1,6 +1,7 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[derive(Asset)]` macro to implement the `amethyst::assets::Asset` trait.
+//! Provides the `#[derive(Asset)]` macro to implement the
+//! `amethyst::assets::Asset` trait.
 //!
 //! # Examples
 //!
@@ -13,7 +14,8 @@
 //! }
 //! ```
 //!
-//! Effectively generates the following without introducing the imports into scope:
+//! Effectively generates the following without introducing the imports into
+//! scope:
 //!
 //! ```rust,ignore
 //! use amethyst::{
@@ -38,7 +40,8 @@
 //!
 //! # Errors
 //!
-//! If the asset type is type parameterized (`MyAsset<T>`), you may encounter the following error:
+//! If the asset type is type parameterized (`MyAsset<T>`), you may encounter
+//! the following error:
 //!
 //! ```ignore
 //! error[E0210]: type parameter `T` must be used as the type parameter for some local type (e.g., `MyStruct<T>`)
@@ -50,8 +53,9 @@
 //!    = note: only traits defined in the current crate can be implemented for a type parameter
 //! ```
 //!
-//! This means `T` may be provided by a downstream crate, meaning `MyAsset<T>` is defined by that
-//! downstream crate. Therefore, implementing `Asset` breaks the orphan rule.
+//! This means `T` may be provided by a downstream crate, meaning `MyAsset<T>`
+//! is defined by that downstream crate. Therefore, implementing `Asset` breaks
+//! the orphan rule.
 //!
 //! To work past this rule, implement a newtype wrapper instead.
 

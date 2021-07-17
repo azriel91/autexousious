@@ -12,8 +12,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -67,8 +67,9 @@ impl EofMatcher {
 ///
 /// # Examples
 ///
-/// This example comes from the shell's REPL, which ensures that the user's input
-/// will only be submitted for execution once a terminated command is supplied.
+/// This example comes from the shell's REPL, which ensures that the user's
+/// input will only be submitted for execution once a terminated command is
+/// supplied.
 #[derive(Debug)]
 pub struct Terminator<I: Iterator<Item = u8>> {
     inner: RearPeekable<I>,
@@ -181,8 +182,8 @@ impl<I: Iterator<Item = u8>> Iterator for Terminator<I> {
 }
 
 impl<I: Iterator<Item = u8>> Terminator<I> {
-    /// Consumes lines until a statement is formed or the iterator runs dry, and returns the
-    /// underlying `String`.
+    /// Consumes lines until a statement is formed or the iterator runs dry, and
+    /// returns the underlying `String`.
     pub fn terminate(&mut self) -> Option<Result<String, ()>> {
         let stmt = self.collect::<Vec<_>>();
         let stmt = unsafe { String::from_utf8_unchecked(stmt) };

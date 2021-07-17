@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum ChaseMode {
     /// Sticks to the target object.
     ///
-    /// The `Position` and `Transform` of this entity is copied from the target entity.
+    /// The `Position` and `Transform` of this entity is copied from the target
+    /// entity.
     Stick,
 }

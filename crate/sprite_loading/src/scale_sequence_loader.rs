@@ -3,7 +3,8 @@ use derivative::Derivative;
 use sequence_loading_spi::FrameComponentDataLoader;
 use sprite_model::{config::Scale, loaded::ScaleSequence};
 
-/// Loads `ScaleSequence`s from `Sequence` types whose `Frame`s contain a `Scale` value.
+/// Loads `ScaleSequence`s from `Sequence` types whose `Frame`s contain a
+/// `Scale` value.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct ScaleSequenceLoader<'s> {
@@ -18,9 +19,10 @@ pub struct ScaleSequenceLoader<'s> {
 impl<'s> ScaleSequenceLoader<'s> {
     /// Loads a `ScaleSequence` and returns its handle.
     ///
-    /// This is similar to calling the `FrameComponentDataLoader::load` trait method, with the
-    /// difference that the resources are stored by an instantiation of this type, so they do not
-    /// need to be passed in when this method is called.
+    /// This is similar to calling the `FrameComponentDataLoader::load` trait
+    /// method, with the difference that the resources are stored by an
+    /// instantiation of this type, so they do not need to be passed in when
+    /// this method is called.
     pub fn load<SequenceIterator, FrameRef>(
         &self,
         sequence_iterator: SequenceIterator,

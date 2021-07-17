@@ -8,7 +8,8 @@ use map_selection_model::MapSelection;
 pub struct SetupFunction;
 
 impl SetupFunction {
-    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
+    /// Returns a function that adds a `MapSelection` and
+    /// `MapSelectionStatus::Confirmed`.
     ///
     /// # Parameters
     ///

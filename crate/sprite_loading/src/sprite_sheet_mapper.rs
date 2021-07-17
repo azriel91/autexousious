@@ -59,8 +59,8 @@ impl SpriteSheetMapper {
                 // 10 11 12 13 14
                 // 15 16 17 18 19
 
-                // Offsets are shifted up by half the sprite width and height, as Amethyst uses the
-                // middle of sprites as the pivot point.
+                // Offsets are shifted up by half the sprite width and height, as Amethyst uses
+                // the middle of sprites as the pivot point.
                 let offset_x = offset_w * col as u32;
                 let offset_y = offset_h * row as u32;
                 let half_sprite_w = definition.sprite_w as f32 / 2.;
@@ -75,6 +75,7 @@ impl SpriteSheetMapper {
                         // Negate the Y value because we want to shift the sprite up, whereas the
                         // offset in Amethyst is to shift it down.
 
+                        // 
                         // * The Y offset specified by the designer should be the bottom of the
                         //   sprite in pixel coordinates for the whole image.
                         // * `offset_y` is the top of the sprite in pixel coordinates.
@@ -123,12 +124,14 @@ impl SpriteSheetMapper {
 
     /// Returns the pixel offset distances per sprite.
     ///
-    /// This is simply the sprite width and height if there is no border between sprites, or 1 added
-    /// to the width and height if there is a border. There is no leading border on the left or top
-    /// of the leftmost and topmost sprites.
+    /// This is simply the sprite width and height if there is no border between
+    /// sprites, or 1 added to the width and height if there is a border.
+    /// There is no leading border on the left or top of the leftmost and
+    /// topmost sprites.
     ///
-    /// Be careful not to confuse this with the sprite offsets on the definition, which are the
-    /// offsets used to position the sprite relative to the entity in game.
+    /// Be careful not to confuse this with the sprite offsets on the
+    /// definition, which are the offsets used to position the sprite
+    /// relative to the entity in game.
     ///
     /// # Parameters
     ///

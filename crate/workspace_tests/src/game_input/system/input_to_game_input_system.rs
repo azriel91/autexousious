@@ -102,8 +102,8 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_effect(move |world| {
-                // HACK: This is what `InputSystem` does from `amethyst::input::InputBundle` in the
-                // system setup phase.
+                // HACK: This is what `InputSystem` does from `amethyst::input::InputBundle` in
+                // the system setup phase.
                 // TODO: Update `amethyst_test` to take in `InputBindings`.
                 world
                     .write_resource::<InputHandler<ControlBindings>>()
@@ -114,8 +114,8 @@ mod tests {
                     .register_reader(); // kcov-ignore
                 world.insert(reader_id);
 
-                // Use the same closure so that the system does not send events before we send the
-                // key events.
+                // Use the same closure so that the system does not send events before we send
+                // the key events.
 
                 let mut input_handler = world.write_resource::<InputHandler<ControlBindings>>();
                 let mut input_ec =

@@ -7,9 +7,10 @@ use crate::config::{Frame, SequenceEndTransition, SequenceName, Wait};
 
 /// A sequence of frames that represents independent behaviour.
 ///
-/// Sequences are shared by different object types, and are genericized by the sequence name. This
-/// is because different object types have different valid sequence names, and we want to be able to
-/// define this at compile time rather than needing to process this at runtime.
+/// Sequences are shared by different object types, and are genericized by the
+/// sequence name. This is because different object types have different valid
+/// sequence names, and we want to be able to define this at compile time rather
+/// than needing to process this at runtime.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default, deny_unknown_fields)]
 pub struct Sequence<SeqName, Frm = Frame>

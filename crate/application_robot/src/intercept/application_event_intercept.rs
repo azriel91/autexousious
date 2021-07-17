@@ -7,7 +7,8 @@ use application_input::ApplicationEvent;
 
 use crate::Intercept;
 
-/// Reads `ApplicationEvent`s and programmatically controls the application control flow.
+/// Reads `ApplicationEvent`s and programmatically controls the application
+/// control flow.
 #[derive(Debug, Default)]
 pub struct ApplicationEventIntercept {
     /// ID of the reader for application events.
@@ -21,7 +22,8 @@ impl ApplicationEventIntercept {
     }
 
     fn initialize_application_event_reader(&mut self, world: &mut World) {
-        // You can't (don't have to) unregister a reader from an EventChannel in `on_stop();`:
+        // You can't (don't have to) unregister a reader from an EventChannel in
+        // `on_stop();`:
         //
         // > @torkleyy: No need to unregister, it's just two integer values.
         // > @Rhuagh: Just drop the reader id

@@ -57,8 +57,8 @@ impl NetworkInputResponderSystem {
                         &payload,
                         // None means it uses a default multiplexed stream.
                         //
-                        // Suspect if we give it a value, the value will be a "channel" over the same
-                        // socket connection.
+                        // Suspect if we give it a value, the value will be a "channel" over the
+                        // same socket connection.
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );

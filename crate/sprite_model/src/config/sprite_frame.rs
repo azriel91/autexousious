@@ -8,7 +8,8 @@ use crate::config::{Scale, SpriteRef, Tint};
 
 /// Frame with a `SpriteRef`.
 ///
-/// This is useful when the sequence does not need any other behaviour besides displaying a sprite.
+/// This is useful when the sequence does not need any other behaviour besides
+/// displaying a sprite.
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default)]
 pub struct SpriteFrame {

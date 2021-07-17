@@ -15,8 +15,8 @@ use object_status_model::config::StunPoints;
 
 /// Character specific `Component` storages.
 ///
-/// These are the storages for the components specific to character objects. See also
-/// `ObjectComponentStorages`.
+/// These are the storages for the components specific to character objects. See
+/// also `ObjectComponentStorages`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterComponentStorages<'s> {

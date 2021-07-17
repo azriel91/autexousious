@@ -7,7 +7,8 @@ use crate::play::SessionStartRequestParams;
 ///
 /// # Examples
 ///
-/// When read in as a command, the command string should look like the following:
+/// When read in as a command, the command string should look like the
+/// following:
 ///
 /// * `session_lobby session_start_request --session-code ABCD`
 /// * `session_lobby session_start_notify`

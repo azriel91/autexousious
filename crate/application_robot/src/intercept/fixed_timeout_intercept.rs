@@ -6,8 +6,8 @@ use crate::Intercept;
 
 /// Pops the application stack after a specified timeout.
 ///
-/// This pops the stack after the fixed timeout, regardless of the state changes that occur from
-/// the underlying delegate.
+/// This pops the stack after the fixed timeout, regardless of the state changes
+/// that occur from the underlying delegate.
 // kcov-ignore-start
 #[derive(Debug)]
 pub struct FixedTimeoutIntercept {
@@ -32,7 +32,8 @@ impl FixedTimeoutIntercept {
     }
 
     fn pop_on_timeout<T, E>(&mut self) -> Option<Trans<T, E>> {
-        // If start_instant is none, then it must have been popped by one of the pushed `State`s.
+        // If start_instant is none, then it must have been popped by one of the pushed
+        // `State`s.
         if self.start_instant.is_none()
             || self.start_instant.as_ref().unwrap().elapsed() >= self.timeout
         {

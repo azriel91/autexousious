@@ -80,9 +80,9 @@ impl AssetSelectionEventStdinMapper {
 }
 
 impl StdinMapper for AssetSelectionEventStdinMapper {
-    type SystemData = AssetSelectionEventStdinMapperData;
-    type Event = AssetSelectionEvent;
     type Args = AssetSelectionEventArgs;
+    type Event = AssetSelectionEvent;
+    type SystemData = AssetSelectionEventStdinMapperData;
 
     fn map(
         asset_id_mappings: &Read<AssetIdMappings>,

@@ -13,7 +13,8 @@ pub struct UiFrame {
     /// Sprite rendering information.
     #[serde(flatten)]
     pub sprite_frame: SpriteFrame,
-    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or
+    /// released.
     #[serde(default)]
     pub input_reactions: InputReactions<SpriteSequenceName>,
 }

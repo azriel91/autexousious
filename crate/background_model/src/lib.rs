@@ -2,7 +2,8 @@
 
 //! Types used to represent backgrounds and their configuration.
 //!
-//! This allows us to define textures to render as backgrounds on UIs, in-game maps, etcetera.
+//! This allows us to define textures to render as backgrounds on UIs, in-game
+//! maps, etcetera.
 
 pub mod config;
 pub mod loaded;

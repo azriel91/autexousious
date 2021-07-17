@@ -58,8 +58,8 @@ pub fn assert_eq_trans<T, E>(expected: &Trans<T, E>, actual: &Trans<T, E>) {
     );
 }
 
-/// Asserts that the `Trans` objects contained in the `Option`s, disregarding their `State`, are
-/// equal.
+/// Asserts that the `Trans` objects contained in the `Option`s, disregarding
+/// their `State`, are equal.
 ///
 /// This `panic!`s with a readable error message when the assertion fails.
 ///

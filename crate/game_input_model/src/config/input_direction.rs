@@ -23,7 +23,8 @@ pub enum InputDirection {
 }
 
 impl InputDirection {
-    /// Returns whether axis input is in the same direction as the object is facing.
+    /// Returns whether axis input is in the same direction as the object is
+    /// facing.
     ///
     /// This returns `false` if there is no input on the axis.
     ///
@@ -35,7 +36,8 @@ impl InputDirection {
         axis_value > 0. && !mirrored || axis_value < 0. && mirrored
     }
 
-    /// Returns whether axis input is in the opposite direction as the object is facing.
+    /// Returns whether axis input is in the opposite direction as the object is
+    /// facing.
     ///
     /// This returns `false` if there is no input on the axis.
     ///

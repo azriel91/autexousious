@@ -2,8 +2,8 @@
 
 //! Discovers and indexes assets.
 //!
-//! This crate provides the logic to discover assets from an `"assets"` directory beside the
-//! application.
+//! This crate provides the logic to discover assets from an `"assets"`
+//! directory beside the application.
 //!
 //! The entry point to using this crate is `AssetDiscovery::asset_index`.
 

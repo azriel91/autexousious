@@ -18,7 +18,8 @@ use spawn_play::{GameObjectSpawner, SpawnGameObjectResources};
 
 use super::PreviewSpawner;
 
-/// Spawns / deletes character preview entities when character selection is switched.
+/// Spawns / deletes character preview entities when character selection is
+/// switched.
 #[derive(Debug, Default, new)]
 pub struct CharacterPreviewSpawn;
 
@@ -37,6 +38,7 @@ pub struct CharacterPreviewSpawnResources<'s> {
 
 impl<'s> PreviewSpawner<'s> for CharacterPreviewSpawn {
     type SystemData = CharacterPreviewSpawnResources<'s>;
+
     const ASSET_TYPE: AssetType = AssetType::Object(ObjectType::Character);
 
     // Spawns new entities that provide a preview for the asset preview widget.
@@ -57,8 +59,8 @@ impl<'s> PreviewSpawner<'s> for CharacterPreviewSpawn {
         if let AssetSelection::Id(asset_id) = asset_selection {
             // TODO: Take in position to spawn entity.
             let x = 60.;
-            // Hack: Since characters have `PositionZAsY`, we shift the entity's Y position up by
-            // the Z position of the asset_selection_entity.
+            // Hack: Since characters have `PositionZAsY`, we shift the entity's Y position
+            // up by the Z position of the asset_selection_entity.
             let y = 30. + 12.;
             let z = 1.;
             let position = Position::new(x, y, z);

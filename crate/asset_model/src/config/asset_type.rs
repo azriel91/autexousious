@@ -11,7 +11,8 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter};
 
 /// Game configuration types.
 ///
-/// Allows compile-time checks for ensuring all configuration types are discovered.
+/// Allows compile-time checks for ensuring all configuration types are
+/// discovered.
 #[derive(Clone, Copy, Debug, EnumDiscriminants, EnumVariantType, Hash, PartialEq, Eq)]
 #[strum_discriminants(
     derive(Display, EnumIter, Hash),

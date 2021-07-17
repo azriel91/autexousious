@@ -27,7 +27,8 @@ use crate::{
 /// Limit for number of sessions the server may host;
 const SESSION_COUNT_LIMIT: usize = 10000;
 
-/// Accepts or rejects session hosting requests, and sends the response to the requester.
+/// Accepts or rejects session hosting requests, and sends the response to the
+/// requester.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionHostResponderSystemDesc))]
 pub struct SessionHostResponderSystem {
@@ -95,8 +96,7 @@ impl SessionHostResponderSystem {
         } else {
             warn!(
                 "Session Count limit ({}) reached. Rejecting request to host new session from `{}`.",
-                SESSION_COUNT_LIMIT,
-                session_device_name
+                SESSION_COUNT_LIMIT, session_device_name
             );
 
             SessionHostEvent::SessionReject(SessionRejectResponse::new())
@@ -160,8 +160,8 @@ impl<'s> System<'s> for SessionHostResponderSystem {
                             &payload,
                             // None means it uses a default multiplexed stream.
                             //
-                            // Suspect if we give it a value, the value will be a "channel" over the
-                            // same socket connection.
+                            // Suspect if we give it a value, the value will be a "channel" over
+                            // the same socket connection.
                             DeliveryRequirement::ReliableOrdered(None),
                             UrgencyRequirement::OnTick,
                         );

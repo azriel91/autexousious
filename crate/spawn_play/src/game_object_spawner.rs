@@ -10,8 +10,9 @@ use crate::SpawnGameObjectResources;
 
 /// Spawns a `GameObject` and sends a `SpawnEvent`.
 ///
-/// This is distinct from the `SpawnGameObjectSystem` so that other systems that spawn game objects
-/// may use the same logic, while attaching additional components.
+/// This is distinct from the `SpawnGameObjectSystem` so that other systems that
+/// spawn game objects may use the same logic, while attaching additional
+/// components.
 #[derive(Debug)]
 pub struct GameObjectSpawner;
 

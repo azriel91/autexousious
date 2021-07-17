@@ -26,8 +26,10 @@ impl CharacterEntityAugmenter {
     ///
     /// # Parameters
     ///
-    /// * `character_spawning_resources`: Resources needed to spawn the character.
-    /// * `character_component_storages`: Character specific `Component` storages.
+    /// * `character_spawning_resources`: Resources needed to spawn the
+    ///   character.
+    /// * `character_component_storages`: Character specific `Component`
+    ///   storages.
     /// * `asset_id`: Asset ID of the character.
     /// * `entity`: The entity to augment.
     pub fn augment<'s>(

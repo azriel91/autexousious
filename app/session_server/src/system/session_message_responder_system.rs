@@ -21,11 +21,13 @@ use crate::model::{
     SessionIdToDeviceMappings, SessionTickStatuses, SocketToDeviceId,
 };
 
-/// Notifies game clients when all `GameInputEvent`s have been sent for the current tick.
+/// Notifies game clients when all `GameInputEvent`s have been sent for the
+/// current tick.
 ///
-/// When `SessionMessageEvent::GameInputTick` has been received from each client, the session server then sends its own
-/// `SessionMessageEvent::GameInputTick` messages to all clients, notifying them that all `GameInputEvent`s have been
-/// sent to them.
+/// When `SessionMessageEvent::GameInputTick` has been received from each
+/// client, the session server then sends its own `SessionMessageEvent::
+/// GameInputTick` messages to all clients, notifying them that all
+/// `GameInputEvent`s have been sent to them.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionMessageResponderSystemDesc))]
 pub struct SessionMessageResponderSystem {
@@ -58,9 +60,11 @@ pub struct SessionMessageResponderSystemData<'s> {
 }
 
 impl SessionMessageResponderSystem {
-    /// Returns the `SessionCodeId` and `SessionDeviceTickStatuses` associated with the event's client.
+    /// Returns the `SessionCodeId` and `SessionDeviceTickStatuses` associated
+    /// with the event's client.
     ///
-    /// This log a warning if the `SessionCodeId` or `SessionDeviceTickStatuses` cannot be found.
+    /// This log a warning if the `SessionCodeId` or `SessionDeviceTickStatuses`
+    /// cannot be found.
     fn select_session_information<'tick>(
         session_id_to_device_mappings: &SessionIdToDeviceMappings,
         socket_to_device_id: &SocketToDeviceId,
@@ -93,16 +97,14 @@ impl SessionMessageResponderSystem {
             .entry(session_code_id)
             .or_insert_with(SessionDeviceTickStatuses::default);
 
-        let session_device_id =
-            socket_to_device_id
-                .get(&socket_addr)
-                .copied()
-                .ok_or_else(|| {
-                    format!(
+        let session_device_id = socket_to_device_id.get(&socket_addr).copied().ok_or_else(
+            || {
+                format!(
                     "Received `{:?}` from {}, but no `SessionDeviceId` tracked for that socket.",
                     session_message_event, socket_addr
                 )
-                })?;
+            },
+        )?;
 
         Ok((
             session_device_tick_statuses,
@@ -160,14 +162,16 @@ impl SessionMessageResponderSystem {
         }
     }
 
-    /// Returns whether `SessionMessageEvent::GameInputTick` has been received from all devices in the session.
+    /// Returns whether `SessionMessageEvent::GameInputTick` has been received
+    /// from all devices in the session.
     fn session_tick_all_received(session_device_tick_statuses: &SessionDeviceTickStatuses) -> bool {
         session_device_tick_statuses
             .values()
             .all(|game_input_tick_status| *game_input_tick_status == GameInputTickStatus::Received)
     }
 
-    /// Sends `SessionMessageEvent::GameInputTick` to all devices in a `Session`.
+    /// Sends `SessionMessageEvent::GameInputTick` to all devices in a
+    /// `Session`.
     fn session_game_input_tick(
         session_id_to_device_mappings: &SessionIdToDeviceMappings,
         session_code_to_id: &SessionCodeToId,
@@ -222,8 +226,8 @@ impl SessionMessageResponderSystem {
                         &payload,
                         // None means it uses a default multiplexed stream.
                         //
-                        // Suspect if we give it a value, the value will be a "channel" over the same
-                        // socket connection.
+                        // Suspect if we give it a value, the value will be a "channel" over the
+                        // same socket connection.
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );
@@ -254,11 +258,13 @@ impl<'s> System<'s> for SessionMessageResponderSystem {
         }: Self::SystemData,
     ) {
         // 1. When a client sends `SessionMessageEvent::GameInputTick`, record it.
-        // 2. When all clients have sent `GameInputTick`, send `GameInputTick` to all of them.
+        // 2. When all clients have sent `GameInputTick`, send `GameInputTick` to all of
+        // them.
         //
         // Error cases:
         //
-        // * If the client has sent `GameInputTick` more than once, ignore it and log a warning.
+        // * If the client has sent `GameInputTick` more than once, ignore it and log a
+        //   warning.
         // * If the client isn't registered to a session, ignore it and log a warning.
 
         let session_id_to_device_mappings = &session_id_to_device_mappings;

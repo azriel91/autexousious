@@ -56,8 +56,8 @@ impl<'s> System<'s> for AssetDiscoverySystem {
             mut asset_id_to_path,
         }: Self::SystemData,
     ) {
-        // TODO: Do a diff between existing index and directory based on a file watch / notify.
-        // TODO: See <https://github.com/polachok/derive-diff>
+        // TODO: Do a diff between existing index and directory based on a file watch /
+        // notify. TODO: See <https://github.com/polachok/derive-diff>
         if asset_index.is_none() {
             let asset_index_discovered = AssetDiscovery::asset_index(&self.assets_dir);
             debug!("Indexed assets: {:?}", &asset_index_discovered);

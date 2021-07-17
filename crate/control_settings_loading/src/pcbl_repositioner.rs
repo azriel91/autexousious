@@ -7,7 +7,8 @@ use kinematic_model::config::PositionInit;
 pub struct PcblRepositioner;
 
 impl PcblRepositioner {
-    /// Shifts `ControlButtonLabel`s to begin at X: 0, and action buttons above axis buttons.
+    /// Shifts `ControlButtonLabel`s to begin at X: 0, and action buttons above
+    /// axis buttons.
     pub fn reposition(player_control_buttons_labels: &mut PlayerControlButtonsLabels) {
         macro_rules! shift_min {
             ($control_button:ident, $pos:ident, $pos_min:ident) => {
@@ -64,8 +65,8 @@ impl PcblRepositioner {
         // 0     p0     p1     p2     p3     800
         //
         // * 5 gaps, so we divide 800 by 5, then skip the first coordinate.
-        // * Then we must account for the width of each set of buttons, and make sure the midpoint
-        //   is at each of those coordinates.
+        // * Then we must account for the width of each set of buttons, and make sure
+        //   the midpoint is at each of those coordinates.
         //
         // May want to revert commit: <87bff3b9>
         let midpoint_distance = camera_zoom_dimensions.width as i32

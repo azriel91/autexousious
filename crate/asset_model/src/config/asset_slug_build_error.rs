@@ -45,8 +45,9 @@ pub enum AssetSlugBuildError {
     },
     /// Too many segments were provided when building.
     ///
-    /// This variant only occurs when building from `FromStr`; when using the `AssetSlugBuilder`,
-    /// providing a value twice will overwrite the previous value.
+    /// This variant only occurs when building from `FromStr`; when using the
+    /// `AssetSlugBuilder`, providing a value twice will overwrite the
+    /// previous value.
     InvalidSegmentCount {
         /// Invalid value provided to build the asset slug.
         value: String,

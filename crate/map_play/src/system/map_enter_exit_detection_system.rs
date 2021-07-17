@@ -16,7 +16,8 @@ use tracker::Last;
 
 use crate::{Comparative, MapBoundsChecks};
 
-/// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited map bounds.
+/// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited
+/// map bounds.
 #[derive(Debug, Default, new)]
 pub struct MapEnterExitDetectionSystem;
 

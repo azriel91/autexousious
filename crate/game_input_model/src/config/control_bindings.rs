@@ -7,6 +7,6 @@ use crate::config::{PlayerActionControl, PlayerAxisControl};
 pub struct ControlBindings;
 
 impl BindingTypes for ControlBindings {
-    type Axis = PlayerAxisControl;
     type Action = PlayerActionControl;
+    type Axis = PlayerAxisControl;
 }

@@ -21,7 +21,8 @@ impl AppFile {
     ///
     /// # Parameters:
     ///
-    /// * `file_name`: Name of the file to search for which should be next to the executable.
+    /// * `file_name`: Name of the file to search for which should be next to
+    ///   the executable.
     pub fn find(file_name: &str) -> Result<PathBuf, Error> {
         Self::find_internal(application_root_dir(), file_name)
     }
@@ -35,16 +36,19 @@ impl AppFile {
         Self::find_in_internal(exe_dir_result, Path::new(""), file_name)
     }
 
-    /// Finds and returns the path to the configuration file within the given configuration directory.
+    /// Finds and returns the path to the configuration file within the given
+    /// configuration directory.
     ///
-    /// By default, configuration directories are assumed to be beside the current executable. This can
-    /// be overridden with the `CARGO_MANIFEST_DIR` environmental variable. Setting this variable
-    /// overrides the directory that is searched &mdash; this function does not fall back to the
-    /// executable base directory.
+    /// By default, configuration directories are assumed to be beside the
+    /// current executable. This can be overridden with the
+    /// `CARGO_MANIFEST_DIR` environmental variable. Setting this variable
+    /// overrides the directory that is searched &mdash; this function does not
+    /// fall back to the executable base directory.
     ///
     /// # Parameters:
     ///
-    /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
+    /// * `conf_dir`: Directory relative to the executable in which to search
+    ///   for configuration.
     /// * `file_name`: Name of the file to search for.
     ///
     /// # Examples
@@ -65,7 +69,9 @@ impl AppFile {
         file_name: &str,
     ) -> Result<PathBuf, Error> {
         Self::find_in_internal(application_root_dir(), conf_dir, file_name)
-    } // kcov-ignore
+    }
+
+    // kcov-ignore
 
     /// Visible for testing.
     #[inline]
@@ -105,7 +111,8 @@ impl AppFile {
     ///
     /// # Parameters:
     ///
-    /// * `file_name`: Name of the file to search for relative to the executable.
+    /// * `file_name`: Name of the file to search for relative to the
+    ///   executable.
     /// * `format`: File format.
     pub fn load<T>(file_name: &str, format: Format) -> Result<T, Error>
     where
@@ -132,8 +139,10 @@ impl AppFile {
     ///
     /// # Parameters:
     ///
-    /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
-    /// * `file_name`: Name of the file to search for relative to the executable.
+    /// * `conf_dir`: Directory relative to the executable in which to search
+    ///   for configuration.
+    /// * `file_name`: Name of the file to search for relative to the
+    ///   executable.
     /// * `format`: File [format].
     ///
     /// [format]: enum.Format.html

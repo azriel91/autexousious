@@ -13,16 +13,18 @@ use sequence_model::{
     play::{SequenceStatus, SequenceUpdateEvent},
 };
 
-/// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends `SequenceBegin` events.
+/// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends
+/// `SequenceBegin` events.
 ///
-/// This **must** run before `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to
-/// determine if a `SequenceBegin` event should be sent.
+/// This **must** run before `SequenceUpdateSystem`, as that relies on the
+/// `SequenceStatus` to determine if a `SequenceBegin` event should be sent.
 #[derive(Debug, Default, new)]
 pub struct SequenceStatusUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]
     sequence_id_rid: Option<ReaderId<ComponentEvent>>,
-    /// Pre-allocated bitset to track insertions and modifications to `SequenceId`s.
+    /// Pre-allocated bitset to track insertions and modifications to
+    /// `SequenceId`s.
     #[new(default)]
     sequence_id_updates: BitSet,
 }

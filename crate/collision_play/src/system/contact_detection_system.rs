@@ -11,8 +11,9 @@ use team_model::play::Team;
 
 /// Detects whether a `ContactEvent` occurs when a `CollisionEvent` happens.
 ///
-/// This system determines if contact happens or not -- e.g. objects on the same team may or may not
-/// contact each other depending on the type of `Interaction`.
+/// This system determines if contact happens or not -- e.g. objects on the same
+/// team may or may not contact each other depending on the type of
+/// `Interaction`.
 #[derive(Debug, Default, new)]
 pub struct ContactDetectionSystem {
     /// Reader ID for the `CollisionEvent` event channel.

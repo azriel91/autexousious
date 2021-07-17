@@ -23,15 +23,15 @@ const COLOUR_CP_HIGH: [f32; 4] = [0.3, 0.6, 1., 0.8];
 ///
 /// * `CpBar`: Tag component.
 /// * `Transform`: Coordinates of the CP bar to draw.
-/// * `Parent`: Link to the parent entity whose `ChargeTrackerClock` the `CpBar` entity will
-///    display.
+/// * `Parent`: Link to the parent entity whose `ChargeTrackerClock` the `CpBar`
+///   entity will display.
 /// * `SpriteRender`: Indicates which "sprite" (colour) of the `CpBar` to draw.
 /// * `Transparent`: Tags the `CpBar` for sorting when rendering.
 ///
-/// Ideally, the `Parent` component will be inserted by the `PrefabLoaderSystem`, so the (game
-/// object) entity whose `ChargeTrackerClock` should displayed is specified as the `parent` of the
-/// `CpBar` entity. However this is not currently possible ergonomically, see
-/// <https://community.amethyst-engine.org/t/prefabs-with-special-cases-at-runtime/589> for
+/// Ideally, the `Parent` component will be inserted by the
+/// `PrefabLoaderSystem`, so the (game object) entity whose `ChargeTrackerClock`
+/// should displayed is specified as the `parent` of the `CpBar` entity. However
+/// this is not currently possible ergonomically, see <https://community.amethyst-engine.org/t/prefabs-with-special-cases-at-runtime/589> for
 /// discussion.
 #[derive(Clone, Copy, Debug, PartialEq, new)]
 pub struct CpBarPrefab {
@@ -69,8 +69,8 @@ pub struct CpBarPrefabSystemData<'s> {
 }
 
 impl<'s> PrefabData<'s> for CpBarPrefab {
-    type SystemData = CpBarPrefabSystemData<'s>;
     type Result = ();
+    type SystemData = CpBarPrefabSystemData<'s>;
 
     fn add_to_entity(
         &self,

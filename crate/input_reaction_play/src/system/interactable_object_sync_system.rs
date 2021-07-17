@@ -12,9 +12,11 @@ use derive_new::new;
 use log::error;
 use ui_model::play::UiFovScaleTransform;
 
-/// Creates / updates the `UiTransform` of an object based on its `Transform` and current sprite.
+/// Creates / updates the `UiTransform` of an object based on its `Transform`
+/// and current sprite.
 ///
-/// This will allow it to receive `UiEvent`s, so that input button reactions can be reacted to.
+/// This will allow it to receive `UiEvent`s, so that input button reactions can
+/// be reacted to.
 #[derive(Debug, Default, new)]
 pub struct InteractableObjectSyncSystem;
 

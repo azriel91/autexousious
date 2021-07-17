@@ -86,7 +86,8 @@ body:
         assert_eq!(Body::new(body_volumes), frame.body);
     }
 
-    /// Needed because the YAML deserializer does not support deserializing values directly.
+    /// Needed because the YAML deserializer does not support deserializing
+    /// values directly.
     #[derive(Debug, Deserialize)]
     struct BodyFrame {
         body: Body,

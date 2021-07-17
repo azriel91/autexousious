@@ -111,8 +111,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it has been
-            // changed.
+            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it
+            // has been changed.
             let sequence_id = sequence_ids.get(entity);
             if sequence_id.is_none() {
                 continue; // kcov-ignore

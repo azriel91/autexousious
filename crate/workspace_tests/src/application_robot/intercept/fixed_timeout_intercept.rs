@@ -104,8 +104,8 @@ mod test {
 
     #[test]
     fn pop_on_timeout_returns_trans_pop_if_start_time_is_empty() {
-        // This case happens when this intercept has been used by a State pushed by the wrapped
-        // state.
+        // This case happens when this intercept has been used by a State pushed by the
+        // wrapped state.
         let (mut intercept, mut world) = setup(Duration::from_millis(0));
 
         // Initialize start time

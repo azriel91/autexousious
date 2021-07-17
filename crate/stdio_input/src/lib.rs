@@ -1,6 +1,7 @@
 #![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
-//! System that integrates with standard I/O so that the application can be controlled headlessly.
+//! System that integrates with standard I/O so that the application can be
+//! controlled headlessly.
 
 pub(crate) use crate::ion::{StatementSplitter, StatementVariant, Terminator};
 pub use crate::{

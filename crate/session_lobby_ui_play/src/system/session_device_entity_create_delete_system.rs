@@ -20,7 +20,8 @@ use session_lobby_ui_model::{
 };
 use ui_model_spi::config::Dimensions;
 
-/// Updates `SessionDevicesEntities` to have the right number of entities for each `SessionDevice`.
+/// Updates `SessionDevicesEntities` to have the right number of entities for
+/// each `SessionDevice`.
 #[derive(Debug, new)]
 pub struct SessionDeviceEntityCreateDeleteSystem;
 
@@ -194,7 +195,8 @@ impl<'s> System<'s> for SessionDeviceEntityCreateDeleteSystem {
                 }
             }
 
-            // Update values if necessary. This should be run regardless of value comparison.
+            // Update values if necessary. This should be run regardless of
+            // value comparison.
         }
     }
 }

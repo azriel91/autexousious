@@ -2,7 +2,8 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{parse_quote, Path};
 
-/// Returns an function implementation for the `ComponentData::to_owned` trait method.
+/// Returns an function implementation for the `ComponentData::to_owned` trait
+/// method.
 pub fn to_owned_fn_impl(component_copy: bool, to_owned_fn: Option<Path>) -> TokenStream {
     if component_copy {
         quote! {

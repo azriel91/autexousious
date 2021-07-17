@@ -15,14 +15,15 @@ use crate::NetworkModeSelectionTrans;
 /// This state is not intended to be constructed directly, but through the
 /// [`NetworkModeSelectionStateBuilder`][state_builder].
 ///
-/// [state_builder]: network_mode_selection_state/struct.NetworkModeSelectionStateBuilder.html
+/// [state_builder]:
+/// network_mode_selection_state/struct.NetworkModeSelectionStateBuilder.html
 pub type NetworkModeSelectionState =
     AppState<'static, 'static, NetworkModeSelectionStateDelegate, NetworkModeSelectionEntity>;
 
 /// Builder for a `NetworkModeSelectionState`.
 ///
-/// `SystemBundle`s to run in the `NetworkModeSelectionState`'s dispatcher are registered on this
-/// builder.
+/// `SystemBundle`s to run in the `NetworkModeSelectionState`'s dispatcher are
+/// registered on this builder.
 pub type NetworkModeSelectionStateBuilder = AppStateBuilder<
     'static,
     'static,
@@ -32,8 +33,9 @@ pub type NetworkModeSelectionStateBuilder = AppStateBuilder<
 
 /// Delegate `State` for network mode selection.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `NetworkModeSelectionState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `NetworkModeSelectionState` is an alias with this as a
+/// delegate state.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct NetworkModeSelectionStateDelegate;

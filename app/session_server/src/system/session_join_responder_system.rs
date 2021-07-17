@@ -26,7 +26,8 @@ use crate::{
     system::SessionCleaner,
 };
 
-/// Accepts or rejects session requests, and sends the response to the requester.
+/// Accepts or rejects session requests, and sends the response to the
+/// requester.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionJoinResponderSystemDesc))]
 pub struct SessionJoinResponderSystem {
@@ -174,8 +175,8 @@ impl SessionJoinResponderSystem {
                                 &payload,
                                 // None means it uses a default multiplexed stream.
                                 //
-                                // Suspect if we give it a value, the value will be a "channel" over the same
-                                // socket connection.
+                                // Suspect if we give it a value, the value will be a "channel"
+                                // over the same socket connection.
                                 DeliveryRequirement::ReliableOrdered(None),
                                 UrgencyRequirement::OnTick,
                             );

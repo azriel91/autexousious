@@ -20,7 +20,8 @@ use crate::{ButtonToPlayerIndexMapper, ControlButtonToButtonMapper, PcblRepositi
 pub struct KeyboardUiGen;
 
 impl KeyboardUiGen {
-    /// Returns `UiSpriteLabel`s for the keyboard's keys, and tints player keys' sprite sequences.
+    /// Returns `UiSpriteLabel`s for the keyboard's keys, and tints player keys'
+    /// sprite sequences.
     pub fn generate_full(
         keyboard_settings: &KeyboardSettings,
         player_input_configs: &PlayerInputConfigs,

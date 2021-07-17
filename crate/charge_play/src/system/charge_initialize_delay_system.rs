@@ -11,8 +11,8 @@ use derive_new::new;
 
 /// Ticks `ChargeBeginDelayClock` while `Attack` is held.
 ///
-/// Adds `ChargeTrackerClock` on charge begin if none exists and `ChargeBeginDelayClock`
-/// `is_complete()`
+/// Adds `ChargeTrackerClock` on charge begin if none exists and
+/// `ChargeBeginDelayClock` `is_complete()`
 #[derive(Debug, Default, new)]
 pub struct ChargeInitializeDelaySystem;
 

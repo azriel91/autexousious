@@ -15,7 +15,8 @@ use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
 ///
 /// # Type Parameters
 ///
-/// * `ICSCD`: Item component which is also sequence component data, e.g. `SequenceEndTransitions`.
+/// * `ICSCD`: Item component which is also sequence component data, e.g.
+///   `SequenceEndTransitions`.
 #[derive(Debug, Default, new)]
 pub struct SequenceComponentUpdateSystem<ICSCD> {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
@@ -113,8 +114,8 @@ where
                     .get(entity)
                     .and_then(|item_id| item_components.get(item_id.0));
 
-                // Some entities will have sequence update events, but not this particular sequence
-                // component datan asset.
+                // Some entities will have sequence update events, but not this particular
+                // sequence component datan asset.
                 if let Some(sequence_component_data) = sequence_component_data {
                     Self::update_component(
                         &mut sequence_components,

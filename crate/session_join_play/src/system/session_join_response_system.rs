@@ -14,7 +14,8 @@ use network_session_model::play::{
 };
 use session_join_model::{play::SessionAcceptResponse, SessionJoinEvent};
 
-/// Records the session code and devices in the world when accepted into a session.
+/// Records the session code and devices in the world when accepted into a
+/// session.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionJoinResponseSystemDesc))]
 pub struct SessionJoinResponseSystem {

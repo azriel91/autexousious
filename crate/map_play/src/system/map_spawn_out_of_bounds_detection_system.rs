@@ -16,7 +16,8 @@ use spawn_model::play::SpawnEvent;
 
 use crate::MapBoundsChecks;
 
-/// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited map bounds.
+/// Sends a `MapBoundaryEvent` when an entity's `Position` has entered or exited
+/// map bounds.
 #[derive(Debug, Default, new)]
 pub struct MapSpawnOutOfBoundsDetectionSystem {
     /// Reader ID for the `SpawnEvent` channel.

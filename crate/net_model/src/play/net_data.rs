@@ -8,8 +8,10 @@ use serde::{Deserialize, Serialize};
 pub struct NetData<D> {
     /// `SocketAddr` of the sender of the data.
     ///
-    /// * If you are reading this on the server, this is the `SocketAddr` of the client.
-    /// * If you are reading this on the client, this is the `SocketAddr` of the server.
+    /// * If you are reading this on the server, this is the `SocketAddr` of the
+    ///   client.
+    /// * If you are reading this on the client, this is the `SocketAddr` of the
+    ///   server.
     pub socket_addr: SocketAddr,
     /// The data.
     pub data: D,

@@ -15,9 +15,10 @@ where
 {
     /// Intercepts to track and control application behaviour.
     ///
-    /// Rc<RefCell<Intercept<T, E>>> is a trait object, which does not implement Sized, needed by the generated
-    /// setter from the `Builder` derive, so we instead provide default intercepts, and functions
-    /// to toggle the enablement of certain `Intercept`s.
+    /// Rc<RefCell<Intercept<T, E>>> is a trait object, which does not implement
+    /// Sized, needed by the generated setter from the `Builder` derive, so
+    /// we instead provide default intercepts, and functions to toggle the
+    /// enablement of certain `Intercept`s.
     #[derivative(Debug = "ignore")]
     pub intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>>,
     /// State to delegate behaviour to.
@@ -38,7 +39,8 @@ where
         } // kcov-ignore
     }
 
-    /// Returns a new application robot state with only the specified intercepts.
+    /// Returns a new application robot state with only the specified
+    /// intercepts.
     pub fn new_with_intercepts(
         delegate: Box<dyn State<T, E>>,
         intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>>,
@@ -78,8 +80,8 @@ where
         self.wrap_trans(intercept_trans.unwrap_or(state_trans))
     }
 
-    /// When returning a `Trans` with a `State`, wrap it with a `RobotState` with the transitive
-    /// intercepts.
+    /// When returning a `Trans` with a `State`, wrap it with a `RobotState`
+    /// with the transitive intercepts.
     fn wrap_trans(&mut self, trans: Trans<T, E>) -> Trans<T, E> {
         match trans {
             Trans::Push(state) => Trans::Push(self.wrap_trans_state(state)),
@@ -88,8 +90,8 @@ where
         }
     }
 
-    /// Returns the provided `trans_state` with a `RobotState` that shares this state's transitive
-    /// `Intercept`s.
+    /// Returns the provided `trans_state` with a `RobotState` that shares this
+    /// state's transitive `Intercept`s.
     ///
     /// # Parameters
     ///
@@ -179,6 +181,7 @@ where
             intercept.borrow_mut().handle_event_end(trans)
         })
     }
+
     // kcov-ignore-end
 
     fn fixed_update(&mut self, mut data: StateData<'_, T>) -> Trans<T, E> {

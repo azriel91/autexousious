@@ -7,13 +7,14 @@ use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{play::GamePlayEndTransitionDelayClock, GamePlayEvent};
 
-/// Number of ticks to wait before accepting input to transition past game play end.
+/// Number of ticks to wait before accepting input to transition past game play
+/// end.
 pub const GAME_PLAY_END_TRANSITION_DELAY_DEFAULT: usize = 60;
 
 /// Delays game play end transition from taking place when game play first ends.
 ///
-/// This is an ergonomics improvement to prevent accidental transition, e.g. when a game is won via
-/// a rapidfire attack.
+/// This is an ergonomics improvement to prevent accidental transition, e.g.
+/// when a game is won via a rapidfire attack.
 #[derive(Debug, Default, new)]
 pub struct GamePlayEndTransitionDelaySystem {
     /// Reader ID for the `GamePlayEvent` event channel.

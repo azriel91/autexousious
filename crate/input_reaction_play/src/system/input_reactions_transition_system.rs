@@ -37,7 +37,8 @@ pub struct InputReactionsTransitionSystem<IRR> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
-    /// Pre-allocated bitset to track entities whose transitions have already been checked.
+    /// Pre-allocated bitset to track entities whose transitions have already
+    /// been checked.
     #[new(default)]
     processed_entities: BitSet,
     /// Marker.
@@ -286,7 +287,8 @@ where
 
     /// Processes `InputReactions` for entities without any `ControlInputEvent`.
     ///
-    /// Checks the `ControllerInput` state for any `Hold` and `Fallback` transitions.
+    /// Checks the `ControllerInput` state for any `Hold` and `Fallback`
+    /// transitions.
     fn process_hold_and_fallback_transitions(
         &self,
         InputReactionsTransitionResources {
@@ -382,11 +384,13 @@ where
             );
     }
 
-    /// Returns the transition sequence ID if the action button for that hold transition is held.
+    /// Returns the transition sequence ID if the action button for that hold
+    /// transition is held.
     ///
     /// # Parameters
     ///
-    /// * `reaction_effect_data`: `ControlAction` and sequence ID the hold transition applies to.
+    /// * `reaction_effect_data`: `ControlAction` and sequence ID the hold
+    ///   transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_action(
         ReactionEffectData {
@@ -426,13 +430,17 @@ where
                 }
             }
         }
-    } // kcov-ignore
+    }
 
-    /// Returns the transition sequence ID if the axis input for that hold transition is valued.
+    // kcov-ignore
+
+    /// Returns the transition sequence ID if the axis input for that hold
+    /// transition is valued.
     ///
     /// # Parameters
     ///
-    /// * `axis_transition`: `Axis` and sequence ID the hold transition applies to.
+    /// * `axis_transition`: `Axis` and sequence ID the hold transition applies
+    ///   to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_axis(
         AxisTransition {
@@ -458,7 +466,9 @@ where
                 }
             }
         }
-    } // kcov-ignore
+    }
+
+    // kcov-ignore
 
     fn process_transition<'f>(
         requirement_system_data: &mut IRR::SystemData,

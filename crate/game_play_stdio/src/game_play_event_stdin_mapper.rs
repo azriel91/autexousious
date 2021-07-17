@@ -7,9 +7,9 @@ use stdio_spi::StdinMapper;
 pub struct GamePlayEventStdinMapper;
 
 impl StdinMapper for GamePlayEventStdinMapper {
-    type SystemData = ();
-    type Event = GamePlayEvent;
     type Args = GamePlayEventArgs;
+    type Event = GamePlayEvent;
+    type SystemData = ();
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event, Error> {
         match args {

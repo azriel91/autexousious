@@ -5,7 +5,8 @@ use game_input_model::config::ControllerId;
 /// Errors when mapping events from the `game_input` crates.
 #[derive(Clone, Debug, PartialEq)]
 pub enum GameInputStdioError {
-    /// There is no entity with an `InputControlled` component with the specified controller ID.
+    /// There is no entity with an `InputControlled` component with the
+    /// specified controller ID.
     EntityWithControllerIdNotFound {
         /// Controller ID specified by the user.
         controller_id: ControllerId,

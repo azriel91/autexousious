@@ -2,8 +2,8 @@
 
 //! Types used to represent spawn configuration.
 //!
-//! These are used by other types that use spawns such as the various object types and map
-//! layers.
+//! These are used by other types that use spawns such as the various object
+//! types and map layers.
 
 pub mod config;
 pub mod loaded;

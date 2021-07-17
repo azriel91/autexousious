@@ -20,18 +20,21 @@ use crate::model::SessionDeviceMappings;
 pub struct SessionTracker<'s> {
     /// Sessions (`HashMap<SessionCode, Session>` newtype).
     pub sessions: &'s mut Sessions,
-    /// Mappings from `SessionCode` to `NetSessionDevices`, and `SocketAddr` to `SessionCode`.
+    /// Mappings from `SessionCode` to `NetSessionDevices`, and `SocketAddr` to
+    /// `SessionCode`.
     pub session_device_mappings: &'s mut SessionDeviceMappings<'s>,
 }
 
 impl<'s> SessionTracker<'s> {
-    /// Registers and returns a new `Session` and the `SessionDeviceId` for the session host.
+    /// Registers and returns a new `Session` and the `SessionDeviceId` for the
+    /// session host.
     ///
     /// # Parameters
     ///
     /// * `session_code_generator`: Generates session codes for sessions.
     /// * `socket_addr`: `SocketAddr` of the session host.
-    /// * `session_host_request_params`: Parameters from the session hosting request.
+    /// * `session_host_request_params`: Parameters from the session hosting
+    ///   request.
     pub fn track_new(
         &mut self,
         session_code_generator: &mut SessionCodeGenerator,
@@ -144,7 +147,8 @@ impl<'s> SessionTracker<'s> {
         }
     }
 
-    /// Removes the device from any previous session, returning it alongside the session code.
+    /// Removes the device from any previous session, returning it alongside the
+    /// session code.
     ///
     /// # Parameters
     ///

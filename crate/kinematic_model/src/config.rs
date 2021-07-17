@@ -237,8 +237,8 @@ kinematic_type!(Acceleration);
 
 impl From<PositionInit> for Position<f32> {
     fn from(position_init: PositionInit) -> Self {
-        // Note: `i32` as `f32` is a lossy conversion, which is why we cannot implement this
-        // generically with `S: From<i32>`, as `f32` is not `From<i32>`.
+        // Note: `i32` as `f32` is a lossy conversion, which is why we cannot implement
+        // this generically with `S: From<i32>`, as `f32` is not `From<i32>`.
         Position::new(
             position_init.x as f32,
             position_init.y as f32,

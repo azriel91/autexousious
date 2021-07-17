@@ -16,7 +16,8 @@ pub const CHARGE_DELAY_DEFAULT: usize = 10;
 
 /// Detects the begin / cancellation of the initialization phase of charging.
 ///
-/// Resets `ChargeBeginDelayClock` upon charge start / stop (currently control input event release).
+/// Resets `ChargeBeginDelayClock` upon charge start / stop (currently control
+/// input event release).
 #[derive(Debug, Default, new)]
 pub struct ChargeInitializeDetectionSystem {
     /// Reader ID for the `ControlInputEvent` channel.

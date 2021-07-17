@@ -13,6 +13,7 @@ pub struct SpriteGenParams {
     pub pixel_left: u32,
     /// Pixel top coordinate.
     pub pixel_top: u32,
-    /// Number of pixels to shift the sprite to the left and down relative to the entity.
+    /// Number of pixels to shift the sprite to the left and down relative to
+    /// the entity.
     pub offsets: [f32; 2],
 }

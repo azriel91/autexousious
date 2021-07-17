@@ -8,7 +8,8 @@ use collision_model::{
 };
 use derive_new::new;
 
-/// Detects whether a `HitEvent` occurs there is contact between an `Interaction` and a `Volume`.
+/// Detects whether a `HitEvent` occurs there is contact between an
+/// `Interaction` and a `Volume`.
 #[derive(Debug, Default, new)]
 pub struct HitDetectionSystem {
     /// Reader ID for the `ContactEvent` event channel.
@@ -55,9 +56,10 @@ impl<'s> System<'s> for HitDetectionSystem {
                     .expect("Expected `contact_event_rid` to exist for `HitDetectionSystem`."),
             )
             .filter(|ev| {
-                // This assumes `ev.from` is the hitting object entity. If we have a separate entity
-                // for each `Interaction`, then this assumption breaks, and we need to traverse the
-                // entity hierarchy to find the object entity.
+                // This assumes `ev.from` is the hitting object entity. If we have a separate
+                // entity for each `Interaction`, then this assumption breaks,
+                // and we need to traverse the entity hierarchy to find the
+                // object entity.
                 let entity_hitter = ev.from;
 
                 // This assumes `ev.to` is the hit object entity. If we have a separate
@@ -69,7 +71,8 @@ impl<'s> System<'s> for HitDetectionSystem {
                 //
                 // 1. `HitRepeatTrackers`:
                 //
-                //     Make sure the same object entity is not hit before the `HitRepeatClock` is up.
+                //     Make sure the same object entity is not hit before the `HitRepeatClock`
+                // is up.
                 //
                 // 2. `HitLimit`: Make sure not more than `HitLimit` entities are hit.
 
@@ -113,8 +116,9 @@ impl<'s> System<'s> for HitDetectionSystem {
             .map(|ev| HitEvent::new(ev.from, ev.to, ev.interaction.clone(), ev.body))
             .collect::<Vec<HitEvent>>();
 
-        // Make sure we clear this before the next tick, otherwise the hitter can only hit more
-        // objects when it has an `Interaction` with a larger `HitLimit`.
+        // Make sure we clear this before the next tick, otherwise the hitter can only
+        // hit more objects when it has an `Interaction` with a larger
+        // `HitLimit`.
         hit_object_counts.clear();
 
         hit_ec.iter_write(hit_events);

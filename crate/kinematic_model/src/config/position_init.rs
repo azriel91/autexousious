@@ -122,8 +122,8 @@ impl<'s> ItemComponent<'s> for PositionInit {
         if let Some(position_init_offset) = position_init_offset {
             let mut position_init_offset = **position_init_offset;
 
-            // Since scaling affects the whole transform, we need to divide the offset by the scale
-            // factor to retain the original values.
+            // Since scaling affects the whole transform, we need to divide the offset by
+            // the scale factor to retain the original values.
             if let Some(scale_init) = scale_init {
                 position_init_offset.x /= scale_init.x;
                 position_init_offset.y /= scale_init.y;

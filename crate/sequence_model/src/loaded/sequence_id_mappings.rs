@@ -17,7 +17,8 @@ use crate::{
 
 /// Mappings from sequence name to ID, and ID to name.
 ///
-/// This is essentially a wrapper around `BiMap`, with the `name()` and `id()` methods.
+/// This is essentially a wrapper around `BiMap`, with the `name()` and `id()`
+/// methods.
 #[derive(Clone, Debug, Default, Deref, DerefMut, Component, PartialEq, new)]
 #[storage(DenseVecStorage)]
 pub struct SequenceIdMappings<SeqName>
@@ -35,7 +36,8 @@ where
 {
     /// Returns a `SequenceIdMappings` with pre-allocated capacity.
     ///
-    /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
+    /// The mappings are guaranteed to hold `capacity` elements without
+    /// re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         SequenceIdMappings {
             sequence_name_to_id: BiMap::with_capacity(capacity),

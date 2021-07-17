@@ -1,4 +1,5 @@
-// See comment on struct. This attribute isn't detected if we put it on the struct.
+// See comment on struct. This attribute isn't detected if we put it on the
+// struct.
 #![allow(clippy::too_many_arguments)]
 
 use character_model::{config::CharacterSequenceName, play::RunCounter};
@@ -11,8 +12,8 @@ use sequence_model::play::SequenceStatus;
 
 /// Components used to compute character sequence updates.
 ///
-/// TODO: Reduce number of arguments passed, perhaps by splitting the sequence update handlers into
-/// separate systems.
+/// TODO: Reduce number of arguments passed, perhaps by splitting the sequence
+/// update handlers into separate systems.
 #[derive(Clone, Copy, Debug, new)]
 pub struct CharacterSequenceUpdateComponents<'c> {
     /// Controller input of the character.
@@ -31,6 +32,7 @@ pub struct CharacterSequenceUpdateComponents<'c> {
     pub mirrored: Mirrored,
     /// Tracks an object's attachment to the surrounding environment.
     pub grounding: Grounding,
-    /// States used to track X axis input over time to determine when a character should run.
+    /// States used to track X axis input over time to determine when a
+    /// character should run.
     pub run_counter: RunCounter,
 }

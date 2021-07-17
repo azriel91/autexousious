@@ -9,12 +9,15 @@ use session_host_model::config::SessionHostEventCommand;
 use session_join_model::config::SessionJoinEventCommand;
 use session_lobby_model::config::SessionLobbyEventCommand;
 
-/// Configuration type to indicate what `AppEvent` to send as part of an `InputReaction`.
+/// Configuration type to indicate what `AppEvent` to send as part of an
+/// `InputReaction`.
 ///
 /// Note:
 ///
-/// * `ControlInputEvent`s are skipped as this is used to indicate events sent upon control input.
-/// * `StdioCommandEvent`s are skipped as those events are not intended to be sent through UI items.
+/// * `ControlInputEvent`s are skipped as this is used to indicate events sent
+///   upon control input.
+/// * `StdioCommandEvent`s are skipped as those events are not intended to be
+///   sent through UI items.
 #[derive(Clone, Copy, Debug, Deserialize, From, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum InputReactionAppEvent {

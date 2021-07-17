@@ -8,8 +8,8 @@ use ui_model_spi::config::Dimensions;
 pub struct SessionDeviceWidgetTemplate {
     /// Dimensions of the widget.
     ///
-    /// Each session device widget will be placed below the previous one. The width is currently not
-    /// used.
+    /// Each session device widget will be placed below the previous one. The
+    /// width is currently not used.
     pub dimensions: Dimensions,
     /// Label attributes for the `SessionDeviceId`.
     pub device_id: UiLabel,

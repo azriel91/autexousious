@@ -14,7 +14,8 @@ use crate::SpriteSheetMapper;
 pub struct SpriteSheetLoader;
 
 impl SpriteSheetLoader {
-    /// Loads Amethyst `SpriteSheet`s from configuration and returns their handles.
+    /// Loads Amethyst `SpriteSheet`s from configuration and returns their
+    /// handles.
     ///
     /// # Parameters
     ///

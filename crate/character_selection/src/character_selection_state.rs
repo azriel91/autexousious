@@ -22,21 +22,24 @@ use state_registry::StateId;
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after character selection is complete.
+/// * `F`: Function to construct the state to return after character selection
+///   is complete.
 /// * `S`: State to return.
 ///
-/// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
+/// [state_builder]:
+/// character_selection_state/struct.CharacterSelectionStateBuilder.html
 pub type CharacterSelectionState<'a, 'b, F, S> =
     AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>, CharacterSelectionEntity>;
 
 /// Builder for a `CharacterSelectionState`.
 ///
-/// `SystemBundle`s to run in the `CharacterSelectionState`'s dispatcher are registered on this
-/// builder.
+/// `SystemBundle`s to run in the `CharacterSelectionState`'s dispatcher are
+/// registered on this builder.
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after character selection is complete.
+/// * `F`: Function to construct the state to return after character selection
+///   is complete.
 /// * `S`: `State` to delegate to.
 pub type CharacterSelectionStateBuilder<'a, 'b, F, S> = AppStateBuilder<
     'a,
@@ -47,12 +50,14 @@ pub type CharacterSelectionStateBuilder<'a, 'b, F, S> = AppStateBuilder<
 
 /// Delegate `State` for character selection.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `CharacterSelectionState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `CharacterSelectionState` is an alias with this as a
+/// delegate state.
 ///
 /// # Type Parameters
 ///
-/// * `F`: Function to construct the state to return after character selection is complete.
+/// * `F`: Function to construct the state to return after character selection
+///   is complete.
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]

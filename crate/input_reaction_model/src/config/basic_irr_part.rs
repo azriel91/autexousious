@@ -14,7 +14,8 @@ use crate::config::BasicIrrParams;
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum BasicIrrPart {
-    /// Whether or not there is x axis input, and if it matches the direction the object is facing.
+    /// Whether or not there is x axis input, and if it matches the direction
+    /// the object is facing.
     InputDirX(InputDirection),
     /// Whether or not there is z axis input, and the direction it is in.
     InputDirZ(InputDirectionZ),

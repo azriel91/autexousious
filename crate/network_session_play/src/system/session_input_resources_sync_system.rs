@@ -15,7 +15,8 @@ use game_input_model::{
 use log::error;
 use network_session_model::{play::SessionStatus, SessionStatusEvent};
 
-/// Rectifies `PlayerController`s and input `Bindings` when switching between local and online play.
+/// Rectifies `PlayerController`s and input `Bindings` when switching between
+/// local and online play.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionInputResourcesSyncSystemDesc))]
 pub struct SessionInputResourcesSyncSystem {

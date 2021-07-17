@@ -13,7 +13,8 @@ use game_input_model::{
 };
 use sequence_model::loaded::SequenceId;
 
-/// Switches `AssetSelectionWidget` portrait entity when receving a `AssetSelectionEvent`.
+/// Switches `AssetSelectionWidget` portrait entity when receving a
+/// `AssetSelectionEvent`.
 #[derive(Debug, Default, new)]
 pub struct AswPortraitUpdateSystem {
     /// Reader ID for the `AssetSelectionEvent` channel.
