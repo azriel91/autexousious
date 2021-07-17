@@ -121,7 +121,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     true
                 }
             }};
-        };
+        }
 
         // sequence_component_loaded!(PositionInit) &&
         // sequence_component_loaded!(VelocityInit) &&

@@ -37,7 +37,10 @@ use crate::config::{AssetSlugBuildError, AssetSlugSegment, AssetSlugVisitor};
 /// }
 /// ```
 #[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-#[builder(derive(Debug), build_fn(validate = "Self::validate"))]
+#[builder(
+    derive(Debug),
+    build_fn(validate = "Self::validate", error = "AssetSlugBuildError")
+)]
 pub struct AssetSlug {
     // kcov-ignore-start
     /// Namespace of the asset, usually the username.

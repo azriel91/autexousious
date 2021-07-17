@@ -5,7 +5,3 @@ members = ["app/*", "crate/*"]
 # Slower compilation, but better performance of final executable.
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
-
-[patch.crates-io]
-# Needs `smithay-client-toolkit` release > 0.9.1
-andrew = { git = "https://github.com/smithay/andrew.git", rev = "389208b" }
