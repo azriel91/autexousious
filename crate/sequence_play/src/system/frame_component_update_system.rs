@@ -104,7 +104,11 @@ where
                     .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
             .filter(|ev| {
-                matches!(ev, SequenceUpdateEvent::SequenceBegin { .. } | SequenceUpdateEvent::FrameBegin { .. })
+                matches!(
+                    ev,
+                    SequenceUpdateEvent::SequenceBegin { .. }
+                        | SequenceUpdateEvent::FrameBegin { .. }
+                )
             })
             .for_each(|ev| {
                 let entity = ev.entity();
