@@ -8,9 +8,9 @@ use stdio_spi::StdinMapper;
 pub struct NetworkModeSelectionEventStdinMapper;
 
 impl StdinMapper for NetworkModeSelectionEventStdinMapper {
-    type SystemData = ();
-    type Event = NetworkModeSelectionEvent;
     type Args = NetworkModeSelectionEventArgs;
+    type Event = NetworkModeSelectionEvent;
+    type SystemData = ();
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event, Error> {
         match args {

@@ -95,7 +95,8 @@ interactions:
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }
 
-    /// Needed because the YAML deserializer does not support deserializing values directly.
+    /// Needed because the YAML deserializer does not support deserializing
+    /// values directly.
     #[derive(Debug, Deserialize)]
     struct InteractionsFrame {
         interactions: Interactions,

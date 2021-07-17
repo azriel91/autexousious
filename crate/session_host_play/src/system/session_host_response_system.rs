@@ -14,7 +14,8 @@ use network_session_model::play::{
 };
 use session_host_model::{play::SessionAcceptResponse, SessionHostEvent};
 
-/// Records the session code and devices in the world when accepted into a session.
+/// Records the session code and devices in the world when accepted into a
+/// session.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionHostResponseSystemDesc))]
 pub struct SessionHostResponseSystem {

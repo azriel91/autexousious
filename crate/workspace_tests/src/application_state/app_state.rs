@@ -283,9 +283,11 @@ mod tests {
         fn on_start(&mut self, mut _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnStart);
         }
+
         fn on_stop(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnStop);
         }
+
         fn on_pause(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnPause);
         }
@@ -342,6 +344,7 @@ mod tests {
     struct SystemCounter;
     impl<'s> System<'s> for SystemCounter {
         type SystemData = WriteExpect<'s, Counter>;
+
         fn run(&mut self, mut counter: Self::SystemData) {
             *counter = Counter((*counter).0 + 10);
         }
@@ -356,6 +359,7 @@ mod tests {
     struct SystemCopyCounter;
     impl<'s> System<'s> for SystemCopyCounter {
         type SystemData = (ReadExpect<'s, Counter>, Write<'s, CopyCounter>);
+
         fn run(&mut self, (counter, mut copy_counter): Self::SystemData) {
             *copy_counter = CopyCounter((*counter).0);
         }

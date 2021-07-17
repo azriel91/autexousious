@@ -26,8 +26,10 @@ impl CharacterEntityAugmenter {
     ///
     /// # Parameters
     ///
-    /// * `character_spawning_resources`: Resources needed to spawn the character.
-    /// * `character_component_storages`: Character specific `Component` storages.
+    /// * `character_spawning_resources`: Resources needed to spawn the
+    ///   character.
+    /// * `character_component_storages`: Character specific `Component`
+    ///   storages.
     /// * `asset_id`: Asset ID of the character.
     /// * `entity`: The entity to augment.
     pub fn augment<'s>(
@@ -62,7 +64,7 @@ impl CharacterEntityAugmenter {
                 )
             });
         let character_definition = character_definition_assets
-            .get(&character_definition_handle)
+            .get(character_definition_handle)
             .expect("Expected `CharacterDefinition` to be loaded.");
 
         let sequence_id_mappings = asset_sequence_id_mappings_character

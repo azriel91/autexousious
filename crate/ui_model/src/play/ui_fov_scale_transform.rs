@@ -1,7 +1,8 @@
 use amethyst::ui::UiTransform;
 use derive_new::new;
 
-/// Scale and transform values to adjust UI components when the window is resized.
+/// Scale and transform values to adjust UI components when the window is
+/// resized.
 #[derive(Clone, Copy, Debug, PartialEq, new)]
 pub struct UiFovScaleTransform {
     /// Scale to apply to UI components.
@@ -32,7 +33,8 @@ impl Default for UiFovScaleTransform {
 }
 
 impl UiFovScaleTransform {
-    /// Applies the scaling and translation to adjust to the new `ScreenDimensions`.
+    /// Applies the scaling and translation to adjust to the new
+    /// `ScreenDimensions`.
     ///
     /// # Parameters
     ///

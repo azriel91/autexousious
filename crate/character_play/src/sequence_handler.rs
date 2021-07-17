@@ -55,7 +55,8 @@ mod walk;
 
 /// Sequence transition behaviour calculation.
 pub trait CharacterSequenceHandler {
-    /// Returns the status update for a character based on current input or lack thereof.
+    /// Returns the status update for a character based on current input or lack
+    /// thereof.
     ///
     /// Returns `Some(..)` when there is an update, `None` otherwise.
     ///

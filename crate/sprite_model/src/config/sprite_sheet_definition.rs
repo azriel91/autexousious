@@ -10,8 +10,9 @@ use crate::config::SpriteOffset;
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
     ///
-    /// This is a `String` because Amethyst expects an `Into<String>` when loading an asset, and if
-    /// we store a `PathBuf`, it would need to re-allocate another `String`.
+    /// This is a `String` because Amethyst expects an `Into<String>` when
+    /// loading an asset, and if we store a `PathBuf`, it would need to
+    /// re-allocate another `String`.
     pub path: String,
     /// Width of each individual sprite on the sprite sheet.
     pub sprite_w: u32,
@@ -28,7 +29,8 @@ pub struct SpriteSheetDefinition {
     /// Whether or not there is a 1 pixel border between sprites.
     #[serde(default = "SpriteSheetDefinition::has_border_default")]
     pub has_border: bool,
-    /// Pixel offsets of the sprite relative to the entity's position in the world.
+    /// Pixel offsets of the sprite relative to the entity's position in the
+    /// world.
     ///
     /// A positive x value shifts the sprite to the left by that many pixels.
     /// A positive y value shifts the sprite upwards by that many pixels.

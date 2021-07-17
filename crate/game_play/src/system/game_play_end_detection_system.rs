@@ -14,7 +14,8 @@ use team_model::play::Team;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
 ///
-/// In the future this will be type parameterized to specify the detection function.
+/// In the future this will be type parameterized to specify the detection
+/// function.
 #[derive(Debug, Default, new)]
 pub struct GamePlayEndDetectionSystem {
     /// Pre-allocated `HashMap` to track number of alive players.
@@ -53,7 +54,7 @@ impl GamePlayEndDetectionSystem {
             ..
         }: &mut GamePlayEndDetectionSystemData,
     ) -> Option<WinStatus> {
-        let team_alive_count = self.team_alive_count(&teams, &health_pointses);
+        let team_alive_count = self.team_alive_count(teams, health_pointses);
         if team_alive_count == 0 {
             let win_outcome = WinOutcome::Draw;
             let win_status = WinStatus::new(win_outcome);

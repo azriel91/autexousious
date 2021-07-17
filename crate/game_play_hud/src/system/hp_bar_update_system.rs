@@ -68,11 +68,12 @@ impl<'s> System<'s> for HpBarUpdateSystem {
             .for_each(|(transform, sprite_render, health_points)| {
                 let hp = (**health_points) as f32;
 
-                // This is here because the `DrawFlat2D` pass renders sprites centered -- i.e. the
-                // sprite is shifted left by half its width, and down by half its height.
+                // This is here because the `DrawFlat2D` pass renders sprites centered -- i.e.
+                // the sprite is shifted left by half its width, and down by
+                // half its height.
                 //
-                // Since the `HpBar` is drawn centered, and we want it to be on the left in a fixed
-                // position, we calculate how far it should be.
+                // Since the `HpBar` is drawn centered, and we want it to be on the left in a
+                // fixed position, we calculate how far it should be.
                 let half_hp_lost = (HP_BAR_LENGTH - hp) / 2.;
                 let translation = transform.translation_mut();
                 translation.x += -half_hp_lost;

@@ -70,12 +70,12 @@ macro_rules! kinematic_type {
             }
         }
 
-        impl<S> Into<Vector3<S>> for $name<S>
+        impl<S> From<$name<S>> for Vector3<S>
         where
             S: Copy + Debug + Default + PartialEq + Send + Sync + 'static,
         {
-            fn into(self) -> Vector3<S> {
-                Vector3::new(self.0.x, self.0.y, self.0.z)
+            fn from(s: $name<S>) -> Vector3<S> {
+                Vector3::new(s.0.x, s.0.y, s.0.z)
             }
         }
 
@@ -88,12 +88,12 @@ macro_rules! kinematic_type {
             }
         }
 
-        impl<S> Into<math::Vector3<S>> for $name<S>
+        impl<S> From<$name<S>> for math::Vector3<S>
         where
             S: Copy + Debug + Default + PartialEq + Send + Sync + 'static,
         {
-            fn into(self) -> math::Vector3<S> {
-                self.0
+            fn from(s: $name<S>) -> math::Vector3<S> {
+                s.0
             }
         }
 
@@ -237,8 +237,8 @@ kinematic_type!(Acceleration);
 
 impl From<PositionInit> for Position<f32> {
     fn from(position_init: PositionInit) -> Self {
-        // Note: `i32` as `f32` is a lossy conversion, which is why we cannot implement this
-        // generically with `S: From<i32>`, as `f32` is not `From<i32>`.
+        // Note: `i32` as `f32` is a lossy conversion, which is why we cannot implement
+        // this generically with `S: From<i32>`, as `f32` is not `From<i32>`.
         Position::new(
             position_init.x as f32,
             position_init.y as f32,

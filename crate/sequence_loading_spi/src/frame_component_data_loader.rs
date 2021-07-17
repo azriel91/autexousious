@@ -4,7 +4,8 @@ use amethyst::{
 };
 use sequence_model_spi::loaded::ComponentDataExt;
 
-/// Loads frame component data, typically a sequence of a particular frame component.
+/// Loads frame component data, typically a sequence of a particular frame
+/// component.
 pub trait FrameComponentDataLoader {
     /// The component that changes per frame.
     type Component: Component;

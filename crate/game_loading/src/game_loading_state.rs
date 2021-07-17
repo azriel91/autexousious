@@ -51,8 +51,9 @@ where
 
     /// Removes all entities stored in the `GameEntities` resource.
     ///
-    /// Since the population of `GameEntities` is used to determine whether the next state should be
-    /// switched to, we need to clear it when the entities are stale.
+    /// Since the population of `GameEntities` is used to determine whether the
+    /// next state should be switched to, we need to clear it when the
+    /// entities are stale.
     fn reset_game_loading_status(&mut self, world: &mut World) {
         let mut game_entities = world.write_resource::<GameEntities>();
         game_entities.objects.clear();
@@ -101,8 +102,8 @@ where
         &mut self,
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        data.data.update(&data.world);
-        self.dispatcher.as_mut().unwrap().dispatch(&data.world);
+        data.data.update(data.world);
+        self.dispatcher.as_mut().unwrap().dispatch(data.world);
 
         if data.world.read_resource::<GameLoadingStatus>().loaded() {
             // TODO: `Trans:Push` when we have a proper map selection menu.

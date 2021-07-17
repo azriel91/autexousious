@@ -17,8 +17,9 @@ pub type AssetTextureLoadingSystem = AssetPartLoadingSystem<AssetTextureLoader>;
 pub struct AssetTextureLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
-    const LOAD_STAGE: LoadStage = LoadStage::TextureLoading;
     type SystemData = TextureLoadingResources<'s>;
+
+    const LOAD_STAGE: LoadStage = LoadStage::TextureLoading;
 
     /// Loads an asset's `Texture`s and `SpriteSheet`s.
     fn process(
@@ -68,11 +69,11 @@ impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
 
             let sprite_sheet_handles = SpriteLoader::load(
                 &mut progress_counter,
-                &loader,
-                &texture_assets,
-                &sprite_sheet_assets,
-                &sprites_definition,
-                &asset_path,
+                loader,
+                texture_assets,
+                sprite_sheet_assets,
+                sprites_definition,
+                asset_path,
             )
             .expect("Failed to load textures and sprite sheets.");
 
@@ -80,7 +81,8 @@ impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
         }
     }
 
-    /// Returns whether the `Texture`s and `SpriteSheet` assets have been loaded.
+    /// Returns whether the `Texture`s and `SpriteSheet` assets have been
+    /// loaded.
     ///
     /// Returns `true` if there are no textures to load.
     fn is_complete(

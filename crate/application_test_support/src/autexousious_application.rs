@@ -61,10 +61,11 @@ pub struct AutexousiousApplication;
 impl AutexousiousApplication {
     /// Returns an application with the Transform, Input, and UI bundles.
     ///
-    /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
-    /// done.
+    /// This also adds a `ScreenDimensions` resource to the `World` so that UI
+    /// calculations can be done.
     ///
-    /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
+    /// This has the same effect as calling
+    /// `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
     pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
         AmethystApplication::ui_base::<ControlBindings>()
@@ -73,11 +74,11 @@ impl AutexousiousApplication {
 
     /// Returns an application with Render, Input, and UI bundles loaded.
     ///
-    /// This function does not load any game assets as it is meant to be used to test types
-    /// that load game assets. If you want test objects and maps to be loaded, please use the
-    /// `game_base` function.
-    pub fn render_and_ui(
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
+    /// This function does not load any game assets as it is meant to be used to
+    /// test types that load game assets. If you want test objects and maps
+    /// to be loaded, please use the `game_base` function.
+    pub fn render_and_ui()
+    -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
         amethyst::Logger::from_config(LoggerConfig::default())
             .level_for("gfx_backend_vulkan", LogLevelFilter::Warn)
             .level_for("rendy_factory", LogLevelFilter::Warn)
@@ -95,7 +96,8 @@ impl AutexousiousApplication {
             .with_bundle_event_fn(|event_loop| RenderEmptyBundle::<DefaultBackend>::new(event_loop))
     }
 
-    /// Returns an application with game assets loaded, without `state_play` systems.
+    /// Returns an application with game assets loaded, without `state_play`
+    /// systems.
     pub fn state_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
         let font_config = FontConfigLoader::load().expect("Failed to load `FontConfig`.");
@@ -175,12 +177,13 @@ impl AutexousiousApplication {
 
     /// Returns an application with game assets loaded.
     ///
-    /// This function does not instantiate any game entities. If you want test entities (objects and
-    /// map) to be instantiated, please use the `game_base` function.
+    /// This function does not instantiate any game entities. If you want test
+    /// entities (objects and map) to be instantiated, please use the
+    /// `game_base` function.
     ///
-    /// Note that this is not suitable to test systems that subscribe or write to
-    /// `StateIdUpdateEvent`s as this application base will also send events and spawn entities based on
-    /// those events.
+    /// Note that this is not suitable to test systems that subscribe or write
+    /// to `StateIdUpdateEvent`s as this application base will also send
+    /// events and spawn entities based on those events.
     pub fn config_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
         let font_config = FontConfigLoader::load().expect("Failed to load `FontConfig`.");

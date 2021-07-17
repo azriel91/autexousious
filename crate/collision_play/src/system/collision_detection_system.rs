@@ -136,12 +136,11 @@ impl CollisionDetectionSystem {
     ) -> (i32, i32) {
         let (mut coord, mut coord_w) = {
             let mut x1 = i_x as f32 - offset;
+            let x2 = x1 + i_w as f32;
             if mirrored {
-                let x2 = x1 + i_w as f32;
                 x1 = -x1;
                 (-x2, x1)
             } else {
-                let x2 = x1 + i_w as f32;
                 (x1, x2)
             }
         };

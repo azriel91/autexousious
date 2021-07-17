@@ -5,7 +5,8 @@ use crate::{
     CharacterSequenceUpdateComponents,
 };
 
-/// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
+/// Determines whether to swithc to the `Walk` or `Run` sequence based on X
+/// input.
 ///
 /// This should only be called from the Stand sequence handler.
 #[derive(Debug)]

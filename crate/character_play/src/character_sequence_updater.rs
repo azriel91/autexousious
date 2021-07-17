@@ -16,7 +16,8 @@ use crate::{
 pub struct CharacterSequenceUpdater;
 
 impl CharacterSequenceUpdater {
-    /// Handles behaviour transition (if any) based on components.controller_input.
+    /// Handles behaviour transition (if any) based on
+    /// components.controller_input.
     ///
     /// # Parameters
     ///

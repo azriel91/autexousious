@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use std::convert::AsRef;
 
 use derive_new::new;
@@ -13,7 +15,8 @@ pub struct UiFrame {
     /// Sprite rendering information.
     #[serde(flatten)]
     pub sprite_frame: SpriteFrame,
-    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or
+    /// released.
     #[serde(default)]
     pub input_reactions: InputReactions<SpriteSequenceName>,
 }

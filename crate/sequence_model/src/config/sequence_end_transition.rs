@@ -27,8 +27,8 @@ where
     Delete,
     /// Transition to the specified sequence.
     //
-    // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported yet.
-    // TODO: See: <https://github.com/serde-rs/serde/issues/1402>
+    // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported
+    // yet. TODO: See: <https://github.com/serde-rs/serde/issues/1402>
     SequenceName(SequenceNameString<SeqName>),
 }
 
@@ -46,19 +46,19 @@ where
                 let variant_index = 0;
                 let variant_name =
                     Into::<&'static str>::into(SequenceEndTransition::<SeqName>::None);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+                serializer.serialize_unit_variant(enum_name, variant_index, variant_name)
             }
             SequenceEndTransition::Repeat => {
                 let variant_index = 1;
                 let variant_name =
                     Into::<&'static str>::into(SequenceEndTransition::<SeqName>::Repeat);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+                serializer.serialize_unit_variant(enum_name, variant_index, variant_name)
             }
             SequenceEndTransition::Delete => {
                 let variant_index = 2;
                 let variant_name =
                     Into::<&'static str>::into(SequenceEndTransition::<SeqName>::Delete);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+                serializer.serialize_unit_variant(enum_name, variant_index, variant_name)
             }
             SequenceEndTransition::SequenceName(sequence_name_string) => {
                 let string = match sequence_name_string {

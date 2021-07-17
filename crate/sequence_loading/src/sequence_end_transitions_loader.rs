@@ -23,9 +23,10 @@ where
 {
     /// Loads `SequenceEndTransitions`.
     ///
-    /// This is similar to calling the `SequenceComponentDataLoader::load` trait method, with the
-    /// difference that the resources are stored by an instantiation of this type, so they do not
-    /// need to be passed in when this method is called.
+    /// This is similar to calling the `SequenceComponentDataLoader::load` trait
+    /// method, with the difference that the resources are stored by an
+    /// instantiation of this type, so they do not need to be passed in when
+    /// this method is called.
     pub fn items_to_datas<SequencesIterator, SequenceRef, Frm>(
         &self,
         sequences_iterator: SequencesIterator,
@@ -39,7 +40,7 @@ where
         <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 SequenceEndTransitionMapper::map(
-                    &self.sequence_id_mappings,
+                    self.sequence_id_mappings,
                     asset_slug,
                     sequence_ref,
                 )

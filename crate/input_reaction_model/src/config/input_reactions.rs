@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::{BasicIrr, ButtonInputReactionN, InputReaction};
 
-/// Sequence to transition to when a `ControlAction` is pressed, held, or released.
+/// Sequence to transition to when a `ControlAction` is pressed, held, or
+/// released.
 #[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
 #[derivative(Default)]
 #[serde(deny_unknown_fields)]
@@ -92,9 +93,9 @@ where
     pub fallback: Option<InputReaction<SeqName, IRR>>,
     /// Sequence to transition to when a keyboard `Button` is pressed.
     ///
-    /// This is not intended to be used in the game model, but rather for the control settings UI to
-    /// provide feedback when a device key is pressed. Device may be a keyboard, mouse, or
-    /// controller.
+    /// This is not intended to be used in the game model, but rather for the
+    /// control settings UI to provide feedback when a device key is
+    /// pressed. Device may be a keyboard, mouse, or controller.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub press_button: Option<ButtonInputReactionN<SeqName, IRR>>,

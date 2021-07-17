@@ -9,10 +9,10 @@ set -e
 
 if rustc --version | grep -qF 'nightly'; then
     # Rust fmt
-    cargo fmt --all
+    cargo fmt --workspace
 
     # Clippy - best practices
-    [ "${CLIPPY_ENABLED}" = "false" ] || cargo clippy --all
+    [ "${CLIPPY_ENABLED}" = "false" ] || cargo clippy --workspace
 fi
 
 # Security vulnerability
@@ -28,7 +28,7 @@ cargo audit
 description = '''
 Performs the following code maintenance tasks:
 
-* Format code: `cargo fmt --all`
+* Format code: `cargo fmt --workspace`
 * Upgrade dependencies: `cargo upgrade`
 * Update dependencies: `cargo update`
 * Check for outdated dependencies: `cargo outdated`
@@ -128,8 +128,8 @@ script = [
 '''
 set +x
 . ./scripts/log.sh
-notice "Running \`cargo upgrade --all\`"
-cargo upgrade --all
+notice "Running \`cargo upgrade --workspace\`"
+cargo upgrade --workspace
 '''
 ]
 

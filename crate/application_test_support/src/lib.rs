@@ -2,8 +2,8 @@
 
 //! Test harness to support testing of Autexousious applications.
 //!
-//! This builds on top of the `amethyst_test` crate by providing single calls to common
-//! application setups necessary to test Autexousious applications.
+//! This builds on top of the `amethyst_test` crate by providing single calls to
+//! common application setups necessary to test Autexousious applications.
 
 pub use crate::{
     autexousious_application::AutexousiousApplication,

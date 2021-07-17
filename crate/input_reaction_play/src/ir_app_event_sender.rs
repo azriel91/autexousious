@@ -22,15 +22,17 @@ mod ir_session_host_event_sender;
 mod ir_session_join_event_sender;
 mod ir_session_lobby_event_sender;
 
-/// Maps `InputReactionAppEvent`s to the actual event and sends it to its event channel.
+/// Maps `InputReactionAppEvent`s to the actual event and sends it to its event
+/// channel.
 #[derive(Debug)]
 pub struct IrAppEventSender;
 
 impl IrAppEventSender {
-    /// Maps `InputReactionAppEvent`s to the actual event and sends it to its event channel.
+    /// Maps `InputReactionAppEvent`s to the actual event and sends it to its
+    /// event channel.
     ///
-    /// If necessary, this involves looking up additional information from resources to populate the
-    /// actual event variant's fields.
+    /// If necessary, this involves looking up additional information from
+    /// resources to populate the actual event variant's fields.
     ///
     /// # Parameters
     ///

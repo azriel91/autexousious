@@ -14,7 +14,8 @@ use crate::SpriteSheetMapper;
 pub struct SpriteSheetLoader;
 
 impl SpriteSheetLoader {
-    /// Loads Amethyst `SpriteSheet`s from configuration and returns their handles.
+    /// Loads Amethyst `SpriteSheet`s from configuration and returns their
+    /// handles.
     ///
     /// # Parameters
     ///
@@ -30,7 +31,7 @@ impl SpriteSheetLoader {
         texture_handles: &[Handle<Texture>],
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheetHandle> {
-        let sprite_sheets = SpriteSheetMapper::map(texture_handles, &sprite_sheet_definitions);
+        let sprite_sheets = SpriteSheetMapper::map(texture_handles, sprite_sheet_definitions);
 
         sprite_sheets
             .into_iter()

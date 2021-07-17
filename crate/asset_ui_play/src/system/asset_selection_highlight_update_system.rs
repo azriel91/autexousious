@@ -15,8 +15,8 @@ use ui_model_spi::play::{Siblings, SiblingsVertical};
 
 /// Updates the `AssetSelectionHighlight` when receving a `ControlInputEvent`.
 ///
-/// This simply updates the `TargetObject` to the appropriate sibling of the current
-/// `AssetDisplayCell`.
+/// This simply updates the `TargetObject` to the appropriate sibling of the
+/// current `AssetDisplayCell`.
 #[derive(Debug, Default, new)]
 pub struct AssetSelectionHighlightUpdateSystem {
     /// Reader ID for the `ControlInputEvent` channel.

@@ -26,8 +26,9 @@ pub type AssetSequenceComponentLoadingSystem = AssetPartLoadingSystem<AssetSeque
 pub struct AssetSequenceComponentLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
-    const LOAD_STAGE: LoadStage = LoadStage::SequenceComponentLoading;
     type SystemData = SequenceComponentLoadingResources<'s>;
+
+    const LOAD_STAGE: LoadStage = LoadStage::SequenceComponentLoading;
 
     fn process(
         asset_loading_resources: &mut AssetLoadingResources<'_>,
@@ -120,7 +121,7 @@ impl<'s> AssetPartLoader<'s> for AssetSequenceComponentLoader {
                     true
                 }
             }};
-        };
+        }
 
         // sequence_component_loaded!(PositionInit) &&
         // sequence_component_loaded!(VelocityInit) &&

@@ -98,8 +98,8 @@ mod test {
         let _assets_dir = fs::create_dir(&assets_path).unwrap();
         let assets_dir = AppDir::dir_internal(Ok(exe_dir.into_path()), AppDir::ASSETS);
 
-        // `error-chain` generated `Error` doesn't implement `PartialEq`, so we have to manually
-        // compare
+        // `error-chain` generated `Error` doesn't implement `PartialEq`, so we have to
+        // manually compare
         let expected: Result<PathBuf, Error> = Ok(assets_path.canonicalize().unwrap());
         assert!(
             assets_dir.is_ok(),

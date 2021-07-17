@@ -184,8 +184,8 @@ mod tests {
     }
 
     #[test]
-    fn does_not_increase_velocity_for_x_expr_value_when_x_controller_input_zero(
-    ) -> Result<(), Error> {
+    fn does_not_increase_velocity_for_x_expr_value_when_x_controller_input_zero()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Continuous,
             x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -247,8 +247,8 @@ mod tests {
     }
 
     #[test]
-    fn negates_velocity_for_x_expr_value_when_x_controller_input_positive_and_mirrored(
-    ) -> Result<(), Error> {
+    fn negates_velocity_for_x_expr_value_when_x_controller_input_positive_and_mirrored()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Continuous,
             x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -279,8 +279,8 @@ mod tests {
     }
 
     #[test]
-    fn negates_velocity_once_for_x_expr_value_when_x_controller_input_negative_and_mirrored(
-    ) -> Result<(), Error> {
+    fn negates_velocity_once_for_x_expr_value_when_x_controller_input_negative_and_mirrored()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Continuous,
             x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -311,8 +311,8 @@ mod tests {
     }
 
     #[test]
-    fn negates_velocity_for_x_expr_value_when_x_controller_input_valued_and_mirrored_and_once(
-    ) -> Result<(), Error> {
+    fn negates_velocity_for_x_expr_value_when_x_controller_input_valued_and_mirrored_and_once()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Once,
             x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -343,8 +343,8 @@ mod tests {
     }
 
     #[test]
-    fn does_not_increase_velocity_for_x_expr_value_when_x_controller_input_valued_and_no_event(
-    ) -> Result<(), Error> {
+    fn does_not_increase_velocity_for_x_expr_value_when_x_controller_input_valued_and_no_event()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Once,
             x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
@@ -375,8 +375,8 @@ mod tests {
     }
 
     #[test]
-    fn does_not_increase_velocity_for_z_expr_value_when_z_controller_input_zero(
-    ) -> Result<(), Error> {
+    fn does_not_increase_velocity_for_z_expr_value_when_z_controller_input_zero()
+    -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Continuous,
             x: ObjectAccelerationValue::Const(0.),

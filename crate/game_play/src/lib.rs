@@ -2,8 +2,8 @@
 
 //! Provides the state and systems for game play.
 //!
-//! Note that game entities are spawned in the `GameLoadingState` provided by the `game_loading`
-//! crate.
+//! Note that game entities are spawned in the `GameLoadingState` provided by
+//! the `game_loading` crate.
 
 pub use crate::{
     game_play_bundle::GamePlayBundle,

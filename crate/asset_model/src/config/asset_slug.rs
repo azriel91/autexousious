@@ -7,16 +7,18 @@ use crate::config::{AssetSlugBuildError, AssetSlugSegment, AssetSlugVisitor};
 
 /// Namespaced reference to identify assets.
 ///
-/// This should be constructed using `AssetSlugBuilder` as it performs validation on the values.
+/// This should be constructed using `AssetSlugBuilder` as it performs
+/// validation on the values.
 ///
-/// By convention, both the namespace and name should be lowercase and underscore separated. The
-/// text displayed on character screens is a separate concept called the display name, read from
-/// configuration.
+/// By convention, both the namespace and name should be lowercase and
+/// underscore separated. The text displayed on character screens is a separate
+/// concept called the display name, read from configuration.
 ///
 /// **Developer's note:**
 ///
-/// This is called a `Ref` instead of `Id` because the underlying asset may evolve, and the word
-/// *ID* will likely be used to refer to a specific revision of the asset (deterministic).
+/// This is called a `Ref` instead of `Id` because the underlying asset may
+/// evolve, and the word *ID* will likely be used to refer to a specific
+/// revision of the asset (deterministic).
 ///
 /// # Examples
 ///
@@ -35,7 +37,10 @@ use crate::config::{AssetSlugBuildError, AssetSlugSegment, AssetSlugVisitor};
 /// }
 /// ```
 #[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-#[builder(derive(Debug), build_fn(validate = "Self::validate"))]
+#[builder(
+    derive(Debug),
+    build_fn(validate = "Self::validate", error = "AssetSlugBuildError")
+)]
 pub struct AssetSlug {
     // kcov-ignore-start
     /// Namespace of the asset, usually the username.
@@ -46,7 +51,8 @@ pub struct AssetSlug {
 }
 
 impl AssetSlug {
-    /// Serializes this `AssetSlug` as a single string, such as `default/fireball`.
+    /// Serializes this `AssetSlug` as a single string, such as
+    /// `default/fireball`.
     pub fn serialize_str<S>(asset_slug: &AssetSlug, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -54,7 +60,8 @@ impl AssetSlug {
         serializer.serialize_str(&asset_slug.to_string())
     }
 
-    /// Deserializes this `AssetSlug` from a single string, such as `default/fireball`.
+    /// Deserializes this `AssetSlug` from a single string, such as
+    /// `default/fireball`.
     pub fn deserialize_str<'de, D>(deserializer: D) -> Result<AssetSlug, D::Error>
     where
         D: Deserializer<'de>,
@@ -77,8 +84,8 @@ impl AssetSlugBuilder {
             if value.is_empty() {
                 Err(AssetSlugBuildError::SegmentEmpty { segment })
             } else if value.contains(char::is_control) {
-                // Put this validation first, because we don't want to print control characters in
-                // any of the other validations.
+                // Put this validation first, because we don't want to print control characters
+                // in any of the other validations.
                 Err(AssetSlugBuildError::SegmentContainsControlChar {
                     segment,
                     value: value.to_string(),

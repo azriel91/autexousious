@@ -48,8 +48,8 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     pub positions: WriteStorage<'s, Position<f32>>,
     /// `LazyUpdate` resource.
     ///
-    /// This is used because both the `HpBarPrefab` and `CpBarPrefab` request `Write` access to the
-    /// same resources.
+    /// This is used because both the `HpBarPrefab` and `CpBarPrefab` request
+    /// `Write` access to the same resources.
     #[derivative(Debug = "ignore")]
     pub lazy_update: Read<'s, LazyUpdate>,
 }
@@ -110,8 +110,8 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
     ) {
         // TODO: Entities may not have health_points component -- see the second join()
 
-        // TODO: We may actually want this system to run during gameplay, e.g. when changing which
-        // game object is controlled.
+        // TODO: We may actually want this system to run during gameplay, e.g. when
+        // changing which game object is controlled.
 
         if game_loading_status.character_augment_status != CharacterAugmentStatus::Rectify {
             return;

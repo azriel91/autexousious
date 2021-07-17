@@ -100,7 +100,8 @@ impl CameraTrackingSystem {
         CameraTargetCoordinates::new(x_centred, y_centred, z_centred)
     }
 
-    /// Returns the position skewed in the direction tracked entities are facing.
+    /// Returns the position skewed in the direction tracked entities are
+    /// facing.
     fn position_with_direction(
         camera_trackeds: &ReadStorage<'_, CameraTracked>,
         mirroreds: &ReadStorage<'_, Mirrored>,
@@ -166,8 +167,8 @@ impl<'s> System<'s> for CameraTrackingSystem {
 
         // Focus on tracked entities.
         //
-        // Keep the average x in the middle of the screen, offset by the direction characters are
-        // facing.
+        // Keep the average x in the middle of the screen, offset by the direction
+        // characters are facing.
         // Keep the average (y + z) in the middle of the screen.
         let position_avg = Self::position_average(&camera_trackeds, &positions);
         let target_position = Self::position_with_direction(

@@ -1,6 +1,7 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[numeric_newtype]` proc_macro_attribute to implement `std::ops::*` traits.
+//! Provides the `#[numeric_newtype]` proc_macro_attribute to implement
+//! `std::ops::*` traits.
 //!
 //! # Examples
 //!
@@ -51,8 +52,9 @@
 
 // TODO: Test using `compiletest_rs`.
 //
-// At the time of writing, we cannot test using `compiletest_rs` as it does not appear to be able to
-// link to external crates, so it never resolves `derive_more` as a dependency.
+// At the time of writing, we cannot test using `compiletest_rs` as it does not
+// appear to be able to link to external crates, so it never resolves
+// `derive_more` as a dependency.
 
 extern crate proc_macro;
 
@@ -166,7 +168,8 @@ pub fn numeric_newtype(_args: TokenStream, item: TokenStream) -> TokenStream {
 /// * `PartialEq`
 /// * `PartialOrd`
 ///
-/// Based on a static list, if the inner type derives `Eq + Ord`, those will also be derived.
+/// Based on a static list, if the inner type derives `Eq + Ord`, those will
+/// also be derived.
 fn derive_gen(ast: &mut DeriveInput, derive_eq_ord: bool) {
     let derives = {
         let mut base_derives: Punctuated<NestedMeta, Comma> = parse_quote!(
@@ -185,7 +188,8 @@ fn derive_gen(ast: &mut DeriveInput, derive_eq_ord: bool) {
 
 /// Returns whether the type is known to be `Eq + Ord`.
 ///
-/// Note: This is a static list, so any types not in the following list will give a false `false`:
+/// Note: This is a static list, so any types not in the following list will
+/// give a false `false`:
 fn is_eq_ord(ty: &Type) -> bool {
     if let Type::Path(TypePath { path, .. }) = ty {
         path.segments

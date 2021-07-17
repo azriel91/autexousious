@@ -18,8 +18,8 @@ application_robot = { path = "../application_robot" }
 application_state = { path = "../application_state" }
 application_test_support = { path = "../application_test_support", default-features = false }
 application_ui = { path = "../application_ui" }
-approx = "0.3.2"
-assert_cmd = "1.0.1"
+approx = "0.5.0"
+assert_cmd = "1.0.7"
 asset_derive = { path = "../asset_derive" }
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
@@ -35,8 +35,8 @@ audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
 background_loading = { path = "../background_loading" }
 background_model = { path = "../background_model" }
-bincode = "1.3.1"
-bytes = "0.5.6"
+bincode = "1.3.3"
+bytes = "1.0.1"
 camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }
@@ -56,15 +56,15 @@ collision_audio_play = { path = "../collision_audio_play" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
-crossbeam-channel = "0.4.4"
+crossbeam-channel = "0.5.1"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
 energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
-enumflags2 = "0.6.4"
+enumflags2 = "0.7.1"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
@@ -80,7 +80,7 @@ game_play_model = { path = "../game_play_model" }
 game_play_stdio = { path = "../game_play_stdio" }
 game_stats_model = { path = "../game_stats_model" }
 hamcrest = "0.1.5"
-indexmap = { version = "1.6.0", features = ["serde-1"] }
+indexmap = { version = "1.7.0", features = ["serde-1"] }
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 input_reaction_play = { path = "../input_reaction_play" }
@@ -90,7 +90,7 @@ lazy_static = "1.4.0"
 loading = { path = "../loading" }
 loading_model = { path = "../loading_model" }
 loading_spi = { path = "../loading_spi" }
-log = "0.4.11"
+log = "0.4.14"
 logic_clock = { path = "../logic_clock" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
@@ -113,14 +113,14 @@ object_status_play = { path = "../object_status_play" }
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 parent_play = { path = "../parent_play" }
-pretty_assertions = "0.6.1"
-rayon = "1.4.0"
-ron = "0.6.2"
+pretty_assertions = "0.7.2"
+rayon = "1.5.1"
+ron = "0.6.4"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
-serde = { version = "1.0.116", features = ["derive"] }
-serde_yaml = "0.8.13"
+serde = { version = "1.0.126", features = ["derive"] }
+serde_yaml = "0.8.17"
 session_host_model = { path = "../session_host_model" }
 session_host_play = { path = "../session_host_play" }
 session_host_stdio = { path = "../session_host_stdio" }
@@ -131,7 +131,7 @@ session_lobby_model = { path = "../session_lobby_model" }
 session_lobby_play = { path = "../session_lobby_play" }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 shape_model = { path = "../shape_model" }
-slotmap = { version = "0.4.0", features = ["serde"] }
+slotmap = { version = "1.0.5", features = ["serde"] }
 spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 spawn_play = { path = "../spawn_play" }
@@ -144,12 +144,12 @@ stdio_command_model = { path = "../stdio_command_model" }
 stdio_command_stdio = { path = "../stdio_command_stdio" }
 stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.3.18"
-structopt-derive = "0.4.11"
-strum = "0.19.2"
-strum_macros = "0.19.2"
+structopt = "0.3.22"
+structopt-derive = "0.4.15"
+strum = "0.21.0"
+strum_macros = "0.21.1"
 team_model = { path = "../team_model" }
-tempfile = "3.1.0"
+tempfile = "3.2.0"
 test_object_model = { path = "../test_object_model" }
 test_support = { path = "../test_support" }
 tracker = { path = "../tracker" }

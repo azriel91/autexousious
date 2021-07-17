@@ -74,12 +74,12 @@ impl<'s> System<'s> for UiTransformForFovSystem {
             let aspect_ratio_diff =
                 screen_dimensions.aspect_ratio() - camera_zoom_dimensions.aspect_ratio();
             let scale = if aspect_ratio_diff > 0. {
-                // Wider than original dimensions, so we use screen height / original height for the
-                // scale.
+                // Wider than original dimensions, so we use screen height / original height for
+                // the scale.
                 screen_dimensions.height() / camera_zoom_dimensions.height
             } else if aspect_ratio_diff < 0. {
-                // Narrower than original dimensions, so we use screen width / original width for
-                // the scale.
+                // Narrower than original dimensions, so we use screen width / original width
+                // for the scale.
                 screen_dimensions.width() / camera_zoom_dimensions.width
             } else {
                 1.

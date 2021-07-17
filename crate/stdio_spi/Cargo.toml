@@ -12,7 +12,7 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 application_event = { path = "../application_event" }
 clap = "2.33.3"
-derive-new = "0.5.8"
-err-derive = "0.2.4"
-log = "0.4.11"
-structopt = "0.3.18"
+derive-new = "0.5.9"
+err-derive = "0.3.0"
+log = "0.4.14"
+structopt = "0.3.22"

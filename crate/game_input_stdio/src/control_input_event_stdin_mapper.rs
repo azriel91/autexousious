@@ -22,9 +22,9 @@ impl<'s> MapperSystemData<'s> for ControlInputEventStdinMapperData {
 pub struct ControlInputEventStdinMapper;
 
 impl StdinMapper for ControlInputEventStdinMapper {
-    type SystemData = ControlInputEventStdinMapperData;
-    type Event = ControlInputEvent;
     type Args = ControlInputEventArgs;
+    type Event = ControlInputEvent;
+    type SystemData = ControlInputEventStdinMapperData;
 
     fn map(
         (entities, input_controlleds): &<Self::SystemData as MapperSystemData>::SystemData,

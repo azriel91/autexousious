@@ -72,12 +72,14 @@ mod test {
                 };
                 let sprite_sheet_1 = SpriteSheet {
                     texture: texture_handles[1].clone(),
-                    sprites: vec![(
-                        (19., 29.),
-                        [-9.5, 15.5],
-                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
-                    )
-                        .into()],
+                    sprites: vec![
+                        (
+                            (19., 29.),
+                            [-9.5, 15.5],
+                            [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
+                        )
+                            .into(),
+                    ],
                 }; // kcov-ignore
 
                 // kcov-ignore-start
@@ -146,12 +148,14 @@ mod test {
                 };
                 let sprite_sheet_1 = SpriteSheet {
                     texture: texture_handles[1].clone(),
-                    sprites: vec![(
-                        (19., 29.),
-                        [-9.5, 15.5],
-                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
-                    )
-                        .into()],
+                    sprites: vec![
+                        (
+                            (19., 29.),
+                            [-9.5, 15.5],
+                            [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
+                        )
+                            .into(),
+                    ],
                 };
 
                 // kcov-ignore-start
@@ -175,12 +179,14 @@ mod test {
 
                 let sprite_sheet = SpriteSheet {
                     texture: texture_handles[0].clone(),
-                    sprites: vec![(
-                        (19., 29.),
-                        [-9.5, -14.5],
-                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
-                    )
-                        .into()],
+                    sprites: vec![
+                        (
+                            (19., 29.),
+                            [-9.5, -14.5],
+                            [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
+                        )
+                            .into(),
+                    ],
                 }; // kcov-ignore
 
                 // kcov-ignore-start

@@ -3,7 +3,8 @@ use std::ops::{Deref, DerefMut};
 use amethyst::ecs::{storage::VecStorage, Component};
 use serde::{Deserialize, Serialize};
 
-/// Number of ticks to stay on the current frame before switching to the next frame.
+/// Number of ticks to stay on the current frame before switching to the next
+/// frame.
 #[derive(Clone, Component, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[storage(VecStorage)]
 pub struct Scale(pub Option<f32>);

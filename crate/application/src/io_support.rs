@@ -10,8 +10,8 @@ pub struct IoSupport(
 impl IoSupport {
     /// Returns an approximation of whether two `io::Error`s are equivalent.
     ///
-    /// This is to make testing more ergonomic. The standard library does not implement `PartialEq`
-    /// because it cannot be completely accurate. See:
+    /// This is to make testing more ergonomic. The standard library does not
+    /// implement `PartialEq` because it cannot be completely accurate. See:
     /// <https://github.com/rust-lang/rust/issues/34158>.
     pub fn cmp_io_error(expected: &io::Error, actual: &io::Error) -> bool {
         expected.kind() == actual.kind()
@@ -19,8 +19,8 @@ impl IoSupport {
 
     /// Returns an approximation of whether two `io::Error`s are equivalent.
     ///
-    /// This is to make testing more ergonomic. The standard library does not implement `PartialEq`
-    /// because it cannot be completely accurate. See:
+    /// This is to make testing more ergonomic. The standard library does not
+    /// implement `PartialEq` because it cannot be completely accurate. See:
     /// <https://github.com/rust-lang/rust/issues/34158>.
     pub fn cmp_io_error_opt(expected: &Option<io::Error>, actual: &Option<io::Error>) -> bool {
         if expected.is_none() && actual.is_none() {

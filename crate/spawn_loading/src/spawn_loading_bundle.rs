@@ -10,7 +10,8 @@ use spawn_model::loaded::{Spawns, SpawnsSequence};
 /// Adds the following systems to the dispatcher.
 ///
 /// * `Processor::<Spawns>` is added with id `"spawns_processor"`.
-/// * `Processor::<SpawnsSequence>` is added with id `"spawns_sequence_processor"`.
+/// * `Processor::<SpawnsSequence>` is added with id
+///   `"spawns_sequence_processor"`.
 #[derive(Debug, new)]
 pub struct SpawnLoadingBundle;
 

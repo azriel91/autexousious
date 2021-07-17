@@ -10,7 +10,7 @@ pub struct HitRepeatTracker {
     pub entity: Entity,
     /// Logic clock to track that enough ticks have passed.
     ///
-    /// When this clock has reached its limit, then another hit interaction from the attacking
-    /// entity may hit the target entity.
+    /// When this clock has reached its limit, then another hit interaction from
+    /// the attacking entity may hit the target entity.
     pub clock: HitRepeatClock,
 }

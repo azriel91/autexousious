@@ -9,8 +9,8 @@ doctest = false
 test = false
 
 [dependencies]
-derive-new = "0.5.8"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
 game_input_model = { path = "../game_input_model" }
-serde = { version = "1.0.116", features = ["derive"] }
-structopt = "0.3.18"
+serde = { version = "1.0.126", features = ["derive"] }
+structopt = "0.3.22"

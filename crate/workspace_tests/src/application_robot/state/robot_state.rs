@@ -271,7 +271,6 @@ mod test {
         setup(invocations, intercepts)
     }
 
-    #[macro_use]
     macro_rules! delegate_test {
         ($test_name:ident, $function:ident, $invocation:expr) => {
             #[test]
@@ -286,7 +285,6 @@ mod test {
         };
     }
 
-    #[macro_use]
     macro_rules! intercept_no_op_test {
         ($test_name:ident, $function:ident, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -304,7 +302,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_no_op_trans_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -323,7 +320,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_begin_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -342,7 +338,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_end_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -376,9 +371,9 @@ mod test {
     );
     delegate_test!(update_delegates_to_state, update, Invocation::Update);
 
-    // TODO: We ignore running the following tests because we cannot construct a window in both
-    // this test and in the application_event_intercept module due to
-    // <https://gitlab.com/azriel91/autexousious/issues/16>.
+    // TODO: We ignore running the following tests because we cannot construct a
+    // window in both this test and in the application_event_intercept module
+    // due to <https://gitlab.com/azriel91/autexousious/issues/16>.
     // kcov-ignore-start
     #[test]
     fn handle_event_delegates_to_state() {
@@ -700,8 +695,8 @@ mod test {
         UpdateEnd(u32),
     }
 
-    /// Declares a function that pushes the specified invocation to the `self.invocations` field.
-    #[macro_use]
+    /// Declares a function that pushes the specified invocation to the
+    /// `self.invocations` field.
     macro_rules! fn_ {
         ($function:ident, $invocation:expr) => {
             fn $function(&mut self, _: StateData<'_, T>) {
@@ -710,10 +705,11 @@ mod test {
         };
     }
 
-    /// Declares a function that pushes the specified invocation to the `self.invocations` field.
+    /// Declares a function that pushes the specified invocation to the
+    /// `self.invocations` field.
     ///
-    /// This macro passes the `self.id` field as a parameter to the `Invocation` variant.
-    #[macro_use]
+    /// This macro passes the `self.id` field as a parameter to the `Invocation`
+    /// variant.
     macro_rules! fn_id {
         ($function:ident, $invocation:expr; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) {
@@ -724,11 +720,11 @@ mod test {
         }
     }
 
-    /// Declares a function that pushes the specified invocation to the `self.invocations` field.
+    /// Declares a function that pushes the specified invocation to the
+    /// `self.invocations` field.
     ///
-    /// The function returns the value in the `self.trans` field, which is expected to contain a
-    /// value.
-    #[macro_use]
+    /// The function returns the value in the `self.trans` field, which is
+    /// expected to contain a value.
     macro_rules! fn_trans {
         ($function:ident, $invocation:expr; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) -> Trans<T, E> {
@@ -741,10 +737,10 @@ mod test {
         }
     }
 
-    /// Declares a function that pushes the specified invocation to the `self.invocations` field.
+    /// Declares a function that pushes the specified invocation to the
+    /// `self.invocations` field.
     ///
     /// The function returns the optional value in the `self.$trans` field
-    #[macro_use]
     macro_rules! fn_opt_trans {
         ($function:ident, $invocation:expr, $trans:ident; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) -> Option<Trans<T, E>> {
@@ -775,24 +771,38 @@ mod test {
         E: Send + Sync + 'static,
     {
         fn_id!(on_start_begin, Invocation::OnStartBegin; [&mut StateData<'_, T>]);
+
         fn_id!(on_start_end, Invocation::OnStartEnd; []);
+
         fn_id!(on_stop_begin, Invocation::OnStopBegin; [&mut StateData<'_, T>]);
+
         fn_id!(on_stop_end, Invocation::OnStopEnd; []);
+
         fn_id!(on_pause_begin, Invocation::OnPauseBegin; [&mut StateData<'_, T>]);
+
         fn_id!(on_pause_end, Invocation::OnPauseEnd; []);
+
         fn_id!(on_resume_begin, Invocation::OnResumeBegin; [&mut StateData<'_, T>]);
+
         fn_id!(on_resume_end, Invocation::OnResumeEnd; []);
+
         fn_opt_trans!(
             handle_event_begin,
             Invocation::HandleEventBegin,
             trans_begin;
             [&mut StateData<'_, T>, &mut E]
         );
+
         fn_opt_trans!(handle_event_end, Invocation::HandleEventEnd, trans_end; [&Trans<T, E>]);
+
         fn_opt_trans!(fixed_update_begin, Invocation::FixedUpdateBegin, trans_begin; [&mut StateData<'_, T>]);
+
         fn_opt_trans!(fixed_update_end, Invocation::FixedUpdateEnd, trans_end; [&Trans<T, E>]);
+
         fn_opt_trans!(update_begin, Invocation::UpdateBegin, trans_begin; [&mut StateData<'_, T>]);
+
         fn_opt_trans!(update_end, Invocation::UpdateEnd, trans_end; [&Trans<T, E>]);
+
         fn is_transitive(&self) -> bool {
             self.transitive
         }
@@ -855,15 +865,21 @@ mod test {
         E: Send + Sync + 'static,
     {
         fn_!(on_start, Invocation::OnStart);
+
         fn_!(on_stop, Invocation::OnStop);
+
         fn_!(on_pause, Invocation::OnPause);
+
         fn_!(on_resume, Invocation::OnResume);
+
         fn_trans!(
             handle_event,
             Invocation::HandleEvent; // kcov-ignore
             [StateData<'_, T>, E]
         );
+
         fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<'_, T>]);
+
         fn_trans!(update, Invocation::Update; [StateData<'_, T>]);
     }
 }

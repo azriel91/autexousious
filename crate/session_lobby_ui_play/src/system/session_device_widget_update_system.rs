@@ -8,7 +8,8 @@ use derive_new::new;
 use network_session_model::play::SessionDevices;
 use session_lobby_ui_model::play::{SessionDeviceWidget, SessionDevicesEntities};
 
-/// Updates the text in each `SessionDeviceWidget` with `SessionDevice` ID and name.
+/// Updates the text in each `SessionDeviceWidget` with `SessionDevice` ID and
+/// name.
 #[derive(Debug, new)]
 pub struct SessionDeviceWidgetUpdateSystem;
 

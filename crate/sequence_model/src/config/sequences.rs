@@ -10,10 +10,10 @@ use crate::config::{Sequence, SequenceName, SequenceNameString, Wait};
 
 /// Mappings of `SequenceName` to `Sequence`s.
 ///
-/// For some reason, when using a tuple struct, serde does not transparently deserialize the inner
-/// `IndexMap` (tested through `UiSequences`, which is a type alias of this).
-/// Also, serde requires us to specify `#[serde(skip)]` on the `marker` field instead of
-/// automatically using a default value.
+/// For some reason, when using a tuple struct, serde does not transparently
+/// deserialize the inner `IndexMap` (tested through `UiSequences`, which is a
+/// type alias of this). Also, serde requires us to specify `#[serde(skip)]` on
+/// the `marker` field instead of automatically using a default value.
 ///
 /// See <https://github.com/serde-rs/serde/issues/1660>.
 #[derive(Clone, Debug, Deref, DerefMut, Derivative, Deserialize, PartialEq, Serialize, new)]

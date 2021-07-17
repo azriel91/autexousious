@@ -12,8 +12,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -89,10 +89,10 @@ impl Display for StatementError {
 /// Returns true if the byte matches [^A-Za-z0-9_]
 fn is_invalid(byte: u8) -> bool {
     byte <= 47
-        || (byte >= 58 && byte <= 64)
-        || (byte >= 91 && byte <= 94)
+        || (58..=64).contains(&byte)
+        || (91..=94).contains(&byte)
         || byte == 96
-        || (byte >= 123 && byte <= 127)
+        || (123..=127).contains(&byte)
 }
 
 #[derive(Debug, PartialEq)]
@@ -143,10 +143,10 @@ impl<'a> StatementSplitter<'a> {
     fn get_statement(&mut self, new_flag: Flags) -> StatementVariant<'a> {
         if self.flags.contains(Flags::AND) {
             self.flags = (self.flags - Flags::AND) | new_flag;
-            StatementVariant::And(&self.data[self.start + 1..self.read - 1].trim())
+            StatementVariant::And(self.data[self.start + 1..self.read - 1].trim())
         } else if self.flags.contains(Flags::OR) {
             self.flags = (self.flags - Flags::OR) | new_flag;
-            StatementVariant::Or(&self.data[self.start + 1..self.read - 1].trim())
+            StatementVariant::Or(self.data[self.start + 1..self.read - 1].trim())
         } else {
             self.flags |= new_flag;
             let statement = &self.data[self.start..self.read - 1].trim();
@@ -217,11 +217,10 @@ impl<'a> StatementSplitter<'a> {
                     self.flags = (self.flags - Flags::COMM_1) | Flags::MATHEXPR;
                     // The next character will always be a left paren in this branch;
                     self.math_paren_level = -1;
-                    return;
                 } else {
                     self.paren_level += 1;
-                    return;
                 }
+                return;
             }
 
             if self.flags.contains(Flags::COMM_2) {
@@ -231,14 +230,12 @@ impl<'a> StatementSplitter<'a> {
 
             if self.flags.intersects(Flags::VARIAB | Flags::ARRAY) {
                 self.flags = (self.flags - (Flags::VARIAB | Flags::ARRAY)) | Flags::METHOD;
-                return;
             }
         } else {
             if self.flags.contains(Flags::MATHEXPR) {
                 if self.math_paren_level == 0 {
                     if self.data.as_bytes().len() <= self.read && error.is_none() {
                         *error = Some(StatementError::UnterminatedArithmetic);
-                        return;
                     } else {
                         let next_character = self.data.as_bytes()[self.read] as char;
                         if next_character == ')' {
@@ -247,12 +244,11 @@ impl<'a> StatementSplitter<'a> {
                             *error =
                                 Some(StatementError::InvalidCharacter(next_character, self.read));
                         }
-                        return;
                     }
                 } else {
                     self.math_paren_level -= 1;
-                    return;
                 }
+                return;
             }
 
             if self.flags.contains(Flags::METHOD) && self.paren_level == 0 {
@@ -449,7 +445,7 @@ impl<'a> Iterator for StatementSplitter<'a> {
                         && self.paren_level == 0
                         && matches!(self.data.as_bytes()[self.read - 2], b' ' | b'\t')) =>
                 {
-                    return self.match_number_sign(error)
+                    return self.match_number_sign(error);
                 }
 
                 b' ' => {

@@ -7,15 +7,19 @@ use crate::play::{SessionAcceptResponse, SessionHostRequestParams, SessionReject
 ///
 /// # Examples
 ///
-/// When read in as a command, the command string should look like the following:
+/// When read in as a command, the command string should look like the
+/// following:
 ///
-/// * `session_host session_host_request --device-name azriel --player-controllers "0:azriel 1:friend_a"`
+/// * `session_host session_host_request --device-name azriel
+///   --player-controllers "0:azriel 1:friend_a"`
 /// * `session_host host_cancel`
-/// * `session_host session_accept --session-code abcd --session-devices "1:az_comp::0:azriel::1:friend_a" --session-device_id 1`
+/// * `session_host session_accept --session-code abcd --session-devices
+///   "1:az_comp::0:azriel::1:friend_a" --session-device_id 1`
 /// * `session_host back`
 ///
-/// **Note:** The `session_accept` subcommand is designed to be received from the server, so sending
-/// this as a local command may cause undefined behaviour.
+/// **Note:** The `session_accept` subcommand is designed to be received from
+/// the server, so sending this as a local command may cause undefined
+/// behaviour.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, StructOpt)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[structopt(rename_all = "snake_case")]

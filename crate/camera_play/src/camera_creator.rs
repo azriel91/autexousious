@@ -96,13 +96,13 @@ impl CameraCreator {
 
         // Camera translation from origin.
         //
-        // The Z coordinate of the camera is how far along it should be before it faces the
-        // entities. If an entity's Z coordinate is greater than the camera's Z coordinate, it will
-        // be culled.
+        // The Z coordinate of the camera is how far along it should be before it faces
+        // the entities. If an entity's Z coordinate is greater than the
+        // camera's Z coordinate, it will be culled.
         //
-        // We cannot use `::std::f32::MAX`, because float inconsistencies cause nothing to be
-        // rendered. We rely on `CAMERA_ZOOM_DEPTH_DEFAULT` being large enough to fit everything in
-        // view.
+        // We cannot use `::std::f32::MAX`, because float inconsistencies cause nothing
+        // to be rendered. We rely on `CAMERA_ZOOM_DEPTH_DEFAULT` being large
+        // enough to fit everything in view.
         let translation = Vector3::new(
             zoom_width / 2.,
             zoom_height / 2.,

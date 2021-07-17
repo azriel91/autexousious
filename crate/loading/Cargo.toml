@@ -30,18 +30,18 @@ collision_audio_model = { path = "../collision_audio_model" }
 collision_model = { path = "../collision_model" }
 control_settings_loading = { path = "../control_settings_loading" }
 control_settings_model = { path = "../control_settings_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 energy_model = { path = "../energy_model" }
 game_input_model = { path = "../game_input_model" }
-humantime = "2.0.1"
+humantime = "2.1.0"
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
 loading_spi = { path = "../loading_spi" }
-log = "0.4.11"
+log = "0.4.14"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection_ui_model = { path = "../map_selection_ui_model" }
@@ -52,16 +52,16 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_loading_spi = { path = "../sequence_loading_spi" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.116", features = ["derive"] }
-serde_yaml = "0.8.13"
+serde = { version = "1.0.126", features = ["derive"] }
+serde_yaml = "0.8.17"
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
-slotmap = { version = "0.4.0", features = ["serde"] }
-smallvec = "1.4.2"
+slotmap = { version = "1.0.5", features = ["serde"] }
+smallvec = "1.6.1"
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
-strum = "0.19.2"
+strum = "0.21.0"
 ui_audio_model = { path = "../ui_audio_model" }
 ui_form_model = { path = "../ui_form_model" }
 ui_label_model = { path = "../ui_label_model" }

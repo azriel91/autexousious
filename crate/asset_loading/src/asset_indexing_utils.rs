@@ -23,6 +23,7 @@ impl AssetIndexingUtils {
                     .namespace(namespace)
                     .name(name)
                     .build()
+                    .map_err(|e| e.to_string())
             })
             .map(|asset_slug| AssetRecord::new(asset_slug, path));
 

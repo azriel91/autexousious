@@ -1,6 +1,7 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[frame_component_data]` attribute to generate a newtype around `Vec<C>`.
+//! Provides the `#[frame_component_data]` attribute to generate a newtype
+//! around `Vec<C>`.
 //!
 //! # Examples
 //!

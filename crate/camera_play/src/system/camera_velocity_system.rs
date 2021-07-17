@@ -11,7 +11,8 @@ use kinematic_model::config::{Position, Velocity};
 /// How much to divide the target velocity by, to smoothen the acceleration.
 const SMOOTHING_FACTOR_DEFAULT: f32 = 3.;
 
-/// Updates camera velocity to smoothen camera movement between its current and target position.
+/// Updates camera velocity to smoothen camera movement between its current and
+/// target position.
 #[derive(Debug, Derivative, new)]
 #[derivative(Default)]
 pub struct CameraVelocitySystem {

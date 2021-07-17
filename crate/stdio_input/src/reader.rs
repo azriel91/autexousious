@@ -6,10 +6,12 @@ use log::{debug, info, trace, warn};
 
 use crate::Terminator;
 
-/// Reads lines from stdin and sends them to the [`StdinSystem`](struct.StdinSystem.html).
+/// Reads lines from stdin and sends them to the
+/// [`StdinSystem`](struct.StdinSystem.html).
 ///
-/// This should be run in a separate thread to the system as input from stdin is blocking, and the
-/// system needs to be responsive to changes in the ECS `World`.
+/// This should be run in a separate thread to the system as input from stdin is
+/// blocking, and the system needs to be responsive to changes in the ECS
+/// `World`.
 #[derive(Debug)]
 pub struct StdinReader {
     /// Channel sender to the endpoint for input from stdin.
@@ -67,8 +69,9 @@ impl StdinReader {
                                     break;
                                 }
 
-                                // This prevents the thread that is running this function from panicking due
-                                // to accessing stdin while the application is exiting.
+                                // This prevents the thread that is running this function from
+                                // panicking due to accessing stdin
+                                // while the application is exiting.
                                 if should_exit {
                                     info!("StdinReader thread terminating.");
                                     break;

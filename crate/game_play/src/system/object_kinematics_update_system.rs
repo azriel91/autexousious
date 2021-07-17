@@ -9,7 +9,8 @@ use sequence_model::play::FrameFreezeClock;
 
 /// Updates each entity's `Position` based on their `Velocity` in game.
 ///
-/// This system should be run after all other systems that affect kinematics have run.
+/// This system should be run after all other systems that affect kinematics
+/// have run.
 #[derive(Debug, Default, new)]
 pub struct ObjectKinematicsUpdateSystem;
 

@@ -35,7 +35,9 @@ impl GameModeSelectionTrans {
             GameModeIndex::ControlSettings => Trans::Push(Box::new(ControlSettingsState::new())),
             GameModeIndex::Exit => Trans::Quit,
         }
-    } // kcov-ignore
+    }
+
+    // kcov-ignore
 
     fn character_selection_state() -> Box<dyn State<GameData<'static, 'static>, AppEvent>> {
         // kcov-ignore-start

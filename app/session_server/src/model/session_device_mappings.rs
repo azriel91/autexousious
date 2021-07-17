@@ -6,27 +6,31 @@ use network_session_model::play::SessionCode;
 
 use crate::model::{SessionCodeToId, SessionIdToDeviceMappings};
 
-/// Abstraction layer for mappings between `SessionCode` and `NetSessionDevice`s.
+/// Abstraction layer for mappings between `SessionCode` and
+/// `NetSessionDevice`s.
 ///
-/// This hides the detail of mapping between `SessionCode` and `SessionCodeId` when managing the `NetSessionDevices` for
-/// a session.
+/// This hides the detail of mapping between `SessionCode` and `SessionCodeId`
+/// when managing the `NetSessionDevices` for a session.
 #[derive(Clone, Copy, Debug, new)]
 pub struct SessionDeviceMappingsRead<'sdm> {
     /// Bidirectional mappings from `SessionCode` to `SessionCodeId`.
     pub session_code_to_id: &'sdm SessionCodeToId,
-    /// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr` to `SessionCodeId`.
+    /// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr`
+    /// to `SessionCodeId`.
     pub session_id_to_device_mappings: &'sdm SessionIdToDeviceMappings,
 }
 
-/// Abstraction layer for mappings between `SessionCode` and `NetSessionDevice`s.
+/// Abstraction layer for mappings between `SessionCode` and
+/// `NetSessionDevice`s.
 ///
-/// This hides the detail of mapping between `SessionCode` and `SessionCodeId` when managing the `NetSessionDevices` for
-/// a session.
+/// This hides the detail of mapping between `SessionCode` and `SessionCodeId`
+/// when managing the `NetSessionDevices` for a session.
 #[derive(Debug, new)]
 pub struct SessionDeviceMappings<'sdm> {
     /// Bidirectional mappings from `SessionCode` to `SessionCodeId`.
     session_code_to_id: &'sdm mut SessionCodeToId,
-    /// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr` to `SessionCodeId`.
+    /// Mappings from `SessionCodeId` to `NetSessionDevices`, and `SocketAddr`
+    /// to `SessionCodeId`.
     session_id_to_device_mappings: &'sdm mut SessionIdToDeviceMappings,
 }
 
@@ -85,8 +89,9 @@ impl<'sdm> SessionDeviceMappingsRead<'sdm> {
 
     /// Returns the number of sessions.
     ///
-    /// Because each session has multiple devices, this will differ from the number of socket
-    /// address mappings to the same session. For that, please use the [`len_devices`] method.
+    /// Because each session has multiple devices, this will differ from the
+    /// number of socket address mappings to the same session. For that,
+    /// please use the [`len_devices`] method.
     pub fn len(&self) -> usize {
         self.session_id_to_device_mappings.len()
     }
@@ -115,11 +120,11 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
 
     /// Inserts a new mapping from `SessionCode` to `NetSessionDevices`.
     ///
-    /// If a mapping previously existed for the session code, the devices are returned, but the key
-    /// is not updated.
+    /// If a mapping previously existed for the session code, the devices are
+    /// returned, but the key is not updated.
     ///
-    /// If you are attempting to add another device to an existing session, please see the
-    /// [`append`] method.
+    /// If you are attempting to add another device to an existing session,
+    /// please see the [`append`] method.
     ///
     /// # Parameters
     ///
@@ -136,7 +141,8 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
             .insert(session_code_id, net_session_devices)
     }
 
-    /// Removes the `NetSessionDevices` for the given `SessionCode`, returning it if present.
+    /// Removes the `NetSessionDevices` for the given `SessionCode`, returning
+    /// it if present.
     pub fn remove(&mut self, session_code: &SessionCode) -> Option<NetSessionDevices> {
         let session_code_id = self
             .session_code_to_id
@@ -147,7 +153,8 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
             .and_then(|session_code_id| self.session_id_to_device_mappings.remove(session_code_id))
     }
 
-    /// Removes the device for the given `SocketAddr`, returning the `SessionCode` if it exists.
+    /// Removes the device for the given `SocketAddr`, returning the
+    /// `SessionCode` if it exists.
     pub fn remove_device(
         &mut self,
         socket_addr: &SocketAddr,
@@ -163,7 +170,8 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
         })
     }
 
-    /// Removes the session and `NetSessionDevices` for the given `SocketAddr`, returning them if present.
+    /// Removes the session and `NetSessionDevices` for the given `SocketAddr`,
+    /// returning them if present.
     pub fn remove_session(
         &mut self,
         socket_addr: &SocketAddr,
@@ -185,7 +193,8 @@ impl<'sdm> SessionDeviceMappings<'sdm> {
             })
     }
 
-    /// Reserves capacity for at least `additional` more mappings to be inserted.
+    /// Reserves capacity for at least `additional` more mappings to be
+    /// inserted.
     ///
     /// This may reserve more space to avosession_code frequent reallocations.
     ///

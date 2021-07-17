@@ -19,10 +19,12 @@ pub struct GamePlayState;
 
 impl GamePlayState {
     fn terminate_entities(&mut self, world: &mut World) {
-        // This `allow` is needed because rustc evaluates that `game_entities` does not live long
-        // enough when entities is constructed, so we need to bind entities to a variable.
+        // This `allow` is needed because rustc evaluates that `game_entities` does not
+        // live long enough when entities is constructed, so we need to bind
+        // entities to a variable.
         //
-        // However, that triggers the clippy lint that we're binding and then returning. Pending:
+        // However, that triggers the clippy lint that we're binding and then returning.
+        // Pending:
         //
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/1524>
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/2904>
@@ -106,10 +108,10 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         &mut self,
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        // Note: The built-in dispatcher must be run before the state specific dispatcher as the
-        // `"input_system"` is registered in the main dispatcher, and is a dependency of the
-        // `ControllerInputUpdateSystem`.
-        data.data.update(&data.world);
+        // Note: The built-in dispatcher must be run before the state specific
+        // dispatcher as the `"input_system"` is registered in the main
+        // dispatcher, and is a dependency of the `ControllerInputUpdateSystem`.
+        data.data.update(data.world);
         Trans::None
     }
 }

@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 
 /// Mass of an object.
 ///
-/// The acceleration that an object has is the product of its mass and the gravitational force.
+/// The acceleration that an object has is the product of its mass and the
+/// gravitational force.
 #[numeric_newtype]
 #[derive(Component, Debug, Default, Deserialize, Serialize)]
 #[storage(VecStorage)]

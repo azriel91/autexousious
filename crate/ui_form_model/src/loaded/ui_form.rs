@@ -13,7 +13,8 @@ use crate::play::UiFormInputEntities;
 /// Displays a form that takes in input.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub struct UiForm {
-    /// `ItemId`s of the `UiLabel`s, `UiSpriteLabel`s and `UiTextInput` for each form item.
+    /// `ItemId`s of the `UiLabel`s, `UiSpriteLabel`s and `UiTextInput` for each
+    /// form item.
     pub ui_form_item_item_ids: Vec<(ItemId, ItemId, ItemId)>,
 }
 
@@ -32,7 +33,8 @@ pub struct UiFormSystemData<'s> {
     pub parent_entities: WriteStorage<'s, ParentEntity>,
     /// `Selectable<()>` components.
     ///
-    /// `Note:` The `UiBundle` defaults the selectable group `G` type parameter to `()`.
+    /// `Note:` The `UiBundle` defaults the selectable group `G` type parameter
+    /// to `()`.
     #[derivative(Debug = "ignore")]
     pub selectables: WriteStorage<'s, Selectable<()>>,
     /// `UiFormInputEntities` resource.

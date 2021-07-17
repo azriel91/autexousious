@@ -10,7 +10,8 @@ impl StateAssetUtils {
     ///
     /// # Parameters
     ///
-    /// * `asset_id_mappings`: Bidrectional mappings beteen Asset ID and asset slug.
+    /// * `asset_id_mappings`: Bidrectional mappings beteen Asset ID and asset
+    ///   slug.
     /// * `state_id`: ID of the active state.
     pub fn asset_id(asset_id_mappings: &AssetIdMappings, state_id: StateId) -> Option<AssetId> {
         let state_id_name = state_id.to_string();

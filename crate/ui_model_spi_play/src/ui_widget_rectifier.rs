@@ -6,12 +6,14 @@ use ui_model_spi::{
 
 use crate::UiRectifySystemData;
 
-/// Attaches `Siblings` component and sets `WidgetStatus::Active` on the first entity.
+/// Attaches `Siblings` component and sets `WidgetStatus::Active` on the first
+/// entity.
 #[derive(Debug)]
 pub struct UiWidgetRectifier;
 
 impl UiWidgetRectifier {
-    /// Attaches `Siblings` component and sets `WidgetStatus::Active` on the first entity.
+    /// Attaches `Siblings` component and sets `WidgetStatus::Active` on the
+    /// first entity.
     pub fn rectify(
         UiRectifySystemData {
             widget_statuses,

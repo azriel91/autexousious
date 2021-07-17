@@ -26,19 +26,21 @@ pub struct SequenceQueries;
 impl SequenceQueries {
     /// Returns the `CharacterIrsHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` of the running application.
-    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
+    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to
+    ///   retrieve.
     /// * `sequence_id`: Sequence ID whose `CharacterIrsHandle` to retrieve.
     pub fn character_irs_handle(
         world: &World,
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> CharacterIrsHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -68,16 +70,20 @@ impl SequenceQueries {
             .clone()
     }
 
-    /// Returns the `CharacterInputReactionsHandle` for the specified sequence ID.
+    /// Returns the `CharacterInputReactionsHandle` for the specified sequence
+    /// ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` of the running application.
-    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
+    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to
+    ///   retrieve.
     /// * `sequence_id`: Sequence ID whose `CharacterIrsHandle` to retrieve.
-    /// * `frame_index`: Frame index within the sequence whose input reactions to retrieve.
+    /// * `frame_index`: Frame index within the sequence whose input reactions
+    ///   to retrieve.
     pub fn character_input_reactions_handle(
         world: &World,
         asset_slug: &AssetSlug,
@@ -96,7 +102,8 @@ impl SequenceQueries {
 
     /// Returns the `SequenceEndTransition` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -108,7 +115,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SequenceEndTransition {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -140,7 +147,8 @@ impl SequenceQueries {
 
     /// Returns the `WaitSequenceHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -152,7 +160,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> WaitSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -184,7 +192,8 @@ impl SequenceQueries {
 
     /// Returns the `SpriteRenderSequenceHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -196,7 +205,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpriteRenderSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -228,7 +237,8 @@ impl SequenceQueries {
 
     /// Returns the `BodySequenceHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -240,7 +250,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> BodySequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -272,7 +282,8 @@ impl SequenceQueries {
 
     /// Returns the `InteractionsSequenceHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -284,7 +295,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> InteractionsSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -316,7 +327,8 @@ impl SequenceQueries {
 
     /// Returns the `SpawnsSequenceHandle` for the specified sequence ID.
     ///
-    /// This function assumes the character for the specified slug is instantiated in the world.
+    /// This function assumes the character for the specified slug is
+    /// instantiated in the world.
     ///
     /// # Parameters
     ///
@@ -328,7 +340,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpawnsSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids

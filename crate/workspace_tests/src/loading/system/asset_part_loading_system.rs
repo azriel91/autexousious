@@ -169,8 +169,9 @@ mod tests {
     struct TestAssetPartLoader;
 
     impl<'s> AssetPartLoader<'s> for TestAssetPartLoader {
-        const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
         type SystemData = Write<'s, SecondaryMap<AssetId, MockLoadData>>;
+
+        const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
 
         fn process(
             _asset_loading_resources: &mut AssetLoadingResources,

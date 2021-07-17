@@ -20,10 +20,11 @@ use crate::{
 pub struct PlayerInputConfigs(pub Vec<PlayerInputConfig>);
 
 impl PlayerInputConfigs {
-    /// Generates amethyst input `Bindings<ControlBindings>` for each input configuration.
+    /// Generates amethyst input `Bindings<ControlBindings>` for each input
+    /// configuration.
     ///
-    /// The `ControllerIdOffset` is used when local controllers should start with a higher index as
-    /// remote controllers may use the lower indices.
+    /// The `ControllerIdOffset` is used when local controllers should start
+    /// with a higher index as remote controllers may use the lower indices.
     ///
     /// # Parameters
     ///

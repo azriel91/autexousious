@@ -49,8 +49,8 @@ fn lookup_path_on_server(path: &Path) -> bool {
     // We block here and wait for http fetch to complete
     xhr.send().expect("XmlHttpRequest send failed.");
 
-    // Status returns a result but according to javascript spec it should never return error.
-    // Returns 0 if request was not completed.
+    // Status returns a result but according to javascript spec it should never
+    // return error. Returns 0 if request was not completed.
     let status = xhr.status().expect("Failed to get XHR `status()`.");
     match status {
         200 => true,

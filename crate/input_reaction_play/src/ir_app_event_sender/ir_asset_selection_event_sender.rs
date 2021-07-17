@@ -27,8 +27,9 @@ impl IrAssetSelectionEventSender {
     ) {
         // For `AssetPreviewWidget` entities, `entity` is the `ApwMain` entity.
         //
-        // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is not the
-        // `AssetSelectionHighlightMain` entity, but its `TargetObject` is.
+        // For `AssetSelectionHighlightMain` entities, `entity` that sends the event is
+        // not the `AssetSelectionHighlightMain` entity, but its `TargetObject`
+        // is.
         let target_object_entity = ir_app_event_sender_system_data
             .target_objects
             .get(entity)

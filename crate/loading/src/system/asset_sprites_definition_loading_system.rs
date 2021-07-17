@@ -17,8 +17,9 @@ pub type AssetSpritesDefinitionLoadingSystem = AssetPartLoadingSystem<AssetSprit
 pub struct AssetSpritesDefinitionLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
-    const LOAD_STAGE: LoadStage = LoadStage::SpritesDefinitionLoading;
     type SystemData = SpritesDefinitionLoadingResources<'s>;
+
+    const LOAD_STAGE: LoadStage = LoadStage::SpritesDefinitionLoading;
 
     /// Loads an asset's `SpritesDefinition`.
     fn process(
@@ -53,8 +54,8 @@ impl<'s> AssetPartLoader<'s> for AssetSpritesDefinitionLoader {
         let sprites_definition_path = asset_path.join("sprites.yaml");
         if let AssetType::Map | AssetType::Ui = asset_type {
             // Return early if `sprites.yaml` does not exist.
-            // This means `asset_sprites_definition_handles` will not have a key for the current
-            // `asset_id`.
+            // This means `asset_sprites_definition_handles` will not have a key for the
+            // current `asset_id`.
             #[cfg(not(target_arch = "wasm32"))]
             let sprites_definition_path_exists = sprites_definition_path.exists();
             #[cfg(target_arch = "wasm32")]

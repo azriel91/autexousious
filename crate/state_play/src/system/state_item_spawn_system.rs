@@ -11,7 +11,8 @@ use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use state_support::StateAssetUtils;
 
-/// Spawns entities for each `ItemId` for the state `AssetId` when the `StateId` changes.
+/// Spawns entities for each `ItemId` for the state `AssetId` when the `StateId`
+/// changes.
 #[derive(Debug, Default, new)]
 pub struct StateItemSpawnSystem {
     /// Reader ID for the `StateIdUpdateEvent` channel.

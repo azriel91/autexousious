@@ -111,8 +111,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it has been
-            // changed.
+            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it
+            // has been changed.
             let sequence_id = sequence_ids.get(entity);
             if sequence_id.is_none() {
                 continue; // kcov-ignore
@@ -135,12 +135,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 character_sequence_name_string
             {
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
-                    &controller_input,
+                    controller_input,
                     *health_points,
                     *character_sequence_name,
                     *sequence_status,
-                    &position,
-                    &velocity,
+                    position,
+                    velocity,
                     *mirrored,
                     *grounding,
                     *run_counter,

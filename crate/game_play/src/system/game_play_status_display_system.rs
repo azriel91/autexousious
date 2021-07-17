@@ -25,7 +25,8 @@ const LABEL_HEIGHT: f32 = 100.;
 
 /// Displays the status of game play.
 ///
-/// Intended for displaying when the game is paused, or when the game ends (winning team).
+/// Intended for displaying when the game is paused, or when the game ends
+/// (winning team).
 #[derive(Debug, Default, new)]
 pub struct GamePlayStatusDisplaySystem {
     /// Reader ID for the `GamePlayEvent` event channel.

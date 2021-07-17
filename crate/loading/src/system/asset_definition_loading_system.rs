@@ -18,8 +18,9 @@ pub type AssetDefinitionLoadingSystem = AssetPartLoadingSystem<AssetDefinitionLo
 pub struct AssetDefinitionLoader;
 
 impl<'s> AssetPartLoader<'s> for AssetDefinitionLoader {
-    const LOAD_STAGE: LoadStage = LoadStage::AssetDefinitionLoading;
     type SystemData = DefinitionLoadingResources<'s>;
+
+    const LOAD_STAGE: LoadStage = LoadStage::AssetDefinitionLoading;
 
     fn process(
         AssetLoadingResources {

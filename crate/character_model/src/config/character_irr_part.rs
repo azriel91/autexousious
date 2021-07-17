@@ -22,7 +22,8 @@ pub enum CharacterIrrPart {
     Hp(HealthPoints),
     /// `SkillPoints` the object must spend to transition.
     Sp(SkillPoints),
-    /// Whether or not there is x axis input, and if it matches the direction the object is facing.
+    /// Whether or not there is x axis input, and if it matches the direction
+    /// the object is facing.
     InputDirX(InputDirection),
     /// Whether or not there is z axis input, and the direction it is in.
     InputDirZ(InputDirectionZ),

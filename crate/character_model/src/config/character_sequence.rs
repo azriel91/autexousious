@@ -12,7 +12,8 @@ pub struct CharacterSequence {
     /// Object sequence for common object fields.
     #[serde(flatten)]
     pub object_sequence: ObjectSequence<CharacterSequenceName, CharacterFrame>,
-    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or
+    /// released.
     ///
     /// This is shared by all frames in the sequence, unless overridden.
     #[serde(default)]
@@ -32,8 +33,8 @@ impl AsRef<Option<CharacterInputReactions>> for CharacterSequence {
 }
 
 impl GameObjectSequence for CharacterSequence {
-    type SequenceName = CharacterSequenceName;
     type GameObjectFrame = CharacterFrame;
+    type SequenceName = CharacterSequenceName;
 
     fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence

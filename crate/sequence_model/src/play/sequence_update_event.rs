@@ -40,7 +40,8 @@ impl SequenceUpdateEvent {
         }
     }
 
-    /// Returns the last valid frame index of the sequence this event corresponds to.
+    /// Returns the last valid frame index of the sequence this event
+    /// corresponds to.
     pub fn frame_index(self) -> usize {
         match self {
             SequenceUpdateEvent::SequenceBegin { .. } => 0,

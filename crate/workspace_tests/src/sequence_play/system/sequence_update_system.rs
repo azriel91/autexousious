@@ -87,7 +87,8 @@ mod tests {
             .run_winit_loop()
     }
 
-    /// Asserts the following when a frame is still in progress but entity is frozen:
+    /// Asserts the following when a frame is still in progress but entity is
+    /// frozen:
     ///
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
@@ -96,8 +97,8 @@ mod tests {
     /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
-    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
-    ) -> Result<(), Error> {
+    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete()
+    -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_effect(setup_system_data)
             .with_effect(|world| {
@@ -123,7 +124,8 @@ mod tests {
             .run_winit_loop()
     }
 
-    /// Asserts the following when a frame is still in progress but entity is frozen:
+    /// Asserts the following when a frame is still in progress but entity is
+    /// frozen:
     ///
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
@@ -132,8 +134,8 @@ mod tests {
     /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
-    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
-    ) -> Result<(), Error> {
+    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete()
+    -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_effect(setup_system_data)
             .with_effect(|world| {
@@ -167,8 +169,8 @@ mod tests {
     /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
     /// * `SequenceUpdateEvent::FrameBegin` events are sent.
     #[test]
-    fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
-    ) -> Result<(), Error> {
+    fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing()
+    -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_effect(setup_system_data)
             .with_effect(|world| {

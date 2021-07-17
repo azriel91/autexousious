@@ -9,10 +9,11 @@ pub enum MenuEvent<I> {
     Select(I),
     /// Indicates the menu should be closed.
     ///
-    /// TODO: `UiEvent`s currently only include mouse input. Should they also include keyboard /
-    /// device input?
+    /// TODO: `UiEvent`s currently only include mouse input. Should they also
+    /// include keyboard / device input?
     ///
-    /// If not, `State`s have to generate this event in [`handle_event(..)`][hdl_evt], instead of
+    /// If not, `State`s have to generate this event in
+    /// [`handle_event(..)`][hdl_evt], instead of
     /// the `UiInputHandlerSystem`s' [`run(..)`][specs_run].
     ///
     /// [hdl_evt]: https://docs.rs/amethyst/latest/amethyst/trait.State.html#method.handle_event

@@ -15,21 +15,23 @@ use crate::GameModeSelectionTrans;
 /// This state is not intended to be constructed directly, but through the
 /// [`GameModeSelectionStateBuilder`][state_builder].
 ///
-/// [state_builder]: game_mode_selection_state/struct.GameModeSelectionStateBuilder.html
+/// [state_builder]:
+/// game_mode_selection_state/struct.GameModeSelectionStateBuilder.html
 pub type GameModeSelectionState =
     AppState<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntity>;
 
 /// Builder for a `GameModeSelectionState`.
 ///
-/// `SystemBundle`s to run in the `GameModeSelectionState`'s dispatcher are registered on this
-/// builder.
+/// `SystemBundle`s to run in the `GameModeSelectionState`'s dispatcher are
+/// registered on this builder.
 pub type GameModeSelectionStateBuilder =
     AppStateBuilder<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntity>;
 
 /// Delegate `State` for game mode selection.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `GameModeSelectionState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `GameModeSelectionState` is an alias with this as a delegate
+/// state.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct GameModeSelectionStateDelegate;

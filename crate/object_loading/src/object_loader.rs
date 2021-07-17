@@ -74,8 +74,8 @@ impl ObjectLoader {
     {
         // Calculate the indices of each sequence ID.
         //
-        // TODO: Extract this out to a separate loading phase, as other objects may reference this
-        // TODO: object's sequences.
+        // TODO: Extract this out to a separate loading phase, as other objects may
+        // reference this TODO: object's sequences.
         let sequence_id_mappings = object_definition
             .sequences
             .keys()
@@ -94,7 +94,7 @@ impl ObjectLoader {
                     config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
                     config::SequenceEndTransition::SequenceName(sequence_name) => {
                         let sequence_id = sequence_id_mappings
-                            .get(&sequence_name)
+                            .get(sequence_name)
                             .map(|index| SequenceId(**index))
                             .unwrap_or_else(|| {
                                 panic!(

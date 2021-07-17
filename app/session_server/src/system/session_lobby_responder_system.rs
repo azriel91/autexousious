@@ -15,7 +15,8 @@ use session_lobby_model::{play::SessionStartRequestParams, SessionLobbyEvent};
 
 use crate::model::{SessionCodeToId, SessionDeviceMappingsRead, SessionIdToDeviceMappings};
 
-/// Accepts or rejects session start requests, and notifies all connected devices.
+/// Accepts or rejects session start requests, and notifies all connected
+/// devices.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(SessionLobbyResponderSystemDesc))]
 pub struct SessionLobbyResponderSystem {
@@ -57,8 +58,8 @@ impl SessionLobbyResponderSystem {
                         &payload,
                         // None means it uses a default multiplexed stream.
                         //
-                        // Suspect if we give it a value, the value will be a "channel" over the same
-                        // socket connection.
+                        // Suspect if we give it a value, the value will be a "channel" over the
+                        // same socket connection.
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );

@@ -13,8 +13,8 @@ pub struct IoAppEventUtils;
 impl IoAppEventUtils {
     /// Maps the input string to an `AppEventVariant` and `String` tokens.
     pub fn input_to_variant_and_tokens(input: &str) -> Result<Option<VariantAndTokens>, String> {
-        shell_words::split(&input)
-            .map_err(|e| Self::parse_error_to_string(&input, e))
+        shell_words::split(input)
+            .map_err(|e| Self::parse_error_to_string(input, e))
             .and_then(Self::tokens_to_variant)
     }
 

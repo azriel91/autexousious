@@ -9,7 +9,8 @@ use kinematic_model::loaded::ObjectAccelerationSequence;
 
 /// Adds the following systems to the dispatcher.
 ///
-/// * `Processor::<ObjectAccelerationSequence>` is added with id `"object_acceleration_sequence_processor"`.
+/// * `Processor::<ObjectAccelerationSequence>` is added with id
+///   `"object_acceleration_sequence_processor"`.
 #[derive(Debug, new)]
 pub struct KinematicLoadingBundle;
 

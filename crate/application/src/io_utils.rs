@@ -13,8 +13,8 @@ pub struct IoUtils;
 impl IoUtils {
     /// Returns the contents of specified file.
     ///
-    /// Care must be taken to ensure the file is not large, as this does not do any file size
-    /// checking.
+    /// Care must be taken to ensure the file is not large, as this does not do
+    /// any file size checking.
     ///
     /// # Parameters
     ///
@@ -51,8 +51,8 @@ impl IoUtils {
                 Ok(basename.to_string())
             } else {
                 // kcov-ignore-start
-                // We can't actually construct an invalid unicode path, but just in case we hit this
-                // in the wild, the code is here.
+                // We can't actually construct an invalid unicode path, but just in case we hit
+                // this in the wild, the code is here.
                 Err(io::Error::new(
                     io::ErrorKind::Other,
                     format!(

@@ -7,12 +7,14 @@ use amethyst::{
 use game_input_model::config::{ControllerId, PlayerInputConfigs};
 use smallvec::SmallVec;
 
-/// Creates a map of `PlayerInputConfigs` buttons to the player index that uses the button.
+/// Creates a map of `PlayerInputConfigs` buttons to the player index that uses
+/// the button.
 #[derive(Debug)]
 pub struct ButtonToPlayerIndexMapper;
 
 impl ButtonToPlayerIndexMapper {
-    /// Returns a map of `PlayerInputConfigs` buttons to the player index that uses the button.
+    /// Returns a map of `PlayerInputConfigs` buttons to the player index that
+    /// uses the button.
     ///
     /// # Parameters
     ///

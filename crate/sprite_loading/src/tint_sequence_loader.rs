@@ -6,7 +6,8 @@ use derivative::Derivative;
 use sequence_loading_spi::FrameComponentDataLoader;
 use sprite_model::{config, loaded::TintSequence};
 
-/// Loads `TintSequence`s from `Sequence` types whose `Frame`s contain a `Tint` value.
+/// Loads `TintSequence`s from `Sequence` types whose `Frame`s contain a `Tint`
+/// value.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct TintSequenceLoader<'s> {
@@ -21,9 +22,10 @@ pub struct TintSequenceLoader<'s> {
 impl<'s> TintSequenceLoader<'s> {
     /// Loads a `TintSequence` and returns its handle.
     ///
-    /// This is similar to calling the `FrameComponentDataLoader::load` trait method, with the
-    /// difference that the resources are stored by an instantiation of this type, so they do not
-    /// need to be passed in when this method is called.
+    /// This is similar to calling the `FrameComponentDataLoader::load` trait
+    /// method, with the difference that the resources are stored by an
+    /// instantiation of this type, so they do not need to be passed in when
+    /// this method is called.
     pub fn load<SequenceIterator, FrameRef>(
         &self,
         sequence_iterator: SequenceIterator,

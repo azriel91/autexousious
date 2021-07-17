@@ -18,10 +18,13 @@ use crate::{AutexState, HookFn, HookableFn};
 
 /// Wrapper `State` with a custom dispatcher.
 ///
-/// All `State` methods are called through, with special handling for the following:
+/// All `State` methods are called through, with special handling for the
+/// following:
 ///
-/// * `on_start`: The `World` is setup with the state specific dispatcher before calling through.
-/// * `update`: The game data and state specific dispatchers are run before calling through.
+/// * `on_start`: The `World` is setup with the state specific dispatcher before
+///   calling through.
+/// * `update`: The game data and state specific dispatchers are run before
+///   calling through.
 ///
 /// This state is not intended to be constructed directly, but through the
 /// [`AppStateBuilder`][state_builder].
@@ -29,7 +32,8 @@ use crate::{AutexState, HookFn, HookableFn};
 /// # Type Parameters
 ///
 /// * `S`: `State` to delegate to.
-/// * `I`: `State` identifier component to identify entities to delete when the state is popped.
+/// * `I`: `State` identifier component to identify entities to delete when the
+///   state is popped.
 ///
 /// [state_builder]: application_state/struct.AppStateBuilder.html
 #[derive(Derivative, new)]
@@ -98,7 +102,7 @@ where
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         data.world.register::<I>();
 
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStart) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnStart) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -109,7 +113,7 @@ where
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStop) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnStop) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -121,7 +125,7 @@ where
     }
 
     fn on_pause(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnPause) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnPause) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -133,7 +137,7 @@ where
     }
 
     fn on_resume(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnResume) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnResume) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -164,14 +168,15 @@ where
         &mut self,
         data: StateData<'_, GameData<'a, 'b>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        // Note: The built-in dispatcher must be run before the state specific dispatcher as the
-        // `"input_system"` is registered in the main dispatcher, and by design we have chosen that
-        // systems that depend on that should be placed in the state specific dispatcher.
-        data.data.update(&data.world);
+        // Note: The built-in dispatcher must be run before the state specific
+        // dispatcher as the `"input_system"` is registered in the main
+        // dispatcher, and by design we have chosen that systems that depend on
+        // that should be placed in the state specific dispatcher.
+        data.data.update(data.world);
         self.dispatcher
             .as_mut()
             .expect("Expected `dispatcher` to be set up.")
-            .dispatch(&data.world);
+            .dispatch(data.world);
 
         self.delegate.update(data)
     }
@@ -179,7 +184,8 @@ where
 
 /// Builder for an `AppState`.
 ///
-/// `SystemBundle`s to run in the `AppState`'s dispatcher are registered on this builder.
+/// `SystemBundle`s to run in the `AppState`'s dispatcher are registered on this
+/// builder.
 ///
 /// # Type Parameters
 ///
@@ -226,7 +232,8 @@ where
         self
     }
 
-    /// Registers a function to be run at the beginning of a particular `State` method.
+    /// Registers a function to be run at the beginning of a particular `State`
+    /// method.
     ///
     /// # Parameters
     ///
@@ -246,7 +253,8 @@ where
     /// # Parameters
     ///
     /// * `system`: Function to instantiate the `System`.
-    /// * `name`: Name to register the system with, used for dependency ordering.
+    /// * `name`: Name to register the system with, used for dependency
+    ///   ordering.
     /// * `deps`: Names of systems that must run before this system.
     pub fn with_system<Sys, N>(mut self, system: Sys, name: N, dependencies: &[N]) -> Self
     where

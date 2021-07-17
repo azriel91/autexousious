@@ -16,8 +16,9 @@ use amethyst::{StateData, Trans};
 // kcov-ignore-start
 /// Trait for types that intercept and manipulate application behaviour.
 ///
-/// Types that implement this trait are invoked at the beginning of each [`State`][state] function
-/// so they may record application state or override the behaviour of the state.
+/// Types that implement this trait are invoked at the beginning of each
+/// [`State`][state] function so they may record application state or override
+/// the behaviour of the state.
 ///
 /// [state]: https://docs.rs/amethyst/0.6.0/amethyst/trait.State.html
 pub trait Intercept<T, E>: Debug
@@ -47,8 +48,8 @@ where
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`
-    /// * `event`: `Event` received by the application. Mutable so the `Intercept` may alter
-    ///             behaviour.
+    /// * `event`: `Event` received by the application. Mutable so the
+    ///   `Intercept` may alter behaviour.
     fn handle_event_begin(
         &mut self,
         _data: &mut StateData<'_, T>,
@@ -106,8 +107,8 @@ where
     fn update_end(&mut self, _state_trans: &Trans<T, E>) -> Option<Trans<T, E>> {
         None
     }
-    /// Returns whether this intercept should be shared with `Trans::Push` and `Trans::Switch`ed
-    /// `State`s.
+    /// Returns whether this intercept should be shared with `Trans::Push` and
+    /// `Trans::Switch`ed `State`s.
     ///
     /// Defaults to `false`.
     fn is_transitive(&self) -> bool {

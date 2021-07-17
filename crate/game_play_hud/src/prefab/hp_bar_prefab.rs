@@ -23,14 +23,15 @@ const COLOUR_HP_HIGH: [f32; 4] = [0.1, 0.9, 0.1, 0.8];
 ///
 /// * `HpBar`: Tag component.
 /// * `Transform`: Coordinates of the HP bar to draw.
-/// * `Parent`: Link to the parent entity whose `HealthPoints` the `HpBar` entity will display.
+/// * `Parent`: Link to the parent entity whose `HealthPoints` the `HpBar`
+///   entity will display.
 /// * `SpriteRender`: Indicates which "sprite" (colour) of the `HpBar` to draw.
 /// * `Transparent`: Tags the `HpBar` for sorting when rendering.
 ///
-/// Ideally, the `Parent` component will be inserted by the `PrefabLoaderSystem`, so the (game
-/// object) entity whose `HealthPoints` should displayed is specified as the `parent` of the `HpBar`
-/// entity. However this is not currently possible ergonomically, see
-/// <https://community.amethyst-engine.org/t/prefabs-with-special-cases-at-runtime/589> for
+/// Ideally, the `Parent` component will be inserted by the
+/// `PrefabLoaderSystem`, so the (game object) entity whose `HealthPoints`
+/// should displayed is specified as the `parent` of the `HpBar` entity. However
+/// this is not currently possible ergonomically, see <https://community.amethyst-engine.org/t/prefabs-with-special-cases-at-runtime/589> for
 /// discussion.
 #[derive(Clone, Copy, Debug, PartialEq, new)]
 pub struct HpBarPrefab {
@@ -68,8 +69,8 @@ pub struct HpBarPrefabSystemData<'s> {
 }
 
 impl<'s> PrefabData<'s> for HpBarPrefab {
-    type SystemData = HpBarPrefabSystemData<'s>;
     type Result = ();
+    type SystemData = HpBarPrefabSystemData<'s>;
 
     fn add_to_entity(
         &self,

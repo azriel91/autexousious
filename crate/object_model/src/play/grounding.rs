@@ -13,7 +13,8 @@ pub enum Grounding {
     /// Object is in the air.
     #[derivative(Default)]
     Airborne,
-    /// Object is resting on the ground, whether it is the floor or another solid object.
+    /// Object is resting on the ground, whether it is the floor or another
+    /// solid object.
     OnGround,
     /// Object is below ground.
     Underground,

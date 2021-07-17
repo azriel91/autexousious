@@ -4,7 +4,8 @@ use sequence_model::play::SequenceStatus;
 
 use crate::CharacterSequenceUpdateComponents;
 
-/// Switches to the ascend / descend sequence name when the current sequence ends.
+/// Switches to the ascend / descend sequence name when the current sequence
+/// ends.
 #[derive(Debug, new)]
 pub struct SwitchSequenceOnEndYVelocity {
     /// The sequence to switch to if Y velocity is upwards.
@@ -14,7 +15,8 @@ pub struct SwitchSequenceOnEndYVelocity {
 }
 
 impl SwitchSequenceOnEndYVelocity {
-    /// Switches to the ascend / descend sequence name when the current sequence ends.
+    /// Switches to the ascend / descend sequence name when the current sequence
+    /// ends.
     pub fn update(
         &self,
         components: CharacterSequenceUpdateComponents<'_>,

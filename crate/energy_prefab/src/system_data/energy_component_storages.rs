@@ -8,8 +8,8 @@ use map_model::play::MapUnboundedDelete;
 
 /// Energy specific `Component` storages.
 ///
-/// These are the storages for the components specific to energy objects. See also
-/// `ObjectComponentStorages`.
+/// These are the storages for the components specific to energy objects. See
+/// also `ObjectComponentStorages`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct EnergyComponentStorages<'s> {

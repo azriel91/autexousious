@@ -14,7 +14,8 @@ use parent_model::play::ParentEntity;
 
 use crate::play::ApwMain;
 
-/// Tracks the Item IDs to be attached to entities that represent the asset preview widget.
+/// Tracks the Item IDs to be attached to entities that represent the asset
+/// preview widget.
 #[derive(Clone, Component, Debug, PartialEq, new)]
 pub struct AssetPreviewWidget {
     /// Layers of sprite labels to draw for the asset preview widget.

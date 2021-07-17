@@ -56,9 +56,11 @@ pub struct MapPreviewSpawnResources<'s> {
 }
 
 impl MapPreviewSpawn {
-    /// Returns the scale and translation to fit and center the map into the preview dimensions.
+    /// Returns the scale and translation to fit and center the map into the
+    /// preview dimensions.
     ///
-    /// This returns the smaller of width and height, and the smaller of the two values used.
+    /// This returns the smaller of width and height, and the smaller of the two
+    /// values used.
     fn scale_and_translate_x(
         camera_zoom_dimensions: CameraZoomDimensions,
         preview_dimensions: Dimensions,
@@ -94,6 +96,7 @@ impl MapPreviewSpawn {
 
 impl<'s> PreviewSpawner<'s> for MapPreviewSpawn {
     type SystemData = MapPreviewSpawnResources<'s>;
+
     const ASSET_TYPE: AssetType = AssetType::Map;
 
     // Spawns new entities that provide a preview for the asset preview widget.

@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use serde::{Deserialize, Serialize};
 
 use crate::config::{AshTemplate, AssetDisplay};

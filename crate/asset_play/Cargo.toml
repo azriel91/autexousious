@@ -18,8 +18,8 @@ audio_model = { path = "../audio_model" }
 character_model = { path = "../character_model" }
 chase_model = { path = "../chase_model" }
 collision_model = { path = "../collision_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 kinematic_model = { path = "../kinematic_model" }

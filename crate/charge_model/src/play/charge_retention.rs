@@ -13,7 +13,8 @@ pub enum ChargeRetention {
     /// Charge is retained until spent.
     #[derivative(Default)]
     Forever,
-    /// Charge is never retained, if there is no transition, then it is simply lost.
+    /// Charge is never retained, if there is no transition, then it is simply
+    /// lost.
     Never,
     /// Charge is lost over time.
     Lossy(ChargeRetentionClock),

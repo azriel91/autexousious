@@ -37,7 +37,8 @@ pub struct InputReactionsTransitionSystem<IRR> {
     /// Reader ID for the `ControlInputEvent` channel.
     #[new(default)]
     control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
-    /// Pre-allocated bitset to track entities whose transitions have already been checked.
+    /// Pre-allocated bitset to track entities whose transitions have already
+    /// been checked.
     #[new(default)]
     processed_entities: BitSet,
     /// Marker.
@@ -153,7 +154,7 @@ where
                             }
                         }
                         ReactionEffect::ActionHold(reaction_effect_data) => {
-                            Self::hold_transition_action(&reaction_effect_data, *controller_input)
+                            Self::hold_transition_action(reaction_effect_data, *controller_input)
                                 .map(|(transition, events)| {
                                     (transition, events, input_reaction_requirement)
                                 })
@@ -161,7 +162,7 @@ where
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                .find_map(|(sequence_id, events, input_reaction_requirement)| {
                     Self::process_transition(
                         requirement_system_data,
                         entity,
@@ -169,8 +170,7 @@ where
                         events,
                         input_reaction_requirement,
                     )
-                })
-                .next();
+                });
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
@@ -256,7 +256,7 @@ where
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                .find_map(|(sequence_id, events, input_reaction_requirement)| {
                     Self::process_transition(
                         requirement_system_data,
                         entity,
@@ -264,8 +264,7 @@ where
                         events,
                         input_reaction_requirement,
                     )
-                })
-                .next();
+                });
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
@@ -286,7 +285,8 @@ where
 
     /// Processes `InputReactions` for entities without any `ControlInputEvent`.
     ///
-    /// Checks the `ControllerInput` state for any `Hold` and `Fallback` transitions.
+    /// Checks the `ControllerInput` state for any `Hold` and `Fallback`
+    /// transitions.
     fn process_hold_and_fallback_transitions(
         &self,
         InputReactionsTransitionResources {
@@ -352,7 +352,7 @@ where
                                 _ => None,
                             }
                         })
-                        .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                        .find_map(|(sequence_id, events, input_reaction_requirement)| {
                             Self::process_transition(
                                 requirement_system_data,
                                 entity,
@@ -360,8 +360,7 @@ where
                                 events,
                                 input_reaction_requirement,
                             )
-                        })
-                        .next();
+                        });
 
                     if let Some((transition_sequence_id, events)) = transition_sequence_id {
                         events.iter().copied().for_each(|event| {
@@ -382,11 +381,13 @@ where
             );
     }
 
-    /// Returns the transition sequence ID if the action button for that hold transition is held.
+    /// Returns the transition sequence ID if the action button for that hold
+    /// transition is held.
     ///
     /// # Parameters
     ///
-    /// * `reaction_effect_data`: `ControlAction` and sequence ID the hold transition applies to.
+    /// * `reaction_effect_data`: `ControlAction` and sequence ID the hold
+    ///   transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_action(
         ReactionEffectData {
@@ -426,13 +427,17 @@ where
                 }
             }
         }
-    } // kcov-ignore
+    }
 
-    /// Returns the transition sequence ID if the axis input for that hold transition is valued.
+    // kcov-ignore
+
+    /// Returns the transition sequence ID if the axis input for that hold
+    /// transition is valued.
     ///
     /// # Parameters
     ///
-    /// * `axis_transition`: `Axis` and sequence ID the hold transition applies to.
+    /// * `axis_transition`: `Axis` and sequence ID the hold transition applies
+    ///   to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_axis(
         AxisTransition {
@@ -458,7 +463,9 @@ where
                 }
             }
         }
-    } // kcov-ignore
+    }
+
+    // kcov-ignore
 
     fn process_transition<'f>(
         requirement_system_data: &mut IRR::SystemData,

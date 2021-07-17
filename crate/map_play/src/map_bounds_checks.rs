@@ -19,7 +19,8 @@ impl MapBoundsChecks {
             && within_z == Comparative::Within
     }
 
-    /// Returns a 3-tuple of `Comparative`s whether the position is within margins on each axis.
+    /// Returns a 3-tuple of `Comparative`s whether the position is within
+    /// margins on each axis.
     pub fn position_comparative(
         map_margins: &Margins,
         position: Position<f32>,
@@ -31,7 +32,8 @@ impl MapBoundsChecks {
         (within_x, within_y, within_z)
     }
 
-    /// Returns whether the value is between the lower and upper limits (inclusive at both ends).
+    /// Returns whether the value is between the lower and upper limits
+    /// (inclusive at both ends).
     pub fn value_comparative(lower: f32, upper: f32, value: f32) -> Comparative {
         if value >= lower {
             if value <= upper {

@@ -53,7 +53,8 @@ impl<'s> ItemComponent<'s> for AssetSelectionHighlight {
         let asset_selection_parent = AssetSelectionParent::new(entity);
         let parent_entity = ParentEntity::new(entity);
         let target_object = TargetObject::new(entity);
-        // `ChaseModeStick` should be inserted by the `AssetSelectionHighlight` sprite `ItemId`.
+        // `ChaseModeStick` should be inserted by the `AssetSelectionHighlight` sprite
+        // `ItemId`.
         entities
             .build_entity()
             .with(self.ash_sprite_item_id, item_ids)

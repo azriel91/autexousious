@@ -9,9 +9,9 @@ pub trait StdinMapper {
     ///
     /// TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/76>
     ///
-    /// Ideally we can have this be the `SystemData` of an ECS system. However, we cannot add
-    /// a `Resources: for<'res> SystemData<'res>` trait bound as generic associated types (GATs)
-    /// are not yet implemented. See:
+    /// Ideally we can have this be the `SystemData` of an ECS system. However,
+    /// we cannot add a `Resources: for<'res> SystemData<'res>` trait bound
+    /// as generic associated types (GATs) are not yet implemented. See:
     ///
     /// * <https://users.rust-lang.org/t/17444>
     /// * <https://github.com/rust-lang/rust/issues/44265>

@@ -143,8 +143,8 @@ mod tests {
         AmethystApplication::blank()
             .with_system(SequenceEndTransitionSystem::new(), "", &[])
             .with_effect(move |world| {
-                // Add entity before registering `component_event_rid`, so we don't get the first
-                // insertion event.
+                // Add entity before registering `component_event_rid`, so we don't get the
+                // first insertion event.
                 let entity = world
                     .create_entity()
                     .with(sequence_id_setup)

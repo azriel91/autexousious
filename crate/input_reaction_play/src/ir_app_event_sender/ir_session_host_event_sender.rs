@@ -18,14 +18,9 @@ impl IrSessionHostEventSender {
     ) {
         let host_event = match host_event_command {
             SessionHostEventCommand::SessionHostRequest => {
-                if let Some(host_request_params) =
-                    Self::host_request_params_discover(ir_app_event_sender_system_data)
-                {
-                    Some(SessionHostEvent::SessionHostRequest(host_request_params))
-                } else {
-                    // TODO: Feedback that the form needs to be filled.
-                    None
-                }
+                // TODO: if `None`, feedback that the form needs to be filled.
+                Self::host_request_params_discover(ir_app_event_sender_system_data)
+                    .map(SessionHostEvent::SessionHostRequest)
             }
             SessionHostEventCommand::HostCancel => Some(SessionHostEvent::HostCancel),
             SessionHostEventCommand::Back => Some(SessionHostEvent::Back),
@@ -57,13 +52,8 @@ impl IrSessionHostEventSender {
 
         let player_controllers = (*player_controllers).clone();
 
-        if let Some(session_device_name) = session_device_name {
-            Some(SessionHostRequestParams::new(
-                session_device_name,
-                player_controllers,
-            ))
-        } else {
-            None
-        }
+        session_device_name.map(|session_device_name| {
+            SessionHostRequestParams::new(session_device_name, player_controllers)
+        })
     }
 }

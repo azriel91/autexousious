@@ -12,7 +12,8 @@ use mirrored_model::play::Mirrored;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
 ///
-/// This system should be run after all other systems that affect kinematics have run.
+/// This system should be run after all other systems that affect kinematics
+/// have run.
 #[derive(Debug, Default, new)]
 pub struct ObjectTransformUpdateSystem;
 
@@ -79,8 +80,9 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
             }
 
             if position_z_as_y.is_some() {
-                // We subtract z from the y translation as the z axis increases "out of the screen".
-                // Entities that have a larger Z value are transformed downwards.
+                // We subtract z from the y translation as the z axis increases "out of the
+                // screen". Entities that have a larger Z value are transformed
+                // downwards.
                 transform.set_translation_y(position.y - position.z);
             } else {
                 transform.set_translation_y(position.y);

@@ -15,8 +15,8 @@ mod tests {
     use charge_play::{ChargeInitializeDetectionSystem, CHARGE_DELAY_DEFAULT};
 
     #[test]
-    fn inserts_charge_begin_delay_clock_and_sets_charging_status_on_attack_press(
-    ) -> Result<(), Error> {
+    fn inserts_charge_begin_delay_clock_and_sets_charging_status_on_attack_press()
+    -> Result<(), Error> {
         run_test(
             None,
             press_attack,

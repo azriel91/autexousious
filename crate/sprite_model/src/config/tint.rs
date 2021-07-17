@@ -7,11 +7,13 @@ use serde::{Deserialize, Serialize};
 pub struct Tint {
     /// Value between 0.0 and 1.0 (inclusive) to multiply the red channel with.
     pub r: f32,
-    /// Value between 0.0 and 1.0 (inclusive) to multiply the green channel with.
+    /// Value between 0.0 and 1.0 (inclusive) to multiply the green channel
+    /// with.
     pub g: f32,
     /// Value between 0.0 and 1.0 (inclusive) to multiply the blue channel with.
     pub b: f32,
-    /// Value between 0.0 and 1.0 (inclusive) to multiply the alpha channel with.
+    /// Value between 0.0 and 1.0 (inclusive) to multiply the alpha channel
+    /// with.
     pub a: f32,
 }
 

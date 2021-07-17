@@ -18,8 +18,8 @@ use crate::play::SequenceStatus;
 #[derive(Debug, Default, Deserialize, Hash, Serialize)]
 pub struct SequenceId(pub usize);
 
-/// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
-/// table.
+/// Not every entity will have this, but since this is probably a `u8`, we don't
+/// need an indirection table.
 impl Component for SequenceId {
     type Storage = FlaggedStorage<Self, VecStorage<Self>>;
 }

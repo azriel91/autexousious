@@ -27,8 +27,9 @@ pub type AssetIdMappingSystem = AssetPartLoadingSystem<AssetIdMapper>;
 pub struct AssetIdMapper;
 
 impl<'s> AssetPartLoader<'s> for AssetIdMapper {
-    const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
     type SystemData = IdMappingResources<'s>;
+
+    const LOAD_STAGE: LoadStage = LoadStage::IdMapping;
 
     fn preprocess(
         AssetLoadingResources {
@@ -127,7 +128,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 let sequence_id_mappings =
                     SequenceIdMappings::from_iter(map_definition.background.layers.keys().map(
                         |sequence_string| {
-                            SequenceNameString::<SpriteSequenceName>::from_str(&sequence_string)
+                            SequenceNameString::<SpriteSequenceName>::from_str(sequence_string)
                                 .expect("Expected `SequenceNameString::from_str` to succeed.")
                         },
                     ));
@@ -136,10 +137,10 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
             }
             AssetType::Ui => {
                 // For UI, sequences exist in both `BackgroundDefinition` and `UiDefinition`.
-                // However, we cannot simply merge both `sequence_id_mappings` because we would also
-                // need to merge the sequences when being loaded, which is not possible --
-                // `BackgroundDefinition` uses `SpriteSequence`, and `UiDefinition` uses
-                // `UiSequence`.
+                // However, we cannot simply merge both `sequence_id_mappings` because we would
+                // also need to merge the sequences when being loaded, which is
+                // not possible -- `BackgroundDefinition` uses `SpriteSequence`,
+                // and `UiDefinition` uses `UiSequence`.
                 //
                 // In addition, different UIs need to reference the `ControlSettings` UI's
                 // configuration to display the mini control buttons display. The relevant
@@ -158,8 +159,8 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 //     let sequence_id_mappings = SequenceIdMappings::from_iter(
                 //         background_definition.layers.keys().map(|sequence_string| {
                 //             SequenceNameString::from_str(sequence_string)
-                //                 .expect("Expected `SequenceNameString::from_str` to succeed.")
-                //         }),
+                //                 .expect("Expected `SequenceNameString::from_str` to
+                // succeed.")         }),
                 //     );
                 // }
 
@@ -283,8 +284,10 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                                     let asset_id_control_settings =
                                         asset_id_mappings.id(&asset_slug_control_settings).copied();
                                     if asset_id_control_settings == Some(asset_id) {
-                                        // If the current asset ID is the same as the control_settings `AssetId`, then we
-                                        // return None -- we don't allow displaying the mini control buttons. This also
+                                        // If the current asset ID is the same as the
+                                        // control_settings `AssetId`, then we
+                                        // return None -- we don't allow displaying the mini control
+                                        // buttons. This also
                                         // prevents waiting on our own asset ID to be loaded.
                                         None
                                     } else {

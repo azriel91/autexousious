@@ -22,7 +22,8 @@ pub struct AssetTypeMappings {
 impl AssetTypeMappings {
     /// Returns a `AssetTypeMappings` with pre-allocated capacity.
     ///
-    /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
+    /// The mappings are guaranteed to hold `capacity` elements without
+    /// re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         AssetTypeMappings {
             asset_id_to_type: IndexMap::with_capacity(capacity),
@@ -30,7 +31,8 @@ impl AssetTypeMappings {
         }
     }
 
-    /// Returns the number of elements the mappings can hold without reallocating.
+    /// Returns the number of elements the mappings can hold without
+    /// reallocating.
     pub fn capacity(&self) -> usize {
         self.asset_id_to_type.capacity()
     }
@@ -109,7 +111,8 @@ impl AssetTypeMappings {
         self.asset_id_to_type.len()
     }
 
-    /// Removes the ID mapping for the given asset type, returning it if it exists.
+    /// Removes the ID mapping for the given asset type, returning it if it
+    /// exists.
     pub fn remove(&mut self, asset_id: AssetId) -> Option<AssetType> {
         let previous_type = self.asset_id_to_type.swap_remove(&asset_id);
 
@@ -120,7 +123,8 @@ impl AssetTypeMappings {
         previous_type
     }
 
-    /// Reserves capacity for at least `additional` more mappings to be inserted.
+    /// Reserves capacity for at least `additional` more mappings to be
+    /// inserted.
     ///
     /// This may reserve more space to avoid frequent reallocations.
     ///

@@ -3,7 +3,8 @@ use derivative::Derivative;
 use sequence_loading_spi::FrameComponentDataLoader;
 use sequence_model::{config::Wait, loaded::WaitSequence};
 
-/// Loads `WaitSequence`s from `Sequence` types whose `Frame`s contain a `Wait` value.
+/// Loads `WaitSequence`s from `Sequence` types whose `Frame`s contain a `Wait`
+/// value.
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub struct WaitSequenceLoader<'s> {
@@ -18,9 +19,10 @@ pub struct WaitSequenceLoader<'s> {
 impl<'s> WaitSequenceLoader<'s> {
     /// Loads a `WaitSequence` and returns its handle.
     ///
-    /// This is similar to calling the `FrameComponentDataLoader::load` trait method, with the
-    /// difference that the resources are stored by an instantiation of this type, so they do not
-    /// need to be passed in when this method is called.
+    /// This is similar to calling the `FrameComponentDataLoader::load` trait
+    /// method, with the difference that the resources are stored by an
+    /// instantiation of this type, so they do not need to be passed in when
+    /// this method is called.
     pub fn load<SequenceIterator, FrameRef, FnFrameToComponent>(
         &self,
         fn_frame_to_component: FnFrameToComponent,

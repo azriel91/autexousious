@@ -49,8 +49,9 @@ pub const FPS_NO_LIMIT: u32 = 9999;
 
 /// Sleep until the given duration remains, then yield.
 ///
-/// At 60 FPS, we have 16 ms per frame, so we should be able to risk not spin-looping a thread until
-/// the last 1 ms. At 120 FPS, we have 8 ms per frame, and the error margin increases, but should
-/// not be too high to cause an inconsistent frame rate.
+/// At 60 FPS, we have 16 ms per frame, so we should be able to risk not
+/// spin-looping a thread until the last 1 ms. At 120 FPS, we have 8 ms per
+/// frame, and the error margin increases, but should not be too high to cause
+/// an inconsistent frame rate.
 pub const SLEEP_AND_YIELD: FrameRateLimitStrategy =
     FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1));

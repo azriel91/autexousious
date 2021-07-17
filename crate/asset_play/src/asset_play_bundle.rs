@@ -118,7 +118,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         builder.add_barrier();
         builder.add(
             ItemComponentComponentAugmentSystem::<InputControlled>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<InputControlled>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<InputControlled>>(),
             &[],
         );
         builder.add(
@@ -133,7 +133,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ButtonInputControlled>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<ButtonInputControlled>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ButtonInputControlled>>(),
             &[],
         );
         builder.add(
@@ -255,8 +255,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
             &[
                 // Needed for `Position<f32>` value to be used for `UiTransform`.
                 //
-                // `PositionInit` has special logic to offset the position by parent and offset, and
-                // we want to take advantage of that logic.
+                // `PositionInit` has special logic to offset the position by parent and offset,
+                // and we want to take advantage of that logic.
                 any::type_name::<ItemComponentComponentAugmentSystem<PositionInit>>(),
                 any::type_name::<ItemComponentComponentAugmentSystem<UiTextInput>>(),
             ],
@@ -275,27 +275,27 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         // Asset selection UI common systems.
         builder.add(
             ItemComponentComponentAugmentSystem::<ApwContainer>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<ApwContainer>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ApwContainer>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetPreviewWidget>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetPreviewWidget>>(),
-            &[&any::type_name::<
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetPreviewWidget>>(),
+            &[any::type_name::<
                 ItemComponentComponentAugmentSystem<ApwContainer>,
             >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ApwMain>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<ApwMain>>(),
-            &[&any::type_name::<
+            any::type_name::<ItemComponentComponentAugmentSystem<ApwMain>>(),
+            &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AswPortraits>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AswPortraits>>(),
-            &[&any::type_name::<
+            any::type_name::<ItemComponentComponentAugmentSystem<AswPortraits>>(),
+            &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetPreviewWidget>,
             >()],
         );
@@ -303,19 +303,19 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         // Character Selection UI
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelector<Character>>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetDisplayCellCharacter>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellCharacter>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellCharacter>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionCell<AssetDisplayCellCharacter>>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell<AssetDisplayCellCharacter>>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionCell<AssetDisplayCellCharacter>>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Character>>,
             >()],
@@ -324,19 +324,19 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         // Map Selection UI
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelector<Map>>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetDisplayCellMap>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellMap>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetDisplayCellMap>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelector<Map>>,
             >()],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionCell<AssetDisplayCellMap>>::new(),
-            &any::type_name::<
+            any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelectionCell<AssetDisplayCellMap>>,
             >(),
             &[any::type_name::<
@@ -347,7 +347,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         // Common Asset selection systems
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionStatus>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionStatus>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionStatus>>(),
             &[
                 any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
                 any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
@@ -355,7 +355,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlight>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlight>>(),
             &[
                 any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Character>>>(),
                 any::type_name::<ItemComponentComponentAugmentSystem<AssetSelector<Map>>>(),
@@ -363,17 +363,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<AssetSelectionHighlightMain>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<AssetSelectionHighlightMain>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<Dimensions>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<Dimensions>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<Dimensions>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<ChaseModeStick>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<ChaseModeStick>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<ChaseModeStick>>(),
             &[any::type_name::<
                 ItemComponentComponentAugmentSystem<AssetSelectionHighlight>,
             >()],
@@ -382,12 +382,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for AssetPlayBundle {
         // Session Lobby UI
         builder.add(
             ItemComponentComponentAugmentSystem::<SessionCodeLabel>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<SessionCodeLabel>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SessionCodeLabel>>(),
             &[],
         );
         builder.add(
             ItemComponentComponentAugmentSystem::<SessionDevicesWidget>::new(),
-            &any::type_name::<ItemComponentComponentAugmentSystem<SessionDevicesWidget>>(),
+            any::type_name::<ItemComponentComponentAugmentSystem<SessionDevicesWidget>>(),
             &[],
         );
         builder.add_barrier();

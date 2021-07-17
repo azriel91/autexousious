@@ -21,8 +21,8 @@ impl AsRef<Sequence<EnergySequenceName, EnergyFrame>> for EnergySequence {
 }
 
 impl GameObjectSequence for EnergySequence {
-    type SequenceName = EnergySequenceName;
     type GameObjectFrame = EnergyFrame;
+    type SequenceName = EnergySequenceName;
 
     fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence

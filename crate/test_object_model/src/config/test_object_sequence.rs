@@ -21,8 +21,8 @@ impl AsRef<Sequence<TestObjectSequenceName, TestObjectFrame>> for TestObjectSequ
 }
 
 impl GameObjectSequence for TestObjectSequence {
-    type SequenceName = TestObjectSequenceName;
     type GameObjectFrame = TestObjectFrame;
+    type SequenceName = TestObjectSequenceName;
 
     fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence

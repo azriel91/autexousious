@@ -15,7 +15,8 @@ pub enum KeyboardLayout {
 impl KeyboardLayout {
     /// Returns the keyboard buttons present for this keyboard layout.
     ///
-    /// Development note: This is not called `keys()` as it is ambiguous with [`HashMap::keys`].
+    /// Development note: This is not called `keys()` as it is ambiguous with
+    /// [`HashMap::keys`].
     pub fn buttons(self) -> Vec<VirtualKeyCode> {
         match self {
             KeyboardLayout::Us => {

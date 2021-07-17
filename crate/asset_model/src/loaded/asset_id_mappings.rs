@@ -21,7 +21,8 @@ pub struct AssetIdMappings {
 impl AssetIdMappings {
     /// Returns a `AssetIdMappings` with pre-allocated capacity.
     ///
-    /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
+    /// The mappings are guaranteed to hold `capacity` elements without
+    /// re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         AssetIdMappings {
             asset_id_to_slug: DenseSlotMap::with_capacity_and_key(capacity),
@@ -29,7 +30,8 @@ impl AssetIdMappings {
         }
     }
 
-    /// Returns the number of elements the mappings can hold without reallocating.
+    /// Returns the number of elements the mappings can hold without
+    /// reallocating.
     pub fn capacity(&self) -> usize {
         self.asset_id_to_slug.capacity()
     }
@@ -71,7 +73,7 @@ impl AssetIdMappings {
     }
 
     /// Returns an iterator visiting all `AssetId`s in arbitrary order.
-    pub fn keys<'a>(&'a self) -> impl Iterator<Item = AssetId> + 'a {
+    pub fn keys(&self) -> impl Iterator<Item = AssetId> + '_ {
         self.asset_id_to_slug.keys()
     }
 
@@ -85,7 +87,8 @@ impl AssetIdMappings {
         self.asset_id_to_slug.len()
     }
 
-    /// Removes the ID mapping for the given asset slug, returning it if it exists.
+    /// Removes the ID mapping for the given asset slug, returning it if it
+    /// exists.
     pub fn remove(&mut self, asset_id: AssetId) -> Option<AssetSlug> {
         let asset_slug = self.asset_id_to_slug.remove(asset_id);
         if let Some(asset_slug) = asset_slug.as_ref() {
@@ -95,7 +98,8 @@ impl AssetIdMappings {
         asset_slug
     }
 
-    /// Reserves capacity for at least `additional` more mappings to be inserted.
+    /// Reserves capacity for at least `additional` more mappings to be
+    /// inserted.
     ///
     /// This may reserve more space to avoid frequent reallocations.
     ///

@@ -13,15 +13,15 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
 background_model = { path = "../background_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
-derive_more = "0.99.10"
-enumflags2 = "0.6.4"
+derive_more = "0.99.16"
+enumflags2 = "0.7.1"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.116", features = ["derive"] }
-slotmap = "0.4.0"
+serde = { version = "1.0.126", features = ["derive"] }
+slotmap = "1.0.5"
 sprite_model = { path = "../sprite_model" }
-strum = "0.19.2"
-strum_macros = "0.19.2"
+strum = "0.21.0"
+strum_macros = "0.21.1"

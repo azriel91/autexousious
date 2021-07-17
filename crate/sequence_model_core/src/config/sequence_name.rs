@@ -6,8 +6,8 @@ use std::{
 
 /// Marker trait for everywhere that uses sequence names.
 ///
-/// Sequence names may be well-known (enum variant), or arbitrary (fallback enum variant that holds
-/// the string).
+/// Sequence names may be well-known (enum variant), or arbitrary (fallback enum
+/// variant that holds the string).
 ///
 /// TODO: RFC 1733 will allow us to define an alias instead of a new trait. See:
 ///

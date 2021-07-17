@@ -4,8 +4,8 @@ use numeric_newtype_derive::numeric_newtype;
 
 /// Number of game objects that this object has hit.
 ///
-/// This component is needed to track number of objects hit during processing of `HitEvent`s in the
-/// `HitDetectionSystem`.
+/// This component is needed to track number of objects hit during processing of
+/// `HitEvent`s in the `HitDetectionSystem`.
 #[numeric_newtype]
 #[derive(Component, Debug, Default)]
 #[storage(VecStorage)]

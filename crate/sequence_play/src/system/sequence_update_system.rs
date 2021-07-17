@@ -21,9 +21,10 @@ use sequence_model::{
 /// * `FrameWaitClock`
 /// * `FrameIndexClock`
 ///
-/// This system **must** be run before all systems that update the frame components that are
-/// attached to entities, as the `SequenceUpdateEvent`s include the new frame index, which is only
-/// guaranteed to be valid for the current dispatcher run.
+/// This system **must** be run before all systems that update the frame
+/// components that are attached to entities, as the `SequenceUpdateEvent`s
+/// include the new frame index, which is only guaranteed to be valid for the
+/// current dispatcher run.
 #[derive(Debug, Default, new)]
 pub struct SequenceUpdateSystem;
 
@@ -210,7 +211,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                 )| {
                     let sequence_update_params = SequenceUpdateParams {
                         entity,
-                        wait_sequence_handle: &wait_sequence_handle,
+                        wait_sequence_handle,
                         frame_index_clock: &mut frame_index_clock,
                         frame_wait_clock: &mut frame_wait_clock,
                         sequence_status: &mut sequence_status,

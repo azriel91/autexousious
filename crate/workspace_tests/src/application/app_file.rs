@@ -68,8 +68,10 @@ mod test {
                 .as_error()
                 .downcast_ref::<Box<FindContext>>()
             {
-                let base_dirs = vec![application_root_dir()
-                    .expect("Failed to determine application root directory.")];
+                let base_dirs = vec![
+                    application_root_dir()
+                        .expect("Failed to determine application root directory."),
+                ];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -186,8 +188,10 @@ mod test {
                 .as_error()
                 .downcast_ref::<Box<FindContext>>()
             {
-                let base_dirs = vec![application_root_dir()
-                    .expect("Failed to determine application root directory.")];
+                let base_dirs = vec![
+                    application_root_dir()
+                        .expect("Failed to determine application root directory."),
+                ];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -209,8 +213,10 @@ mod test {
                 .as_error()
                 .downcast_ref::<Box<FindContext>>()
             {
-                let base_dirs = vec![application_root_dir()
-                    .expect("Failed to determine application root directory.")];
+                let base_dirs = vec![
+                    application_root_dir()
+                        .expect("Failed to determine application root directory."),
+                ];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -322,9 +328,12 @@ mod test {
     ///
     /// # Parameters
     ///
-    /// * `resource_dir`: Parent directory of the file. Either absolute, or relative to the executable.
-    /// * `file_prefix`: File stem, such as "display_config" in "display_config.ron".
-    /// * `file_suffix`: File extension including the ".", such as ".ron" in "display_config.ron".
+    /// * `resource_dir`: Parent directory of the file. Either absolute, or
+    ///   relative to the executable.
+    /// * `file_prefix`: File stem, such as "display_config" in
+    ///   "display_config.ron".
+    /// * `file_suffix`: File extension including the ".", such as ".ron" in
+    ///   "display_config.ron".
     /// * `contents`: String to write into the file.
     fn setup_temp_file(
         exe_dir: &Path,
@@ -335,11 +344,13 @@ mod test {
     ) -> (Option<TempDir>, NamedTempFile) {
         let conf_path = PathBuf::from(resource_dir);
 
-        // normalize relative paths to be relative to exe directory instead of working directory
+        // normalize relative paths to be relative to exe directory instead of working
+        // directory
         let conf_parent;
         let temp_dir;
 
-        // if the conf_path is absolute, or is the exe directory, we don't create a temp_dir
+        // if the conf_path is absolute, or is the exe directory, we don't create a
+        // temp_dir
         if conf_path.is_absolute() || resource_dir == "" {
             conf_parent = exe_dir.to_path_buf();
             temp_dir = None;

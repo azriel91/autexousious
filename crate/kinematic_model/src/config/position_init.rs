@@ -72,9 +72,13 @@ impl MulAssign<f32> for PositionInit {
     }
 }
 
-impl Into<Vector3<f32>> for PositionInit {
-    fn into(self) -> Vector3<f32> {
-        Vector3::new(self.x as f32, self.y as f32, self.z as f32)
+impl From<PositionInit> for Vector3<f32> {
+    fn from(position_init: PositionInit) -> Vector3<f32> {
+        Vector3::new(
+            position_init.x as f32,
+            position_init.y as f32,
+            position_init.z as f32,
+        )
     }
 }
 
@@ -122,8 +126,8 @@ impl<'s> ItemComponent<'s> for PositionInit {
         if let Some(position_init_offset) = position_init_offset {
             let mut position_init_offset = **position_init_offset;
 
-            // Since scaling affects the whole transform, we need to divide the offset by the scale
-            // factor to retain the original values.
+            // Since scaling affects the whole transform, we need to divide the offset by
+            // the scale factor to retain the original values.
             if let Some(scale_init) = scale_init {
                 position_init_offset.x /= scale_init.x;
                 position_init_offset.y /= scale_init.y;

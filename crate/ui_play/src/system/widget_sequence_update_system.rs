@@ -16,7 +16,8 @@ pub struct WidgetSequenceUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]
     widget_status_rid: Option<ReaderId<ComponentEvent>>,
-    /// Pre-allocated bitset to track insertions and modifications to `WidgetStatus`s.
+    /// Pre-allocated bitset to track insertions and modifications to
+    /// `WidgetStatus`s.
     #[new(default)]
     widget_status_updates: BitSet,
 }

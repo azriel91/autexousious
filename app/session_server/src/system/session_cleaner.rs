@@ -14,9 +14,11 @@ use crate::{
 pub struct SessionCleaner;
 
 impl SessionCleaner {
-    /// Removes all devices and session information for the client with the given `SocketAddr`.
+    /// Removes all devices and session information for the client with the
+    /// given `SocketAddr`.
     ///
-    /// This returns the session code and devices so that the caller may choose to send closing messages to the clients.
+    /// This returns the session code and devices so that the caller may choose
+    /// to send closing messages to the clients.
     pub fn session_forget(
         sessions: &mut Sessions,
         session_device_mappings: &mut SessionDeviceMappings<'_>,
@@ -56,7 +58,8 @@ impl SessionCleaner {
         }
     }
 
-    /// Removes session information for the given `SocketAddr` from session resources.
+    /// Removes session information for the given `SocketAddr` from session
+    /// resources.
     pub fn client_forget(
         session_tracker: &mut SessionTracker<'_>,
         socket_to_device_id: &mut SocketToDeviceId,

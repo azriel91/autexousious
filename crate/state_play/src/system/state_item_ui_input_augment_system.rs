@@ -15,7 +15,8 @@ use shrev_support::EventChannelExt;
 use state_registry::{StateIdUpdateEvent, StateItemEntities};
 use ui_model_spi::config::WidgetStatus;
 
-/// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem` item entities.
+/// Adds the `InputControlled` and `ControllerInput` components to `UiMenuItem`
+/// item entities.
 #[derive(Debug, SystemDesc, new)]
 #[system_desc(name(StateItemUiInputAugmentSystemDesc))]
 pub struct StateItemUiInputAugmentSystem {
@@ -75,15 +76,16 @@ impl<'s> System<'s> for StateItemUiInputAugmentSystem {
                 .iter()
                 .any(|entity| widget_statuses.get(*entity).is_some());
 
-            // This creates another entity for each controller, which is an odd implementation.
+            // This creates another entity for each controller, which is an odd
+            // implementation.
             //
             // TODO: Perhaps instead of creating an entity for each controller, add a
             // `SharedInputControlled` component to each of the menu item entities, and:
             //
-            // * Change the `SharedControllerInputUpdateSystem` to also write `ControlInputEvent`s
-            //   for changes in the merged `ControllerInput` values.
-            // * Change the `MenuItemWidgetInputSystem` to get the menu item entity based off the
-            //   `ControlInputEvent` instead of joining and filtering.
+            // * Change the `SharedControllerInputUpdateSystem` to also write
+            //   `ControlInputEvent`s for changes in the merged `ControllerInput` values.
+            // * Change the `MenuItemWidgetInputSystem` to get the menu item entity based
+            //   off the `ControlInputEvent` instead of joining and filtering.
             if menu_items_exist {
                 let mut controller_entities = (0..player_controllers.len())
                     .map(|index| {

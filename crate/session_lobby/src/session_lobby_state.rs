@@ -26,14 +26,16 @@ pub type SessionLobbyState =
 
 /// Builder for a `SessionLobbyState`.
 ///
-/// `SystemBundle`s to run in the `SessionLobbyState`'s dispatcher are registered on this builder.
+/// `SystemBundle`s to run in the `SessionLobbyState`'s dispatcher are
+/// registered on this builder.
 pub type SessionLobbyStateBuilder =
     AppStateBuilder<'static, 'static, SessionLobbyStateDelegate, SessionLobbyEntity>;
 
 /// Delegate `State` for the session lobby.
 ///
-/// This state is not intended to be used directly, but wrapped in an `AppState`. The
-/// `SessionLobbyState` is an alias with this as a delegate state.
+/// This state is not intended to be used directly, but wrapped in an
+/// `AppState`. The `SessionLobbyState` is an alias with this as a delegate
+/// state.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
 pub struct SessionLobbyStateDelegate;

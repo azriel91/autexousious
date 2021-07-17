@@ -57,7 +57,8 @@ impl AssetQueries {
 
     /// Generates an `AssetId` for the given slug.
     ///
-    /// This will insert `AssetIdMappings` into the `World` if it is not already present.
+    /// This will insert `AssetIdMappings` into the `World` if it is not already
+    /// present.
     ///
     /// # Parameters
     ///
@@ -70,7 +71,8 @@ impl AssetQueries {
 
     /// Returns an `AssetId` where the asset slug is not important.
     ///
-    /// This will insert `AssetIdMappings` into the `World` if it is not already present.
+    /// This will insert `AssetIdMappings` into the `World` if it is not already
+    /// present.
     ///
     /// # Parameters
     ///

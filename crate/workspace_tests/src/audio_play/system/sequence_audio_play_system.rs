@@ -50,8 +50,8 @@ mod tests {
             amethyst_application = amethyst_application.with_bundle(AudioBundle::default());
         }
 
-        // Windows cannot handle `AudioBundle` -- a segfault occurs due to threading interaction
-        // with the COM object.
+        // Windows cannot handle `AudioBundle` -- a segfault occurs due to threading
+        // interaction with the COM object.
         //
         // See <https://github.com/amethyst/amethyst/issues/1595>.
         #[cfg(windows)]

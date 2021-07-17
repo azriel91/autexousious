@@ -4,7 +4,6 @@ mod test {
 
     use debug_util_amethyst::{assert_eq_opt_trans, assert_eq_trans};
 
-    #[macro_use]
     macro_rules! test_opt_trans_panic {
         ($test_name:ident, $message:expr, $expected:expr, $actual:expr) => {
             #[test]

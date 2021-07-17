@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use derive_new::new;
 use object_model::config::{GameObjectFrame, ObjectFrame};
 use sequence_model::config::Wait;
@@ -12,7 +14,8 @@ pub struct CharacterFrame {
     /// Common object behaviour specification that can change each tick.
     #[serde(flatten)]
     pub object_frame: ObjectFrame,
-    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or
+    /// released.
     #[serde(default)]
     pub input_reactions: CharacterInputReactions,
 }

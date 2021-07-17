@@ -7,9 +7,9 @@ use stdio_spi::StdinMapper;
 pub struct StdioCommandEventStdinMapper;
 
 impl StdinMapper for StdioCommandEventStdinMapper {
-    type SystemData = ();
-    type Event = StdioCommandEvent;
     type Args = StdioCommandEventArgs;
+    type Event = StdioCommandEvent;
+    type SystemData = ();
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event, Error> {
         Ok(args)

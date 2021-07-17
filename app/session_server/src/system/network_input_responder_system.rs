@@ -57,8 +57,8 @@ impl NetworkInputResponderSystem {
                         &payload,
                         // None means it uses a default multiplexed stream.
                         //
-                        // Suspect if we give it a value, the value will be a "channel" over the same
-                        // socket connection.
+                        // Suspect if we give it a value, the value will be a "channel" over the
+                        // same socket connection.
                         DeliveryRequirement::ReliableOrdered(None),
                         UrgencyRequirement::OnTick,
                     );
@@ -101,8 +101,7 @@ impl<'s> System<'s> for NetworkInputResponderSystem {
                     data: game_input_event,
                 } = net_game_input_event;
 
-                if let Some(session_code) = session_device_mappings_read.session_code(&socket_addr)
-                {
+                if let Some(session_code) = session_device_mappings_read.session_code(socket_addr) {
                     if let Some(net_session_devices) =
                         session_device_mappings_read.net_session_devices(session_code)
                     {

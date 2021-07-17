@@ -1,7 +1,9 @@
-use enumflags2::BitFlags;
+use enumflags2::bitflags;
 
 /// Boundary faces (individual and combinations) of a cuboid.
-#[derive(Clone, Copy, Debug, BitFlags, PartialEq)]
+#[bitflags]
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum BoundaryFace {
     /// Left face (`x-`).
     Left = 0b00_0001,
