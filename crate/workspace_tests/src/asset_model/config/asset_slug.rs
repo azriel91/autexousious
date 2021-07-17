@@ -9,8 +9,7 @@ mod tests {
         assert_eq!(
             Err(AssetSlugBuildError::NoValueProvided {
                 segment: AssetSlugSegment::Namespace
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default().build()
         );
     }
@@ -20,8 +19,7 @@ mod tests {
         assert_eq!(
             Err(AssetSlugBuildError::SegmentEmpty {
                 segment: AssetSlugSegment::Namespace
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("".to_string())
                 .build()
@@ -34,8 +32,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsControlChar {
                 segment: AssetSlugSegment::Namespace,
                 value: String::from("ab")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("ab".to_string())
                 .build()
@@ -48,8 +45,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsWhitespace {
                 segment: AssetSlugSegment::Namespace,
                 value: String::from("a b")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("a b".to_string())
                 .build()
@@ -62,8 +58,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsForwardSlash {
                 segment: AssetSlugSegment::Namespace,
                 value: String::from("a/b")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("a/b".to_string())
                 .build()
@@ -76,8 +71,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentStartsWithNumericChar {
                 segment: AssetSlugSegment::Namespace,
                 value: String::from("1ab")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("1ab".to_string())
                 .build()
@@ -89,8 +83,7 @@ mod tests {
         assert_eq!(
             Err(AssetSlugBuildError::NoValueProvided {
                 segment: AssetSlugSegment::Name
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .build()
@@ -102,8 +95,7 @@ mod tests {
         assert_eq!(
             Err(AssetSlugBuildError::SegmentEmpty {
                 segment: AssetSlugSegment::Name
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("".to_string())
@@ -117,8 +109,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsControlChar {
                 segment: AssetSlugSegment::Name,
                 value: String::from("ab")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("ab".to_string())
@@ -132,8 +123,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsWhitespace {
                 segment: AssetSlugSegment::Name,
                 value: String::from("a b")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a b".to_string())
@@ -147,8 +137,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentContainsForwardSlash {
                 segment: AssetSlugSegment::Name,
                 value: String::from("a/b")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a/b".to_string())
@@ -162,8 +151,7 @@ mod tests {
             Err(AssetSlugBuildError::SegmentStartsWithNumericChar {
                 segment: AssetSlugSegment::Name,
                 value: String::from("1ab")
-            }
-            .to_string()),
+            }),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("1ab".to_string())

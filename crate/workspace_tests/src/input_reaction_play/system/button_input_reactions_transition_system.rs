@@ -4,23 +4,20 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
+        ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
         input::InputEvent,
-        shred::{ResourceId, SystemData},
         shrev::EventChannel,
         winit::event::VirtualKeyCode,
         Error,
     };
     use application::IoUtils;
     use application_test_support::AutexousiousApplication;
-    use derivative::Derivative;
     use game_input_model::{config::ControlBindings, play::ButtonInputControlled};
     use input_reaction_loading::{IrsLoader, IrsLoaderParams};
     use input_reaction_model::{
         config::BasicIrr,
         loaded::{
-            InputReaction, InputReactions, InputReactionsHandle, InputReactionsSequence,
-            InputReactionsSequenceHandle,
+            InputReaction, InputReactions, InputReactionsSequence, InputReactionsSequenceHandle,
         },
     };
     use sequence_model::{
@@ -191,17 +188,6 @@ mod tests {
         let mut ec = world.write_resource::<EventChannel<InputEvent<ControlBindings>>>();
         ec.single_write(event);
     } // kcov-ignore
-
-    #[derive(Derivative, SystemData)]
-    #[derivative(Debug)]
-    struct TestSystemData<'s> {
-        #[derivative(Debug = "ignore")]
-        sequence_ids: WriteStorage<'s, SequenceId>,
-        #[derivative(Debug = "ignore")]
-        input_reactions_handles: WriteStorage<'s, InputReactionsHandle<InputReaction<BasicIrr>>>,
-        #[derivative(Debug = "ignore")]
-        button_input_controlleds: WriteStorage<'s, ButtonInputControlled>,
-    }
 
     struct SetupParams {
         sequence_id: SequenceId,

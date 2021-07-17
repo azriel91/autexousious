@@ -271,7 +271,6 @@ mod test {
         setup(invocations, intercepts)
     }
 
-    #[macro_use]
     macro_rules! delegate_test {
         ($test_name:ident, $function:ident, $invocation:expr) => {
             #[test]
@@ -286,7 +285,6 @@ mod test {
         };
     }
 
-    #[macro_use]
     macro_rules! intercept_no_op_test {
         ($test_name:ident, $function:ident, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -304,7 +302,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_no_op_trans_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -323,7 +320,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_begin_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -342,7 +338,6 @@ mod test {
         }
     }
 
-    #[macro_use]
     macro_rules! intercept_end_test {
         ($test_name:ident, $function:ident, $expected_trans:expr, $($invocation:expr),* $(,)*) => {
             #[test]
@@ -702,7 +697,6 @@ mod test {
 
     /// Declares a function that pushes the specified invocation to the
     /// `self.invocations` field.
-    #[macro_use]
     macro_rules! fn_ {
         ($function:ident, $invocation:expr) => {
             fn $function(&mut self, _: StateData<'_, T>) {
@@ -716,7 +710,6 @@ mod test {
     ///
     /// This macro passes the `self.id` field as a parameter to the `Invocation`
     /// variant.
-    #[macro_use]
     macro_rules! fn_id {
         ($function:ident, $invocation:expr; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) {
@@ -732,7 +725,6 @@ mod test {
     ///
     /// The function returns the value in the `self.trans` field, which is
     /// expected to contain a value.
-    #[macro_use]
     macro_rules! fn_trans {
         ($function:ident, $invocation:expr; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) -> Trans<T, E> {
@@ -749,7 +741,6 @@ mod test {
     /// `self.invocations` field.
     ///
     /// The function returns the optional value in the `self.$trans` field
-    #[macro_use]
     macro_rules! fn_opt_trans {
         ($function:ident, $invocation:expr, $trans:ident; [$($additional_param:ty),*]) => {
             fn $function(&mut self, $(_: $additional_param),*) -> Option<Trans<T, E>> {

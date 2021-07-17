@@ -73,12 +73,8 @@ mod test {
 
                         assert!(
                             !object_entities.is_empty(),
-                            // kcov-ignore-start
-                            format!(
-                                // kcov-ignore-end
-                                "Expected at least one entity for the `{}` object type",
-                                object_type
-                            )
+                            "Expected at least one entity for the `{}` object type",
+                            object_type
                         );
                     });
 
