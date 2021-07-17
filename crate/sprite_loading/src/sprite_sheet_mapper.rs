@@ -74,8 +74,7 @@ impl SpriteSheetMapper {
 
                         // Negate the Y value because we want to shift the sprite up, whereas the
                         // offset in Amethyst is to shift it down.
-
-                        // 
+                        //
                         // * The Y offset specified by the designer should be the bottom of the
                         //   sprite in pixel coordinates for the whole image.
                         // * `offset_y` is the top of the sprite in pixel coordinates.
