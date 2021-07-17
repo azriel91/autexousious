@@ -39,7 +39,7 @@ game_play_stdio = { path = "../../crate/game_play_stdio" }
 input_reaction_loading = { path = "../../crate/input_reaction_loading" }
 kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
-log = "0.4.11"
+log = "0.4.14"
 map_loading = { path = "../../crate/map_loading" }
 net_play = { path = "../../crate/net_play" }
 network_input_play = { path = "../../crate/network_input_play" }
@@ -48,8 +48,8 @@ network_session_model = { path = "../../crate/network_session_model" }
 network_session_play = { path = "../../crate/network_session_play" }
 parent_play = { path = "../../crate/parent_play" }
 sequence_loading = { path = "../../crate/sequence_loading" }
-serde = { version = "1.0.116", features = ["derive"] }
-serde_yaml = "0.8.13"
+serde = { version = "1.0.126", features = ["derive"] }
+serde_yaml = "0.8.17"
 session_host_play = { path = "../../crate/session_host_play" }
 session_host_stdio = { path = "../../crate/session_host_stdio" }
 session_join_play = { path = "../../crate/session_join_play" }
@@ -63,8 +63,8 @@ state_registry = { path = "../../crate/state_registry" }
 stdio_command_stdio = { path = "../../crate/stdio_command_stdio" }
 stdio_input = { path = "../../crate/stdio_input" }
 stdio_spi = { path = "../../crate/stdio_spi" }
-structopt = "0.3.18"
-structopt-derive = "0.4.11"
+structopt = "0.3.22"
+structopt-derive = "0.4.15"
 structopt-toml = "0.4.5"
 tracker = { path = "../../crate/tracker" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
@@ -73,12 +73,12 @@ ui_play = { path = "../../crate/ui_play" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.6"
-wasm-bindgen = "0.2.68"
-web-sys = { version = "0.3.45", features = ["ErrorEvent", "MessageEvent", "WebSocket"] }
+wasm-bindgen = "0.2.74"
+web-sys = { version = "0.3.51", features = ["ErrorEvent", "MessageEvent", "WebSocket"] }
 
 [dev-dependencies]
-assert_cmd = "1.0.1"
-escargot = "0.5.0"
+assert_cmd = "1.0.7"
+escargot = "0.5.2"
 
 [features]
 default = ["parallel", "gl"]

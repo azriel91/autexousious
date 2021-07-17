@@ -15,11 +15,11 @@ asset_selection_model = { path = "../asset_selection_model" }
 asset_selection_ui_model = { path = "../asset_selection_ui_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 camera_model = { path = "../camera_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 game_input_model = { path = "../game_input_model" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.11"
+log = "0.4.14"
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }

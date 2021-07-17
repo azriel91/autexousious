@@ -14,8 +14,8 @@ application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
-log = "0.4.11"
+derivative = "2.2.0"
+derive-new = "0.5.9"
+log = "0.4.14"
 map_selection_model = { path = "../map_selection_model" }
 state_registry = { path = "../state_registry" }

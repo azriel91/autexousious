@@ -10,19 +10,19 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
-approx = "0.3.2"
+approx = "0.5.0"
 asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 asset_ui_model = { path = "../asset_ui_model" }
 chase_model = { path = "../chase_model" }
 control_settings_model = { path = "../control_settings_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
 input_reaction_model = { path = "../input_reaction_model" }
-log = "0.4.11"
+log = "0.4.14"
 network_mode_selection_model = { path = "../network_mode_selection_model" }
 network_session_model = { path = "../network_session_model" }
 object_type = { path = "../object_type" }

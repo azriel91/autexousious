@@ -14,19 +14,19 @@ asset_model = { path = "../asset_model" }
 asset_selection_model = { path = "../asset_selection_model" }
 camera_model = { path = "../camera_model" }
 chase_model = { path = "../chase_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
-indexmap = { version = "1.6.0", features = ["serde-1"] }
+indexmap = { version = "1.7.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.11"
+log = "0.4.14"
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.116", features = ["derive"] }
+serde = { version = "1.0.126", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 spawn_play = { path = "../spawn_play" }
 sprite_model = { path = "../sprite_model" }

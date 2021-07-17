@@ -10,10 +10,10 @@ test = false
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
-derive-new = "0.5.8"
+derive-new = "0.5.9"
 logic_clock_derive = { path = "../logic_clock_derive" }
-serde = { version = "1.0.116", features = ["derive"] }
+serde = { version = "1.0.126", features = ["derive"] }
 
 [dev-dependencies]
 derive_deref = "1.1.1"
-derive_more = "0.99.10"
+derive_more = "0.99.16"

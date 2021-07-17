@@ -24,8 +24,8 @@ chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
@@ -34,7 +34,7 @@ game_stats_model = { path = "../game_stats_model" }
 input_reaction_model = { path = "../input_reaction_model" }
 input_reaction_play = { path = "../input_reaction_play" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.11"
+log = "0.4.14"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }

@@ -16,7 +16,7 @@ background_model = { path = "../background_model" }
 camera_model = { path = "../camera_model" }
 character_model = { path = "../character_model" }
 collision_model = { path = "../collision_model" }
-derivative = "2.1.1"
+derivative = "2.2.0"
 energy_model = { path = "../energy_model" }
 game_input_model = { path = "../game_input_model" }
 input_reaction_model = { path = "../input_reaction_model" }
@@ -24,7 +24,7 @@ kinematic_model = { path = "../kinematic_model" }
 loading_model = { path = "../loading_model" }
 map_model = { path = "../map_model" }
 sequence_model = { path = "../sequence_model" }
-slotmap = { version = "0.4.0", features = ["serde"] }
+slotmap = { version = "1.0.5", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 ui_model = { path = "../ui_model" }

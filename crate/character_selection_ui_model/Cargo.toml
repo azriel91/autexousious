@@ -12,15 +12,15 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 asset_model = { path = "../asset_model" }
 asset_ui_model = { path = "../asset_ui_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
-indexmap = { version = "1.6.0", features = ["serde-1"] }
+indexmap = { version = "1.7.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.11"
+log = "0.4.14"
 object_type = { path = "../object_type" }
 parent_model = { path = "../parent_model" }
 sequence_model = { path = "../sequence_model" }
-serde = { version = "1.0.116", features = ["derive"] }
+serde = { version = "1.0.126", features = ["derive"] }
 sprite_model = { path = "../sprite_model" }
 ui_label_model = { path = "../ui_label_model" }

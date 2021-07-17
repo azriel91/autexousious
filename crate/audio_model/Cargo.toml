@@ -12,9 +12,9 @@ test = false
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", default-features = false, features = ["audio", "network", "renderer", "no-slow-safety-checks", "test-support", "wav", "web_socket"] }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.116", features = ["derive"] }
+serde = { version = "1.0.126", features = ["derive"] }

@@ -19,7 +19,7 @@ character_selection_ui_model = { path = "../character_selection_ui_model" }
 chase_model = { path = "../chase_model" }
 control_settings_loading = { path = "../control_settings_loading" }
 control_settings_model = { path = "../control_settings_model" }
-derive-new = "0.5.8"
+derive-new = "0.5.9"
 game_input_model = { path = "../game_input_model" }
 input_reaction_loading = { path = "../input_reaction_loading" }
 input_reaction_model = { path = "../input_reaction_model" }
@@ -31,7 +31,7 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
-smallvec = "1.4.2"
+smallvec = "1.6.1"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }

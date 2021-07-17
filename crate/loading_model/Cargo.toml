@@ -10,4 +10,4 @@ test = false
 
 [dependencies]
 asset_model = { path = "../asset_model" }
-slotmap = { version = "0.4.0", features = ["serde"] }
+slotmap = { version = "1.0.5", features = ["serde"] }

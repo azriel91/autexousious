@@ -13,20 +13,20 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "wasm", 
 asset_model = { path = "../asset_model" }
 audio_model = { path = "../audio_model" }
 collision_model = { path = "../collision_model" }
-derivative = "2.1.1"
-derive-new = "0.5.8"
+derivative = "2.2.0"
+derive-new = "0.5.9"
 derive_deref = "1.1.1"
-derive_more = "0.99.10"
-indexmap = { version = "1.6.0", features = ["serde-1"] }
+derive_more = "0.99.16"
+indexmap = { version = "1.7.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = { version = "1.0.116", features = ["derive"] }
+serde = { version = "1.0.126", features = ["derive"] }
 shape_model = { path = "../shape_model" }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
-strum = "0.19.2"
-strum_macros = "0.19.2"
+strum = "0.21.0"
+strum_macros = "0.21.1"
