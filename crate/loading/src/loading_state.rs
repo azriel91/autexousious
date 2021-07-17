@@ -80,7 +80,7 @@ where
         &mut self,
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        data.data.update(&data.world);
+        data.data.update(data.world);
 
         let loading_statuses_complete = *data.world.read_resource::<CollisionAudioLoadingStatus>()
             == CollisionAudioLoadingStatus::Complete

@@ -204,8 +204,8 @@ impl AppFile {
         for<'de> T: Deserialize<'de>,
     {
         let data = match format {
-            Format::Ron => ron::de::from_bytes(&bytes)?,
-            Format::Yaml => serde_yaml::from_slice(&bytes)?,
+            Format::Ron => ron::de::from_bytes(bytes)?,
+            Format::Yaml => serde_yaml::from_slice(bytes)?,
         };
 
         Ok(data)

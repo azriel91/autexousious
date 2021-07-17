@@ -19,9 +19,9 @@ impl ControlButtonToButtonMapper {
     /// # Parameters
     ///
     /// * `player_input_configs`: Player input configuration.
-    pub fn map<'f>(
-        player_input_configs: &'f PlayerInputConfigs,
-    ) -> impl Iterator<Item = SmallVec<[(ControlButton, VirtualKeyCode); 8]>> + 'f {
+    pub fn map(
+        player_input_configs: &PlayerInputConfigs,
+    ) -> impl Iterator<Item = SmallVec<[(ControlButton, VirtualKeyCode); 8]>> + '_ {
         // TODO: Support all kinds of `amethyst::input::Button`s
         // Pending <https://github.com/amethyst/amethyst/pull/2041>.
         player_input_configs.iter().map(|player_input_config| {

@@ -102,8 +102,8 @@ where
         &mut self,
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        data.data.update(&data.world);
-        self.dispatcher.as_mut().unwrap().dispatch(&data.world);
+        data.data.update(data.world);
+        self.dispatcher.as_mut().unwrap().dispatch(data.world);
 
         if data.world.read_resource::<GameLoadingStatus>().loaded() {
             // TODO: `Trans:Push` when we have a proper map selection menu.

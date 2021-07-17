@@ -16,7 +16,7 @@ impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
         event: &mut StateEvent,
     ) -> Option<Trans<T, StateEvent>> {
         if let StateEvent::Window(event) = &event {
-            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+            if is_close_requested(event) || is_key_down(event, VirtualKeyCode::Escape) {
                 Some(Trans::Quit)
             } else {
                 None

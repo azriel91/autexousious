@@ -111,7 +111,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         // Note: The built-in dispatcher must be run before the state specific
         // dispatcher as the `"input_system"` is registered in the main
         // dispatcher, and is a dependency of the `ControllerInputUpdateSystem`.
-        data.data.update(&data.world);
+        data.data.update(data.world);
         Trans::None
     }
 }

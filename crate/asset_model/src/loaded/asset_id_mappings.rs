@@ -73,7 +73,7 @@ impl AssetIdMappings {
     }
 
     /// Returns an iterator visiting all `AssetId`s in arbitrary order.
-    pub fn keys<'a>(&'a self) -> impl Iterator<Item = AssetId> + 'a {
+    pub fn keys(&self) -> impl Iterator<Item = AssetId> + '_ {
         self.asset_id_to_slug.keys()
     }
 

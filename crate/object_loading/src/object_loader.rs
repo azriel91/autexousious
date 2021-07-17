@@ -94,7 +94,7 @@ impl ObjectLoader {
                     config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
                     config::SequenceEndTransition::SequenceName(sequence_name) => {
                         let sequence_id = sequence_id_mappings
-                            .get(&sequence_name)
+                            .get(sequence_name)
                             .map(|index| SequenceId(**index))
                             .unwrap_or_else(|| {
                                 panic!(

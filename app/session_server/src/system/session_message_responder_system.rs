@@ -84,7 +84,7 @@ impl SessionMessageResponderSystem {
         } = net_session_message_event;
 
         let session_code_id = session_id_to_device_mappings
-            .session_code_id(&socket_addr)
+            .session_code_id(socket_addr)
             .ok_or_else(|| {
                 // TODO: reject
                 format!(
@@ -97,14 +97,15 @@ impl SessionMessageResponderSystem {
             .entry(session_code_id)
             .or_insert_with(SessionDeviceTickStatuses::default);
 
-        let session_device_id = socket_to_device_id.get(&socket_addr).copied().ok_or_else(
-            || {
+        let session_device_id = socket_to_device_id
+            .get(socket_addr)
+            .copied()
+            .ok_or_else(|| {
                 format!(
                     "Received `{:?}` from {}, but no `SessionDeviceId` tracked for that socket.",
                     session_message_event, socket_addr
                 )
-            },
-        )?;
+            })?;
 
         Ok((
             session_device_tick_statuses,

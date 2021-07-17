@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 //! Configuration types for object sequences.
 //!
 //! A sequence is an independent grouping of frames, which contains not only

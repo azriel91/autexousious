@@ -47,9 +47,13 @@ impl AddAssign for VelocityInit {
     }
 }
 
-impl Into<Vector3<f32>> for VelocityInit {
-    fn into(self) -> Vector3<f32> {
-        Vector3::new(self.x as f32, self.y as f32, self.z as f32)
+impl From<VelocityInit> for Vector3<f32> {
+    fn from(velocity_init: VelocityInit) -> Vector3<f32> {
+        Vector3::new(
+            velocity_init.x as f32,
+            velocity_init.y as f32,
+            velocity_init.z as f32,
+        )
     }
 }
 

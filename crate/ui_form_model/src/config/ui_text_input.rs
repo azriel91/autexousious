@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use amethyst::{
     ecs::{storage::DenseVecStorage, Component, Entity, World, WriteStorage},
     shred::{ResourceId, SystemData},

@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use derive_new::new;
 use object_model::config::{GameObjectFrame, ObjectFrame};
 use sequence_model::config::Wait;

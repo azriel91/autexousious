@@ -21,7 +21,7 @@ where
     IRR: Send + Sync + 'static,
 {
     fn as_ref(&self) -> &InputReaction<IRR> {
-        &self
+        self
     }
 }
 

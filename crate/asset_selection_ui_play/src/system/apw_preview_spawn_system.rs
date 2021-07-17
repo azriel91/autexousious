@@ -222,7 +222,7 @@ where
         asset_selection: Option<AssetSelection>,
     ) {
         let apw_main_entity =
-            Self::find_apw_main_entity(&apw_preview_spawn_resources, controller_id);
+            Self::find_apw_main_entity(apw_preview_spawn_resources, controller_id);
 
         let ApwPreviewSpawnResources {
             asset_type_mappings,
@@ -306,7 +306,7 @@ where
                         )
                     });
                     if let Some(ash_entity) = ash_entity {
-                        Self::delete_preview_entities(&apw_preview_spawn_resources, ash_entity);
+                        Self::delete_preview_entities(apw_preview_spawn_resources, ash_entity);
                     }
                 }
                 AssetSelectionEvent::Switch {

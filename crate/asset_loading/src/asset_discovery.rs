@@ -57,11 +57,11 @@ impl AssetDiscovery {
         asset_records_new: &mut AssetIndex,
         asset_type: AssetType,
     ) {
-        if let Some(asset_records) = asset_records_new.get_mut(&asset_type) {
+        if let Some(mut asset_records) = asset_records_new.get_mut(&asset_type) {
             if let Some(asset_records_existing) = asset_index_combined.get_mut(&asset_type) {
-                asset_records_existing.extend(asset_records.drain(..));
+                asset_records_existing.append(&mut asset_records);
             } else {
-                asset_index_combined.insert(asset_type, mem::replace(asset_records, Vec::new()));
+                asset_index_combined.insert(asset_type, mem::take(asset_records));
             }
         }
     }

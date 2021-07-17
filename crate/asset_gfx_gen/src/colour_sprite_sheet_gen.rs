@@ -40,7 +40,7 @@ impl ColourSpriteSheetGen {
             let texture_builder =
                 load_from_srgba(Srgba::new(colour[0], colour[1], colour[2], colour[3]));
             let texture_handle =
-                loader.load_from_data(TextureData::from(texture_builder), (), &texture_assets);
+                loader.load_from_data(TextureData::from(texture_builder), (), texture_assets);
             let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2], false, false);
             let sprites = vec![sprite];
 
@@ -126,7 +126,7 @@ impl ColourSpriteSheetGen {
                 .with_data(pixel_data);
             let texture_data = texture_builder.into();
 
-            let texture_handle = loader.load_from_data(texture_data, (), &texture_assets);
+            let texture_handle = loader.load_from_data(texture_data, (), texture_assets);
             let sprite_sheet = SpriteSheetGen::HalfPixel.generate(
                 texture_handle,
                 params,

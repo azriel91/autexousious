@@ -69,11 +69,11 @@ impl<'s> AssetPartLoader<'s> for AssetTextureLoader {
 
             let sprite_sheet_handles = SpriteLoader::load(
                 &mut progress_counter,
-                &loader,
-                &texture_assets,
-                &sprite_sheet_assets,
-                &sprites_definition,
-                &asset_path,
+                loader,
+                texture_assets,
+                sprite_sheet_assets,
+                sprites_definition,
+                asset_path,
             )
             .expect("Failed to load textures and sprite sheets.");
 

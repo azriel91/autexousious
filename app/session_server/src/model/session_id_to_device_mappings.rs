@@ -185,11 +185,7 @@ impl SessionIdToDeviceMappings {
                 *socket_addr,
             );
 
-            if let Some(net_session_device) = net_session_device {
-                Some((session_code_id, net_session_device))
-            } else {
-                None
-            }
+            net_session_device.map(|net_session_device| (session_code_id, net_session_device))
         } else {
             None
         }

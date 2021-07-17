@@ -79,7 +79,7 @@ where
         sequence_name_string: &SequenceNameString<SeqName>,
     ) -> SequenceId {
         sequence_id_mappings
-            .id(&sequence_name_string)
+            .id(sequence_name_string)
             .copied()
             .unwrap_or_else(|| {
                 error!(

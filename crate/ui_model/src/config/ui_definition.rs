@@ -1,3 +1,5 @@
+#![allow(clippy::nonstandard_macro_braces)] // TODO: Pending https://github.com/rust-lang/rust-clippy/issues/7434
+
 use asset_derive::Asset;
 use derive_new::new;
 use serde::{Deserialize, Serialize};

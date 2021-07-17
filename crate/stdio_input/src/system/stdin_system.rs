@@ -145,7 +145,7 @@ impl<'s> System<'s> for StdinSystem {
                         }
                     })
                     .for_each(|command| {
-                        match IoAppEventUtils::input_to_variant_and_tokens(&command) {
+                        match IoAppEventUtils::input_to_variant_and_tokens(command) {
                             Ok(variant_and_tokens) => {
                                 if let Some(variant_and_tokens) = variant_and_tokens {
                                     variant_and_tokens_ec.single_write(variant_and_tokens);

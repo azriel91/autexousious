@@ -64,7 +64,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for ControlSettingsState {
         &mut self,
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        data.data.update(&data.world);
+        data.data.update(data.world);
         Trans::None
     }
 }

@@ -128,7 +128,7 @@ impl<'s> AssetPartLoader<'s> for AssetIdMapper {
                 let sequence_id_mappings =
                     SequenceIdMappings::from_iter(map_definition.background.layers.keys().map(
                         |sequence_string| {
-                            SequenceNameString::<SpriteSequenceName>::from_str(&sequence_string)
+                            SequenceNameString::<SpriteSequenceName>::from_str(sequence_string)
                                 .expect("Expected `SequenceNameString::from_str` to succeed.")
                         },
                     ));

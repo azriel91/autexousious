@@ -72,9 +72,13 @@ impl MulAssign<f32> for PositionInit {
     }
 }
 
-impl Into<Vector3<f32>> for PositionInit {
-    fn into(self) -> Vector3<f32> {
-        Vector3::new(self.x as f32, self.y as f32, self.z as f32)
+impl From<PositionInit> for Vector3<f32> {
+    fn from(position_init: PositionInit) -> Vector3<f32> {
+        Vector3::new(
+            position_init.x as f32,
+            position_init.y as f32,
+            position_init.z as f32,
+        )
     }
 }
 

@@ -211,7 +211,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                 )| {
                     let sequence_update_params = SequenceUpdateParams {
                         entity,
-                        wait_sequence_handle: &wait_sequence_handle,
+                        wait_sequence_handle,
                         frame_index_clock: &mut frame_index_clock,
                         frame_wait_clock: &mut frame_wait_clock,
                         sequence_status: &mut sequence_status,

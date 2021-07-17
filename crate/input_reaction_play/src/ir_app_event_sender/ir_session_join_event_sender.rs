@@ -18,16 +18,9 @@ impl IrSessionJoinEventSender {
     ) {
         let session_join_event = match session_join_event_command {
             SessionJoinEventCommand::SessionJoinRequest => {
-                if let Some(session_join_request_params) =
-                    Self::session_join_request_params_discover(ir_app_event_sender_system_data)
-                {
-                    Some(SessionJoinEvent::SessionJoinRequest(
-                        session_join_request_params,
-                    ))
-                } else {
-                    // TODO: Feedback that the form needs to be filled.
-                    None
-                }
+                // TODO: if `None`, feedback that the form needs to be filled.
+                Self::session_join_request_params_discover(ir_app_event_sender_system_data)
+                    .map(SessionJoinEvent::SessionJoinRequest)
             }
             SessionJoinEventCommand::JoinCancel => Some(SessionJoinEvent::JoinCancel),
             SessionJoinEventCommand::Back => Some(SessionJoinEvent::Back),

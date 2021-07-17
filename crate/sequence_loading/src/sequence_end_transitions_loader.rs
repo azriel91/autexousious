@@ -40,7 +40,7 @@ where
         <Self as SequenceComponentDataLoader>::load(
             |sequence_ref| {
                 SequenceEndTransitionMapper::map(
-                    &self.sequence_id_mappings,
+                    self.sequence_id_mappings,
                     asset_slug,
                     sequence_ref,
                 )

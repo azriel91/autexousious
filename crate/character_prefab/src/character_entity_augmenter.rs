@@ -64,7 +64,7 @@ impl CharacterEntityAugmenter {
                 )
             });
         let character_definition = character_definition_assets
-            .get(&character_definition_handle)
+            .get(character_definition_handle)
             .expect("Expected `CharacterDefinition` to be loaded.");
 
         let sequence_id_mappings = asset_sequence_id_mappings_character

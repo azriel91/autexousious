@@ -251,7 +251,7 @@ impl<'s> System<'s> for SessionJoinResponderSystem {
 
                     if let Some(session_message_event) = session_message_event {
                         Self::send_session_message_event(
-                            &session_tracker.session_device_mappings,
+                            session_tracker.session_device_mappings,
                             &mut transport_resource,
                             socket_addr,
                             session_message_event,

@@ -12,9 +12,9 @@ pub struct SwitchSequenceOnLand(
 
 impl SwitchSequenceOnLand {
     /// Switches to the landing sequence name when the character is on ground.
-    pub fn update<'c>(
+    pub fn update(
         &self,
-        components: CharacterSequenceUpdateComponents<'c>,
+        components: CharacterSequenceUpdateComponents<'_>,
     ) -> Option<CharacterSequenceName> {
         if components.grounding == Grounding::OnGround {
             Some(self.0)

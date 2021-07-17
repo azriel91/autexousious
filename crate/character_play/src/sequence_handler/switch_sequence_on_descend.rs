@@ -12,9 +12,9 @@ pub struct SwitchSequenceOnDescend(
 
 impl SwitchSequenceOnDescend {
     /// Switches to the descend sequence name when Y velocity is downwards.
-    pub fn update<'c>(
+    pub fn update(
         &self,
-        components: CharacterSequenceUpdateComponents<'c>,
+        components: CharacterSequenceUpdateComponents<'_>,
     ) -> Option<CharacterSequenceName> {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {

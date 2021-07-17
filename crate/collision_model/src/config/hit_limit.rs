@@ -40,7 +40,7 @@ impl Serialize for HitLimit {
                 let enum_name = stringify!(HitLimit);
                 let variant_index = 1;
                 let variant_name = Into::<&'static str>::into(HitLimit::Unlimited);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+                serializer.serialize_unit_variant(enum_name, variant_index, variant_name)
             }
         }
     }

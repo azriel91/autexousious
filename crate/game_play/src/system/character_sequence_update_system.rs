@@ -135,12 +135,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 character_sequence_name_string
             {
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
-                    &controller_input,
+                    controller_input,
                     *health_points,
                     *character_sequence_name,
                     *sequence_status,
-                    &position,
-                    &velocity,
+                    position,
+                    velocity,
                     *mirrored,
                     *grounding,
                     *run_counter,

@@ -16,13 +16,13 @@ impl EnergyEntityAugmenter {
     ///
     /// * `entity`: The entity to augment.
     /// * `energy_component_storages`: Energy specific `Component` storages.
-    pub fn augment<'s>(
+    pub fn augment(
         entity: Entity,
         EnergyComponentStorages {
             map_unbounded_deletes,
             hit_transitions,
             hitting_transitions,
-        }: &mut EnergyComponentStorages<'s>,
+        }: &mut EnergyComponentStorages<'_>,
     ) {
         map_unbounded_deletes
             .insert(entity, MapUnboundedDelete::default())

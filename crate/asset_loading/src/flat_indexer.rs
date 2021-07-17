@@ -16,7 +16,7 @@ impl FlatIndexer {
     /// * `namespace`: Namespace that the asset_type reside in.
     /// * `asset_type_dir`: Directory containing asset_type's assets.
     pub fn index(namespace: &str, asset_type_dir: &Path) -> Vec<AssetRecord> {
-        DirTraverse::child_directories(&asset_type_dir)
+        DirTraverse::child_directories(asset_type_dir)
             .into_iter()
             .filter_map(|asset_dir| {
                 AssetIndexingUtils::asset_record(namespace.to_string(), asset_dir)

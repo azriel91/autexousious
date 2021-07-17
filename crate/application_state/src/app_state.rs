@@ -102,7 +102,7 @@ where
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         data.world.register::<I>();
 
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStart) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnStart) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -113,7 +113,7 @@ where
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStop) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnStop) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -125,7 +125,7 @@ where
     }
 
     fn on_pause(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnPause) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnPause) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -137,7 +137,7 @@ where
     }
 
     fn on_resume(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnResume) {
+        if let Some(functions) = self.hook_fns.get(&HookableFn::OnResume) {
             functions
                 .iter()
                 .for_each(|function| function(&mut data.world));
@@ -172,11 +172,11 @@ where
         // dispatcher as the `"input_system"` is registered in the main
         // dispatcher, and by design we have chosen that systems that depend on
         // that should be placed in the state specific dispatcher.
-        data.data.update(&data.world);
+        data.data.update(data.world);
         self.dispatcher
             .as_mut()
             .expect("Expected `dispatcher` to be set up.")
-            .dispatch(&data.world);
+            .dispatch(data.world);
 
         self.delegate.update(data)
     }

@@ -128,7 +128,7 @@ impl TextureLoader {
             path,
             ImageFormat::default(),
             progress_counter,
-            &texture_assets,
+            texture_assets,
         )
     }
 }

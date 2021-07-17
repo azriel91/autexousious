@@ -40,7 +40,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> CharacterIrsHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -115,7 +115,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SequenceEndTransition {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -160,7 +160,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> WaitSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -205,7 +205,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpriteRenderSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -250,7 +250,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> BodySequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -295,7 +295,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> InteractionsSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids
@@ -340,7 +340,7 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpawnsSequenceHandle {
-        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_id = AssetQueries::id(world, asset_slug);
         let asset_world = world.read_resource::<AssetWorld>();
         let asset_item_ids = world.read_resource::<AssetItemIds>();
         let item_id_first = asset_item_ids

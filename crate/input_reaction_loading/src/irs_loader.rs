@@ -56,7 +56,7 @@ where
                     sequence_id_mappings,
                     input_reactions_default,
                     AsRef::<Option<config::InputReactions<SeqName, IRR>>>::as_ref(seq).as_ref(),
-                    &AsRef::<config::InputReactions<SeqName, IRR>>::as_ref(frame),
+                    AsRef::<config::InputReactions<SeqName, IRR>>::as_ref(frame),
                 )
             })
             .collect::<Vec<loaded::InputReactionsHandle<InputReaction<IRR>>>>();
@@ -295,8 +295,7 @@ where
             use input_reaction_model::config::InputReaction::*;
             match config_input_reaction {
                 SequenceNameString(sequence_name_string) => {
-                    let sequence_id =
-                        Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                    let sequence_id = Self::sequence_id(sequence_id_mappings, sequence_name_string);
                     input_reactions_loaded.push(fn_input_reaction(
                         sequence_id,
                         InputReactionAppEvents::default(),
@@ -308,8 +307,7 @@ where
                     events,
                     requirement,
                 }) => {
-                    let sequence_id =
-                        Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                    let sequence_id = Self::sequence_id(sequence_id_mappings, sequence_name_string);
                     input_reactions_loaded.push(fn_input_reaction(
                         sequence_id,
                         events.clone(),
@@ -323,7 +321,7 @@ where
                          requirement,
                      }| {
                         let sequence_id =
-                            Self::sequence_id(sequence_id_mappings, &sequence_name_string);
+                            Self::sequence_id(sequence_id_mappings, sequence_name_string);
                         fn_input_reaction(sequence_id, events.clone(), requirement.clone())
                     },
                 )),

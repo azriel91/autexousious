@@ -351,7 +351,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         builder.add(
             InputReactionsTransitionSystem::<BasicIrr>::new(),
-            &any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
+            any::type_name::<InputReactionsTransitionSystem<BasicIrr>>(),
             &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
         builder.add(
@@ -360,7 +360,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                 'b,
                 ButtonInputReactionsTransitionSystem<BasicIrr>,
             >>::build(ButtonInputReactionsTransitionSystemDesc::default(), world),
-            &any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
+            any::type_name::<ButtonInputReactionsTransitionSystem<BasicIrr>>(),
             &[any::type_name::<SequenceEndTransitionSystem>()],
         ); // kcov-ignore
 
@@ -378,24 +378,20 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
         builder.add(
             InputReactionsTransitionSystem::<CharacterIrr>::new(),
-            &any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>(),
+            any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>(),
             &[any::type_name::<CharacterSequenceUpdateSystem>()],
         ); // kcov-ignore
         builder.add(
             CharacterHitEffectSystem::new(),
             any::type_name::<CharacterHitEffectSystem>(),
-            &[&any::type_name::<
-                InputReactionsTransitionSystem<CharacterIrr>,
-            >()],
+            &[any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>()],
         ); // kcov-ignore
 
         // Charging
         builder.add(
             ChargeInitializeDetectionSystem::new().pausable(SessionCondition::Ready),
             any::type_name::<ChargeInitializeDetectionSystem>(),
-            &[&any::type_name::<
-                InputReactionsTransitionSystem<CharacterIrr>,
-            >()],
+            &[any::type_name::<InputReactionsTransitionSystem<CharacterIrr>>()],
         ); // kcov-ignore
         builder.add(
             ChargeInitializeDelaySystem::new().pausable(SessionCondition::Ready),

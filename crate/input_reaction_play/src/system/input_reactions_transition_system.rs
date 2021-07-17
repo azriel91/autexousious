@@ -154,7 +154,7 @@ where
                             }
                         }
                         ReactionEffect::ActionHold(reaction_effect_data) => {
-                            Self::hold_transition_action(&reaction_effect_data, *controller_input)
+                            Self::hold_transition_action(reaction_effect_data, *controller_input)
                                 .map(|(transition, events)| {
                                     (transition, events, input_reaction_requirement)
                                 })
@@ -162,7 +162,7 @@ where
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                .find_map(|(sequence_id, events, input_reaction_requirement)| {
                     Self::process_transition(
                         requirement_system_data,
                         entity,
@@ -170,8 +170,7 @@ where
                         events,
                         input_reaction_requirement,
                     )
-                })
-                .next();
+                });
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
@@ -257,7 +256,7 @@ where
                         _ => None,
                     }
                 })
-                .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                .find_map(|(sequence_id, events, input_reaction_requirement)| {
                     Self::process_transition(
                         requirement_system_data,
                         entity,
@@ -265,8 +264,7 @@ where
                         events,
                         input_reaction_requirement,
                     )
-                })
-                .next();
+                });
 
             if let Some((transition_sequence_id, events)) = transition_sequence_id {
                 events.iter().copied().for_each(|event| {
@@ -354,7 +352,7 @@ where
                                 _ => None,
                             }
                         })
-                        .filter_map(|(sequence_id, events, input_reaction_requirement)| {
+                        .find_map(|(sequence_id, events, input_reaction_requirement)| {
                             Self::process_transition(
                                 requirement_system_data,
                                 entity,
@@ -362,8 +360,7 @@ where
                                 events,
                                 input_reaction_requirement,
                             )
-                        })
-                        .next();
+                        });
 
                     if let Some((transition_sequence_id, events)) = transition_sequence_id {
                         events.iter().copied().for_each(|event| {

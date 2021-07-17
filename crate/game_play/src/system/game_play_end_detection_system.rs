@@ -54,7 +54,7 @@ impl GamePlayEndDetectionSystem {
             ..
         }: &mut GamePlayEndDetectionSystemData,
     ) -> Option<WinStatus> {
-        let team_alive_count = self.team_alive_count(&teams, &health_pointses);
+        let team_alive_count = self.team_alive_count(teams, health_pointses);
         if team_alive_count == 0 {
             let win_outcome = WinOutcome::Draw;
             let win_status = WinStatus::new(win_outcome);
