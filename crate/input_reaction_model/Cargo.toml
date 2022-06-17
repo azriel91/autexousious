@@ -31,4 +31,4 @@ serde = { version = "1.0.116", features = ["derive"] }
 session_host_model = { path = "../session_host_model" }
 session_join_model = { path = "../session_join_model" }
 session_lobby_model = { path = "../session_lobby_model" }
-smallvec = "1.4.2"
+smallvec = "1.6.1"
