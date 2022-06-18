@@ -56,7 +56,7 @@ serde = { version = "1.0.116", features = ["derive"] }
 serde_yaml = "0.8.13"
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-smallvec = "1.4.2"
+smallvec = "1.6.1"
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }

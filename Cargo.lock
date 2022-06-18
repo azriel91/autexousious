@@ -163,7 +163,7 @@ dependencies = [
  "log",
  "rodio",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -250,7 +250,7 @@ dependencies = [
  "derive-new",
  "fnv",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "winit",
 ]
 
@@ -295,7 +295,7 @@ dependencies = [
  "rendy",
  "ron 0.5.1",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "static_assertions 1.1.0",
  "web-sys",
 ]
@@ -339,7 +339,7 @@ dependencies = [
  "rand 0.7.3",
  "ron 0.5.1",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "unicode-normalization",
  "unicode-segmentation",
  "winit",
@@ -1627,7 +1627,7 @@ dependencies = [
  "indexmap",
  "kinematic_model",
  "log",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "sprite_model",
  "strum",
  "ui_label_model",
@@ -2650,7 +2650,7 @@ dependencies = [
  "log",
  "parking_lot 0.10.2",
  "raw-window-handle",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "spirv_cross",
  "wasm-bindgen",
  "web-sys",
@@ -2678,7 +2678,7 @@ dependencies = [
  "parking_lot 0.10.2",
  "range-alloc",
  "raw-window-handle",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "spirv_cross",
  "storage-map",
 ]
@@ -2697,7 +2697,7 @@ dependencies = [
  "log",
  "objc",
  "raw-window-handle",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "winapi 0.3.9",
  "x11",
 ]
@@ -3081,7 +3081,7 @@ dependencies = [
  "session_host_model",
  "session_join_model",
  "session_lobby_model",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -3392,7 +3392,7 @@ dependencies = [
  "serde_yaml",
  "session_lobby_ui_model",
  "slotmap 0.4.0",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "spawn_model",
  "sprite_loading",
  "sprite_model",
@@ -4407,7 +4407,7 @@ dependencies = [
  "cloudabi",
  "libc",
  "redox_syscall",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "winapi 0.3.9",
 ]
 
@@ -4996,7 +4996,7 @@ source = "git+https://github.com/amethyst/rendy.git?branch=wasm#26ec46deeda4ab03
 dependencies = [
  "relevant",
  "rendy-core",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "thread_profiler",
 ]
 
@@ -5027,7 +5027,7 @@ dependencies = [
  "gfx-hal",
  "log",
  "relevant",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -5046,7 +5046,7 @@ dependencies = [
  "rendy-resource",
  "rendy-wsi",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "thread_profiler",
 ]
 
@@ -5063,7 +5063,7 @@ dependencies = [
  "rendy-factory",
  "rendy-memory",
  "rendy-resource",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "thread_profiler",
 ]
 
@@ -5086,7 +5086,7 @@ dependencies = [
  "rendy-resource",
  "rendy-shader",
  "rendy-wsi",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "thread_profiler",
 ]
 
@@ -5100,7 +5100,7 @@ dependencies = [
  "rendy-core",
  "rendy-factory",
  "rendy-wsi",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "web-sys",
  "winit",
 ]
@@ -5117,7 +5117,7 @@ dependencies = [
  "relevant",
  "serde",
  "slab",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -5133,7 +5133,7 @@ dependencies = [
  "rendy-resource",
  "serde",
  "serde_bytes",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "wavefront_obj",
 ]
 
@@ -5148,7 +5148,7 @@ dependencies = [
  "rendy-core",
  "rendy-descriptor",
  "rendy-memory",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -5160,7 +5160,7 @@ dependencies = [
  "rendy-core",
  "rendy-factory",
  "serde",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -5189,7 +5189,7 @@ dependencies = [
  "rendy-core",
  "rendy-memory",
  "rendy-resource",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
 ]
 
 [[package]]
@@ -5813,7 +5813,7 @@ dependencies = [
  "mopa",
  "rayon",
  "shred-derive",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "tynm",
 ]
 
@@ -5896,9 +5896,9 @@ dependencies = [
 
 [[package]]
 name = "smallvec"
-version = "1.4.2"
+version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbee7696b84bbf3d89a1c2eccff0850e3047ed46bfcd2e92c29a2d074d57e252"
+checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
 dependencies = [
  "serde",
 ]
@@ -6680,7 +6680,7 @@ dependencies = [
  "sequence_loading",
  "sequence_model",
  "session_lobby_ui_model",
- "smallvec 1.4.2",
+ "smallvec 1.6.1",
  "sprite_loading",
  "sprite_model",
  "state_registry",

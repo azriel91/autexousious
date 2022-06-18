@@ -31,7 +31,7 @@ object_type = { path = "../object_type" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 session_lobby_ui_model = { path = "../session_lobby_ui_model" }
-smallvec = "1.4.2"
+smallvec = "1.6.1"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
